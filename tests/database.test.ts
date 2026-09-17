@@ -24,7 +24,8 @@ beforeAll(async () => {
     create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
     create function auth.uid() returns uuid language sql stable as $$ select (auth.jwt()->>'sub')::uuid $$;
   `);
-  await db.exec(readFileSync(new URL('../supabase/migrations/20260917010106_foundation_identity.sql', import.meta.url), 'utf8'));
+  await db.exec(readFileSync(new URL('../supabase/migrations/20260917132534_foundation_identity.sql', import.meta.url), 'utf8'));
+  await db.exec(readFileSync(new URL('../supabase/migrations/20260917132641_restrict_platform_trigger_execution.sql', import.meta.url), 'utf8'));
   await db.query('insert into auth.users(id, email_confirmed_at) values ($1, now()), ($2, now())', [member, other]);
   await db.query('insert into auth.sessions(id, user_id) values ($1, $2)', [session, member]);
 }, 30000);

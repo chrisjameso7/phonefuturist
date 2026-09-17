@@ -20,7 +20,7 @@ Run `npm run dev`. Without configuration, public shell pages render while accoun
 3. Configure a free custom SMTP sender with a verified sending identity. Test verification and recovery delivery to an address outside the Supabase organization. Default Supabase SMTP is not public onboarding infrastructure.
 4. Set Auth Site URL to the application's actual origin. Allow the exact `/auth/callback` redirect and `/auth/callback?next=/account/password` for development and the intended hosted environment. Avoid production wildcard redirects. Use the standard confirmation link flow with PKCE; do not disable verification.
 5. In Google Cloud, configure an OAuth web client and consent settings. Use the callback URL displayed by Supabase for Google (typically `https://PROJECT_REF.supabase.co/auth/v1/callback`). Enter client ID/secret in Supabase's Google provider settings, not application source. Confirm external users can sign in under the consent app's publishing/test-user settings.
-6. Apply and validate `supabase/migrations/20260917010106_foundation_identity.sql` using the CLI against the dedicated development project first. Verify only intended API schema/grants are exposed; `private` is not an exposed API schema.
+6. Apply and validate `supabase/migrations/20260917132534_foundation_identity.sql` using the CLI against the dedicated development project first. Verify only intended API schema/grants are exposed; `private` is not an exposed API schema.
 7. Supply the project URL/publishable key through local/runtime settings, not chat secrets. Confirm email/password, Google, logout, recovery, factor enrollment, MFA, and restriction behavior.
 
 ## Cloudflare — user-controlled setup required
