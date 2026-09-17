@@ -1,0 +1,14 @@
+---
+import Page from '../../layouts/Page.astro';
+import ArticleCards from '../../components/ArticleCards.astro';
+import {publishedArticles} from '../../lib/publication';
+import {sections} from '../../lib/editorial';
+const section=Astro.url.searchParams.get('section');
+const offset=Math.max(0,Math.min(100000,Math.floor(Number(Astro.url.searchParams.get('offset'))||0)));
+const {articles,unavailable}=await publishedArticles(null,offset,section&&sections.some(s=>s===section)?section:null);
+const filtered=section&&sections.some(s=>s===section)?articles.filter(a=>a.section===section):articles;
+if(unavailable)Astro.response.status=503;
+const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),...(section?{section}:{})});
+---
+<Page title="The latest"><section class="publication-index"><p class="eyebrow">PhoneFuturist / The newsroom</p><h1>{section&&sections.some(s=>s===section)?section.charAt(0).toUpperCase()+section.slice(1):'The latest'}</h1><p class="intro">Independent reporting. The context that counts.</p><nav class="section-tabs" aria-label="Sections"><a href="/articles" aria-current={!section?'page':undefined}>All stories</a>{sections.map(s=><a href={'/articles?section='+s} aria-current={section===s?'page':undefined}>{s}</a>)}</nav>{filtered.length?<ArticleCards articles={filtered}/>:<div class="panel"><h2>{unavailable?'Stories are temporarily unavailable.':'No stories on this page yet.'}</h2><p>{unavailable?'Please try again shortly.':'Published reporting will appear here after editorial review.'}</p></div>}<nav class="pagination" aria-label="Article pages">{offset>0&&<a href={pageLink(Math.max(0,offset-30))}>← Previous</a>}{articles.length===30&&<a href={pageLink(offset+30)}>Next →</a>}</nav></section></Page>
+

@@ -1,0 +1,6 @@
+---
+import type {PublishedArticle} from '../lib/editorial';
+interface Props {articles:PublishedArticle[]}
+const {articles}=Astro.props;
+---
+<div class="article-grid">{articles.map((a,i)=><article class:list={['article-card',{'lead-card':i===0}]}><span class="card-section">{a.section}</span><h3><a href={a.canonical_path}>{a.title}</a></h3><p>{a.withdrawn?'This article has been withdrawn. Read the editorial notice.':a.summary}</p><div class="card-meta"><span>{a.byline}</span><time datetime={a.published_at}>{new Date(a.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}</time></div></article>)}</div>

@@ -1,8 +1,9 @@
 ---
 import '../styles/global.css';
 interface Props { title: string; description?: string; privatePage?: boolean; home?: boolean }
-const { title, description = 'PhoneFuturist — technology journalism and intelligence.', privatePage = false, home = false } = Astro.props;
+const { title, description = 'Independent technology journalism, analysis and intelligence.', privatePage = false, home = false } = Astro.props;
+const links = [['News','news'],['Reports','reports'],['Leaks','leaks'],['Analysis','analysis']];
 ---
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content={privatePage ? 'noindex, nofollow' : 'noindex'}/><title>{title} · PhoneFuturist</title></head>
-<body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav aria-label="Main"><a href="/#newsroom">The newsroom</a><a href="/login">Sign in</a><a class="nav-account" href="/account">My account <span aria-hidden="true">↗</span></a></nav></header><main id="main" class:list={{ 'home-page': home }}><slot/></main><footer><strong>PhoneFuturist.</strong><span>Independent technology journalism and intelligence.<br/>Development edition · Preparing to publish.</span></footer></body></html>
+<body><a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav class="desktop-nav" aria-label="Main">{links.map(([name,key])=><a href={'/articles?section='+key}>{name}</a>)}<a href="/studio">The Studio</a></nav><div class="header-actions"><a class="sign-in" href="/login">Sign in</a><a class="button" href="/account">My account <span aria-hidden="true">↗</span></a></div><details class="mobile-nav"><summary>Explore</summary><nav aria-label="Mobile">{links.map(([name,key])=><a href={'/articles?section='+key}>{name}</a>)}<a href="/studio">The Studio</a></nav></details></header><main id="main" class:list={{ 'home-page': home }}><slot/></main><footer><a class="brand" href="/">PhoneFuturist<span>.</span></a><span>Independent thinking. Informed perspective.<br/>Technology, examined.</span><a href="/#about">About the publication ↗</a></footer></body></html>
