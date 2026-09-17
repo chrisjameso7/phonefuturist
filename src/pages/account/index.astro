@@ -1,0 +1,6 @@
+---
+import Page from '../../layouts/Page.astro';
+const user = Astro.locals.user!;
+const access = Astro.locals.access!;
+---
+<Page title="Account" privatePage><h1>Your account.</h1><section class="panel"><p>Signed in as {user.email}</p><p>Email status: {access.verified ? 'Verified' : 'Verification required before public contributions'}</p><p><a href="/account/security">Authenticator and account security</a></p><p><a href="/account/password">Change password</a></p>{access.roles.length > 0 && <p><a href="/studio">Open Studio</a></p>}<form action="/auth/signout" method="post"><button class="secondary">Sign out</button></form></section></Page>

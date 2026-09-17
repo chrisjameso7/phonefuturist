@@ -141,3 +141,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Foundation tooling and local-only configuration
+.wrangler/
+.astro/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.cache/
+supabase/.temp/
+supabase/.branches/
+coverage/
+

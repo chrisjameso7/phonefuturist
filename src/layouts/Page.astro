@@ -1,0 +1,8 @@
+---
+import '../styles/global.css';
+interface Props { title: string; description?: string; privatePage?: boolean }
+const { title, description = 'PhoneFuturist — technology journalism and intelligence.', privatePage = false } = Astro.props;
+---
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content={privatePage ? 'noindex, nofollow' : 'noindex'}/><title>{title} · PhoneFuturist</title></head>
+<body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav aria-label="Main"><a href="/login">Sign in</a><a href="/join">Create account</a><a href="/account">Account</a></nav></header><main id="main"><slot/></main><footer>PhoneFuturist · Independent technology journalism and intelligence. Publication is preparing to launch.</footer></body></html>
