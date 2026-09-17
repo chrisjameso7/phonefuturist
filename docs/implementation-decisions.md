@@ -13,3 +13,6 @@
 - The initial CLI migration is now generated and tested. Local Auth keeps email confirmation and TOTP enabled. Hosted replay remains mandatory; local email capture does not prove external SMTP delivery.
 
 - Milestone 0 deploys to a dedicated `phonefuturist-dev` Worker on the account's stable workers.dev subdomain. Version preview URLs are disabled so Auth uses one development origin. `keep_vars` preserves user-managed runtime variables in Cloudflare across deployments; values are not committed. This is development hosting, not production launch.
+
+- User selected a hybrid editorial/intelligence visual direction. The Foundation homepage now represents that direction using truthful empty states and clearly labeled planned features; no future domain functionality is introduced.
+- Replaced Referrer-Policy no-referrer with strict-origin: browsers may send Origin null for native form POSTs under no-referrer. Both Astro checkOrigin and the exact APP_ORIGIN check remain enabled. strict-origin avoids leaking paths or OAuth codes in referrers. Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy. Browser verification remains required.

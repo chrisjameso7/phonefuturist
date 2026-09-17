@@ -1,8 +1,8 @@
 ---
 import '../styles/global.css';
-interface Props { title: string; description?: string; privatePage?: boolean }
-const { title, description = 'PhoneFuturist — technology journalism and intelligence.', privatePage = false } = Astro.props;
+interface Props { title: string; description?: string; privatePage?: boolean; home?: boolean }
+const { title, description = 'PhoneFuturist — technology journalism and intelligence.', privatePage = false, home = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content={privatePage ? 'noindex, nofollow' : 'noindex'}/><title>{title} · PhoneFuturist</title></head>
-<body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav aria-label="Main"><a href="/login">Sign in</a><a href="/join">Create account</a><a href="/account">Account</a></nav></header><main id="main"><slot/></main><footer>PhoneFuturist · Independent technology journalism and intelligence. Publication is preparing to launch.</footer></body></html>
+<body><a class="skip" href="#main">Skip to content</a><header><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav aria-label="Main"><a href="/#newsroom">The newsroom</a><a href="/login">Sign in</a><a class="nav-account" href="/account">My account <span aria-hidden="true">↗</span></a></nav></header><main id="main" class:list={{ 'home-page': home }}><slot/></main><footer><strong>PhoneFuturist.</strong><span>Independent technology journalism and intelligence.<br/>Development edition · Preparing to publish.</span></footer></body></html>
