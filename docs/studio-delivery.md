@@ -1,28 +1,19 @@
-# Publication and Studio implementation queue
+# Native Studio core — implementation status
 
-The next product priority is a native writing-to-publication flow. The site is not a finished publication and must not accept irreplaceable production articles before backup/restore acceptance. The accepted Milestone 1 requirements remain the completion standard.
+The first native editorial slice is implemented: structured drafts, public sources and private notes, immutable revisions, optimistic concurrency, submission, independent approval, MFA-protected publication, audited Admin override, correction notes and withdrawal notices. Public routes and feeds select only the published revision; later draft edits remain private.
 
-## First working journey
+## Editor decision
 
-1. An administrator promotes an explicitly identified, verified account to Writer.
-2. The writer creates an article using schema-versioned structured content and records supporting sources, keeping confidential notes private.
-3. Submission freezes a revision for review. An Editor other than that revision's author requests changes or approves the exact revision.
-4. A Publisher with MFA publishes that approved revision atomically to its canonical route. An Admin emergency override requires a reason and immutable audit event.
-5. The live page, section feed and homepage show the published revision only. Subsequent edits remain private until reviewed. Material corrections carry a visible note.
+The initial editor is a small React structured-block editor using existing dependencies. Schema version 1 supports paragraphs, headings, quotes, lists and HTTPS links. It stores plain text, never arbitrary HTML. No paid CMS or AI service is involved. A full rich-text editor and validated media workflow remain separate work. Writers must save explicitly; navigating away from unsaved changes triggers a browser warning. Unsaved confidential content is not stored in localStorage.
 
-## Logical implementation commits
+## Authorization
 
-- Editorial schema, private sourcing, author identities and revision-specific authorization, with direct database negative tests.
-- Studio article list and structured editor; draft save, conflict detection and submission.
-- Review feedback, approval, publication and audited emergency override; staff promotion controls.
-- Public article rendering, actual homepage/section stories, canonical routes, redirects and author pages.
-- Media validation/storage permissions, scheduling/cancellation/retry behavior, corrections and withdrawal notices.
-- RSS/sitemap/SEO, database/media backup and restore drill, hosted end-to-end acceptance.
+Writer: create and edit own work. Editor: edit and review; cannot approve any article they created or contributed to. Publisher: publish an approved revision. Admin: all capabilities, with an explicit reason required for emergency publication. Every database command rechecks active account, verified email, role, session and applicable MFA. Direct client access to private editorial tables is denied.
 
-The editor should be a modest open-source structured editor with no paid backend. Public readers do not load Studio/editor bundles. Final editor dependency selection must be documented and validated against Workers before adoption.
+Both user-authorized administrator grants were confirmed in the development database. MFA enrollment/verification and the hosted multi-account acceptance journey still require verification. Do not infer staff readiness from the presence of a role alone.
 
-## Current prerequisite
+## Remaining Milestone 1 work
 
-The intended administrator account is verified and active, but the connector's data queries are read-only. The project owner must run the reviewed bootstrap SQL in Supabase SQL Editor and enroll/verify TOTP through the app. This is an external access-control boundary, not a missing app role to work around. Remaining Foundation acceptance checks stay open until verified.
+Media upload validation and storage policies, author identities/coauthors, staff promotion controls, scheduling, route redirects, revision comparison/restore UI, RSS/sitemap/SEO and backup/restore drill are not complete. Hosted writer → editor → publisher acceptance remains open. Do not treat this core slice as completion of Milestone 1 or the outstanding Foundation checks.
 
-The user requested that work on the full site begin; the immediate deliverable is this newsroom journey. Community/intelligence and the immersive, brand-neutral device lab follow the accepted roadmap, not fabricated placeholder activity.
+The user expressly authorized Studio implementation while Foundation evidence was still being gathered. No fabricated article or test content is inserted into the hosted publication. Database tests use a disposable local PGlite database only.
