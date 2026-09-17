@@ -8,3 +8,6 @@
 - Pin dependencies and commit the lockfile. The Windows environment rejected npm lifecycle subprocesses; installs/checks attempted without automatic lifecycle scripts must be reported separately from a normal clean-install/build verification.
 - Canonical repository access uses the GitHub connector because local Git HTTPS credential prompting failed. Work is on `foundation/milestone-0`, with normal parent-linked commits; no force update of main.
 - Missing hosted configuration is a blocker to acceptance, not permission to insert fake data, privileged demo users, or relaxed authorization.
+
+- Subsequent user authorization replaces manual milestone reviews with automatic advancement after acceptance checks pass. External setup and architecture changes remain user-controlled.
+- The initial CLI migration is now generated and tested. Local Auth keeps email confirmation and TOTP enabled. Hosted replay remains mandatory; local email capture does not prove external SMTP delivery.

@@ -13,7 +13,7 @@ Hosted acceptance requires a Supabase project, SMTP, Google OAuth, and Cloudflar
 - Astro/React/TypeScript shell and Cloudflare Workers configuration, pinned dependencies and lockfile.
 - Server-mediated email/password and Google authentication routes, confirmation/recovery flow, protected account/Studio entry and TOTP enrollment/verification.
 - Fail-closed configuration, origin checks, bounded form parsing, private-response caching restrictions and security headers.
-- Candidate PostgreSQL account/role/profile schema with RLS, restricted caller-scoped access functions and session/restriction/MFA checks. No future domain tables or fabricated content.
+- Versioned PostgreSQL account/role/profile migration with RLS, restricted caller-scoped access functions and session/restriction/MFA checks. No future domain tables or fabricated content.
 - CI validation workflow, security/bootstrap documentation and exact external setup checklist.
 
 ## Verification evidence
@@ -27,6 +27,6 @@ Hosted acceptance requires a Supabase project, SMTP, Google OAuth, and Cloudflar
 
 ## Blocking work before acceptance
 
-Supabase initialization/migration generation was rejected by automatic approval review because its account usage limit had been reached. The SQL remains explicitly a schema candidate; no migration filename was invented and no hosted database was modified.
+The earlier automatic approval usage block cleared. Supabase initialization succeeded and the CLI generated `20260917010106_foundation_identity.sql`; all 10 tests passed against that migration. Local configuration requires email confirmation, 12-character passwords and TOTP, with explicit API grants and no seed content. No hosted database was modified. Real Supabase replay is still blocked: no accessible hosted project and no local Docker installation.
 
-Provide the user-controlled configuration listed in [setup](setup.md). Then generate the CLI migration, replay it against real Supabase, complete the hosted acceptance checklist, and review the evidence. Milestone 0 is not accepted and Milestone 1 must not begin yet.
+Provide the user-controlled configuration listed in [setup](setup.md). Then replay the migration against real Supabase and complete the hosted acceptance checklist. The user now authorizes automatic advancement after each milestone passes its acceptance checks. Milestone 0 has not passed yet. External setup and changes to accepted architecture still require user input.
