@@ -1,6 +1,6 @@
 # Cloudflare development deployment
 
-Target: `phonefuturist-dev`, Workers Free, stable workers.dev address. Deployment is pending Cloudflare browser authorization; no live origin has been verified yet.
+Target: `phonefuturist-dev`, stable workers.dev address. Deployed on 2026-09-17 by the user through the prepared Wrangler build. Verified origin: `https://phonefuturist-dev.phonefuturist.workers.dev`. The homepage returned HTTP 200; `/login` returned the expected fail-closed HTTP 503 until runtime configuration is supplied. Deployment version: `a74b01e9-5328-4528-a8dd-40f9834d7275`.
 
 ## Authorization
 
@@ -22,8 +22,8 @@ The app uses server-side runtime bindings, not build-time environment substituti
 
 After the real origin is known, set Site URL to that exact origin and allow these exact redirect URLs:
 
-- `<development-origin>/auth/callback`
-- `<development-origin>/auth/callback?next=/account/password`
+- `https://phonefuturist-dev.phonefuturist.workers.dev/auth/callback`
+- `https://phonefuturist-dev.phonefuturist.workers.dev/auth/callback?next=/account/password`
 
 Keep any still-needed localhost callback entries. Avoid wildcard production redirects. If the Supabase project also serves another application, preserve its Site URL until the intended project separation is confirmed. Google Cloud's authorized OAuth redirect remains the Supabase provider callback shown in Supabase, not the Worker URL.
 
