@@ -67,4 +67,18 @@ describe('database authorization', () => {
     await db.query('delete from auth.sessions where id = $1', [session]);
     await authenticate('aal2'); expect((await access()).active).toBe(false);
   });
+  it('bootstraps only a verified active target and audits the grant once', async () => {
+    await db.exec('reset role');
+    const script = readFileSync(new URL('../supabase/bootstrap-admin.sql', import.meta.url), 'utf8')
+      .replace('REPLACE_WITH_CONFIRMED_AUTH_USER_UUID', member);
+    await db.query('delete from private.role_grants where user_id = $1', [member]);
+    await expect(db.exec(script)).rejects.toThrow('Bootstrap requires');
+    await db.query('update auth.users set email_confirmed_at = now() where id = $1', [member]);
+    await db.query("update private.accounts set status = 'suspended' where user_id = $1", [member]);
+    await expect(db.exec(script)).rejects.toThrow('Bootstrap requires');
+    await db.query("update private.accounts set status = 'active' where user_id = $1", [member]);
+    await db.exec(script); await db.exec(script);
+    expect((await db.query("select role from private.role_grants where user_id = $1", [member])).rows).toEqual([{ role: 'admin' }]);
+    expect((await db.query("select action from private.access_audit where subject_id = $1", [member])).rows).toEqual([{ action: 'admin_bootstrap' }]);
+  });
 });
