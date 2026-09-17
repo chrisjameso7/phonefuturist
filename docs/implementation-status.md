@@ -22,6 +22,7 @@ Hosted acceptance requires a Supabase project, SMTP, Google OAuth, and Cloudflar
 - Vitest: all 10 security and PostgreSQL authorization tests passed. Windows required the native config loader and thread pool.
 - Dependency installation succeeded with lifecycle scripts disabled; this is not a substitute for clean CI installation.
 - Local production build is unverified: the Windows environment rejected an esbuild subprocess with `spawn EPERM`.
+- GitHub Actions subsequently passed clean `npm ci` and the full `npm run verify` (type checks, tests and production build) on Linux for commit `6a8d31d6ccda1a429cccfe2e764533fe8c331361`: [successful run](https://github.com/chrisjameso7/phonefuturist/actions/runs/35168040566). The initial run caught a truncated lockfile transfer; its repair is committed separately.
 - Hosted authentication, real Supabase migration replay, browser checks and Cloudflare deployment remain unverified.
 
 ## Blocking work before acceptance
