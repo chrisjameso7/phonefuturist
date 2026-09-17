@@ -36,7 +36,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     } else response = await next();
   }
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'no-referrer');
+  // Preserve Origin on native form POSTs; no-referrer can turn it into null.
+  // Send only the origin to HTTPS destinations, never callback paths or codes.
+  response.headers.set('Referrer-Policy', 'strict-origin');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   // Astro supplies content-specific script/style hashes in its CSP meta element.

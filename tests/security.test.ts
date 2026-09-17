@@ -3,6 +3,7 @@ import { boundedForm, safeNext, validOrigin, validPassword } from '../src/lib/se
 describe('authentication request boundaries', () => {
   it('rejects foreign and missing origins', () => {
     expect(validOrigin(null, 'https://phonefuturist.test')).toBe(false);
+    expect(validOrigin('null', 'https://phonefuturist.test')).toBe(false);
     expect(validOrigin('https://phonefuturist.test.attacker.test', 'https://phonefuturist.test')).toBe(false);
     expect(validOrigin('https://phonefuturist.test', 'https://phonefuturist.test')).toBe(true);
   });
