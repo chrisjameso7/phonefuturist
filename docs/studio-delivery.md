@@ -17,3 +17,9 @@ Both user-authorized administrator grants were confirmed in the development data
 Media upload validation and storage policies, author identities/coauthors, staff promotion controls, scheduling, route redirects, revision comparison/restore UI, RSS/sitemap/SEO and backup/restore drill are not complete. Hosted writer → editor → publisher acceptance remains open. Do not treat this core slice as completion of Milestone 1 or the outstanding Foundation checks.
 
 The user expressly authorized Studio implementation while Foundation evidence was still being gathered. No fabricated article or test content is inserted into the hosted publication. Database tests use a disposable local PGlite database only.
+
+## Verification and deployment
+
+17 September 2026: 15 tests passed against disposable PGlite, TypeScript passed, and GitHub Actions run 35260253434 passed Astro check, tests and Cloudflare production build at commit 27ec889a. Hosted migration studio_editorial_core was applied successfully. The provider assigned version 20260917184133; the CLI-generated migration and test reference were reconciled to that exact applied version, without changing SQL.
+
+The local agent cannot run the Wrangler/esbuild subprocess (spawn EPERM). The earlier published development Worker is unchanged until the owner runs the deployment commands from the local checkout. Hosted browser and multi-account workflow verification remain pending; CI build success does not establish those checks.

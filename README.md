@@ -6,7 +6,7 @@ Professional technology publication and intelligence platform. Initial stack: As
 
 ## Current scope
 
-Milestone 0 — Foundation is in progress. This branch contains the application shell, authentication foundation, versioned permission migration, and documentation. Hosted acceptance is pending. Article publishing, forum, predictions, intelligence, and simulations are not implemented in Foundation.
+Foundation acceptance is in progress. At the explicit direction of the user, this branch also contains the first native Studio publishing workflow and the approved frontend concept. Studio preserves sourced revisions through review and publication. Hosted end-to-end acceptance and remaining Milestone 1 deliverables are pending; community, predictions and simulations follow the roadmap.
 
 ## Develop
 
@@ -14,4 +14,5 @@ Use Node 22.12 or newer. Install with `npm ci`, configure `.dev.vars` from `.dev
 
 See [setup and external prerequisites](docs/setup.md), [implementation status](docs/implementation-status.md), [security](docs/security.md), [accepted ADRs](docs/adr), [master specification](docs/master-specification.md), and [approved roadmap](docs/architecture-review.md).
 
-No paid services are authorized. No fabricated content or seeded administrator is included. Do not begin Milestone 1 until Foundation acceptance checks pass.
+No paid services are authorized. No fabricated content or seeded administrator is included. The user authorized the current Studio slice; this does not mark Foundation or Milestone 1 accepted. See implementation status before advancing.
+

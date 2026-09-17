@@ -19,7 +19,7 @@ beforeAll(async()=>{
  create table auth.mfa_factors(id uuid primary key,user_id uuid references auth.users(id),status text);
  create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
  create function auth.uid() returns uuid language sql stable as $$select (auth.jwt()->>'sub')::uuid$$;`);
- for(const file of ['20260917132534_foundation_identity.sql','20260917132641_restrict_platform_trigger_execution.sql','20260917135627_studio_editorial_core.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
+ for(const file of ['20260917132534_foundation_identity.sql','20260917132641_restrict_platform_trigger_execution.sql','20260917184133_studio_editorial_core.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
  for(const [role,id] of Object.entries(ids)){
   await db.query('insert into auth.users values($1,now(),null)',[id]);await db.query('insert into auth.sessions values($1,$1)',[id]);
   await db.query("insert into private.role_grants values($1,$2,now())",[id,role==='stranger'?'writer':role]);
@@ -68,3 +68,4 @@ describe('Studio publishing authorization and history',()=>{
   await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=now() where id=$1',[ids.writer]);
  });
 });
+
