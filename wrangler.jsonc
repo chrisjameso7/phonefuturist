@@ -1,9 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "phonefuturist",
+  "name": "phonefuturist-dev",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-16",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": "./dist/client", "binding": "ASSETS" },
-  "workers_dev": true
+  "workers_dev": true,
+  "preview_urls": false,
+  "keep_vars": true
 }

@@ -11,3 +11,5 @@
 
 - Subsequent user authorization replaces manual milestone reviews with automatic advancement after acceptance checks pass. External setup and architecture changes remain user-controlled.
 - The initial CLI migration is now generated and tested. Local Auth keeps email confirmation and TOTP enabled. Hosted replay remains mandatory; local email capture does not prove external SMTP delivery.
+
+- Milestone 0 deploys to a dedicated `phonefuturist-dev` Worker on the account's stable workers.dev subdomain. Version preview URLs are disabled so Auth uses one development origin. `keep_vars` preserves user-managed runtime variables in Cloudflare across deployments; values are not committed. This is development hosting, not production launch.
