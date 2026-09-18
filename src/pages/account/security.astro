@@ -1,0 +1,27 @@
+---
+import Page from '../../layouts/Page.astro';
+import { boundedForm } from '../../lib/security';
+const client = Astro.locals.supabase!;
+let message = ''; let qr = ''; let enrollmentId = '';
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await boundedForm(Astro.request);
+    if (form.get('action') === 'enroll') {
+      const { data, error } = await client.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'PhoneFuturist authenticator' });
+      if (error) message = 'Enrollment could not be started. Retry or contact the administrator if a previous enrollment is unfinished.';
+      else { qr = data.totp.qr_code; enrollmentId = data.id; }
+    } else if (form.get('action') === 'verify') {
+      const factorId = form.get('factorId') ?? ''; const code = form.get('code') ?? '';
+      if (!/^[0-9]{6}$/.test(code) || factorId.length > 100) message = 'Enter the six-digit authenticator code.';
+      else {
+        const { error } = await client.auth.mfa.challengeAndVerify({ factorId, code });
+        if (error) message = 'Verification failed. Use a current code or restart enrollment if it expired.';
+        else return Astro.redirect('/account', 303);
+      }
+    }
+  } catch { message = 'The security request could not be processed.'; }
+}
+const { data: factors, error: factorError } = await client.auth.mfa.listFactors();
+const verified = factors?.totp.filter(f => f.status === 'verified') ?? [];
+---
+<Page title="Account security" privatePage><h1>Account security.</h1><p>Admin and Publisher access requires a verified authenticator session.</p>{(message || factorError) && <p class="notice error" role="alert">{message || 'Authenticators could not be loaded. Please retry.'}</p>}{qr && <section class="panel"><h2>Set up your authenticator</h2><p>Scan this code with your authenticator app, then enter its six-digit code. Keep the QR code private.</p><img class="qr" src={qr} alt="Private authenticator enrollment QR code"/><form class="stack" method="post"><input type="hidden" name="action" value="verify"/><input type="hidden" name="factorId" value={enrollmentId}/><label>Authenticator code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button>Verify enrollment</button></form></section>}{verified.map(factor => <form class="panel stack" method="post"><h2>Verify authenticator</h2><input type="hidden" name="action" value="verify"/><input type="hidden" name="factorId" value={factor.id}/><label>Current six-digit code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button>Verify</button></form>)}{!qr && verified.length === 0 && !factorError && <form method="post"><input type="hidden" name="action" value="enroll"/><button>Set up authenticator</button></form>}<p class="muted">Lost access or an unfinished enrollment? Contact the administrator for identity-verified recovery. There is no public MFA bypass.</p><a href="/account">Back to account</a></Page>

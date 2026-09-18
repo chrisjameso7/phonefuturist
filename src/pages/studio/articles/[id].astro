@@ -1,0 +1,10 @@
+---
+import Page from '../../../layouts/Page.astro';
+import ArticleEditor from '../../../components/studio/ArticleEditor';
+import {validUuid,type StudioArticle} from '../../../lib/editorial';
+const id=Astro.params.id;
+if(!validUuid(id))return new Response('Article not found.',{status:404});
+const {data,error}=await Astro.locals.supabase!.rpc('studio_read',{p_article:id,p_offset:0});
+if(error||!data)return new Response('Article unavailable or access denied.',{status:error?.code==='42501'?403:503});
+---
+<Page title="Edit article" privatePage><ArticleEditor client:load article={data as StudioArticle} roles={Astro.locals.access!.roles} userId={Astro.locals.user!.id}/></Page>

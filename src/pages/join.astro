@@ -1,0 +1,5 @@
+---
+import Page from '../layouts/Page.astro';
+import PasswordField from '../components/PasswordField';
+---
+<Page title="Create account" privatePage><h1>Join PhoneFuturist.</h1><p>One account for PhoneFuturist. Verify your email before contributing public content.</p>{Astro.url.searchParams.has('error') && <p class="notice error" role="alert">We could not complete this request. Use a valid email and a password of 12–128 characters, or try again later.</p>}<div class="panel"><form class="stack" action="/auth/signup" method="post"><label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"/></label><PasswordField autocomplete="new-password" client:load/><button>Create account</button></form><p>Already registered? <a href="/login">Sign in</a>.</p><a class="button secondary" href="/auth/google">Continue with Google</a></div></Page>

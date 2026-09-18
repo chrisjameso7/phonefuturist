@@ -1,0 +1,4 @@
+# Copy to .dev.vars; never commit credentials. APP_ORIGIN must be exact, no path.
+APP_ORIGIN=http://localhost:4321
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
