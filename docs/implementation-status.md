@@ -14,7 +14,7 @@
 
 15 local tests passed, including database permission and publishing workflow cases. TypeScript passed. GitHub Actions run [35260253434](https://github.com/chrisjameso7/phonefuturist/actions/runs/35260253434) passed clean installation and full Astro check, tests and Workers production build at commit 27ec889a. Hosted Foundation and Studio migrations are applied; no hosted stories were seeded. Hosted metadata confirms RLS and no direct client table access on all three editorial tables, anonymous Studio execution denied, and anonymous publication reads permitted.
 
-The development Worker exists at https://phonefuturist-dev.phonefuturist.workers.dev. The sign-in origin-policy fix was previously deployed. This new Studio/frontend release still needs deployment from the owner terminal because agent-side Wrangler/esbuild subprocess creation is denied (spawn EPERM). No hosted browser verification of this release is claimed.
+The development Worker exists at https://phonefuturist-dev.phonefuturist.workers.dev. The sign-in origin-policy fix was previously deployed. Full-access authorization removed the subprocess blocker. The Studio/frontend release is deployed as Cloudflare version 1230c0d5-4ef5-4239-b507-989408280795. Browser checks verified the live homepage, loaded hero image, mobile menu and anonymous Studio redirect. Empty same-origin login POST returns 303 validation; foreign/null origins return 403. Authenticated multi-account acceptance remains open.
 
 ## Remaining acceptance
 
@@ -24,3 +24,6 @@ The Supabase advisor reports intentional deny-all private-table RLS notices and 
 
 See [Studio delivery](studio-delivery.md) for remaining Milestone 1 work and [frontend decisions](frontend-concept.md). Community, predictions, device intelligence and deterministic simulations remain subsequent milestones. The user authorized automatic advancement only after acceptance checks pass; external setup and architectural changes still require input.
 
+
+
+18 September: OneDrive is the approved independent encrypted backup destination. Local export/encryption/recovery/status tools are implemented; public-certificate pinning, ciphertext-only sync writes, integrity verification and plaintext hash checks are tested. No real backup, encryption key, export credential, schedule or recovery guarantee has been provisioned. PostgreSQL clients and privately entered export/recovery setup are required. See [backup/restore](backup-restore.md). All 17 tests pass locally.

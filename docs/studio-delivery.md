@@ -23,3 +23,5 @@ The user expressly authorized Studio implementation while Foundation evidence wa
 17 September 2026: 15 tests passed against disposable PGlite, TypeScript passed, and GitHub Actions run 35260253434 passed Astro check, tests and Cloudflare production build at commit 27ec889a. Hosted migration studio_editorial_core was applied successfully. The provider assigned version 20260917184133; the CLI-generated migration and test reference were reconciled to that exact applied version, without changing SQL.
 
 The local agent cannot run the Wrangler/esbuild subprocess (spawn EPERM). The earlier published development Worker is unchanged until the owner runs the deployment commands from the local checkout. Hosted browser and multi-account workflow verification remain pending; CI build success does not establish those checks.
+
+Full-access update: local verification now succeeds and the Studio/frontend Worker was deployed as version 1230c0d5-4ef5-4239-b507-989408280795. Live mobile homepage/navigation, anonymous Studio redirect and login origin rejection were checked. Authenticated multi-account acceptance remains pending.
