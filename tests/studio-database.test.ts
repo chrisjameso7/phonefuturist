@@ -19,7 +19,7 @@ beforeAll(async()=>{
  create table auth.mfa_factors(id uuid primary key,user_id uuid references auth.users(id),status text);
  create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
  create function auth.uid() returns uuid language sql stable as $$select (auth.jwt()->>'sub')::uuid$$;`);
- for(const file of ['20260917132534_foundation_identity.sql','20260917132641_restrict_platform_trigger_execution.sql','20260917184133_studio_editorial_core.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
+ for(const file of ['20260917132534_foundation_identity.sql','20260917132641_restrict_platform_trigger_execution.sql','20260917184133_studio_editorial_core.sql','20260918031640_fix_studio_list_alias.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
  for(const [role,id] of Object.entries(ids)){
   await db.query('insert into auth.users values($1,now(),null)',[id]);await db.query('insert into auth.sessions values($1,$1)',[id]);
   await db.query("insert into private.role_grants values($1,$2,now())",[id,role==='stranger'?'writer':role]);
@@ -28,10 +28,12 @@ beforeAll(async()=>{
 },30000);
 afterAll(async()=>db.close());
 describe('Studio publishing authorization and history',()=>{
+ it('loads an empty newsroom for an authenticated admin',async()=>{await as('admin');const rows=await db.query<{result:unknown}>('select public.studio_read(null,0) as result');expect(rows.rows[0].result).toEqual([]);});
  it('keeps drafts private, blocks another writer and direct private table writes',async()=>{
   await as('writer');const a=await command(null,null,'create',payload());
+  const own=(await db.query<{result:{id:string}[]}>('select public.studio_read(null,0) as result')).rows[0].result;expect(own.map(x=>x.id)).toContain(a.id);
   await expect(db.exec('select * from private.articles')).rejects.toThrow();
-  await as('stranger');await expect(db.query('select public.studio_read($1,0)',[a.id])).rejects.toThrow('STUDIO_FORBIDDEN');
+  await as('stranger');expect((await db.query<{result:unknown[]}>('select public.studio_read(null,0) as result')).rows[0].result).toEqual([]);await expect(db.query('select public.studio_read($1,0)',[a.id])).rejects.toThrow('STUDIO_FORBIDDEN');
   await expect(command(a.id,1,'save',payload())).rejects.toThrow('STUDIO_FORBIDDEN');
   await as('anon');expect(await publicRead()).toEqual([]);await expect(command(a.id,1,'publish')).rejects.toThrow();
  });
@@ -68,4 +70,8 @@ describe('Studio publishing authorization and history',()=>{
   await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=now() where id=$1',[ids.writer]);
  });
 });
+
+
+
+
 
