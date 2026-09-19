@@ -1,0 +1,6 @@
+---
+import Page from '../layouts/Page.astro';
+import PasswordField from '../components/PasswordField';
+const failed = Astro.url.searchParams.has('error');
+---
+<Page title="Sign in" privatePage><p class="eyebrow">Your PhoneFuturist account</p><h1>Welcome back.</h1>{failed && <p class="notice error" role="alert">Sign-in could not be completed. Check your details or try again.</p>}<div class="panel"><form class="stack" action="/auth/login" method="post"><label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"/></label><PasswordField client:load/><button>Sign in</button></form><p><a href="/forgot-password">Forgot your password?</a></p><a class="button secondary" href="/auth/google">Continue with Google</a></div><a href="/join">Create an account</a></Page>

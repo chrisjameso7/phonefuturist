@@ -1,0 +1,71 @@
+---
+import Page from '../../layouts/Page.astro';
+import { boundedForm } from '../../lib/security';
+import { cancelUnfinishedTotp, mfaError } from '../../lib/mfa';
+const client = Astro.locals.supabase!;
+const access = Astro.locals.access!;
+let message = ''; let qr = ''; let enrollmentId = '';
+if (Astro.request.method === 'POST') {
+  try {
+    const form = await boundedForm(Astro.request);
+    if (form.get('action') === 'enroll') {
+      const { data: existing, error: listError } = await client.auth.mfa.listFactors();
+      if (listError) message = mfaError('list', listError);
+      else if (existing.all.some(f => f.factor_type === 'totp' && f.status === 'unverified')) {
+        message = 'An unfinished setup already exists. Cancel it below before starting again.';
+      } else {
+        const { data, error } = await client.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'PhoneFuturist authenticator' });
+        if (error) message = mfaError('enroll', error);
+        else { qr = data.totp.qr_code; enrollmentId = data.id; }
+      }
+    } else if (form.get('action') === 'cancel') {
+      if (form.get('confirm') !== 'yes') message = 'Confirm that you want to cancel this unfinished setup.';
+      else {
+        const { error } = await cancelUnfinishedTotp(client, form.get('factorId') ?? '');
+        if (error) message = mfaError('cancel_unverified', error);
+        else return Astro.redirect('/account/security', 303);
+      }
+    } else if (form.get('action') === 'verify') {
+      const factorId = form.get('factorId') ?? ''; const code = form.get('code') ?? '';
+      if (!/^[0-9]{6}$/.test(code) || factorId.length > 100) message = 'Enter the six-digit authenticator code.';
+      else {
+        const { error } = await client.auth.mfa.challengeAndVerify({ factorId, code });
+        if (error) message = mfaError('verify', error);
+        else return Astro.redirect('/account', 303);
+      }
+    } else if (form.get('action') === 'revoke_exception') {
+      const target = form.get('target') ?? '';
+      if (!/^[0-9a-f-]{36}$/i.test(target) || form.get('confirm') !== 'yes') message = 'Confirm the exception revocation.';
+      else {
+        const { error } = await client.rpc('manage_mfa_exceptions', { target, reason: form.get('reason') ?? '' });
+        if (error) message = 'Exception could not be revoked. Primary Admin authorization and a reason are required.';
+        else return Astro.redirect('/account/security', 303);
+      }
+    }
+  } catch { message = 'The security request could not be processed.'; }
+}
+const { data: factors, error: factorError } = await client.auth.mfa.listFactors();
+if (factorError) message ||= mfaError('list', factorError);
+const verified = factors?.totp ?? [];
+const unfinished = factors?.all.filter(f => f.factor_type === 'totp' && f.status === 'unverified' && f.id !== enrollmentId) ?? [];
+type Exception = { user_id: string; email: string; revoked_at: string | null; expires_at: string | null; reason: string };
+let exceptions: Exception[] = [];
+if (access.can_manage_mfa_exceptions && access.roles.includes('admin') && access.verified && (!access.mfa_required || access.aal === 'aal2')) {
+  const { data, error } = await client.rpc('manage_mfa_exceptions');
+  if (!error) exceptions = data ?? [];
+  else message ||= 'Exception management could not be loaded.';
+}
+---
+<Page title="Account security" privatePage>
+  <h1>Account security.</h1>
+  <p>Your browser remembers a valid session. You do not need a fresh code on each visit. Sign out when using a shared device.</p>
+  {access.mfa_exception ? <p class="notice">Your Admin account has an explicitly approved MFA exception. An authenticator is optional for PhoneFuturist access.</p> : <p>Admin and Publisher access requires an authenticator-verified session.</p>}
+  {access.aal === 'aal2' && <p class="notice">This session is already verified. You can return to your account without entering another code.</p>}
+  {message && <p class="notice error" role="alert">{message}</p>}
+  {qr && <section class="panel"><h2>Set up your authenticator</h2><p>Scan this code, then enter its six-digit code. Keep the QR code private.</p><img class="qr" src={qr} alt="Private authenticator enrollment QR code"/><form class="stack" method="post"><input type="hidden" name="action" value="verify"/><input type="hidden" name="factorId" value={enrollmentId}/><label>Authenticator code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button>Verify enrollment</button></form></section>}
+  {access.aal !== 'aal2' && verified.map(factor => <form class="panel stack" method="post"><h2>Verify authenticator</h2><input type="hidden" name="action" value="verify"/><input type="hidden" name="factorId" value={factor.id}/><label>Current six-digit code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button>Verify</button></form>)}
+  {unfinished.map(factor => <form class="panel stack" method="post"><h2>Unfinished authenticator setup</h2><p>{factor.friendly_name || 'Authenticator'} · Started {factor.created_at}</p><p>If you have lost its QR code, cancel this setup and start again. Verified authenticators cannot be removed here.</p><input type="hidden" name="action" value="cancel"/><input type="hidden" name="factorId" value={factor.id}/><label><input type="checkbox" name="confirm" value="yes" required/> Cancel this unfinished setup</label><button>Cancel unfinished setup</button></form>)}
+  {!qr && verified.length === 0 && unfinished.length === 0 && !factorError && <form method="post"><input type="hidden" name="action" value="enroll"/><button>Set up authenticator</button></form>}
+  {exceptions.length > 0 && <section class="panel"><h2>Approved Admin MFA exceptions</h2><p>Only the primary Admin can revoke these exceptions. Revocation restores the MFA requirement on the next privileged request. Revoking your own exception may require authenticator setup before you can return to Studio.</p>{exceptions.map(e => <form class="stack panel" method="post"><h3>{e.email}</h3><p>{e.reason}</p><p>{e.revoked_at ? `Revoked: ${e.revoked_at}` : e.expires_at ? `Expires: ${e.expires_at}` : 'Active · no expiry'}</p>{!e.revoked_at && <><input type="hidden" name="action" value="revoke_exception"/><input type="hidden" name="target" value={e.user_id}/><label>Reason<textarea name="reason" minlength="10" maxlength="2000" required/></label><label><input type="checkbox" name="confirm" value="yes" required/> Restore mandatory MFA for this Admin</label><button>Revoke exception</button></>}</form>)}</section>}
+  <p><a href="/account">Back to account</a></p>
+</Page>

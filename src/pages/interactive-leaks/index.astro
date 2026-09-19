@@ -1,0 +1,1162 @@
+---
+import Page from '../../layouts/Page.astro';
+import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
+---
+
+<Page
+  title="Interactive Leaks"
+  description="Build and test unreleased device concepts with PhoneFuturist's deterministic hardware simulation engine."
+>
+  <main class="interactive-page">
+    <section class="interactive-hero">
+      <div class="interactive-hero-copy">
+        <p class="interactive-eyebrow">PhoneFuturist Intelligence</p>
+
+        <h1>
+          Interactive
+          <span>Leaks.</span>
+        </h1>
+
+        <p class="interactive-intro">
+          Don't just read the specifications. Test them.
+        </p>
+
+        <p class="interactive-description">
+          Build an unreleased device from reported, estimated, or hypothetical
+          specifications and see what the numbers actually imply.
+        </p>
+
+        <div class="interactive-principles">
+          <span>Evidence in</span>
+          <span>Math applied</span>
+          <span>No invented specifications</span>
+        </div>
+      </div>
+
+      <div class="interactive-model-wrap" aria-hidden="true">
+        <div class="model-orbit model-orbit-one"></div>
+        <div class="model-orbit model-orbit-two"></div>
+
+        <div class="model-phone">
+          <div class="model-camera model-camera-one"></div>
+          <div class="model-camera model-camera-two"></div>
+          <div class="model-camera model-camera-three"></div>
+          <div class="model-flash"></div>
+
+          <div class="model-mark">
+            <strong>PF</strong>
+            <span>SIM 0.4</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="interactive-context">
+      <p class="interactive-section-label">
+        Interactive hardware modelling
+      </p>
+
+      <div>
+        <h2>
+          Turn leaked specifications into something testable.
+        </h2>
+
+        <p>
+          Interactive Leaks uses deterministic calculations rather than
+          generative guesses. Give the model what is known. Leave the rest
+          unknown. The engine calculates only what the supplied evidence
+          supports.
+        </p>
+      </div>
+    </section>
+
+    <section class="interactive-workspace">
+      <div class="interactive-workspace-header">
+        <div>
+          <p class="interactive-section-label">Simulator</p>
+          <h2>Device workspace</h2>
+        </div>
+
+        <div class="interactive-engine-badge">
+          <span class="interactive-engine-dot"></span>
+          Beta engine · v0.4.0
+        </div>
+      </div>
+
+      <div class="interactive-simulator-shell">
+        <InteractiveLeaksSimulator client:load />
+      </div>
+    </section>
+
+    <section class="interactive-methodology">
+      <div class="interactive-methodology-heading">
+        <p class="interactive-section-label">Methodology</p>
+        <h2>Calculation, not clairvoyance.</h2>
+      </div>
+
+      <div class="interactive-method-grid">
+        <article>
+          <span>01</span>
+          <h3>Known stays known.</h3>
+          <p>
+            Measurements and specifications you provide are preserved as
+            inputs rather than quietly replaced with assumptions.
+          </p>
+        </article>
+
+        <article>
+          <span>02</span>
+          <h3>Unknown stays unknown.</h3>
+          <p>
+            Missing information remains missing when the engine cannot
+            calculate it honestly from the available data.
+          </p>
+        </article>
+
+        <article>
+          <span>03</span>
+          <h3>Math stays reproducible.</h3>
+          <p>
+            The engine version is attached to the result so the same supported
+            inputs can be evaluated against the same model.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+</Page>
+
+<style is:global>
+  .interactive-page {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 76px 0 110px;
+  }
+
+  /* HERO */
+
+  .interactive-hero {
+    min-height: 610px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    align-items: center;
+    gap: 72px;
+    padding: 42px 0 92px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .interactive-hero::after {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    right: -150px;
+    top: 20px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(136, 149, 255, 0.12),
+      rgba(136, 149, 255, 0) 68%
+    );
+    pointer-events: none;
+  }
+
+  .interactive-eyebrow,
+  .interactive-section-label {
+    margin: 0 0 18px;
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .interactive-hero h1 {
+    margin: 0;
+    max-width: 720px;
+    color: var(--ink);
+    font-size: clamp(4rem, 9vw, 8.5rem);
+    line-height: 0.82;
+    letter-spacing: -0.075em;
+    font-weight: 700;
+  }
+
+  .interactive-hero h1 span {
+    display: block;
+    color: var(--muted);
+  }
+
+  .interactive-intro {
+    margin: 42px 0 0;
+    color: var(--ink);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+  }
+
+  .interactive-description {
+    max-width: 610px;
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .interactive-principles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 30px;
+  }
+
+  .interactive-principles span {
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  /* HERO DEVICE */
+
+  .interactive-model-wrap {
+    min-height: 500px;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
+  .model-phone {
+    width: 225px;
+    height: 440px;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 38px;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.015)
+      ),
+      #11171d;
+    box-shadow:
+      0 45px 100px rgba(0, 0, 0, 0.45),
+      inset 0 1px rgba(255, 255, 255, 0.08);
+    transform: rotate(8deg);
+  }
+
+  .model-phone::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.045);
+    border-radius: 30px;
+  }
+
+  .model-camera {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    border: 7px solid #202832;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 40% 35%,
+        #596675 0 4%,
+        #121820 18%,
+        #030506 57%
+      );
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .model-camera-one {
+    top: 31px;
+    left: 29px;
+  }
+
+  .model-camera-two {
+    top: 31px;
+    left: 100px;
+  }
+
+  .model-camera-three {
+    top: 101px;
+    left: 29px;
+  }
+
+  .model-flash {
+    position: absolute;
+    top: 117px;
+    left: 118px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #d8d2b4;
+  }
+
+  .model-mark {
+    position: absolute;
+    left: 29px;
+    right: 29px;
+    bottom: 31px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    color: var(--muted);
+  }
+
+  .model-mark strong {
+    color: var(--ink);
+    font-size: 1.25rem;
+    letter-spacing: -0.05em;
+  }
+
+  .model-mark span {
+    font-size: 0.63rem;
+    letter-spacing: 0.15em;
+  }
+
+  .model-orbit {
+    position: absolute;
+    border: 1px solid rgba(136, 149, 255, 0.13);
+    border-radius: 50%;
+  }
+
+  .model-orbit-one {
+    width: 410px;
+    height: 410px;
+  }
+
+  .model-orbit-two {
+    width: 510px;
+    height: 240px;
+    transform: rotate(-24deg);
+  }
+
+  /* INTRO */
+
+  .interactive-context {
+    display: grid;
+    grid-template-columns: 0.65fr 1.35fr;
+    gap: 70px;
+    padding: 100px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-context h2,
+  .interactive-workspace-header h2,
+  .interactive-methodology h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.1rem, 4vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+
+  .interactive-context > div > p {
+    max-width: 720px;
+    margin: 28px 0 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* WORKSPACE */
+
+  .interactive-workspace {
+    padding: 90px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-workspace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 35px;
+  }
+
+  .interactive-engine-badge {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .interactive-engine-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(136, 149, 255, 0.65);
+  }
+
+  .interactive-simulator-shell {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+  }
+
+  /*
+   * InteractiveLeaksSimulator renders:
+   * .il-app
+   *   .il-toolbar
+   *   .il-workspace
+   *     .il-builder
+   *     .il-results
+   */
+
+  .interactive-simulator-shell .il-app {
+    width: 100%;
+  }
+
+  /* TOOLBAR */
+
+  .interactive-simulator-shell .il-toolbar {
+    min-height: 72px;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .interactive-simulator-shell .il-toolbar > div:first-child {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .interactive-simulator-shell .il-status {
+    color: var(--ink);
+    font-size: 0.83rem;
+    font-weight: 700;
+  }
+
+  .interactive-simulator-shell .il-engine {
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .interactive-simulator-shell .il-toolbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .interactive-simulator-shell .il-toolbar-actions button {
+    width: auto;
+    min-height: 38px;
+    margin: 0;
+    padding: 8px 13px;
+    font-size: 0.76rem;
+  }
+
+  /* ACTUAL TWO-COLUMN SIMULATOR */
+
+  .interactive-simulator-shell .il-workspace {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.45fr)
+      minmax(330px, 0.72fr);
+    align-items: start;
+  }
+
+  .interactive-simulator-shell .il-builder {
+    min-width: 0;
+    padding: 0 30px 30px;
+    border-right: 1px solid var(--line);
+  }
+
+  .interactive-simulator-shell .il-results {
+    min-width: 0;
+    padding: 28px;
+    position: sticky;
+    top: 120px;
+    align-self: start;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(136, 149, 255, 0.035),
+        rgba(0, 0, 0, 0) 220px
+      ),
+      rgba(0, 0, 0, 0.12);
+  }
+
+  /* INPUT SECTIONS */
+
+  .interactive-simulator-shell .il-section {
+    padding: 30px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .interactive-simulator-shell .il-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 17px;
+    margin-bottom: 20px;
+  }
+
+  .interactive-simulator-shell .il-section-heading > span,
+  .interactive-simulator-shell .il-heading-copy > span {
+    flex: 0 0 auto;
+    padding-top: 4px;
+    color: var(--accent);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .interactive-simulator-shell .il-section-heading h2,
+  .interactive-simulator-shell .il-heading-copy h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 1.35rem;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+
+  .interactive-simulator-shell .il-section-heading p,
+  .interactive-simulator-shell .il-heading-copy p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .interactive-simulator-shell .il-section-heading-action {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .interactive-simulator-shell .il-heading-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 17px;
+  }
+
+  .interactive-simulator-shell .il-section-heading-action > button {
+    width: auto;
+    min-height: 38px;
+    margin: 0;
+    padding: 8px 13px;
+    white-space: nowrap;
+    font-size: 0.76rem;
+  }
+
+  /* FORM GRID */
+
+  .interactive-simulator-shell .il-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+  }
+
+  .interactive-simulator-shell .il-wide {
+    grid-column: 1 / -1;
+  }
+
+  .interactive-simulator-shell .il-field {
+    display: block;
+    min-width: 0;
+  }
+
+  .interactive-simulator-shell .il-field > span {
+    min-height: 18px;
+    margin: 0 0 7px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  /*
+   * NumericField currently renders suffixes as <small>.
+   * Give them visual separation so "CapacitymAh" becomes
+   * "Capacity  mAh" instead of looking like one word.
+   */
+
+  .interactive-simulator-shell .il-field > span small {
+    margin-left: 3px;
+    color: #747d89;
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .interactive-simulator-shell .il-field input,
+  .interactive-simulator-shell .il-field select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #39434f;
+    border-radius: 9px;
+    background: #0d1319;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.82rem;
+    outline: none;
+    transition:
+      border-color 150ms ease,
+      background 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .interactive-simulator-shell .il-field input:focus,
+  .interactive-simulator-shell .il-field select:focus {
+    border-color: rgba(136, 149, 255, 0.72);
+    background: #10171e;
+    box-shadow: 0 0 0 3px rgba(136, 149, 255, 0.08);
+  }
+
+  .interactive-simulator-shell .il-field input::placeholder {
+    color: #59616c;
+  }
+
+  /* ADVANCED */
+
+  .interactive-simulator-shell .il-advanced {
+    margin-top: 16px;
+  }
+
+  .interactive-simulator-shell .il-advanced summary {
+    width: fit-content;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 0.73rem;
+    font-weight: 600;
+  }
+
+  .interactive-simulator-shell .il-advanced[open] summary {
+    margin-bottom: 15px;
+  }
+
+  .interactive-simulator-shell .il-help {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.55;
+  }
+
+  /* CAMERAS */
+
+  .interactive-simulator-shell .il-empty {
+    padding: 18px;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+
+  .interactive-simulator-shell .il-camera-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .interactive-simulator-shell .il-camera {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .interactive-simulator-shell .il-camera-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 16px;
+  }
+
+  .interactive-simulator-shell .il-camera-title strong {
+    color: var(--ink);
+    font-size: 0.84rem;
+  }
+
+  .interactive-simulator-shell .il-remove {
+    width: auto;
+    min-height: 32px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 155, 168, 0.25);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--error);
+    font-size: 0.68rem;
+  }
+
+  /* RUN */
+
+  .interactive-simulator-shell .il-run {
+    padding: 24px 0 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .interactive-simulator-shell .il-simulate {
+    width: auto;
+    min-height: 46px;
+    margin: 0;
+    padding: 11px 17px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 9px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .interactive-simulator-shell .il-run p {
+    flex: 1 1 260px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+
+  /* RESULTS */
+
+  .interactive-simulator-shell .il-results-top {
+    padding-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.68rem;
+  }
+
+  .interactive-simulator-shell .il-results-top .eyebrow {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .interactive-simulator-shell .il-result-empty {
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .interactive-simulator-shell .il-result-empty h2 {
+    margin: 25px 0 8px;
+    color: var(--ink);
+    font-size: 1.35rem;
+    letter-spacing: -0.035em;
+  }
+
+  .interactive-simulator-shell .il-result-empty p {
+    max-width: 280px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.65;
+  }
+
+  .interactive-simulator-shell .il-orbit {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    border: 1px solid rgba(136, 149, 255, 0.28);
+    border-radius: 50%;
+  }
+
+  .interactive-simulator-shell .il-orbit::after {
+    content: "";
+    position: absolute;
+    width: 76px;
+    height: 31px;
+    border: 1px solid rgba(136, 149, 255, 0.18);
+    border-radius: 50%;
+    transform: rotate(-28deg);
+  }
+
+  .interactive-simulator-shell .il-orbit span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .interactive-simulator-shell .il-result-identity {
+    padding: 24px 0 18px;
+  }
+
+  .interactive-simulator-shell .il-result-identity > span {
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .interactive-simulator-shell .il-result-identity h2 {
+    margin: 7px 0 0;
+    color: var(--ink);
+    font-size: 1.55rem;
+    line-height: 1.1;
+    letter-spacing: -0.045em;
+  }
+
+  .interactive-simulator-shell .il-result-group {
+    padding: 19px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-simulator-shell .il-result-label {
+    display: block;
+    margin-bottom: 11px;
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /*
+   * The component's result markup is a collection of divs
+   * containing <strong>value</strong><span>label</span>.
+   * Turn those into real metric cards.
+   */
+
+  .interactive-simulator-shell .il-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .interactive-simulator-shell .il-metrics > div {
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .interactive-simulator-shell .il-metrics strong {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  .interactive-simulator-shell .il-metrics span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 0.64rem;
+    line-height: 1.3;
+  }
+
+  .interactive-simulator-shell .il-volume-number {
+    margin-bottom: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    border: 1px solid rgba(136, 149, 255, 0.15);
+    border-radius: 10px;
+    background: rgba(136, 149, 255, 0.04);
+  }
+
+  .interactive-simulator-shell .il-volume-number strong {
+    color: var(--ink);
+    font-size: 1.35rem;
+    letter-spacing: -0.04em;
+  }
+
+  .interactive-simulator-shell .il-volume-number > span {
+    color: #59616c;
+  }
+
+  .interactive-simulator-shell .il-volume-number small {
+    flex-basis: 100%;
+    color: var(--muted);
+    font-size: 0.63rem;
+  }
+
+  /* VERDICT */
+
+  .interactive-simulator-shell .il-verdict {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .interactive-simulator-shell .il-verdict.passes {
+    border-color: rgba(136, 149, 255, 0.24);
+    background: rgba(136, 149, 255, 0.045);
+  }
+
+  .interactive-simulator-shell .il-verdict.fails {
+    border-color: rgba(255, 155, 168, 0.28);
+    background: rgba(255, 155, 168, 0.045);
+  }
+
+  .interactive-simulator-shell .il-verdict strong {
+    color: var(--ink);
+    font-size: 0.78rem;
+  }
+
+  .interactive-simulator-shell .il-verdict p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.7rem;
+    line-height: 1.55;
+  }
+
+  /* WARNINGS */
+
+  .interactive-simulator-shell .il-warnings {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-simulator-shell .il-warning {
+    margin-top: 9px;
+    padding: 12px;
+    border: 1px solid rgba(255, 155, 168, 0.2);
+    border-radius: 9px;
+    background: rgba(255, 155, 168, 0.035);
+  }
+
+  .interactive-simulator-shell .il-warning strong {
+    color: var(--error);
+    font-size: 0.68rem;
+  }
+
+  .interactive-simulator-shell .il-warning p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 0.68rem;
+    line-height: 1.5;
+  }
+
+  /* METHOD FOOTER */
+
+  .interactive-simulator-shell .il-method {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-simulator-shell .il-method strong {
+    color: var(--ink);
+    font-size: 0.72rem;
+  }
+
+  .interactive-simulator-shell .il-method p {
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 0.68rem;
+    line-height: 1.55;
+  }
+
+  /* METHODOLOGY */
+
+  .interactive-methodology {
+    padding: 105px 0 30px;
+    border-top: 1px solid var(--line);
+  }
+
+  .interactive-methodology-heading {
+    max-width: 680px;
+  }
+
+  .interactive-method-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 55px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .interactive-method-grid article {
+    min-height: 245px;
+    padding: 28px;
+    background: var(--paper);
+  }
+
+  .interactive-method-grid article > span {
+    color: var(--accent);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+  }
+
+  .interactive-method-grid h3 {
+    margin: 65px 0 12px;
+    color: var(--ink);
+    font-size: 1.1rem;
+    letter-spacing: -0.025em;
+  }
+
+  .interactive-method-grid p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+
+  /* RESPONSIVE */
+
+  @media (max-width: 1050px) {
+    .interactive-hero {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 30px;
+    }
+
+    .interactive-model-wrap {
+      transform: scale(0.82);
+    }
+
+    .interactive-simulator-shell .il-workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .interactive-simulator-shell .il-builder {
+      border-right: 0;
+    }
+
+    .interactive-simulator-shell .il-results {
+      position: static;
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 820px) {
+    .interactive-page {
+      width: min(100% - 28px, 1180px);
+      padding-top: 45px;
+    }
+
+    .interactive-hero {
+      min-height: auto;
+      grid-template-columns: 1fr;
+      padding-bottom: 65px;
+    }
+
+    .interactive-model-wrap {
+      min-height: 350px;
+      margin: -35px 0;
+      transform: scale(0.78);
+    }
+
+    .interactive-context {
+      grid-template-columns: 1fr;
+      gap: 15px;
+      padding: 70px 0;
+    }
+
+    .interactive-workspace {
+      padding: 70px 0;
+    }
+
+    .interactive-method-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .interactive-method-grid article {
+      min-height: 200px;
+    }
+
+    .interactive-method-grid h3 {
+      margin-top: 40px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .interactive-page {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .interactive-hero h1 {
+      font-size: clamp(3.6rem, 20vw, 5.8rem);
+    }
+
+    .interactive-principles {
+      gap: 6px;
+    }
+
+    .interactive-workspace-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .interactive-simulator-shell {
+      border-radius: 17px;
+    }
+
+    .interactive-simulator-shell .il-toolbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .interactive-simulator-shell .il-toolbar-actions {
+      width: 100%;
+    }
+
+    .interactive-simulator-shell .il-toolbar-actions button {
+      flex: 1;
+    }
+
+    .interactive-simulator-shell .il-builder,
+    .interactive-simulator-shell .il-results {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+
+    .interactive-simulator-shell .il-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .interactive-simulator-shell .il-wide {
+      grid-column: auto;
+    }
+
+    .interactive-simulator-shell .il-section-heading-action {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .interactive-simulator-shell .il-metrics {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

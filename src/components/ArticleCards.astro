@@ -1,0 +1,105 @@
+---
+import type { PublishedArticle } from '../lib/editorial';
+
+interface Props {
+  articles: PublishedArticle[];
+}
+
+const { articles } = Astro.props;
+
+function safeHttps(url?: string | null) {
+  if (!url) return false;
+
+  try {
+    return new URL(url).protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function articleImage(article: PublishedArticle) {
+  const image = article.blocks.find(
+    (block) =>
+      block.type === 'image' &&
+      safeHttps(block.url),
+  );
+
+  if (!image?.url) return null;
+
+  return {
+    url: image.url,
+    alt: image.alt ?? '',
+  };
+}
+---
+
+<div
+  class="article-grid"
+  data-count={Math.min(articles.length, 4)}
+>
+  {
+    articles.map((article, index) => {
+      const image = articleImage(article);
+
+      return (
+        <article
+          class:list={[
+            'article-card',
+            {
+              'lead-card': index === 0,
+              'has-card-image': Boolean(image),
+            },
+          ]}
+        >
+          {image && (
+            <a
+              class="card-image"
+              href={article.canonical_path}
+              aria-label={`Read ${article.title}`}
+            >
+              <img
+                src={image.url}
+                alt={image.alt}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </a>
+          )}
+
+          <div class="card-content">
+            <span class="card-section">
+              {article.section}
+            </span>
+
+            <h3>
+              <a href={article.canonical_path}>
+                {article.title}
+              </a>
+            </h3>
+
+            <p>
+              {article.withdrawn
+                ? 'This article has been withdrawn. Read the editorial notice.'
+                : article.summary}
+            </p>
+
+            <div class="card-meta">
+              <span>{article.byline}</span>
+
+              <time datetime={article.published_at}>
+                {new Date(
+                  article.published_at,
+                ).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                  timeZone: 'UTC',
+                })}
+              </time>
+            </div>
+          </div>
+        </article>
+      );
+    })
+  }
+</div>
