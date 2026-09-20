@@ -1,18 +1,21 @@
-# Interactive Leaks — Simulation Engine v0.5 foundation: Battery Experience
+# Interactive Leaks — Simulation Engine v0.5.x: Battery Experience
 
-Status: foundation implemented on `simulation/v0.5-battery`. Not merged. No UI
-changes. The v0.4 deterministic engine (`src/lib/simulation/engine.ts`,
-`SIMULATION_ENGINE_VERSION = '0.4.0'`) is untouched and all of its tests
+Status: v0.5 (`0.5.0-battery.1`) was merged to `main` via PR #2 (merge commit
+`bc8a953`). This document describes v0.5.1 (`0.5.1-battery.1`), a correctness
+pass implemented on `simulation/v0.5.1-battery-corrections` and opened as a PR
+against `main`; the PR is left unmerged pending human review. No UI changes.
+The v0.4 deterministic engine (`src/lib/simulation/engine.ts`,
+`SIMULATION_ENGINE_VERSION = '0.4.0'`) remains untouched and all of its tests
 continue to pass unchanged.
 
 ## Scope of this slice
 
-Battery Experience introduces a modeled (non-deterministic) runtime layer
-alongside the existing deterministic battery module:
+Battery Experience is the modeled (non-deterministic) runtime layer alongside
+the existing deterministic battery module:
 
 - The existing battery module keeps ownership of deterministic pack
   calculations: Wh from mAh × V, cell/pack volume, energy densities.
-- The new battery-experience module models real-world runtime behavior from
+- The battery-experience module models real-world runtime behavior from
   subsystem power under named workloads. It never fabricates wattage figures.
 
 Implemented workloads: `mixed_use`, `web_browsing`, `video_playback`,
@@ -26,7 +29,7 @@ the architecture; camera behaviour itself is not simulated here.
   thermal without new type plumbing).
 - `src/lib/simulation/modules/battery-experience.ts` — the module: inputs,
   resolution, runtime derivation, outputs, comparison helper.
-- `tests/simulation-battery-experience.test.ts` — 30 tests.
+- `tests/simulation-battery-experience.test.ts` — the module test suite.
 
 ## Core formula
 
@@ -50,6 +53,23 @@ bound; best-case runtime pairs the highest energy bound with the lowest
 power bound. This interval division is the mechanism that turns input ranges
 into runtime ranges without any fabricated precision.
 
+## Profile-level runtime semantics (corrected in v0.5.1)
+
+A simulated profile has exactly one runtime: the runtime of the workload
+mixture that was actually simulated. It is reported once, at
+`estimate.runtimeHours`.
+
+- Each workload entry reports its own average modeled power
+  (`averagePowerW`), its weighted contribution to the profile average
+  (`weightedPowerW` — own power scaled by its normalized weight share), and
+  the normalized `weightShare` used.
+- `runtimeHours` appears on a workload entry only when that workload is
+  itself the complete simulated profile (a single-workload profile); the
+  profile runtime and the workload runtime are then the same figure.
+- v0.5.0 repeated the mixture runtime inside every workload entry, which
+  read as a standalone per-workload runtime that was never simulated. That
+  repetition was removed rather than reinterpreted.
+
 ## Uncertainty and interval arithmetic
 
 Inputs may be supplied as:
@@ -57,9 +77,13 @@ Inputs may be supplied as:
 - an exact number — a point quantity,
 - `{ value, provenance }` — a point with provenance,
 - `{ range: { min, max }, provenance }` — a range; each bound may be omitted
-  and stays unknown,
-- `{ value, range }` — the point drives the calculation, the range is
-  preserved on the parameter record.
+  and stays unknown.
+
+Supplying both a point value and a range on the same parameter is ambiguous
+for v0.5.x — the type does not yet distinguish a central estimate plus
+uncertainty — and is rejected fail-closed with an explicit message instead of
+silently preferring the point and discarding the range. This applies to
+total energy, usable percent, and every subsystem power.
 
 Interval arithmetic rules implemented in `modeling.ts`:
 
@@ -81,12 +105,20 @@ Every modeled parameter can carry provenance:
 - `modeled` — derived by PhoneFuturist modeling with no external source.
 - `user` — entered by the simulation user (advanced configuration).
 
-A parameter supplied as a bare number is recorded with kind `modeled` and the
-note "Provenance not supplied; treated as modeled." Such parameters are
-counted and surfaced in `confidenceNotes`, so public simulations can later
-explain exactly which figures rest on unattributed data. Provenance is
-never inferred or upgraded: a reported number never silently becomes
-measured.
+Provenance state is structured, not inferred: every parameter record carries
+`provenanceRecorded: boolean`.
+
+- `provenanceRecorded: true` — the input supplied provenance of its own.
+- `provenanceRecorded: false` — the input carried no provenance. The record
+  still shows the structural fallback (`kind: 'modeled'`, note
+  "Provenance not supplied; treated as modeled.") for human display, but the
+  flag — never the note text — is what confidence grading inspects.
+
+A parameter supplied as a bare number is therefore recorded with the
+fallback provenance and `provenanceRecorded: false`, and is counted in
+`confidenceNotes`, so public simulations can later explain exactly which
+figures rest on unattributed data. Provenance is never inferred or upgraded:
+a reported number never silently becomes measured.
 
 ## Unknowns stay unknown (fail-closed outputs)
 
@@ -94,54 +126,93 @@ The module returns one of two top-level statuses:
 
 1. `resolved` — sufficient information existed; see Outputs below.
 2. `unresolved` — with a `code`, a human-readable `message`, and a `missing`
-   list naming exactly which required information is absent:
+   list naming exactly which required information is absent or invalid:
 
-- `MISSING_TOTAL_ENERGY` — no total pack energy was supplied.
-- `MISSING_WORKLOAD_POWER` — no workload has any usable power parameter.
-- `INVALID_ENERGY_INPUT` — energy was supplied but is not a positive finite
-  value/range.
+- `MISSING_TOTAL_ENERGY` — no total pack energy was supplied (including a
+  parameter object with neither a value nor a range).
+- `MISSING_WORKLOAD_POWER` — no evaluated workload has any usable power
+  parameter.
+- `INVALID_ENERGY_INPUT` — energy was supplied but is invalid (not a
+  positive finite value/range, point+range ambiguity), or an explicitly
+  supplied usable percentage is invalid (see below).
 - `INVALID_WORKLOAD_POWER` — supplied power values are invalid (negative,
-  non-finite, or an inverted range). Invalid supplied values refuse the
-  estimate entirely rather than being silently dropped, because dropping a
-  bad number would overstate runtime.
+  non-finite, inverted range, point+range ambiguity). Invalid supplied
+  values refuse the estimate entirely rather than being silently dropped,
+  because dropping a bad number would overstate runtime.
+- `INVALID_WORKLOAD_WEIGHT` — a supplied workload weight is not a positive
+  finite number (zero, negative, NaN, infinite). The result is unresolved,
+  a warning names the workload and the supplied value, and no default
+  weight is substituted. Weights are validated for the workloads actually
+  evaluated (those surviving `workloadOrder` filtering).
 - `NO_WORKLOADS_SUPPLIED` — the workload record is empty.
 
 No default wattage exists anywhere in the module. Unknown subsystem power is
 excluded from sums and remains absent from parameter records.
 
+## Usable battery percentage
+
+The usable percentage must be greater than 0 and at most 100. Every supplied
+bound of a range must satisfy the same rule, and an inverted range is
+invalid.
+
+- A valid percentage scales the total energy; ranged percentages multiply
+  known energy bounds by known percent bounds (worst case pairs the lowest
+  of each).
+- An explicitly supplied invalid percentage returns an unresolved
+  `INVALID_ENERGY_INPUT` result naming `energy.usablePercent`. Invalid
+  percentages are never retained (v0.5.0 kept values above 100 with a
+  warning) and never silently fall back to the no-derating assumption.
+- A genuinely absent percentage preserves the v0.5 behavior: usable energy
+  equals total energy and the assumption list carries
+  `NO_USABLE_PERCENT_SUPPLIED` — "No usable battery percentage was supplied,
+  so the full rated pack energy was treated as usable. Real devices
+  typically hold a protection reserve, so treat the resulting runtime as
+  optimistic." (provenance: modeled, "Structural assumption, not a
+  device-specific figure.").
+
 ## Outputs
 
 `resolved` results carry:
 
-- `workloads[]` — per-workload `runtimeHours {min,max}` and
-  `averagePowerW {min,max}` (bounds present only when derivable).
+- `runtimeHours` — one profile-level runtime for the whole workload mixture
+  (bounds present only when derivable).
+- `workloads[]` — per-workload `averagePowerW` (own power), `weightedPowerW`
+  (weighted contribution), `weightShare`, and — only for single-workload
+  profiles — `runtimeHours`.
 - `usableEnergyWh` — point expressed as min/max, or a range.
 - `assumptions[]` — structural assumptions (currently the no-derating
   assumption) with provenance.
 - `parameters[]` — every consumed parameter with its resolved value/range,
-  provenance, and parameter path (e.g.
-  `workloads.gaming.subsystems.display`).
+  provenance, structured `provenanceRecorded` state, and parameter path
+  (e.g. `workloads.gaming.subsystems.display`).
 - `contributors[]` — per-subsystem (and workload-specific component) power
   contributions with their share of total power. Shares use range midpoints
   as the basis and the notes say so when midpoints were involved.
-- `warnings[]` — non-fatal input problems (e.g. usable percent > 100, bad
-  workload weights) that were surfaced rather than hidden.
+- `warnings[]` — an array independent of the calculation-level warnings
+  array. Because every invalid input now fails closed, resolved results
+  currently carry empty warning arrays; the field is retained for future
+  non-fatal cases.
+
+No rounding or precision reduction is applied anywhere in the engine;
+consumers format numbers for display.
 
 ## Confidence
 
-`confidence` is derived from input quality, never an arbitrary percentage:
+`confidence` is derived from input quality, never an arbitrary percentage.
+The implemented grading is exactly:
 
 - `deterministic` — every energy and power input was an exact point value
-  with recorded provenance; the runtime is a pure division.
-- `high` — exact points, but some provenance is unrecorded.
-- `moderate` — ranged inputs with complete bounds and recorded provenance,
-  or exact points with unrecorded provenance.
-- `low` — any required bound is unknown, or inputs are largely
-  unattributed.
+  and every parameter recorded provenance; the runtime is a pure division.
+- `high` — inputs may be ranged, but every required bound is known (the
+  runtime range is complete) and every parameter recorded provenance.
+- `moderate` — the numeric result is complete (no required bound unknown)
+  but at least one parameter carries no recorded provenance.
+- `low` — the result is resolved but materially incomplete: at least one
+  required runtime bound could not be derived from the inputs.
 
 `confidenceNotes[]` explains the grade: which bounds are missing, whether
 contributor shares rest on midpoints, and how many parameters lack
-provenance. The wording is intended to be shown to end users as-is.
+recorded provenance. The wording is intended to be shown to end users as-is.
 
 ## Workload and subsystem architecture
 
@@ -155,8 +226,8 @@ Workloads declare subsystem power:
 
 Multiple workloads combine by normalized weights; `workloadOrder` fixes the
 output order deterministically. A workload present in `workloads` but absent
-from `workloadOrder` is not evaluated; an order entry with no workload is
-ignored (warning-free, deterministic).
+from `workloadOrder` is not evaluated (and its weight is not validated); an
+order entry with no workload is ignored (warning-free, deterministic).
 
 ## Simple and advanced modes converge
 
@@ -170,19 +241,23 @@ separate "simple engine" can drift from the advanced one.
 ## Comparison architecture
 
 `compareBatteryExperience(baselineLabel, baseline, candidateLabel, candidate)`
-returns workload-matched deltas:
+compares two resolved results:
 
-- `runtimeHours {min,max}` — candidate minus baseline (interval subtraction:
-  worst case pairs candidate-min with baseline-max).
-- `averagePowerW {min,max}` — candidate minus baseline.
-- `powerDeltaBySubsystem` is reserved in the type for the Upgrade Simulator;
-  the current implementation reports workload-level deltas and the result
-  shape carries `comparisonReady.averagePowerW` for cross-result comparison.
+- `runtimeHours` — one profile-level delta: candidate minus baseline by
+  interval subtraction (worst case pairs candidate-min with baseline-max).
+  Absent when either profile runtime is unknown.
+- `baseline` / `candidate` summaries carry each profile's average power and
+  profile runtime.
+- `deltas[]` — workload-matched power deltas only (`averagePowerW`,
+  candidate minus baseline). Per-workload runtime deltas are intentionally
+  not reported: runtime is a profile-level quantity.
+- `powerDeltaBySubsystem` is reserved in the delta type and is NOT yet
+  implemented. It is never populated today; absence must not be read as
+  "no per-subsystem change". The Upgrade Simulator will implement it by
+  joining the two results' contributor lists by subsystem and component.
 
-The Upgrade Simulator can therefore compare a hypothetical device against a
-known baseline and explain improvement/regression by comparing contributor
-lists of the two resolved results, without new engine plumbing. Deltas
-involving unresolved results return `undefined` rather than partial guesses.
+Deltas involving unresolved results return `undefined` rather than partial
+guesses.
 
 ## What was deliberately not built
 
@@ -191,32 +266,47 @@ involving unresolved results return `undefined` rather than partial guesses.
 - No device-specific wattage tables (no per-phone hard-coding).
 - No AI-generated estimates; every number flows from supplied inputs.
 - No persistence of simulation runs, no server verification.
+- No display rounding; no default weights or percentages.
 
 ## Testing
 
-30 tests in `tests/simulation-battery-experience.test.ts` cover:
+The battery-experience suite in
+`tests/simulation-battery-experience.test.ts` covers:
 
 - deterministic runtime from exact energy and power (with provenance);
 - runtime ranges from ranged power and energy, including multi-subsystem
   ranges and mixed point/range bounds;
-- missing energy, missing workload power, and no workloads → explicit
-  unresolved results with the exact missing pieces named;
+- profile-level runtime semantics: one runtime per profile, per-workload
+  weighted power and weight share, standalone runtime only for
+  single-workload profiles;
+- missing energy (including empty parameter objects), missing workload
+  power, and no workloads → explicit unresolved results with the exact
+  missing pieces named;
 - invalid values: negative energy, non-finite power, inverted ranges,
-  bad workload weights, usable percent above 100;
-- provenance preservation for all four kinds plus the unattributed
-  fallback record;
+  point+range ambiguity (energy, percent, power), invalid workload weights
+  (zero, negative, NaN, infinite), usable percentages outside (0, 100]
+  (including 100 exactly as the valid boundary, and ranged bounds);
+- provenance preservation for all four kinds, the structured
+  `provenanceRecorded` flag, and grading independence from note wording;
 - unknown values remaining unknown (absent subsystems never become zero);
 - workload selection, ordering, weighted mixing, and unknown-order filtering;
 - usable-energy adjustment (point percent, ranged percent, missing percent
   with its assumption record);
 - contributor calculations (single workload, weighted mixture, midpoint
   basis for ranged inputs);
-- comparison deltas and unresolved-comparison refusal;
+- comparison: profile-level runtime deltas, per-workload power deltas, no
+  per-workload runtime deltas, unresolved-comparison refusal;
+- confidence grades: deterministic, high, moderate, low all reached
+  explicitly;
+- independent warning arrays between calculation and estimate;
 - backwards compatibility: the v0.4 battery module and engine API surface
   are unchanged (`SIMULATION_ENGINE_VERSION` stays `0.4.0`; the v0.4 result
   carries no battery-experience fields).
 
-The pre-existing 57 tests are untouched and must keep passing.
+The pre-existing 57 tests are untouched and must keep passing. Three v0.5.0
+tests were rewritten because v0.5.1 deliberately changes the behavior they
+asserted (weight coercion to 1, retaining percentages above 100, per-workload
+comparison runtime deltas); no test was weakened or deleted.
 
 ## Future extension points
 
@@ -225,6 +315,8 @@ The pre-existing 57 tests are untouched and must keep passing.
 - Calibration hooks: measured runtime vs modeled runtime reconciliation per
   workload (Milestone 5 acceptance requires documented calibration).
 - `powerDeltaBySubsystem` implementation in the Upgrade Simulator.
+- A first-class "central estimate + uncertainty" parameter shape, which
+  would replace the point+range rejection with explicit semantics.
 - Advanced UI bound to `parameters[]` paths so overrides round-trip with
   provenance intact.
 - Server-side verification of submitted runs against recomputation.

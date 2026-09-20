@@ -156,6 +156,14 @@ export interface BatteryExperienceParameterRecord {
 
   provenance?: ModelProvenance;
 
+  /**
+   * True when the input supplied provenance of its own. False
+   * means the provenance shown is the structural fallback
+   * (modeled, unknown origin); the flag — never the note text —
+   * is what confidence grading inspects.
+   */
+  provenanceRecorded: boolean;
+
   /** Set when a supplied value was rejected as invalid. */
   rejected?: { reason: string };
 }
@@ -163,9 +171,28 @@ export interface BatteryExperienceParameterRecord {
 export interface BatteryExperienceRuntimeEstimate {
   workload: BatteryExperienceWorkload;
 
+  /**
+   * Present only when this workload is itself the complete
+   * simulated profile (a single-workload profile). Multi-workload
+   * profiles have one profile-level runtime, reported on the
+   * estimate, and never repeat it per workload.
+   */
   runtimeHours?: { min?: number; max?: number };
 
+  /** The workload's own average modeled power (unweighted sum). */
   averagePowerW?: { min?: number; max?: number };
+
+  /**
+   * This workload's weighted contribution to the profile average
+   * power: its own power scaled by its normalized weight share.
+   */
+  weightedPowerW?: { min?: number; max?: number };
+
+  /**
+   * Normalized weight share (weight / total weight) used to
+   * derive weightedPowerW.
+   */
+  weightShare: number;
 }
 
 /**
@@ -177,6 +204,7 @@ export interface BatteryExperienceUnresolved {
     | 'MISSING_WORKLOAD_POWER'
     | 'INVALID_ENERGY_INPUT'
     | 'INVALID_WORKLOAD_POWER'
+    | 'INVALID_WORKLOAD_WEIGHT'
     | 'NO_WORKLOADS_SUPPLIED';
 
   message: string;
@@ -189,15 +217,17 @@ export interface BatteryExperienceBaselineDelta {
   workload: BatteryExperienceWorkload;
 
   /**
-   * Positive runtimeHours means the candidate runs longer
-   * than the baseline; negative means shorter. Absent when a
-   * bound cannot be computed because either side is unknown.
+   * Candidate minus baseline workload power. Per-workload
+   * runtime deltas are intentionally not reported: runtime is a
+   * profile-level quantity (see BatteryExperienceComparison).
    */
-  runtimeHours?: { min?: number; max?: number };
-
   averagePowerW?: { min?: number; max?: number };
 
-  /** Contribution of each subsystem to the power delta. */
+  /**
+   * NOT YET IMPLEMENTED. Reserved for the future Upgrade
+   * Simulator. This is never populated today; absence must not
+   * be read as "no change per subsystem".
+   */
   powerDeltaBySubsystem?: Array<{
     subsystem: BatterySubsystem;
 
@@ -213,13 +243,26 @@ export interface BatteryExperienceComparison {
     label: string;
 
     averagePowerW?: { min?: number; max?: number };
+
+    /** Profile-level runtime of the baseline result. */
+    runtimeHours?: { min?: number; max?: number };
   };
 
   candidate: {
     label: string;
 
     averagePowerW?: { min?: number; max?: number };
+
+    /** Profile-level runtime of the candidate result. */
+    runtimeHours?: { min?: number; max?: number };
   };
+
+  /**
+   * Profile-level runtime delta: candidate minus baseline, by
+   * interval subtraction. Absent when either profile runtime is
+   * unknown.
+   */
+  runtimeHours?: { min?: number; max?: number };
 
   deltas: BatteryExperienceBaselineDelta[];
 }
@@ -239,6 +282,13 @@ export interface BatteryExperienceResult {
 
   /** Only present when status is 'resolved'. */
   estimate?: {
+    /**
+     * One profile-level runtime for the whole workload mixture.
+     * Never repeated per workload (see
+     * BatteryExperienceRuntimeEstimate).
+     */
+    runtimeHours?: { min?: number; max?: number };
+
     workloads: BatteryExperienceRuntimeEstimate[];
 
     usableEnergyWh?: { value?: number; min?: number; max?: number };
@@ -254,9 +304,13 @@ export interface BatteryExperienceResult {
 
   /**
    * Derived from input quality, never an arbitrary percentage:
-   * deterministic when every input is a validated point,
-   * otherwise graded by how many bounds are unknown and how
-   * much provenance is unrecorded. Explained in confidenceNotes.
+   * 'deterministic' when every energy and power input is an
+   * exact point and every parameter recorded provenance; 'high'
+   * when ranged inputs leave no required bound unknown and all
+   * provenance is recorded; 'moderate' when the numeric result
+   * is complete but some provenance is unrecorded; 'low' when a
+   * required bound could not be derived. Explained in
+   * confidenceNotes.
    */
   confidence?: BatteryExperienceConfidence;
 
@@ -313,6 +367,12 @@ function parameterRecord(
   quantity: ResolvedQuantity | undefined,
   fallbackProvenance: ModelProvenance,
 ): BatteryExperienceParameterRecord {
+  // Structured provenance state: recorded means the input
+  // supplied provenance of its own. The fallback provenance is
+  // still shown (for display) but is flagged as unrecorded so
+  // confidence grading never depends on note wording.
+  const provenanceRecorded = parameter?.provenance !== undefined;
+
   const provenance = provenanceFor(parameter, fallbackProvenance);
 
   return {
@@ -327,6 +387,7 @@ function parameterRecord(
         }
       : {}),
     provenance,
+    provenanceRecorded,
   };
 }
 
@@ -468,6 +529,101 @@ function resolveSubsystemPower(
 }
 
 // ---------------------------------------------------------
+// Usable percent resolution
+// ---------------------------------------------------------
+
+type UsablePercentResolution =
+  | { kind: 'absent' }
+  | { kind: 'valid'; quantity: ResolvedQuantity }
+  | { kind: 'invalid'; message: string };
+
+function isValidPercentBound(value: number): boolean {
+  return Number.isFinite(value) && value > 0 && value <= 100;
+}
+
+/**
+ * Resolves the usable battery percentage. Valid values are
+ * greater than 0 and at most 100. An explicitly supplied
+ * invalid percentage is invalid — it never falls back to the
+ * no-derating assumption.
+ */
+function resolveUsablePercent(
+  parameter: ModelParameter,
+): UsablePercentResolution {
+  if (parameter.value !== undefined) {
+    if (parameter.range !== undefined) {
+      return {
+        kind: 'invalid',
+        message:
+          'Usable battery percentage supplied both a point value and a range; these are ambiguous, so supply one or the other.',
+      };
+    }
+
+    if (!isValidPercentBound(parameter.value)) {
+      return {
+        kind: 'invalid',
+        message:
+          'Usable battery percentage must be greater than 0 and at most 100.',
+      };
+    }
+
+    return {
+      kind: 'valid',
+      quantity: { kind: 'point', value: parameter.value },
+    };
+  }
+
+  const range = parameter.range;
+
+  if (range === undefined) {
+    // Present parameter with neither value nor range: treated
+    // exactly like an absent field.
+    return { kind: 'absent' };
+  }
+
+  const boundsInvalid =
+    (range.min !== undefined && !isValidPercentBound(range.min)) ||
+    (range.max !== undefined && !isValidPercentBound(range.max));
+
+  if (boundsInvalid) {
+    return {
+      kind: 'invalid',
+      message:
+        'Usable battery percentage bounds must be greater than 0 and at most 100.',
+    };
+  }
+
+  if (
+    range.min !== undefined &&
+    range.max !== undefined &&
+    range.min > range.max
+  ) {
+    return {
+      kind: 'invalid',
+      message:
+        'Usable battery percentage range minimum must not exceed its maximum.',
+    };
+  }
+
+  if (range.min === undefined && range.max === undefined) {
+    return {
+      kind: 'invalid',
+      message:
+        'Usable battery percentage range must include at least one bound greater than 0 and at most 100.',
+    };
+  }
+
+  return {
+    kind: 'valid',
+    quantity: {
+      kind: 'range',
+      ...(range.min !== undefined ? { min: range.min } : {}),
+      ...(range.max !== undefined ? { max: range.max } : {}),
+    },
+  };
+}
+
+// ---------------------------------------------------------
 // Main entry point
 // ---------------------------------------------------------
 
@@ -552,6 +708,16 @@ export function simulateBatteryExperience(
         message: totalResolution.issue.message,
         missing: ['energy.totalEnergyWh'],
       };
+    } else if (!totalResolution.quantity) {
+      // A parameter object without a value or range supplies
+      // nothing: treat it as missing rather than present-but-
+      // unknown, so a resolved result can never lack energy.
+      energyUnresolved = {
+        code: 'MISSING_TOTAL_ENERGY',
+        message:
+          'Total battery energy is unknown. A runtime estimate requires usable battery energy divided by modeled average power.',
+        missing: ['energy.totalEnergyWh'],
+      };
     }
   }
 
@@ -568,38 +734,24 @@ export function simulateBatteryExperience(
     if (usableParameter === undefined) {
       usableAssumptionIssued = true;
     } else {
-      const usableResolution = resolvePositiveParameter(
-        usableParameter,
-        {
-          code: 'INVALID_ENERGY_INPUT',
-          describe: (label) =>
-            `${label} must be a positive finite value or a range with at least one positive finite bound.`,
-        },
-        'Usable battery percentage',
-      );
+      const percentResolution = resolveUsablePercent(usableParameter);
 
-      if (usableResolution.issue) {
+      if (percentResolution.kind === 'invalid') {
+        // An explicitly supplied percentage that is invalid fails
+        // closed: it must not silently fall back to the
+        // no-derating assumption.
         warnings.push({
-          code: usableResolution.issue.code,
-          message: usableResolution.issue.message,
+          code: 'INVALID_ENERGY_INPUT',
+          message: percentResolution.message,
         });
 
-        usableAssumptionIssued = true;
-      } else if (usableResolution.quantity) {
-        usablePercent = usableResolution.quantity;
-
-        const percentMax =
-          usablePercent.kind === 'point'
-            ? usablePercent.value
-            : usablePercent.max;
-
-        if (percentMax !== undefined && percentMax > 100) {
-          warnings.push({
-            code: 'INVALID_USABLE_PERCENT',
-            message:
-              'Usable battery percentage should not exceed 100. The supplied value was kept, but it likely misstates the pack reserve.',
-          });
-        }
+        energyUnresolved = {
+          code: 'INVALID_ENERGY_INPUT',
+          message: percentResolution.message,
+          missing: ['energy.usablePercent'],
+        };
+      } else if (percentResolution.kind === 'valid') {
+        usablePercent = percentResolution.quantity;
 
         parameters.push(
           parameterRecord(
@@ -707,6 +859,12 @@ export function simulateBatteryExperience(
 
   const invalidPowerMessages: string[] = [];
 
+  const invalidWeightEntries: Array<{
+    workload: BatteryExperienceWorkload;
+
+    weight: unknown;
+  }> = [];
+
   for (const workload of workloads) {
     const definition = input.workloads[workload];
 
@@ -739,22 +897,21 @@ export function simulateBatteryExperience(
       resolved.quantities.map((entry) => entry.quantity),
     );
 
-    const weight =
-      definition.weight !== undefined
-        ? isPositiveFinite(definition.weight)
-          ? definition.weight
-          : 1
-        : 1;
-
     if (
       definition.weight !== undefined &&
       !isPositiveFinite(definition.weight)
     ) {
-      warnings.push({
-        code: 'INVALID_WORKLOAD_WEIGHT',
-        message: `Workload ${workload} weight must be a positive finite value. The workload was weighted as 1.`,
+      // Fail closed: an invalid weight must never be silently
+      // replaced with a default weight.
+      invalidWeightEntries.push({
+        workload,
+        weight: definition.weight,
       });
+
+      continue;
     }
+
+    const weight = definition.weight ?? 1;
 
     resolvedWorkloads.push({
       workload,
@@ -773,6 +930,13 @@ export function simulateBatteryExperience(
     }
   }
 
+  for (const entry of invalidWeightEntries) {
+    warnings.push({
+      code: 'INVALID_WORKLOAD_WEIGHT',
+      message: `Workload ${entry.workload} weight must be a positive finite value. Supplied weight: ${String(entry.weight)}.`,
+    });
+  }
+
   if (missingPowerWorkloads.length > 0) {
     warnings.push({
       code: 'MISSING_WORKLOAD_POWER',
@@ -787,6 +951,7 @@ export function simulateBatteryExperience(
   if (
     energyUnresolved ||
     invalidPowerMessages.length > 0 ||
+    invalidWeightEntries.length > 0 ||
     resolvedWorkloads.length === 0
   ) {
     const missing: string[] = [];
@@ -811,6 +976,17 @@ export function simulateBatteryExperience(
         'Supplied workload power contained invalid values. Battery experience refuses to estimate runtime while ignoring supplied power. Correct or remove the invalid values.';
 
       missing.push('workloads.*.subsystems.* (invalid values)');
+    } else if (invalidWeightEntries.length > 0) {
+      code = 'INVALID_WORKLOAD_WEIGHT';
+
+      message =
+        'Supplied workload weights contained invalid values. Battery experience refuses to estimate runtime while ignoring invalid weights. Correct or remove the invalid weights.';
+
+      missing.push(
+        ...invalidWeightEntries.map(
+          (entry) => `workloads.${entry.workload}.weight`,
+        ),
+      );
     } else {
       code = 'MISSING_WORKLOAD_POWER';
 
@@ -975,7 +1151,7 @@ export function simulateBatteryExperience(
       ));
 
   const unrecordedProvenance = parameters.filter(
-    (record) => record.provenance?.note === UNTYPED_PROVENANCE_NOTE,
+    (record) => !record.provenanceRecorded,
   );
 
   if (
@@ -1057,18 +1233,41 @@ export function simulateBatteryExperience(
   // Assemble
   // -------------------------------------------------------
 
+  const profileRuntime = runtime ? bounds(runtime) : undefined;
+
   const estimate: NonNullable<BatteryExperienceResult['estimate']> = {
-    workloads: resolvedWorkloads.map((workload) => ({
-      workload: workload.workload,
+    ...(profileRuntime ? { runtimeHours: profileRuntime } : {}),
 
-      ...(runtime
-        ? { runtimeHours: bounds(runtime) }
-        : {}),
+    workloads: resolvedWorkloads.map((workload) => {
+      const share = workload.weight / weightTotal;
 
-      ...(workload.power
-        ? { averagePowerW: bounds(workload.power) }
-        : {}),
-    })),
+      const weightedPower =
+        workload.power !== undefined
+          ? scaleQuantity(workload.power, share)
+          : undefined;
+
+      // Standalone runtime is reported on the workload entry only
+      // when this workload is the complete simulated profile.
+      const isCompleteProfile = resolvedWorkloads.length === 1;
+
+      return {
+        workload: workload.workload,
+
+        ...(isCompleteProfile && profileRuntime
+          ? { runtimeHours: { ...profileRuntime } }
+          : {}),
+
+        ...(workload.power
+          ? { averagePowerW: bounds(workload.power) }
+          : {}),
+
+        ...(weightedPower
+          ? { weightedPowerW: bounds(weightedPower) }
+          : {}),
+
+        weightShare: share,
+      };
+    }),
 
     ...(usableEnergy ? { usableEnergyWh: bounds(usableEnergy) } : {}),
 
@@ -1078,7 +1277,10 @@ export function simulateBatteryExperience(
 
     contributors,
 
-    warnings,
+    // Independent array: consumers must not be able to mutate
+    // the calculation-level warning list through the estimate
+    // (or vice versa).
+    warnings: [...warnings],
   };
 
   return {
@@ -1132,6 +1334,40 @@ export function compareBatteryExperience(
       ? candidate.estimate.workloads[0].averagePowerW
       : undefined);
 
+  // Interval subtraction: worst case pairs the candidate's lower
+  // bound with the baseline's upper bound; best case the reverse.
+  const subtractBounds = (
+    a: { min?: number; max?: number } | undefined,
+    b: { min?: number; max?: number } | undefined,
+  ): { min?: number; max?: number } | undefined => {
+    if (a === undefined || b === undefined) {
+      return undefined;
+    }
+
+    const min =
+      a.min !== undefined && b.max !== undefined
+        ? a.min - b.max
+        : undefined;
+    const max =
+      a.max !== undefined && b.min !== undefined
+        ? a.max - b.min
+        : undefined;
+
+    if (min === undefined && max === undefined) {
+      return undefined;
+    }
+
+    return {
+      ...(min !== undefined ? { min } : {}),
+      ...(max !== undefined ? { max } : {}),
+    };
+  };
+
+  const profileRuntimeDelta = subtractBounds(
+    candidate.estimate.runtimeHours,
+    baseline.estimate.runtimeHours,
+  );
+
   const deltas: BatteryExperienceBaselineDelta[] = [];
 
   for (const candidateWorkload of candidate.estimate.workloads) {
@@ -1143,73 +1379,13 @@ export function compareBatteryExperience(
       continue;
     }
 
-    const runtimeDelta = (() => {
-      if (
-        candidateWorkload.runtimeHours === undefined ||
-        baselineWorkload.runtimeHours === undefined
-      ) {
-        return undefined;
-      }
-
-      const candidateMin = candidateWorkload.runtimeHours.min;
-      const candidateMax = candidateWorkload.runtimeHours.max;
-      const baselineMin = baselineWorkload.runtimeHours.min;
-      const baselineMax = baselineWorkload.runtimeHours.max;
-
-      const min =
-        candidateMin !== undefined && baselineMax !== undefined
-          ? candidateMin - baselineMax
-          : undefined;
-      const max =
-        candidateMax !== undefined && baselineMin !== undefined
-          ? candidateMax - baselineMin
-          : undefined;
-
-      if (min === undefined && max === undefined) {
-        return undefined;
-      }
-
-      return {
-        ...(min !== undefined ? { min } : {}),
-        ...(max !== undefined ? { max } : {}),
-      };
-    })();
-
-    const powerDelta = (() => {
-      if (
-        candidateWorkload.averagePowerW === undefined ||
-        baselineWorkload.averagePowerW === undefined
-      ) {
-        return undefined;
-      }
-
-      const candidateMin = candidateWorkload.averagePowerW.min;
-      const candidateMax = candidateWorkload.averagePowerW.max;
-      const baselineMin = baselineWorkload.averagePowerW.min;
-      const baselineMax = baselineWorkload.averagePowerW.max;
-
-      const min =
-        candidateMin !== undefined && baselineMax !== undefined
-          ? candidateMin - baselineMax
-          : undefined;
-      const max =
-        candidateMax !== undefined && baselineMin !== undefined
-          ? candidateMax - baselineMin
-          : undefined;
-
-      if (min === undefined && max === undefined) {
-        return undefined;
-      }
-
-      return {
-        ...(min !== undefined ? { min } : {}),
-        ...(max !== undefined ? { max } : {}),
-      };
-    })();
+    const powerDelta = subtractBounds(
+      candidateWorkload.averagePowerW,
+      baselineWorkload.averagePowerW,
+    );
 
     deltas.push({
       workload: candidateWorkload.workload,
-      ...(runtimeDelta ? { runtimeHours: runtimeDelta } : {}),
       ...(powerDelta ? { averagePowerW: powerDelta } : {}),
     });
   }
@@ -1218,16 +1394,23 @@ export function compareBatteryExperience(
     baseline: {
       label: baselineLabel,
       ...(baselinePower ? { averagePowerW: baselinePower } : {}),
+      ...(baseline.estimate.runtimeHours
+        ? { runtimeHours: baseline.estimate.runtimeHours }
+        : {}),
     },
     candidate: {
       label: candidateLabel,
       ...(candidatePower ? { averagePowerW: candidatePower } : {}),
+      ...(candidate.estimate.runtimeHours
+        ? { runtimeHours: candidate.estimate.runtimeHours }
+        : {}),
     },
+    ...(profileRuntimeDelta ? { runtimeHours: profileRuntimeDelta } : {}),
     deltas,
   };
 }
 
-export const BATTERY_EXPERIENCE_VERSION = '0.5.0-battery.1';
+export const BATTERY_EXPERIENCE_VERSION = '0.5.1-battery.1';
 
 export type {
   ModelParameter,
