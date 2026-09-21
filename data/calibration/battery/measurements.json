@@ -222,6 +222,144 @@
         "The 6,000 mAh dual-cell device provides useful battery-capacity diversity within the initial cohort.",
         "Its runtime should not be interpreted as a direct SoC-efficiency measurement because battery, display, software and other subsystem differences remain confounding variables."
       ]
+    },
+    {
+      "id": "meas_battery_000006",
+      "device_id": "samsung_galaxy_s24_ultra",
+      "protocol_id": "toms_guide_cellular_web_150_nits",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 60300,
+        "source_display_value": "16 h 45 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "setpoint"
+        },
+        "connectivity": "cellular",
+        "refresh_mode": "adaptive",
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Tom's Guide"
+      },
+      "source": {
+        "id": "src_toms_guide_s24_ultra_review",
+        "type": "device_review",
+        "title": "Samsung Galaxy S24 Ultra review",
+        "url": "https://www.tomsguide.com/reviews/samsung-galaxy-s24-ultra",
+        "accessed_at": "2026-09-21"
+      },
+      "dataset_role": "validation",
+      "calibration_eligibility": "reference_only",
+      "uncertainty": null,
+      "notes": [
+        "Held out from the Notebookcheck calibration cohort.",
+        "Tom's Guide reports 16 hours 45 minutes for the Galaxy S24 Ultra.",
+        "The source explicitly identifies the tested display setting as adaptive mode.",
+        "Tom's Guide documents its battery protocol as continuous web browsing over cellular at 150 nits, using 5G for 5G-capable devices until shutdown.",
+        "Unknown test-specific resolution, browser, firmware and radio conditions are not inferred."
+      ]
+    },
+    {
+      "id": "meas_battery_000007",
+      "device_id": "apple_iphone_16_pro_max",
+      "protocol_id": "toms_guide_cellular_web_150_nits",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 63480,
+        "source_display_value": "17 h 38 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "setpoint"
+        },
+        "connectivity": "cellular",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Tom's Guide"
+      },
+      "source": {
+        "id": "src_toms_guide_iphone_16_pro_max_review",
+        "type": "device_review",
+        "title": "Apple iPhone 16 Pro Max review",
+        "url": "https://www.tomsguide.com/phones/iphones/apple-iphone-16-pro-max-review",
+        "accessed_at": "2026-09-21"
+      },
+      "dataset_role": "validation",
+      "calibration_eligibility": "reference_only",
+      "uncertainty": null,
+      "notes": [
+        "Held out from the Notebookcheck calibration cohort.",
+        "The canonical observation stored here is the 17 hours 38 minutes value reported by the final Tom's Guide review.",
+        "A separate Tom's Guide article reports three individual runs of 18:06, 17:11 and 17:28 and a calculated average of 17:35; those repeated-run observations are intentionally not collapsed into this record.",
+        "Tom's Guide documents its battery protocol as continuous web browsing over cellular at 150 nits, using 5G for 5G-capable devices until shutdown.",
+        "Unknown test-specific refresh behavior, browser, firmware and radio conditions are not inferred."
+      ]
+    },
+    {
+      "id": "meas_battery_000008",
+      "device_id": "google_pixel_9_pro_xl",
+      "protocol_id": "toms_guide_cellular_web_150_nits",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 50760,
+        "source_display_value": "14 h 06 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "setpoint"
+        },
+        "connectivity": "cellular",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Tom's Guide"
+      },
+      "source": {
+        "id": "src_toms_guide_pixel_9_pro_xl_result",
+        "type": "comparative_review_result",
+        "title": "Apple iPhone 16 Pro Max review",
+        "url": "https://www.tomsguide.com/phones/iphones/apple-iphone-16-pro-max-review",
+        "accessed_at": "2026-09-21"
+      },
+      "dataset_role": "validation",
+      "calibration_eligibility": "reference_only",
+      "uncertainty": null,
+      "notes": [
+        "Held out from the Notebookcheck calibration cohort.",
+        "Tom's Guide reports 14 hours 06 minutes for the Pixel 9 Pro XL in the comparison table accompanying its iPhone 16 Pro Max review.",
+        "This record preserves that comparative observation without pretending it came from the Pixel's own review page.",
+        "Tom's Guide documents its battery protocol as continuous web browsing over cellular at 150 nits, using 5G for 5G-capable devices until shutdown.",
+        "Unknown test-specific refresh behavior, browser, firmware and radio conditions are not inferred."
+      ]
     }
   ]
 }

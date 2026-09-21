@@ -11,6 +11,8 @@ const FILES = {
   measurements: path.join(__dirname, 'measurements.json'),
 };
 
+const TARGET_SCHEMA_VERSION = '0.1.0';
+
 const errors = [];
 const warnings = [];
 
@@ -81,9 +83,9 @@ function validateSchemaVersion(document, label) {
     return;
   }
 
-  if (document.schema_version !== '0.1.0') {
+  if (document.schema_version !== TARGET_SCHEMA_VERSION) {
     warning(
-      `${label}: schema_version is "${document.schema_version}", validator currently targets "0.1.0".`,
+      `${label}: schema_version is "${document.schema_version}", validator currently targets "${TARGET_SCHEMA_VERSION}".`,
     );
   }
 }
@@ -116,11 +118,15 @@ function validateProtocol(protocol) {
       }
 
       if (!isNonEmptyString(source?.type)) {
-        error(`${prefix}: source "${source?.id ?? '<unknown>'}" is missing type.`);
+        error(
+          `${prefix}: source "${source?.id ?? '<unknown>'}" is missing type.`,
+        );
       }
 
       if (!isNonEmptyString(source?.url)) {
-        error(`${prefix}: source "${source?.id ?? '<unknown>'}" is missing url.`);
+        error(
+          `${prefix}: source "${source?.id ?? '<unknown>'}" is missing url.`,
+        );
       }
     }
   }
@@ -194,9 +200,7 @@ function validateDevice(device) {
     isPositiveFinite(minimumCapacity) &&
     minimumCapacity > typicalCapacity
   ) {
-    error(
-      `${prefix}: minimum battery capacity cannot exceed typical capacity.`,
-    );
+    error(`${prefix}: minimum battery capacity cannot exceed typical capacity.`);
   }
 
   const voltage = device?.battery?.nominal_voltage_v;
@@ -314,7 +318,12 @@ function parseRuntimeDisplayValue(value) {
   return hours * 3600 + minutes * 60;
 }
 
-function validateMeasurement(measurement, deviceIds, protocolIds) {
+function validateMeasurement(
+  measurement,
+  deviceIds,
+  protocolIds,
+  protocolById,
+) {
   const prefix = `measurement "${measurement?.id ?? '<missing id>'}"`;
 
   if (!isNonEmptyString(measurement?.device_id)) {
@@ -343,16 +352,26 @@ function validateMeasurement(measurement, deviceIds, protocolIds) {
     error(`${prefix}: workload_class is required.`);
   }
 
+  const protocol = protocolById.get(measurement?.protocol_id);
+
+  if (
+    protocol &&
+    isNonEmptyString(protocol.workload_class) &&
+    isNonEmptyString(measurement?.workload_class) &&
+    protocol.workload_class !== measurement.workload_class
+  ) {
+    error(
+      `${prefix}: workload_class "${measurement.workload_class}" does not match protocol "${measurement.protocol_id}" workload_class "${protocol.workload_class}".`,
+    );
+  }
+
   const runtimeSeconds = measurement?.value?.runtime_seconds;
 
   if (!isPositiveFinite(runtimeSeconds)) {
     error(`${prefix}: runtime_seconds must be a positive finite number.`);
   }
 
-  if (
-    isFiniteNumber(runtimeSeconds) &&
-    !Number.isInteger(runtimeSeconds)
-  ) {
+  if (isFiniteNumber(runtimeSeconds) && !Number.isInteger(runtimeSeconds)) {
     error(`${prefix}: runtime_seconds must be an integer.`);
   }
 
@@ -450,6 +469,125 @@ function validateMeasurement(measurement, deviceIds, protocolIds) {
       `${prefix}: calibration_eligibility must be eligible, conditional, reference_only, or excluded.`,
     );
   }
+
+  if (
+    measurement?.dataset_role === 'calibration' &&
+    measurement?.calibration_eligibility === 'reference_only'
+  ) {
+    error(
+      `${prefix}: calibration records cannot be marked reference_only.`,
+    );
+  }
+
+  if (
+    measurement?.dataset_role === 'validation' &&
+    measurement?.calibration_eligibility === 'eligible'
+  ) {
+    error(
+      `${prefix}: held-out validation records cannot be marked eligible for calibration.`,
+    );
+  }
+}
+
+function validateDatasetSplitIntegrity(measurements) {
+  const observationRoles = new Map();
+
+  for (const measurement of measurements) {
+    if (
+      !isNonEmptyString(measurement?.device_id) ||
+      !isNonEmptyString(measurement?.protocol_id) ||
+      !isNonEmptyString(measurement?.metric) ||
+      !isNonEmptyString(measurement?.workload_class) ||
+      !isNonEmptyString(measurement?.source?.id)
+    ) {
+      continue;
+    }
+
+    const observationKey = [
+      measurement.device_id,
+      measurement.protocol_id,
+      measurement.metric,
+      measurement.workload_class,
+      measurement.source.id,
+      measurement.value?.runtime_seconds ?? 'unknown-runtime',
+    ].join('|');
+
+    const previous = observationRoles.get(observationKey);
+
+    if (!previous) {
+      observationRoles.set(observationKey, {
+        id: measurement.id,
+        role: measurement.dataset_role,
+      });
+      continue;
+    }
+
+    if (previous.role !== measurement.dataset_role) {
+      error(
+        `dataset split leakage: measurements "${previous.id}" and "${measurement.id}" represent the same observation but use different dataset roles "${previous.role}" and "${measurement.dataset_role}".`,
+      );
+    } else {
+      error(
+        `duplicate observation: measurements "${previous.id}" and "${measurement.id}" represent the same source observation.`,
+      );
+    }
+  }
+
+  const sourceRoleMap = new Map();
+
+  for (const measurement of measurements) {
+    if (
+      !isNonEmptyString(measurement?.source?.id) ||
+      !isNonEmptyString(measurement?.dataset_role)
+    ) {
+      continue;
+    }
+
+    const sourceId = measurement.source.id;
+
+    if (!sourceRoleMap.has(sourceId)) {
+      sourceRoleMap.set(sourceId, new Set());
+    }
+
+    sourceRoleMap.get(sourceId).add(measurement.dataset_role);
+  }
+
+  for (const [sourceId, roles] of sourceRoleMap.entries()) {
+    if (roles.has('calibration') && roles.has('validation')) {
+      warning(
+        `source "${sourceId}" contributes to both calibration and validation. Review manually for possible evidence leakage.`,
+      );
+    }
+  }
+}
+
+function validateProtocolSplitIntegrity(measurements) {
+  const protocolRoles = new Map();
+
+  for (const measurement of measurements) {
+    if (
+      !isNonEmptyString(measurement?.protocol_id) ||
+      !isNonEmptyString(measurement?.dataset_role)
+    ) {
+      continue;
+    }
+
+    if (!protocolRoles.has(measurement.protocol_id)) {
+      protocolRoles.set(measurement.protocol_id, new Set());
+    }
+
+    protocolRoles
+      .get(measurement.protocol_id)
+      .add(measurement.dataset_role);
+  }
+
+  for (const [protocolId, roles] of protocolRoles.entries()) {
+    if (roles.has('calibration') && roles.has('validation')) {
+      warning(
+        `protocol "${protocolId}" contains both calibration and validation observations. This is allowed, but verify that the split is intentional.`,
+      );
+    }
+  }
 }
 
 function validateNoZeroAsUnknown(value, pathParts = []) {
@@ -535,14 +673,27 @@ function main() {
 
   const protocolIds = validateUniqueIds(protocols, 'protocols');
   const deviceIds = validateUniqueIds(devices, 'devices');
+
   validateUniqueIds(measurements, 'measurements');
+
+  const protocolById = new Map(
+    protocols.map((protocol) => [protocol.id, protocol]),
+  );
 
   protocols.forEach(validateProtocol);
   devices.forEach(validateDevice);
 
   measurements.forEach((measurement) =>
-    validateMeasurement(measurement, deviceIds, protocolIds),
+    validateMeasurement(
+      measurement,
+      deviceIds,
+      protocolIds,
+      protocolById,
+    ),
   );
+
+  validateDatasetSplitIntegrity(measurements);
+  validateProtocolSplitIntegrity(measurements);
 
   validateNoZeroAsUnknown(protocolsDocument, ['protocols.json']);
   validateNoZeroAsUnknown(devicesDocument, ['devices.json']);
@@ -560,13 +711,34 @@ function main() {
     (measurement) => measurement.dataset_role === 'reference',
   ).length;
 
+  const calibrationProtocols = new Set(
+    measurements
+      .filter((measurement) => measurement.dataset_role === 'calibration')
+      .map((measurement) => measurement.protocol_id),
+  );
+
+  const validationProtocols = new Set(
+    measurements
+      .filter((measurement) => measurement.dataset_role === 'validation')
+      .map((measurement) => measurement.protocol_id),
+  );
+
   if (measurements.length === 0) {
     warning('Dataset currently contains no measurements.');
+  }
+
+  if (calibrationCount === 0) {
+    warning('Dataset currently contains no calibration observations.');
+  }
+
+  if (validationCount === 0) {
+    warning('Dataset currently contains no held-out validation observations.');
   }
 
   console.log('');
   console.log('Interactive Leaks Battery Calibration Validator');
   console.log('------------------------------------------------');
+  console.log(`Schema:       ${TARGET_SCHEMA_VERSION}`);
   console.log(`Protocols:    ${protocols.length}`);
   console.log(`Devices:      ${devices.length}`);
   console.log(`Measurements: ${measurements.length}`);
@@ -574,6 +746,13 @@ function main() {
   console.log(`Calibration:  ${calibrationCount}`);
   console.log(`Validation:   ${validationCount}`);
   console.log(`Reference:    ${referenceCount}`);
+  console.log('');
+  console.log(
+    `Calibration protocols: ${calibrationProtocols.size}`,
+  );
+  console.log(
+    `Validation protocols:  ${validationProtocols.size}`,
+  );
 
   printReport();
 
@@ -583,7 +762,7 @@ function main() {
   }
 
   console.log('');
-  console.log('PASS: Battery calibration seed dataset is valid.');
+  console.log('PASS: Battery calibration dataset is valid.');
 }
 
 function printReport() {
@@ -605,7 +784,7 @@ function printReport() {
     }
 
     console.error('');
-    console.error('FAIL: Battery calibration seed dataset is invalid.');
+    console.error('FAIL: Battery calibration dataset is invalid.');
   }
 }
 
