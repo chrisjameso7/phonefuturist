@@ -1,0 +1,230 @@
+{
+  "schema_version": "0.1.0",
+  "dataset": "phonefuturist_interactive_leaks_battery_protocols",
+  "description": "Verified battery-test protocol records used by the Interactive Leaks calibration dataset. Protocol constants include only conditions supported by cited methodology documentation. Device- or review-specific conditions belong on measurement records.",
+  "protocols": [
+    {
+      "id": "notebookcheck_wifi_web_v1_3",
+      "provider": "Notebookcheck",
+      "name": "Wi-Fi Web Browsing Test",
+      "protocol_version": "1.3",
+      "version_status": "documented",
+      "workload_class": "web",
+      "workload_description": "Automated browsing workload using a mix of internet pages that change every 30 seconds.",
+      "measurement_target": "runtime",
+      "known_conditions": {
+        "display": {
+          "brightness_nits": {
+            "value": 150,
+            "qualifier": "approximate"
+          },
+          "refresh_mode": null,
+          "resolution": null,
+          "hdr": null
+        },
+        "connectivity": {
+          "type": "wifi",
+          "cellular_generation": null,
+          "signal_conditions": null
+        },
+        "audio": {
+          "state": null,
+          "speaker_db": null
+        },
+        "environment": {
+          "ambient_temperature_c": null,
+          "ambient_lighting": null
+        },
+        "workload": {
+          "page_change_interval_seconds": 30,
+          "browser": null,
+          "browser_version": null
+        }
+      },
+      "methodology": {
+        "documented_script_version": "1.3",
+        "script_update_date": "2015-03-05",
+        "notes": [
+          "Notebookcheck describes the WLAN runtime test as using adjusted display brightness of approximately 150 cd/m².",
+          "The documented v1.3 script uses HTML5 and JavaScript and calls up a changing mix of internet pages every 30 seconds.",
+          "The methodology page states that power-saving measures are activated for the WLAN test.",
+          "Browser identity, browser version, refresh behavior, display resolution, signal quality and other review-specific conditions must not be inferred from this protocol record."
+        ]
+      },
+      "sources": [
+        {
+          "id": "src_notebookcheck_review_methodology_2024",
+          "type": "methodology",
+          "title": "How does Notebookcheck test laptops and smartphones? A behind-the-scenes look into our review process",
+          "url": "https://www.notebookcheck.net/How-does-Notebookcheck-test-laptops-and-smartphones-A-behind-the-scenes-look-into-our-review-process.15394.0.html",
+          "accessed_at": "2026-09-20"
+        }
+      ],
+      "calibration_status": "candidate",
+      "limitations": [
+        "The methodology documentation does not establish every condition needed for a complete device power model.",
+        "Approximately 150 cd/m² must not be represented as an exact 150 cd/m² device measurement.",
+        "Review-specific settings must be stored on individual measurement records when available."
+      ]
+    },
+    {
+      "id": "toms_guide_cellular_web_150_nits",
+      "provider": "Tom's Guide",
+      "name": "Cellular Web Browsing Battery Test",
+      "protocol_version": null,
+      "version_status": "unresolved",
+      "workload_class": "web",
+      "workload_description": "Continuous web browsing over a cellular connection from a fully charged battery until the device runs out of power.",
+      "measurement_target": "runtime",
+      "known_conditions": {
+        "display": {
+          "brightness_nits": {
+            "value": 150,
+            "qualifier": "setpoint"
+          },
+          "refresh_mode": null,
+          "resolution": null,
+          "hdr": null
+        },
+        "connectivity": {
+          "type": "cellular",
+          "cellular_generation": "5G for 5G-capable devices; otherwise dependent on device/test",
+          "signal_conditions": null
+        },
+        "audio": {
+          "state": null,
+          "speaker_db": null
+        },
+        "environment": {
+          "ambient_temperature_c": null,
+          "ambient_lighting": null
+        },
+        "workload": {
+          "continuous_web_browsing": true,
+          "browser": null,
+          "browser_version": null
+        }
+      },
+      "methodology": {
+        "documented_script_version": null,
+        "notes": [
+          "Tom's Guide documents setting each phone display to 150 nits before its battery test.",
+          "The phone browses the web over cellular until the battery is depleted.",
+          "Current methodology documentation specifies 5G for 5G-capable devices.",
+          "Tom's Guide may test multiple refresh-rate settings, so the actual refresh configuration must be recorded on the individual measurement when known.",
+          "No protocol version is assigned because the reviewed methodology documentation does not provide a formal version identifier."
+        ]
+      },
+      "sources": [
+        {
+          "id": "src_toms_guide_phone_testing_methodology",
+          "type": "methodology",
+          "title": "How Tom's Guide tests and reviews smartphones",
+          "url": "https://www.tomsguide.com/reference/how-toms-guide-tests-and-reviews-smartphones",
+          "accessed_at": "2026-09-20"
+        }
+      ],
+      "calibration_status": "candidate",
+      "limitations": [
+        "Cellular signal conditions are not established as a universal constant by the methodology page.",
+        "Refresh-rate configuration can vary between reported device results.",
+        "Browser and browser version are not encoded as protocol constants here.",
+        "The absence of a formal protocol version requires measurement dates and source pages to remain attached to observations."
+      ]
+    },
+    {
+      "id": "dxomark_calibrated_use_case_200_nits",
+      "provider": "DXOMARK",
+      "name": "Calibrated Battery Use Cases",
+      "protocol_version": null,
+      "version_status": "time_sensitive_unresolved",
+      "workload_class": "multiple_single_activity_profiles",
+      "supported_workload_classes": [
+        "video_streaming_cellular",
+        "video_streaming_wifi",
+        "video_local",
+        "music_streaming",
+        "gaming",
+        "call",
+        "idle"
+      ],
+      "workload_description": "Controlled single-activity battery tests performed with standardized device and environmental parameters.",
+      "measurement_target": "autonomy_and_power_consumption",
+      "known_conditions": {
+        "display": {
+          "brightness_nits": {
+            "value": 200,
+            "qualifier": "setpoint"
+          },
+          "refresh_mode": null,
+          "resolution": null,
+          "hdr": null
+        },
+        "connectivity": {
+          "type": "workload_dependent",
+          "cellular_generation": null,
+          "signal_conditions": "controlled network conditions documented generally, exact parameters unresolved in this seed record"
+        },
+        "audio": {
+          "state": "workload_dependent",
+          "speaker_db": {
+            "value": 60,
+            "qualifier": "setpoint_when_applicable"
+          }
+        },
+        "environment": {
+          "ambient_temperature_c": null,
+          "ambient_lighting": "controlled"
+        },
+        "workload": {
+          "single_activity": true,
+          "application_parameters": "standardized across tested devices",
+          "application": null,
+          "application_version": null
+        }
+      },
+      "methodology": {
+        "documented_script_version": null,
+        "notes": [
+          "DXOMARK describes calibrated use cases as using the same settings and application parameters across tested phones.",
+          "Display brightness is documented at 200 cd/m².",
+          "Speaker level is documented at 60 dB when applicable.",
+          "DXOMARK documents calibrated use cases including video streaming over cellular and Wi-Fi, video playback, music streaming, gaming, calls and idle.",
+          "DXOMARK states that its battery protocols are updated over time.",
+          "Methodology pages have documented different speaker measurement distances at different times; therefore measurement distance is intentionally not encoded as a timeless protocol constant here.",
+          "Individual DXOMARK workload measurements should identify their specific workload rather than being stored only under the broad calibrated-use-case protocol."
+        ]
+      },
+      "sources": [
+        {
+          "id": "src_dxomark_battery_protocol_introduction",
+          "type": "methodology",
+          "title": "Introducing the DXOMARK Battery protocol",
+          "url": "https://www.dxomark.com/introducing-the-dxomark-battery-protocol/",
+          "accessed_at": "2026-09-20"
+        },
+        {
+          "id": "src_dxomark_battery_experience_methodology",
+          "type": "methodology",
+          "title": "How DXOMARK tests the smartphone battery experience",
+          "url": "https://www.dxomark.com/how-dxomark-tests-the-smartphone-battery-experience/",
+          "accessed_at": "2026-09-20"
+        },
+        {
+          "id": "src_dxomark_battery_overview",
+          "type": "methodology",
+          "title": "What we test: Battery",
+          "url": "https://www.dxomark.com/what-we-test-battery/",
+          "accessed_at": "2026-09-20"
+        }
+      ],
+      "calibration_status": "candidate",
+      "limitations": [
+        "No formal protocol version is assigned because DXOMARK explicitly updates its methodology and the reviewed pages do not provide a single stable version identifier suitable for all historical measurements.",
+        "Historical measurements must be associated with their test date and original result page before calibration use.",
+        "Speaker measurement distance must be resolved per applicable methodology period if it becomes relevant to a model.",
+        "Exact network parameters, application versions and other workload-specific conditions require further evidence before becoming calibration constants."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "schema_version": "0.1.0",
+  "dataset": "phonefuturist_interactive_leaks_battery_measurements",
+  "description": "Raw released-device battery observations for Interactive Leaks calibration and validation. Values in this file are observations, not model coefficients.",
+  "measurements": [
+    {
+      "id": "meas_battery_000001",
+      "device_id": "samsung_galaxy_s24_ultra",
+      "protocol_id": "notebookcheck_wifi_web_v1_3",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 68880,
+        "source_display_value": "19 h 08 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "approximately"
+        },
+        "connectivity": "wifi",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Notebookcheck"
+      },
+      "source": {
+        "id": "src_notebookcheck_s24_ultra_review",
+        "type": "device_review",
+        "title": "Samsung Galaxy S24 Ultra review",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "accessed_at": "2026-09-20"
+      },
+      "dataset_role": "calibration",
+      "calibration_eligibility": "eligible",
+      "uncertainty": null,
+      "notes": [
+        "Runtime is preserved exactly as reported by the source.",
+        "The approximately 150 cd/m² display condition comes from the associated Notebookcheck Wi-Fi protocol record.",
+        "Unknown review-specific conditions are not inferred from device capabilities."
+      ]
+    },
+    {
+      "id": "meas_battery_000002",
+      "device_id": "samsung_galaxy_s25_ultra",
+      "protocol_id": "notebookcheck_wifi_web_v1_3",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 79860,
+        "source_display_value": "22 h 11 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "approximately"
+        },
+        "connectivity": "wifi",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Notebookcheck"
+      },
+      "source": {
+        "id": "src_notebookcheck_s25_ultra_review",
+        "type": "device_review",
+        "title": "Samsung Galaxy S25 Ultra review",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "accessed_at": "2026-09-20"
+      },
+      "dataset_role": "calibration",
+      "calibration_eligibility": "eligible",
+      "uncertainty": null,
+      "notes": [
+        "Runtime is preserved exactly as reported by the source.",
+        "This measurement shares the same protocol family as the Galaxy S24 Ultra observation, making the pair useful for generation-to-generation calibration research.",
+        "Equal nominal battery capacity does not imply equal usable energy or equal average system power."
+      ]
+    },
+    {
+      "id": "meas_battery_000003",
+      "device_id": "apple_iphone_16_pro_max",
+      "protocol_id": "notebookcheck_wifi_web_v1_3",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 74940,
+        "source_display_value": "20 h 49 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "approximately"
+        },
+        "connectivity": "wifi",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Notebookcheck"
+      },
+      "source": {
+        "id": "src_notebookcheck_iphone_16_pro_max_review",
+        "type": "device_review",
+        "title": "Apple iPhone 16 Pro Max review",
+        "url": "https://www.notebookcheck.net/Apple-iPhone-16-Pro-Max-review-Lots-of-small-improvements-for-the-top-smartphone.900028.0.html",
+        "accessed_at": "2026-09-20"
+      },
+      "dataset_role": "calibration",
+      "calibration_eligibility": "eligible",
+      "uncertainty": null,
+      "notes": [
+        "Runtime is preserved exactly as reported by the source.",
+        "This device provides a useful cross-platform calibration point using Apple's SoC and operating-system stack.",
+        "No Android-specific efficiency assumptions should be transferred to this record."
+      ]
+    },
+    {
+      "id": "meas_battery_000004",
+      "device_id": "google_pixel_9_pro_xl",
+      "protocol_id": "notebookcheck_wifi_web_v1_3",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 59880,
+        "source_display_value": "16 h 38 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "approximately"
+        },
+        "connectivity": "wifi",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Notebookcheck"
+      },
+      "source": {
+        "id": "src_notebookcheck_pixel_9_pro_xl_review",
+        "type": "device_review",
+        "title": "Google Pixel 9 Pro XL review",
+        "url": "https://www.notebookcheck.net/Google-Pixel-9-Pro-XL-review-Super-bright-display-and-great-cameras.884168.0.html",
+        "accessed_at": "2026-09-20"
+      },
+      "dataset_role": "calibration",
+      "calibration_eligibility": "eligible",
+      "uncertainty": null,
+      "notes": [
+        "Runtime is preserved exactly as reported by the source.",
+        "The Tensor platform increases architectural diversity in the seed calibration cohort.",
+        "Unknown test-specific display and software behavior is intentionally not inferred."
+      ]
+    },
+    {
+      "id": "meas_battery_000005",
+      "device_id": "oneplus_13",
+      "protocol_id": "notebookcheck_wifi_web_v1_3",
+      "metric": "runtime",
+      "workload_class": "web",
+      "value": {
+        "runtime_seconds": 80940,
+        "source_display_value": "22 h 29 min"
+      },
+      "conditions": {
+        "brightness_nits": {
+          "value": 150,
+          "qualifier": "approximately"
+        },
+        "connectivity": "wifi",
+        "refresh_mode": null,
+        "refresh_hz": null,
+        "resolution": null,
+        "browser": null,
+        "browser_version": null,
+        "firmware": null,
+        "ambient_temperature_c": null
+      },
+      "provenance": {
+        "kind": "independent_lab",
+        "provider": "Notebookcheck"
+      },
+      "source": {
+        "id": "src_notebookcheck_oneplus_13_review",
+        "type": "device_review",
+        "title": "OnePlus 13 review",
+        "url": "https://www.notebookcheck.net/OnePlus-13-smartphone-review-The-first-flagship-of-2025-sets-the-bar-high.947791.0.html",
+        "accessed_at": "2026-09-20"
+      },
+      "dataset_role": "calibration",
+      "calibration_eligibility": "eligible",
+      "uncertainty": null,
+      "notes": [
+        "Runtime is preserved exactly as reported by the source.",
+        "The 6,000 mAh dual-cell device provides useful battery-capacity diversity within the initial cohort.",
+        "Its runtime should not be interpreted as a direct SoC-efficiency measurement because battery, display, software and other subsystem differences remain confounding variables."
+      ]
+    }
+  ]
+}
