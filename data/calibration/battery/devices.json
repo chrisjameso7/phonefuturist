@@ -1,13 +1,12 @@
 {
   "schema_version": "0.1.0",
   "dataset": "phonefuturist_interactive_leaks_battery_devices",
-  "description": "Released-device hardware records for Interactive Leaks battery calibration. These records describe device capabilities and known hardware, not the conditions used by individual battery tests.",
+  "description": "Released-device reference records used by the Interactive Leaks battery calibration system. Null means the value has not been established from accepted evidence.",
   "devices": [
     {
       "id": "samsung_galaxy_s24_ultra",
       "manufacturer": "Samsung",
       "model": "Galaxy S24 Ultra",
-      "generation": "Galaxy S24",
       "release_year": 2024,
       "platform": {
         "soc": "Snapdragon 8 Gen 3 for Galaxy",
@@ -15,21 +14,23 @@
         "software_skin_at_launch": "One UI 6.1"
       },
       "battery": {
-        "typical_capacity_mah": 5000,
-        "minimum_capacity_mah": null,
-        "nominal_voltage_v": null,
-        "rated_energy_wh": null,
-        "cell_configuration": null,
-        "chemistry": null
+  "typical_capacity_mah": 5000,
+  "minimum_capacity_mah": null,
+  "rated_capacity_mah": 4855,
+  "typical_energy_wh": null,
+  "rated_energy_wh": 18.84,
+  "nominal_voltage_v": 3.88,
+  "cell_configuration": null,
+  "chemistry": null
       },
       "display": {
         "diagonal_inches": 6.8,
         "width_pixels": 1440,
         "height_pixels": 3120,
         "technology": "Dynamic AMOLED 2X",
-        "ltpo": null,
         "minimum_refresh_hz": 1,
-        "maximum_refresh_hz": 120
+        "maximum_refresh_hz": 120,
+        "ltpo": null
       },
       "physical": {
         "height_mm": 162.3,
@@ -39,51 +40,54 @@
       },
       "sources": [
         {
-          "id": "src_samsung_s24_ultra_global_launch_specs",
+          "id": "src_samsung_s24_ultra_launch",
           "type": "manufacturer",
+          "title": "Enter the New Era of Mobile AI With Samsung Galaxy S24 Series",
           "url": "https://news.samsung.com/global/enter-the-new-era-of-mobile-ai-with-samsung-galaxy-s24-series",
           "accessed_at": "2026-09-20"
         },
         {
-          "id": "src_samsung_s24_series_b2b_spec_sheet",
-          "type": "manufacturer",
+          "id": "src_samsung_s24_ultra_b2b_spec",
+          "type": "manufacturer_specification",
+          "title": "Galaxy S24 Series B2B Spec Sheet",
           "url": "https://images.samsung.com/is/content/samsung/assets/us/2401/business/mobile/phones/galaxy/Galaxy_S24_Series_B2B_Spec_Sheet.pdf",
           "accessed_at": "2026-09-20"
         }
       ],
       "notes": [
-        "Battery capacity is the manufacturer's typical value.",
-        "Nominal voltage and rated energy are intentionally unresolved.",
-        "Display capability does not establish the refresh rate or resolution used during any individual battery measurement."
+        "Samsung publishes a 5,000 mAh typical battery capacity.",
+        "Battery energy and nominal voltage remain unresolved in this calibration record until accepted evidence is recorded.",
+        "No energy value is derived from capacity using an assumed generic voltage."
       ]
     },
     {
       "id": "samsung_galaxy_s25_ultra",
       "manufacturer": "Samsung",
       "model": "Galaxy S25 Ultra",
-      "generation": "Galaxy S25",
       "release_year": 2025,
       "platform": {
-        "soc": "Snapdragon 8 Elite",
+        "soc": "Snapdragon 8 Elite for Galaxy",
         "operating_system_at_launch": "Android 15",
-        "software_skin_at_launch": "One UI 7.0"
+        "software_skin_at_launch": "One UI 7"
       },
       "battery": {
-        "typical_capacity_mah": 5000,
-        "minimum_capacity_mah": null,
-        "nominal_voltage_v": null,
-        "rated_energy_wh": null,
-        "cell_configuration": null,
-        "chemistry": null
-      },
+  "typical_capacity_mah": 5000,
+  "minimum_capacity_mah": null,
+  "rated_capacity_mah": 4855,
+  "typical_energy_wh": null,
+  "rated_energy_wh": 18.84,
+  "nominal_voltage_v": 3.88,
+  "cell_configuration": null,
+  "chemistry": null
+},
       "display": {
         "diagonal_inches": 6.9,
         "width_pixels": 1440,
         "height_pixels": 3120,
         "technology": "Dynamic AMOLED 2X",
-        "ltpo": null,
         "minimum_refresh_hz": null,
-        "maximum_refresh_hz": 120
+        "maximum_refresh_hz": 120,
+        "ltpo": null
       },
       "physical": {
         "height_mm": 162.8,
@@ -93,29 +97,30 @@
       },
       "sources": [
         {
-          "id": "src_samsung_s25_ultra_product_specs",
+          "id": "src_samsung_s25_ultra_product",
           "type": "manufacturer",
+          "title": "Galaxy S25 Ultra",
           "url": "https://www.samsung.com/africa_en/business/smartphones/galaxy-s/galaxy-s25-ultra-titanium-gray-512gb-sm-s938bztoafb/",
           "accessed_at": "2026-09-20"
         },
         {
           "id": "src_samsung_2025_q1_interim_report",
-          "type": "manufacturer",
+          "type": "manufacturer_report",
+          "title": "Samsung Electronics 2025 First Quarter Interim Report",
           "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2025_1Q_Interim_Report.pdf",
           "accessed_at": "2026-09-20"
         }
       ],
       "notes": [
-        "Battery capacity is the manufacturer's typical value.",
-        "Samsung identifies the S25 platform as Snapdragon 8 Elite in its 2025 interim reporting.",
-        "Minimum refresh rate is intentionally unresolved in this seed record rather than inferred from product-family behavior."
+        "Samsung publishes a 5,000 mAh typical battery capacity.",
+        "Minimum refresh rate remains unresolved in this record rather than inferred from the display family.",
+        "Battery energy and nominal voltage remain unresolved until accepted evidence is recorded."
       ]
     },
     {
       "id": "apple_iphone_16_pro_max",
       "manufacturer": "Apple",
       "model": "iPhone 16 Pro Max",
-      "generation": "iPhone 16",
       "release_year": 2024,
       "platform": {
         "soc": "A18 Pro",
@@ -125,8 +130,10 @@
       "battery": {
         "typical_capacity_mah": 4685,
         "minimum_capacity_mah": null,
-        "nominal_voltage_v": null,
-        "rated_energy_wh": null,
+        "rated_capacity_mah": null,
+        "typical_energy_wh": null,
+        "rated_energy_wh": 18.169,
+        "nominal_voltage_v": 3.878,
         "cell_configuration": null,
         "chemistry": null
       },
@@ -135,9 +142,9 @@
         "width_pixels": 1320,
         "height_pixels": 2868,
         "technology": "OLED",
-        "ltpo": null,
         "minimum_refresh_hz": null,
-        "maximum_refresh_hz": 120
+        "maximum_refresh_hz": 120,
+        "ltpo": null
       },
       "physical": {
         "height_mm": 163.0,
@@ -147,29 +154,30 @@
       },
       "sources": [
         {
-          "id": "src_apple_iphone_16_pro_max_tech_specs",
+          "id": "src_apple_iphone_16_pro_max_specs",
           "type": "manufacturer",
+          "title": "iPhone 16 Pro Max - Technical Specifications",
           "url": "https://support.apple.com/en-au/121032",
           "accessed_at": "2026-09-20"
         },
         {
           "id": "src_notebookcheck_iphone_16_pro_max_review",
-          "type": "independent_review",
+          "type": "independent_lab",
+          "title": "Apple iPhone 16 Pro Max review",
           "url": "https://www.notebookcheck.net/Apple-iPhone-16-Pro-Max-review-Lots-of-small-improvements-for-the-top-smartphone.900028.0.html",
           "accessed_at": "2026-09-20"
         }
       ],
       "notes": [
-        "Apple's technical specifications establish the physical and display properties but do not publish battery capacity in mAh.",
-        "The 4,685 mAh battery capacity in this seed record is therefore sourced from Notebookcheck rather than treated as an Apple manufacturer specification.",
-        "Apple specifies ProMotion adaptive refresh rates up to 120 Hz; a minimum refresh rate is not inferred here."
+        "Apple does not publish battery capacity in mAh on its standard technical-specification page.",
+        "The 4,685 mAh, 3.878 V and 18.169 Wh battery values are preserved from Notebookcheck evidence rather than attributed to Apple.",
+        "Rated energy is stored separately from typical energy and must not silently be treated as a manufacturer typical-energy figure."
       ]
     },
     {
       "id": "google_pixel_9_pro_xl",
       "manufacturer": "Google",
       "model": "Pixel 9 Pro XL",
-      "generation": "Pixel 9",
       "release_year": 2024,
       "platform": {
         "soc": "Google Tensor G4",
@@ -179,8 +187,10 @@
       "battery": {
         "typical_capacity_mah": 5060,
         "minimum_capacity_mah": 4942,
-        "nominal_voltage_v": null,
-        "rated_energy_wh": null,
+        "rated_capacity_mah": 4942,
+        "typical_energy_wh": null,
+        "rated_energy_wh": 19.22,
+        "nominal_voltage_v": 3.89,
         "cell_configuration": null,
         "chemistry": null
       },
@@ -189,9 +199,9 @@
         "width_pixels": 1344,
         "height_pixels": 2992,
         "technology": "LTPO OLED",
-        "ltpo": true,
         "minimum_refresh_hz": 1,
-        "maximum_refresh_hz": 120
+        "maximum_refresh_hz": 120,
+        "ltpo": true
       },
       "physical": {
         "height_mm": null,
@@ -203,32 +213,42 @@
         {
           "id": "src_google_pixel_9_pro_specs",
           "type": "manufacturer",
+          "title": "Pixel 9 Pro and Pixel 9 Pro XL specifications",
           "url": "https://store.google.com/us/product/pixel_9_pro_specs?hl=en-US",
           "accessed_at": "2026-09-20"
+        },
+        {
+          "id": "src_ifixit_google_pixel_9_pro_xl_battery",
+          "type": "manufacturer_authorized_part",
+          "title": "Google Pixel 9 Pro XL Battery - Genuine",
+          "url": "https://www.ifixit.com/products/google-pixel-9-pro-xl-battery-genuine",
+          "accessed_at": "2026-09-21"
         }
       ],
       "notes": [
-        "Google publishes both typical 5,060 mAh and minimum 4,942 mAh battery capacities.",
-        "The official specification identifies the display as LTPO OLED with a 1–120 Hz Smooth Display range.",
-        "Physical dimensions are intentionally left unresolved in this seed record because the surfaced official page expresses them as rounded imperial values; exact metric dimensions are unnecessary for the initial battery calibration dataset."
+        "Google publishes 5,060 mAh as the typical capacity and 4,942 mAh as the minimum capacity.",
+        "The genuine replacement battery supplied through Google's official iFixit parts partnership is specified at 4,942 mAh, 3.89 V and 19.22 Wh.",
+        "The 19.22 Wh value is therefore stored as rated energy rather than typical energy.",
+        "Typical and rated energy must not be interchanged during calibration."
       ]
     },
     {
       "id": "oneplus_13",
       "manufacturer": "OnePlus",
       "model": "OnePlus 13",
-      "generation": "OnePlus 13",
       "release_year": 2025,
       "platform": {
         "soc": "Snapdragon 8 Elite Mobile Platform",
         "operating_system_at_launch": "Android 15",
-        "software_skin_at_launch": "OxygenOS 15.0"
+        "software_skin_at_launch": "OxygenOS 15"
       },
       "battery": {
         "typical_capacity_mah": 6000,
         "minimum_capacity_mah": null,
+        "rated_capacity_mah": null,
+        "typical_energy_wh": 22.92,
+        "rated_energy_wh": 22.31,
         "nominal_voltage_v": null,
-        "rated_energy_wh": null,
         "cell_configuration": "dual-cell, 3000 mAh per cell",
         "chemistry": "Silicon NanoStack"
       },
@@ -237,9 +257,9 @@
         "width_pixels": 1440,
         "height_pixels": 3168,
         "technology": "ProXDR LTPO 4.1",
-        "ltpo": true,
         "minimum_refresh_hz": 1,
-        "maximum_refresh_hz": 120
+        "maximum_refresh_hz": 120,
+        "ltpo": true
       },
       "physical": {
         "height_mm": 162.9,
@@ -249,22 +269,25 @@
       },
       "sources": [
         {
-          "id": "src_oneplus_13_official_specs",
+          "id": "src_oneplus_13_specs",
           "type": "manufacturer",
+          "title": "OnePlus 13 Specifications",
           "url": "https://www.oneplus.com/by/13/specs",
           "accessed_at": "2026-09-20"
         },
         {
-          "id": "src_oneplus_13_global_launch",
+          "id": "src_oneplus_13_launch",
           "type": "manufacturer",
+          "title": "OnePlus launches new smartphone flagship series in North America",
           "url": "https://www.oneplus.com/us/press/press-release/oneplus-launches-new-smartphone-flagship-series-in-north-america-oneplus-13-and-oneplus-13r",
           "accessed_at": "2026-09-20"
         }
       ],
       "notes": [
-        "OnePlus specifies a 6,000 mAh dual-cell battery consisting of two 3,000 mAh cells.",
-        "OnePlus describes the battery as Silicon NanoStack.",
-        "Depth and weight vary by finish, so they are intentionally unresolved at the generic device level rather than selecting one finish arbitrarily."
+        "OnePlus publishes 6,000 mAh typical capacity and 22.92 Wh typical energy.",
+        "OnePlus also publishes 22.31 Wh rated energy.",
+        "The battery uses two 3,000 mAh cells connected in series.",
+        "Typical and rated energy are preserved separately so calibration can choose a consistent energy basis."
       ]
     }
   ]
