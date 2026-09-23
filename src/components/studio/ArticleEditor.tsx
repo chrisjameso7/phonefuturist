@@ -30,7 +30,8 @@ export default function ArticleEditor({
 
   const admin = roles.includes('admin');
   const editor = admin || roles.includes('editor');
-  const publisher = admin || roles.includes('publisher');
+  const publisher =
+    admin || roles.includes('publisher');
 
   const canEdit =
     editor ||
@@ -47,7 +48,10 @@ export default function ArticleEditor({
     window.addEventListener('beforeunload', warn);
 
     return () =>
-      window.removeEventListener('beforeunload', warn);
+      window.removeEventListener(
+        'beforeunload',
+        warn,
+      );
   }, [dirty]);
 
   function change<K extends keyof ArticlePayload>(
@@ -176,13 +180,14 @@ export default function ArticleEditor({
       )}
 
       <p className="studio-help">
-        Public sources appear with the article. Keep
-        confidential identities and research in Private
-        notes.
+        Sources are optional. Add them when they support
+        the article. Keep confidential identities,
+        unpublished research and internal context in
+        Private notes.
       </p>
 
       <div className="studio-columns">
-        <section>
+        <main className="studio-editor-column">
           <fieldset
             disabled={!canEdit || busy}
             className="studio-fields"
@@ -196,10 +201,7 @@ export default function ArticleEditor({
                 maxLength={180}
                 value={draft.title}
                 onChange={(e) =>
-                  change(
-                    'title',
-                    e.target.value,
-                  )
+                  change('title', e.target.value)
                 }
               />
             </label>
@@ -212,10 +214,7 @@ export default function ArticleEditor({
                 rows={3}
                 value={draft.summary}
                 onChange={(e) =>
-                  change(
-                    'summary',
-                    e.target.value,
-                  )
+                  change('summary', e.target.value)
                 }
               />
             </label>
@@ -249,10 +248,7 @@ export default function ArticleEditor({
                   maxLength={160}
                   value={draft.byline}
                   onChange={(e) =>
-                    change(
-                      'byline',
-                      e.target.value,
-                    )
+                    change('byline', e.target.value)
                   }
                 />
               </label>
@@ -266,31 +262,30 @@ export default function ArticleEditor({
                 pattern="[a-z0-9]+(-[a-z0-9]+)*"
                 value={draft.slug}
                 onChange={(e) =>
-                  change(
-                    'slug',
-                    e.target.value,
-                  )
+                  change('slug', e.target.value)
                 }
               />
             </label>
 
             <small>
-              Lowercase words separated by hyphens. After
-              publication, headline and slug edits do not
-              change the canonical URL.
+              Lowercase words separated by hyphens.
+              After publication, headline and slug edits
+              do not change the canonical URL.
             </small>
 
-            <h2>Article body</h2>
+            <div className="studio-section-heading">
+              <div>
+                <h2>Article body</h2>
+                <p>
+                  Write and format the complete article.
+                </p>
+              </div>
+            </div>
 
             <RichArticleEditor
               blocks={draft.blocks}
               disabled={!canEdit || busy}
               onChange={(blocks) => {
-                /*
-                 * Tiptap may emit an update while restoring
-                 * content after a save. Do not mark the
-                 * article dirty when nothing actually changed.
-                 */
                 if (
                   JSON.stringify(blocks) ===
                   JSON.stringify(draft.blocks)
@@ -302,21 +297,56 @@ export default function ArticleEditor({
               }}
             />
 
-            <h2>Public sources</h2>
+            <div className="studio-section-heading">
+              <div>
+                <h2>Sources</h2>
+                <p>
+                  Optional. Add public references when
+                  they are relevant to the article.
+                </p>
+              </div>
 
-            <p>
-              At least one complete source is required to
-              publish. These details are public when
-              published.
-            </p>
+              <span className="studio-count">
+                {draft.sources.length}/30
+              </span>
+            </div>
+
+            {draft.sources.length === 0 && (
+              <p className="studio-empty">
+                No sources added. You can still save and
+                publish this article.
+              </p>
+            )}
 
             {draft.sources.map((source, index) => (
               <section
                 className="studio-block"
                 key={index}
               >
+                <div className="studio-block-header">
+                  <strong>
+                    Source {index + 1}
+                  </strong>
+
+                  <button
+                    type="button"
+                    className="studio-secondary-action"
+                    onClick={() =>
+                      change(
+                        'sources',
+                        draft.sources.filter(
+                          (_, itemIndex) =>
+                            index !== itemIndex,
+                        ),
+                      )
+                    }
+                  >
+                    Remove
+                  </button>
+                </div>
+
                 <label>
-                  Source {index + 1} label
+                  Label
 
                   <input
                     maxLength={200}
@@ -330,8 +360,7 @@ export default function ArticleEditor({
                               ? {
                                   ...value,
                                   label:
-                                    e.target
-                                      .value,
+                                    e.target.value,
                                 }
                               : value,
                         ),
@@ -346,6 +375,7 @@ export default function ArticleEditor({
                   <input
                     type="url"
                     maxLength={2048}
+                    placeholder="https://"
                     value={source.url}
                     onChange={(e) =>
                       change(
@@ -356,8 +386,7 @@ export default function ArticleEditor({
                               ? {
                                   ...value,
                                   url:
-                                    e.target
-                                      .value,
+                                    e.target.value,
                                 }
                               : value,
                         ),
@@ -367,10 +396,11 @@ export default function ArticleEditor({
                 </label>
 
                 <label>
-                  What this supports (public)
+                  What this supports
 
                   <textarea
                     maxLength={1000}
+                    rows={3}
                     value={source.note}
                     onChange={(e) =>
                       change(
@@ -381,8 +411,7 @@ export default function ArticleEditor({
                               ? {
                                   ...value,
                                   note:
-                                    e.target
-                                      .value,
+                                    e.target.value,
                                 }
                               : value,
                         ),
@@ -390,29 +419,13 @@ export default function ArticleEditor({
                     }
                   />
                 </label>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    change(
-                      'sources',
-                      draft.sources.filter(
-                        (_, itemIndex) =>
-                          index !== itemIndex,
-                      ),
-                    )
-                  }
-                >
-                  Remove source {index + 1}
-                </button>
               </section>
             ))}
 
             <button
               type="button"
-              disabled={
-                draft.sources.length >= 30
-              }
+              className="studio-add-source"
+              disabled={draft.sources.length >= 30}
               onClick={() =>
                 change('sources', [
                   ...draft.sources,
@@ -426,6 +439,16 @@ export default function ArticleEditor({
             >
               Add source
             </button>
+
+            <div className="studio-section-heading">
+              <div>
+                <h2>Editorial notes</h2>
+                <p>
+                  Internal information and revision
+                  context.
+                </p>
+              </div>
+            </div>
 
             <label>
               Private notes
@@ -473,10 +496,9 @@ export default function ArticleEditor({
               Public correction/update note
 
               <textarea
+                rows={4}
                 maxLength={2000}
-                value={
-                  draft.correctionNote
-                }
+                value={draft.correctionNote}
                 onChange={(e) =>
                   change(
                     'correctionNote',
@@ -488,168 +510,175 @@ export default function ArticleEditor({
           </fieldset>
 
           {canEdit && (
-            <button
-              className="studio-save"
-              disabled={busy}
-              onClick={() =>
-                act(
-                  article
-                    ? 'save'
-                    : 'create',
-                )
-              }
-            >
-              {busy
-                ? 'Working…'
-                : article
-                  ? 'Save new revision'
-                  : 'Create draft'}
-            </button>
+            <div className="studio-save-row">
+              <button
+                className="studio-save"
+                disabled={busy}
+                onClick={() =>
+                  act(
+                    article
+                      ? 'save'
+                      : 'create',
+                  )
+                }
+              >
+                {busy
+                  ? 'Working…'
+                  : article
+                    ? 'Save new revision'
+                    : 'Create draft'}
+              </button>
+
+              {dirty && (
+                <span className="studio-unsaved">
+                  Unsaved changes
+                </span>
+              )}
+            </div>
           )}
-        </section>
+        </main>
 
         <aside className="studio-sidebar">
-          <h2>Publishing</h2>
+          <div className="studio-sidebar-inner">
+            <h2>Publishing</h2>
 
-          {article ? (
-            <>
-              <p>
-                Revision{' '}
-                {article.current_revision}{' '}
-                · Version {article.version}
-              </p>
+            {article ? (
+              <>
+                <p>
+                  Revision {article.current_revision} ·
+                  Version {article.version}
+                </p>
 
-              {article.canonical_path && (
-                <a
-                  href={
-                    article.canonical_path
-                  }
-                >
-                  Open{' '}
-                  {article.withdrawn
-                    ? 'withdrawn'
-                    : 'published'}{' '}
-                  article ↗
-                </a>
-              )}
-
-              <div className="studio-actions">
-                {canEdit && (
-                  <button
-                    disabled={
-                      busy || dirty
-                    }
-                    onClick={() =>
-                      act('publish')
-                    }
+                {article.canonical_path && (
+                  <a
+                    className="studio-public-link"
+                    href={article.canonical_path}
                   >
-                    {article.public_revision
-                      ? 'Publish new revision'
-                      : 'Publish article'}
-                  </button>
+                    Open{' '}
+                    {article.withdrawn
+                      ? 'withdrawn'
+                      : 'published'}{' '}
+                    article ↗
+                  </a>
                 )}
 
-                <label>
-                  Publication note / action reason
-
-                  <textarea
-                    rows={4}
-                    maxLength={2000}
-                    value={reason}
-                    onChange={(e) =>
-                      setReason(
-                        e.target.value,
-                      )
-                    }
-                  />
-                </label>
-
-                {publisher &&
-                  article.public_revision && (
+                <div className="studio-actions">
+                  {canEdit && (
                     <button
-                      disabled={
-                        busy ||
-                        dirty ||
-                        reason
-                          .trim()
-                          .length < 10
-                      }
+                      disabled={busy || dirty}
                       onClick={() =>
-                        act('withdraw')
+                        act('publish')
                       }
                     >
-                      Withdraw with public
-                      notice
+                      {article.public_revision
+                        ? 'Publish new revision'
+                        : 'Publish article'}
                     </button>
                   )}
-              </div>
 
-              <h2>Activity</h2>
+                  {dirty && canEdit && (
+                    <small>
+                      Save your changes before
+                      publishing.
+                    </small>
+                  )}
 
-              <ol className="studio-history">
-                {article.events.map(
-                  (event) => (
-                    <li key={event.id}>
-                      <strong>
-                        {event.action.replaceAll(
-                          '_',
-                          ' ',
-                        )}
-                      </strong>
+                  <label>
+                    Publication note / action reason
 
-                      {' · revision '}
-                      {event.revision}
-
-                      <br />
-
-                      <time>
-                        {new Date(
-                          event.recorded_at,
-                        )
-                          .toISOString()
-                          .slice(0, 16)
-                          .replace(
-                            'T',
-                            ' ',
-                          )}{' '}
-                        UTC
-                      </time>
-
-                      {event.message && (
-                        <p>
-                          {event.message}
-                        </p>
-                      )}
-                    </li>
-                  ),
-                )}
-              </ol>
-
-              <h2>Saved revisions</h2>
-
-              <ol className="studio-history">
-                {article.revisions.map(
-                  (revision) => (
-                    <li
-                      key={
-                        revision.revision
+                    <textarea
+                      rows={4}
+                      maxLength={2000}
+                      value={reason}
+                      onChange={(e) =>
+                        setReason(e.target.value)
                       }
-                    >
-                      Revision{' '}
-                      {revision.revision}:{' '}
-                      {revision.title}
-                    </li>
-                  ),
-                )}
-              </ol>
-            </>
-          ) : (
-            <p>
-              Create the draft when you're ready.
-              Drafts are private and never appear on
-              the publication.
-            </p>
-          )}
+                    />
+                  </label>
+
+                  {publisher &&
+                    article.public_revision && (
+                      <button
+                        disabled={
+                          busy ||
+                          dirty ||
+                          reason.trim().length < 10
+                        }
+                        onClick={() =>
+                          act('withdraw')
+                        }
+                      >
+                        Withdraw with public notice
+                      </button>
+                    )}
+                </div>
+
+                <div className="studio-sidebar-section">
+                  <h2>Activity</h2>
+
+                  <ol className="studio-history">
+                    {article.events.map((event) => (
+                      <li key={event.id}>
+                        <strong>
+                          {event.action.replaceAll(
+                            '_',
+                            ' ',
+                          )}
+                        </strong>
+
+                        {' · revision '}
+                        {event.revision}
+
+                        <br />
+
+                        <time>
+                          {new Date(
+                            event.recorded_at,
+                          )
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace('T', ' ')}{' '}
+                          UTC
+                        </time>
+
+                        {event.message && (
+                          <p>
+                            {event.message}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <div className="studio-sidebar-section">
+                  <h2>Saved revisions</h2>
+
+                  <ol className="studio-history">
+                    {article.revisions.map(
+                      (revision) => (
+                        <li
+                          key={
+                            revision.revision
+                          }
+                        >
+                          Revision{' '}
+                          {revision.revision}:{' '}
+                          {revision.title}
+                        </li>
+                      ),
+                    )}
+                  </ol>
+                </div>
+              </>
+            ) : (
+              <p>
+                Create the draft when you're ready.
+                Drafts are private and never appear on
+                the publication.
+              </p>
+            )}
+          </div>
         </aside>
       </div>
     </div>
