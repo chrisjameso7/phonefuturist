@@ -1091,8 +1091,8 @@ export default function InteractiveLeaksSimulator() {
                       setWorkloadWeights((current) => ({
                         ...current,
                         [workload]: value,
-                      }));
-                      }}
+                      }))
+                    }
                   />
                 ))}
               </div>
