@@ -401,32 +401,46 @@ describe('battery experience module (v0.5)', () => {
     });
   });
 
-  it('warns on a non-positive workload weight and treats it as 1', () => {
-    const calculation = simulateBatteryExperience({
-      energy: {
-        totalEnergyWh: 20,
-        usablePercent: 100,
-      },
-      workloads: {
-        web_browsing: {
-          subsystems: { display: 2 },
-          weight: -1,
+  it('fails closed on zero, negative, NaN, and infinite workload weights', () => {
+    for (const weight of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const calculation = simulateBatteryExperience({
+        energy: {
+          totalEnergyWh: 20,
         },
-        video_playback: {
-          subsystems: { display: 1 },
-          weight: 1,
+        workloads: {
+          web_browsing: {
+            subsystems: { display: 2 },
+            weight,
+          },
+          video_playback: {
+            subsystems: { display: 1 },
+            weight: 1,
+          },
         },
-      },
-    });
+      });
 
-    expect(calculation.warnings).toContainEqual({
-      code: 'INVALID_WORKLOAD_WEIGHT',
-      message:
-        'Workload web_browsing weight must be a positive finite value. The workload was weighted as 1.',
-    });
+      const result = calculation.result;
+
+      expect(result.status).toBe('unresolved');
+      expect(result.estimate).toBeUndefined();
+      expect(result.unresolved?.code).toBe('INVALID_WORKLOAD_WEIGHT');
+      expect(result.unresolved?.missing).toContain(
+        'workloads.web_browsing.weight',
+      );
+
+      // The warning identifies the workload and the invalid value.
+      expect(
+        calculation.warnings.some(
+          (warning) =>
+            warning.code === 'INVALID_WORKLOAD_WEIGHT' &&
+            warning.message.includes('web_browsing') &&
+            warning.message.includes(String(weight)),
+        ),
+      ).toBe(true);
+    }
   });
 
-  it('warns when usable percent exceeds 100 but keeps the value', () => {
+  it('rejects a usable percent above 100 instead of retaining it', () => {
     const calculation = simulateBatteryExperience({
       energy: {
         totalEnergyWh: 20,
@@ -439,15 +453,14 @@ describe('battery experience module (v0.5)', () => {
       },
     });
 
-    expect(calculation.warnings).toContainEqual({
-      code: 'INVALID_USABLE_PERCENT',
-      message:
-        'Usable battery percentage should not exceed 100. The supplied value was kept, but it likely misstates the pack reserve.',
-    });
+    const result = calculation.result;
 
-    expect(calculation.result.estimate?.usableEnergyWh?.min).toBeCloseTo(
-      22,
-      6,
+    expect(result.status).toBe('unresolved');
+    expect(result.estimate).toBeUndefined();
+    expect(result.unresolved?.code).toBe('INVALID_ENERGY_INPUT');
+    expect(result.unresolved?.missing).toEqual(['energy.usablePercent']);
+    expect(result.unresolved?.message).toContain(
+      'greater than 0 and at most 100',
     );
   });
 
@@ -529,6 +542,10 @@ describe('battery experience module (v0.5)', () => {
     expect(total?.provenance?.note).toContain(
       'Provenance not supplied',
     );
+
+    // Structured provenance state: the fallback is flagged, not
+    // inferred from note wording.
+    expect(total?.provenanceRecorded).toBe(false);
 
     expect(calculation.result.confidence).toBe('moderate');
     expect(
@@ -871,14 +888,20 @@ describe('battery experience module (v0.5)', () => {
     expect(comparison).toBeDefined();
 
     // Baseline: 16/3 ≈ 5.333333 h; candidate: 16/2.5 = 6.4 h.
-    expect(
-      comparison?.deltas[0].runtimeHours?.min,
-    ).toBeCloseTo(1.066667, 6);
+    // Runtime is compared at the profile level.
+    expect(comparison?.baseline.runtimeHours?.min).toBeCloseTo(5.333333, 6);
+    expect(comparison?.candidate.runtimeHours?.min).toBeCloseTo(6.4, 6);
+
+    expect(comparison?.runtimeHours?.min).toBeCloseTo(1.066667, 6);
+    expect(comparison?.runtimeHours?.max).toBeCloseTo(1.066667, 6);
 
     expect(comparison?.deltas[0].averagePowerW).toEqual({
       min: -0.5,
       max: -0.5,
     });
+
+    // Per-workload deltas carry power only — no runtime.
+    expect(comparison?.deltas[0]).not.toHaveProperty('runtimeHours');
   });
 
   it('returns undefined for comparisons involving unresolved results', () => {
@@ -909,6 +932,453 @@ describe('battery experience module (v0.5)', () => {
     expect(
       compareBatteryExperience('a', resolved, 'b', unresolved),
     ).toBeUndefined();
+  });
+
+  // ---------------------------------------------------------
+  // v0.5.1 corrections
+  // ---------------------------------------------------------
+
+  it('reports one profile-level runtime without per-workload runtimes for multi-workload profiles', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2, compute: 1 },
+          weight: 3,
+        },
+        gaming: {
+          subsystems: { display: 2, compute: 6 },
+          weight: 1,
+        },
+      },
+    });
+
+    const estimate = calculation.result.estimate;
+
+    // Profile power: 3 × 3/4 + 8 × 1/4 = 4.25 W → 20/4.25 ≈ 4.705882 h.
+    expect(estimate?.runtimeHours?.min).toBeCloseTo(4.705882, 6);
+    expect(estimate?.runtimeHours?.max).toBeCloseTo(4.705882, 6);
+
+    const workloads = estimate?.workloads ?? [];
+
+    expect(workloads).toHaveLength(2);
+
+    for (const entry of workloads) {
+      expect(entry.runtimeHours).toBeUndefined();
+    }
+  });
+
+  it('exposes weighted power and weight share for each workload', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2, compute: 1 },
+          weight: 3,
+        },
+        gaming: {
+          subsystems: { display: 2, compute: 6 },
+          weight: 1,
+        },
+      },
+    });
+
+    const workloads = calculation.result.estimate?.workloads ?? [];
+
+    const web = workloads.find((entry) => entry.workload === 'web_browsing');
+
+    expect(web?.averagePowerW).toEqual({ min: 3, max: 3 });
+    expect(web?.weightedPowerW).toEqual({ min: 2.25, max: 2.25 });
+    expect(web?.weightShare).toBeCloseTo(0.75, 6);
+
+    const gaming = workloads.find((entry) => entry.workload === 'gaming');
+
+    expect(gaming?.averagePowerW).toEqual({ min: 8, max: 8 });
+    expect(gaming?.weightedPowerW).toEqual({ min: 2, max: 2 });
+    expect(gaming?.weightShare).toBeCloseTo(0.25, 6);
+  });
+
+  it('reports standalone runtime on the workload entry only when it is the complete profile', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2, compute: 1 },
+        },
+      },
+    });
+
+    const estimate = calculation.result.estimate;
+
+    // 20 Wh / 3 W ≈ 6.666667 h, reported at profile level and on
+    // the workload entry (single workload = complete profile).
+    expect(estimate?.runtimeHours?.min).toBeCloseTo(6.666667, 6);
+    expect(estimate?.workloads[0].runtimeHours?.min).toBeCloseTo(
+      6.666667,
+      6,
+    );
+  });
+
+  it('compares multi-workload profiles at the profile level without per-workload runtime deltas', () => {
+    const baseline = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2, compute: 1 },
+          weight: 3,
+        },
+        gaming: {
+          subsystems: { display: 2, compute: 6 },
+          weight: 1,
+        },
+      },
+    }).result;
+
+    const candidate = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2, compute: 1 },
+          weight: 3,
+        },
+        gaming: {
+          subsystems: { display: 2, compute: 5 },
+          weight: 1,
+        },
+      },
+    }).result;
+
+    const comparison = compareBatteryExperience(
+      'Baseline device',
+      baseline,
+      'Candidate device',
+      candidate,
+    );
+
+    expect(comparison).toBeDefined();
+
+    // Baseline profile: 20/4.25 ≈ 4.705882 h; candidate: 20/4 = 5 h.
+    expect(comparison?.baseline.runtimeHours?.min).toBeCloseTo(4.705882, 6);
+    expect(comparison?.candidate.runtimeHours?.min).toBeCloseTo(5, 6);
+
+    expect(comparison?.runtimeHours?.min).toBeCloseTo(0.294118, 6);
+
+    // Per-workload deltas carry power only.
+    const gamingDelta = comparison?.deltas.find(
+      (entry) => entry.workload === 'gaming',
+    );
+
+    expect(gamingDelta?.averagePowerW).toEqual({ min: -1, max: -1 });
+    expect(gamingDelta).not.toHaveProperty('runtimeHours');
+  });
+
+  it('rejects a usable percent of zero, negative, NaN, and infinity', () => {
+    for (const percent of [0, -10, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const calculation = simulateBatteryExperience({
+        energy: {
+          totalEnergyWh: 20,
+          usablePercent: percent,
+        },
+        workloads: {
+          web_browsing: {
+            subsystems: { display: 2 },
+          },
+        },
+      });
+
+      expect(calculation.result.status).toBe('unresolved');
+      expect(calculation.result.estimate).toBeUndefined();
+      expect(calculation.result.unresolved?.code).toBe(
+        'INVALID_ENERGY_INPUT',
+      );
+      expect(calculation.result.unresolved?.missing).toEqual([
+        'energy.usablePercent',
+      ]);
+    }
+  });
+
+  it('accepts a usable percent of exactly 100', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('resolved');
+    expect(calculation.result.estimate?.usableEnergyWh).toEqual({
+      min: 20,
+      max: 20,
+    });
+  });
+
+  it('rejects a usable percent range with an out-of-range bound', () => {
+    const above = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: { range: { min: 50, max: 150 } },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(above.result.status).toBe('unresolved');
+    expect(above.result.unresolved?.code).toBe('INVALID_ENERGY_INPUT');
+
+    const zeroBound = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: { range: { min: 0, max: 50 } },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(zeroBound.result.status).toBe('unresolved');
+    expect(zeroBound.result.unresolved?.code).toBe('INVALID_ENERGY_INPUT');
+  });
+
+  it('rejects an inverted usable percent range', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: { range: { min: 90, max: 70 } },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('unresolved');
+    expect(calculation.result.unresolved?.code).toBe('INVALID_ENERGY_INPUT');
+    expect(calculation.result.unresolved?.message).toContain(
+      'range minimum must not exceed its maximum',
+    );
+  });
+
+  it('rejects energy input supplying both a point value and a range', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: { value: 20, range: { min: 18, max: 22 } },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('unresolved');
+    expect(calculation.result.unresolved?.code).toBe('INVALID_ENERGY_INPUT');
+    expect(calculation.result.unresolved?.message).toContain(
+      'both a point value and a range',
+    );
+  });
+
+  it('rejects subsystem power supplying both a point value and a range', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: {
+            display: { value: 2, range: { min: 1.5, max: 2.5 } },
+          },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('unresolved');
+    expect(calculation.result.unresolved?.code).toBe(
+      'INVALID_WORKLOAD_POWER',
+    );
+    expect(
+      calculation.warnings.some((warning) =>
+        warning.message.includes('both a point value and a range'),
+      ),
+    ).toBe(true);
+  });
+
+  it('treats an empty energy parameter as missing rather than present-but-unknown', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: {},
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('unresolved');
+    expect(calculation.result.unresolved?.code).toBe('MISSING_TOTAL_ENERGY');
+    expect(calculation.result.unresolved?.missing).toEqual([
+      'energy.totalEnergyWh',
+    ]);
+  });
+
+  it('records provenance state structurally instead of by note wording', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: {
+          value: 20,
+          provenance: {
+            kind: 'reported',
+            note: 'Provenance not supplied; treated as modeled.',
+          },
+        },
+        usablePercent: {
+          value: 80,
+          provenance: { kind: 'user' },
+        },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: {
+            display: {
+              value: 2,
+              provenance: { kind: 'measured' },
+            },
+            compute: {
+              value: 1,
+              provenance: { kind: 'modeled' },
+            },
+          },
+        },
+      },
+    });
+
+    const parameters = calculation.result.estimate?.parameters ?? [];
+
+    expect(parameters).toHaveLength(4);
+
+    for (const record of parameters) {
+      expect(record.provenanceRecorded).toBe(true);
+    }
+
+    // The note coincides with the legacy sentinel text, yet the
+    // grade is deterministic: grading must not depend on wording.
+    expect(calculation.result.confidence).toBe('deterministic');
+  });
+
+  it('grades bounded ranged inputs with recorded provenance as high', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: {
+          range: { min: 18, max: 22 },
+          provenance: { kind: 'reported' },
+        },
+        usablePercent: {
+          range: { min: 80, max: 90 },
+          provenance: { kind: 'user' },
+        },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: {
+            display: {
+              range: { min: 1.5, max: 2.5 },
+              provenance: { kind: 'measured' },
+            },
+            compute: {
+              range: { min: 1, max: 2 },
+              provenance: { kind: 'modeled' },
+            },
+          },
+        },
+      },
+    });
+
+    const estimate = calculation.result.estimate;
+
+    // Usable energy: 18 × 0.8 = 14.4 → 22 × 0.9 = 19.8 Wh.
+    expect(estimate?.usableEnergyWh?.min).toBeCloseTo(14.4, 6);
+    expect(estimate?.usableEnergyWh?.max).toBeCloseTo(19.8, 6);
+
+    expect(calculation.result.confidence).toBe('high');
+    expect(
+      calculation.result.confidenceNotes?.some((note) =>
+        note.includes(
+          'the result is a range, not a single measured figure',
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it('grades numerically complete ranged inputs with unrecorded provenance as moderate', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: { range: { min: 18, max: 22 } },
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: {
+            display: { range: { min: 1.5, max: 2.5 } },
+          },
+        },
+      },
+    });
+
+    expect(calculation.result.status).toBe('resolved');
+    expect(calculation.result.confidence).toBe('moderate');
+    expect(
+      calculation.result.confidenceNotes?.some((note) =>
+        note.includes('carry no explicit provenance'),
+      ),
+    ).toBe(true);
+  });
+
+  it('returns independent warning arrays for the calculation and the estimate', () => {
+    const calculation = simulateBatteryExperience({
+      energy: {
+        totalEnergyWh: 20,
+        usablePercent: 100,
+      },
+      workloads: {
+        web_browsing: {
+          subsystems: { display: 2 },
+        },
+      },
+    });
+
+    const estimateWarnings = calculation.result.estimate?.warnings;
+
+    expect(estimateWarnings).toBeDefined();
+    expect(calculation.warnings).not.toBe(estimateWarnings);
+
+    calculation.warnings.push({ code: 'TEST', message: 'mutated' });
+
+    expect(estimateWarnings).toHaveLength(0);
   });
 
   // ---------------------------------------------------------
