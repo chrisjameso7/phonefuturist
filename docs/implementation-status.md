@@ -40,3 +40,15 @@ Session-aware header and Admin-only public Studio navigation are deployed (54333
 6. Interactive Leaks: calibrated, versioned deterministic models, custom device/scenario inputs and reproducible saved runs. No fabricated benchmark measurements or LLM-generated numerical results.
 
 Launch operations remain outstanding: real encrypted OneDrive backup, isolated restore drill, email delivery configuration/verification, runtime/quota checks and the full AI-free acceptance journey. No paid service was enabled. Backup tools existing in the repository do not constitute an operational backup.
+
+## 23 September 2026 — repository review update
+
+The latest main includes the richer Studio editor, direct publication in the live database, optional textual sources, the v0.4 device simulator, a v0.5 battery-model library and calibration/validation seed datasets. The previous status sections are historical, not a current claim that these features are absent. The three named Admin roles/MFA exceptions are now confirmed active.
+
+The review fixes migration drift, direct Storage authorization, editor formatting/attribution loss, article HTTP statuses, correction history and mixed-workload battery runtime. See [the review report](review-2026-09-23.md) for exact scope, validation, and remaining release blockers. Featured images, a reusable media catalogue, private draft-media handling, authenticated publication acceptance and operational backup/restore still prevent marking Publication complete.
+
+## 24 September 2026 — simplified publication and visual refresh
+
+Accepted [ADR-012](adr/adr-012.md): primary Admin Studio access management, AAL1 for non-Admin editorial roles, optional image/summary/byline/correction metadata and atomic Save and publish. Blank slugs are generated. Image insertion no longer asks mandatory modal metadata questions. Permissions, active verified sessions, safe content limits, immutable revisions and canonical paths remain enforced. New migration: `20260924110530_simplify_publishing_and_studio_access`.
+
+The public site and Studio share a warm graphite/cream visual treatment with rounded panels, pill navigation, an editorial side rail and a device hero. No fabricated activity or journalism is added. Automated suite: 94 passing tests; calibration dataset validation passed; Astro diagnostics and production build passed. Hosted function definitions confirm the metadata gate is removed. Actual account sign-in/publishing still needs an authenticated acceptance session; automated role tests run only in isolated PostgreSQL.

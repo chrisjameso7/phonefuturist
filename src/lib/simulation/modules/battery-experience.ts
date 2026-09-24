@@ -291,6 +291,9 @@ export interface BatteryExperienceResult {
 
     workloads: BatteryExperienceRuntimeEstimate[];
 
+    /** Runtime of the normalized mixed profile, distinct from each standalone workload. */
+    profileRuntimeHours?: { min?: number; max?: number };
+
     usableEnergyWh?: { value?: number; min?: number; max?: number };
 
     assumptions: BatteryExperienceAssumption[];
@@ -666,9 +669,8 @@ export function simulateBatteryExperience(
 
   const order = input.workloadOrder ?? suppliedWorkloads;
 
-  const workloads = order.filter((workload) =>
-    suppliedWorkloads.includes(workload),
-  );
+  // Ordering is presentation only: never duplicate or silently omit supplied loads.
+  const workloads = [...new Set([...order, ...suppliedWorkloads])].filter(workload => suppliedWorkloads.includes(workload));
 
   // -------------------------------------------------------
   // Energy resolution
@@ -1240,7 +1242,6 @@ export function simulateBatteryExperience(
 
     workloads: resolvedWorkloads.map((workload) => {
       const share = workload.weight / weightTotal;
-
       const weightedPower =
         workload.power !== undefined
           ? scaleQuantity(workload.power, share)
@@ -1411,7 +1412,6 @@ export function compareBatteryExperience(
 }
 
 export const BATTERY_EXPERIENCE_VERSION = '0.5.1-battery.1';
-
 export type {
   ModelParameter,
   ModelParameterInput,

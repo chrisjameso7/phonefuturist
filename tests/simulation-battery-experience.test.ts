@@ -1428,3 +1428,12 @@ describe('battery experience module (v0.5)', () => {
     expect(result).not.toHaveProperty('batteryExperience');
   });
 });
+
+it('keeps mixed runtime separate from each workload and treats workloadOrder only as ordering', () => {
+  const result=simulateBatteryExperience({energy:{totalEnergyWh:20,usablePercent:100},workloads:{web_browsing:{subsystems:{compute:2},weight:1},gaming:{subsystems:{compute:8},weight:1}},workloadOrder:['gaming','gaming']}).result;
+  expect(result.engineVersion).toBe('0.5.1-battery.1');
+  expect(result.estimate?.runtimeHours).toEqual({min:4,max:4});
+  expect(result.estimate?.workloads).toHaveLength(2);
+  expect(result.estimate?.workloads.find(w=>w.workload==='gaming')?.runtimeHours).toBeUndefined();
+  expect(result.estimate?.workloads.find(w=>w.workload==='web_browsing')?.runtimeHours).toBeUndefined();
+});

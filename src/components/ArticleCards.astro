@@ -18,6 +18,8 @@ function safeHttps(url?: string | null) {
 }
 
 function articleImage(article: PublishedArticle) {
+  if(article.withdrawn) return null;
+  if(article.card_image && safeHttps(article.card_image.url)) return {url:article.card_image.url,alt:article.card_image.alt??''};
   const image = article.blocks.find(
     (block) =>
       block.type === 'image' &&

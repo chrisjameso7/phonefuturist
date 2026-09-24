@@ -649,4 +649,4 @@
   .studio-actions button {
     min-height: 46px;
   }
-}
+}.rich-editor .ProseMirror { white-space: pre-wrap; }
