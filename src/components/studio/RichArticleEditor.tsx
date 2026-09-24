@@ -4,245 +4,27 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
-import type { Block } from '../../lib/editorial';
+import { safeHttps, type Block } from '../../lib/editorial';
+import { blocksToContent, contentToBlocks, sameBlocks } from '../../lib/rich-content';
+
+const EditorialImage = Image.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...Object.fromEntries(['credit','sourceName','sourceUrl','rightsNote','ownership'].map(key=>[key,{default:'',rendered:false}])) };
+  },
+});
 
 type Props = {
   blocks: Block[];
   disabled?: boolean;
   onChange: (blocks: Block[]) => void;
+  onUploadingChange?: (uploading:boolean) => void;
 };
-
-function textContent(node: any): string {
-  if (!node?.content) return '';
-
-  return node.content
-    .map((child: any) => child.text ?? textContent(child))
-    .join('');
-}
-
-function blocksToContent(blocks: Block[]) {
-  return {
-    type: 'doc',
-    content: blocks.map((block) => {
-      if (block.type === 'heading') {
-        return {
-          type: 'heading',
-          attrs: { level: 2 },
-          content: block.text
-            ? [{ type: 'text', text: block.text }]
-            : [],
-        };
-      }
-
-      if (block.type === 'quote') {
-        return {
-          type: 'blockquote',
-          content: [
-            {
-              type: 'paragraph',
-              content: block.text
-                ? [{ type: 'text', text: block.text }]
-                : [],
-            },
-          ],
-        };
-      }
-
-      if (block.type === 'list') {
-        const items = block.text
-          .split('\n')
-          .filter(Boolean)
-          .map((text) => ({
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [{ type: 'text', text }],
-              },
-            ],
-          }));
-
-        return {
-          type: 'bulletList',
-          content: items.length
-            ? items
-            : [
-                {
-                  type: 'listItem',
-                  content: [{ type: 'paragraph' }],
-                },
-              ],
-        };
-      }
-
-      if (block.type === 'link') {
-        return {
-          type: 'paragraph',
-          content: block.text
-            ? [
-                {
-                  type: 'text',
-                  text: block.text,
-                  marks: block.url
-                    ? [
-                        {
-                          type: 'link',
-                          attrs: {
-                            href: block.url,
-                            target: '_blank',
-                            rel: 'noopener noreferrer nofollow',
-                          },
-                        },
-                      ]
-                    : [],
-                },
-              ]
-            : [],
-        };
-      }
-
-      if (block.type === 'image') {
-        return {
-          type: 'image',
-          attrs: {
-            src: block.url ?? '',
-            alt: block.alt ?? '',
-            title: block.caption || null,
-          },
-        };
-      }
-
-      return {
-        type: 'paragraph',
-        content: block.text
-          ? [{ type: 'text', text: block.text }]
-          : [],
-      };
-    }),
-  };
-}
-
-function contentToBlocks(doc: any): Block[] {
-  const blocks: Block[] = [];
-
-  for (const node of doc.content ?? []) {
-    if (node.type === 'heading') {
-      blocks.push({
-        type: 'heading',
-        text: textContent(node),
-      });
-
-      continue;
-    }
-
-    if (node.type === 'blockquote') {
-      blocks.push({
-        type: 'quote',
-        text:
-          node.content
-            ?.map((paragraph: any) => textContent(paragraph))
-            .join('\n') ?? '',
-      });
-
-      continue;
-    }
-
-    if (
-      node.type === 'bulletList' ||
-      node.type === 'orderedList'
-    ) {
-      blocks.push({
-        type: 'list',
-        text:
-          node.content
-            ?.map((item: any) => textContent(item))
-            .join('\n') ?? '',
-      });
-
-      continue;
-    }
-
-    if (node.type === 'image') {
-      blocks.push({
-        type: 'image',
-        text: '',
-        url: node.attrs?.src ?? '',
-        alt: node.attrs?.alt ?? '',
-        caption: node.attrs?.title ?? '',
-      });
-
-      continue;
-    }
-
-    const text = textContent(node);
-
-    const linked = node.content?.find((child: any) =>
-      child.marks?.some(
-        (mark: any) => mark.type === 'link',
-      ),
-    );
-
-    if (linked) {
-      const link = linked.marks.find(
-        (mark: any) => mark.type === 'link',
-      );
-
-      blocks.push({
-        type: 'link',
-        text,
-        url: link?.attrs?.href ?? '',
-      });
-    } else {
-      blocks.push({
-        type: 'paragraph',
-        text,
-      });
-    }
-  }
-
-  return blocks.length
-    ? blocks
-    : [{ type: 'paragraph', text: '' }];
-}
-
-function normalizeBlocks(blocks: Block[]): Block[] {
-  return blocks.map((block) => {
-    if (block.type === 'image') {
-      return {
-        type: 'image',
-        text: '',
-        url: block.url ?? '',
-        alt: block.alt ?? '',
-        caption: block.caption ?? '',
-      };
-    }
-
-    if (block.type === 'link') {
-      return {
-        type: 'link',
-        text: block.text ?? '',
-        url: block.url ?? '',
-      };
-    }
-
-    return {
-      type: block.type,
-      text: block.text ?? '',
-    } as Block;
-  });
-}
-
-function sameBlocks(a: Block[], b: Block[]) {
-  return (
-    JSON.stringify(normalizeBlocks(a)) ===
-    JSON.stringify(normalizeBlocks(b))
-  );
-}
 
 export default function RichArticleEditor({
   blocks,
   disabled = false,
   onChange,
+  onUploadingChange,
 }: Props) {
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -264,13 +46,13 @@ export default function RichArticleEditor({
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({ link: false, codeBlock: false, horizontalRule: false, underline: false, heading: { levels: [2, 3] } }),
 
       Link.configure({
         openOnClick: false,
       }),
 
-      Image.configure({
+      EditorialImage.configure({
         inline: false,
         allowBase64: false,
       }),
@@ -283,6 +65,8 @@ export default function RichArticleEditor({
     content: blocksToContent(blocks),
     editable: !disabled,
     immediatelyRender: false,
+    injectCSS: false,
+    shouldRerenderOnTransaction: true,
 
     onUpdate: ({ editor }) => {
       if (syncingRef.current) {
@@ -370,7 +154,7 @@ export default function RichArticleEditor({
 
     const cleanUrl = url.trim();
 
-    if (!cleanUrl.startsWith('https://')) {
+    if (!safeHttps(cleanUrl)) {
       window.alert(
         'PhoneFuturist links must use HTTPS.',
       );
@@ -397,7 +181,7 @@ export default function RichArticleEditor({
 
     const cleanUrl = url.trim();
 
-    if (!cleanUrl.startsWith('https://')) {
+    if (!safeHttps(cleanUrl)) {
       window.alert(
         'PhoneFuturist images must use an HTTPS URL.',
       );
@@ -405,27 +189,12 @@ export default function RichArticleEditor({
       return;
     }
 
-    const alt = window.prompt(
-      'Alt text: briefly describe the image for accessibility.',
-      '',
-    );
-
-    if (alt === null) return;
-
-    const caption = window.prompt(
-      'Caption (optional)',
-      '',
-    );
-
-    if (caption === null) return;
-
     editor
       .chain()
       .focus()
       .setImage({
         src: cleanUrl,
-        alt: alt.trim(),
-        title: caption.trim() || undefined,
+        alt: '',
       })
       .run();
   };
@@ -470,21 +239,8 @@ export default function RichArticleEditor({
       return;
     }
 
-    const alt = window.prompt(
-      'Alt text: briefly describe the image for accessibility.',
-      '',
-    );
-
-    if (alt === null) return;
-
-    const caption = window.prompt(
-      'Caption (optional)',
-      '',
-    );
-
-    if (caption === null) return;
-
     setUploadingImage(true);
+    onUploadingChange?.(true);
 
     try {
       const form = new FormData();
@@ -521,9 +277,7 @@ export default function RichArticleEditor({
         .focus()
         .setImage({
           src: result.url,
-          alt: alt.trim(),
-          title:
-            caption.trim() || undefined,
+          alt: '',
         })
         .run();
     } catch (error) {
@@ -534,6 +288,7 @@ export default function RichArticleEditor({
       );
     } finally {
       setUploadingImage(false);
+      onUploadingChange?.(false);
     }
   };
 
@@ -733,6 +488,15 @@ export default function RichArticleEditor({
       </div>
 
       <EditorContent editor={editor} />
+      {editor.isActive('image') && <fieldset disabled={disabled || uploadingImage} className="studio-fields">
+        <legend>Selected image attribution</legend>
+        {([
+          ['alt','Alt text (accessibility)'], ['title','Caption'], ['credit','Image credit / photographer'],
+          ['sourceName','Source name'], ['sourceUrl','Source URL (HTTPS)'], ['rightsNote','Rights / license note'],
+        ] as const).map(([key,label])=><label key={key}>{label}<input value={editor.getAttributes('image')[key] ?? ''} maxLength={key==='sourceUrl'?2048:key==='alt'?1000:2000} onChange={e=>editor.commands.updateAttributes('image',{[key]:e.target.value})}/></label>)}
+        <label>Ownership<select value={editor.getAttributes('image').ownership ?? ''} onChange={e=>editor.commands.updateAttributes('image',{ownership:e.target.value})}><option value="">Not designated</option><option value="external">External editorial image</option><option value="phonefuturist">PhoneFuturist-owned graphic or screenshot</option></select></label>
+        <p>All image details are optional. Alt text helps accessibility; captions and credits appear beneath the image.</p>
+      </fieldset>}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { boundedImageForm, matchesImageSignature, MediaRequestError } from '../../lib/media-upload';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -18,7 +19,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   try {
-    const form = await request.formData();
+    const form = await boundedImageForm(request);
     const file = form.get('file');
 
     if (!(file instanceof File)) {
@@ -60,6 +61,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       `${Date.now()}-${id}.${extension}`;
 
     const bytes = await file.arrayBuffer();
+    if (!matchesImageSignature(new Uint8Array(bytes), file.type)) {
+      return Response.json({error:'The file contents do not match a supported image format.'},{status:415});
+    }
 
     const { error: uploadError } = await locals.supabase.storage
       .from('article-media')
@@ -70,7 +74,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
 
     if (uploadError) {
-      console.error('Article media upload failed:', uploadError);
+      console.error('article_media_upload_failed');
 
       return Response.json(
         { error: 'Image upload failed. Please try again.' },
@@ -98,7 +102,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       size: file.size,
     });
   } catch (error) {
-    console.error('Article media endpoint failed:', error);
+    if (error instanceof MediaRequestError) return Response.json({error:error.message},{status:error.status});
+    console.error('article_media_request_failed');
 
     return Response.json(
       { error: 'Image upload failed. Please try again.' },
