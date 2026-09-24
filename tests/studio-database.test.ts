@@ -35,6 +35,7 @@ beforeAll(async()=>{
   if(role!=='reader')await db.query('insert into private.role_grants values($1,$2,now())',[id,role==='stranger'?'writer':role]);
   if(['publisher','admin'].includes(role))await db.query("insert into auth.mfa_factors values($1,$1,'verified')",[id]);
  }
+ await db.exec(readFileSync(new URL('../supabase/migrations/20260924111314_public_article_card_images.sql',import.meta.url),'utf8'));
 },30000);
 afterAll(async()=>db.close());
 describe('current Studio publishing policy and historical integrity',()=>{
@@ -103,6 +104,8 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await as('writer');const p={...payload('image'),blocks:[{type:'image',url:'https://example.test/image.webp',text:'',alt:'A test device',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'}, {type:'paragraph',text:'A linked claim',inline:[{text:'A ',bold:true},{text:'linked claim',href:'https://example.test/evidence'}]}]};
   const a=await command(null,null,'create',p);await command(a.id,1,'publish');
   await as('anon');const blocks=(await publicRead('/news/image'))[0].blocks;
+  const card=(await publicRead()).find(item=>item.canonical_path==='/news/image');
+  expect(card.card_image).toEqual({url:'https://example.test/image.webp',alt:'A test device'});expect(card.blocks).toEqual([]);
   expect(blocks[0]).toMatchObject({alt:'A test device',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'});
   expect(blocks[1].inline).toEqual(p.blocks[1].inline);
   await as('writer');const bad=await command(null,null,'create',{...payload('bad-image'),blocks:[{type:'image',url:'https://example.test/x.png',text:'',alt:''}]});
@@ -127,4 +130,3 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await as('publisher','aal1');await db.query("insert into storage.objects(bucket_id,name) values('article-media',$1)",['articles/'+ids.publisher+'/x.png']);
  });
 });
-
