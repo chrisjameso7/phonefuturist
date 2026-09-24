@@ -1042,12 +1042,13 @@ export default function InteractiveLeaksSimulator() {
                       value={workloadPower[workload]}
                       placeholder="—"
                       aria-label={`${WORKLOAD_LABEL[workload]} average power, watts`}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        const value = event.currentTarget.value;
                         setWorkloadPower((current) => ({
                           ...current,
-                          [workload]: event.currentTarget.value,
-                        }))
-                      }
+                          [workload]: value,
+                        }));
+                      }}
                     />
                   </label>
                 );
@@ -1090,8 +1091,8 @@ export default function InteractiveLeaksSimulator() {
                       setWorkloadWeights((current) => ({
                         ...current,
                         [workload]: value,
-                      }))
-                    }
+                      }));
+                      }}
                   />
                 ))}
               </div>
