@@ -1,13 +1,185 @@
 ---
 import '../styles/global.css';
 import '../styles/observatory.css';
-import {navigationFor} from '../lib/navigation';
-interface Props { title: string; description?: string; privatePage?: boolean; home?: boolean }
-const { title, description = 'Independent technology journalism, analysis and intelligence.', privatePage = false, home = false } = Astro.props;
-const links = [['News','news'],['Reports','reports'],['Leaks','leaks'],['Analysis','analysis']];
-const {signedIn,showStudio}=navigationFor(Astro.locals.user,Astro.locals.access);
----
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="description" content={description}/><meta name="robots" content={privatePage ? 'noindex, nofollow' : 'noindex'}/><title>{title} · PhoneFuturist</title></head>
-<body><a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/">PhoneFuturist<span aria-hidden="true">.</span></a><nav class="desktop-nav" aria-label="Main"><a href="/" aria-current={home?'page':undefined}>Home</a>{links.map(([name,key])=><a href={'/articles?section='+key}>{name}</a>)}<a href="/interactive-leaks">The Lab</a>{showStudio&&<a href="/studio">Studio</a>}</nav><div class="header-actions">{signedIn?<><a class="button" href="/account">My account <span aria-hidden="true">↗</span></a><form action="/auth/signout" method="post"><button class="secondary">Sign out</button></form></>:<><a class="sign-in" href="/login">Sign in</a><a class="button" href="/join">Get started</a></>}</div><details class="mobile-nav"><summary>Explore</summary><nav aria-label="Mobile">{links.map(([name,key])=><a href={'/articles?section='+key}>{name}</a>)}{showStudio&&<a href="/studio">The Studio</a>}</nav></details></header><main id="main" class:list={{ 'home-page': home }}><slot/></main><footer><a class="brand" href="/">PhoneFuturist<span>.</span></a><span>Independent thinking. Informed perspective.<br/>Technology, examined.</span><a href="/#about">About the publication ↗</a></footer></body></html>
+import { navigationFor } from '../lib/navigation';
 
+interface Props {
+  title: string;
+  description?: string;
+  privatePage?: boolean;
+  home?: boolean;
+}
+
+const {
+  title,
+  description = 'Independent technology journalism, analysis and intelligence.',
+  privatePage = false,
+  home = false,
+} = Astro.props;
+
+const links = [
+  ['News', 'news'],
+  ['Reports', 'reports'],
+  ['Leaks', 'leaks'],
+  ['Analysis', 'analysis'],
+];
+
+const { signedIn, showStudio } = navigationFor(
+  Astro.locals.user,
+  Astro.locals.access,
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={privatePage ? 'noindex, nofollow' : 'noindex'}
+    />
+    <title>{title} · PhoneFuturist</title>
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="header-brand-row">
+        <a class="brand" href="/">
+          PhoneFuturist<span aria-hidden="true">.</span>
+        </a>
+
+        <details class="mobile-nav">
+          <summary aria-label="Open navigation">
+            <span class="mobile-menu-label">Menu</span>
+
+            <span class="mobile-menu-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </span>
+          </summary>
+
+          <div class="mobile-menu-panel">
+            <nav class="mobile-menu-primary" aria-label="Mobile">
+              <a href="/" aria-current={home ? 'page' : undefined}>
+                <span>Home</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+
+              {
+                links.map(([name, key]) => (
+                  <a href={'/articles?section=' + key}>
+                    <span>{name}</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                ))
+              }
+
+              <a href="/interactive-leaks">
+                <span>The Lab</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+
+              {
+                showStudio && (
+                  <a href="/studio">
+                    <span>The Studio</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                )
+              }
+            </nav>
+
+            <div class="mobile-account">
+              <span class="mobile-account-label">Account</span>
+
+              {
+                signedIn ? (
+                  <div class="mobile-account-actions">
+                    <a class="mobile-account-primary" href="/account">
+                      My account
+                    </a>
+
+                    <form action="/auth/signout" method="post">
+                      <button type="submit" class="mobile-account-secondary">
+                        Sign out
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <div class="mobile-account-actions">
+                    <a class="mobile-account-secondary" href="/login">
+                      Sign in
+                    </a>
+
+                    <a class="mobile-account-primary" href="/join">
+                      Get started
+                    </a>
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <nav class="desktop-nav" aria-label="Main">
+        <a href="/" aria-current={home ? 'page' : undefined}>Home</a>
+
+        {
+          links.map(([name, key]) => (
+            <a href={'/articles?section=' + key}>{name}</a>
+          ))
+        }
+
+        <a href="/interactive-leaks">The Lab</a>
+
+        {showStudio && <a href="/studio">Studio</a>}
+      </nav>
+
+      <div class="header-actions">
+        {
+          signedIn ? (
+            <>
+              <a class="button" href="/account">
+                My account <span aria-hidden="true">↗</span>
+              </a>
+
+              <form action="/auth/signout" method="post">
+                <button class="secondary">Sign out</button>
+              </form>
+            </>
+          ) : (
+            <>
+              <a class="sign-in" href="/login">Sign in</a>
+              <a class="button" href="/join">Get started</a>
+            </>
+          )
+        }
+      </div>
+    </header>
+
+    <main id="main" class:list={{ 'home-page': home }}>
+      <slot />
+    </main>
+
+    <footer>
+      <a class="brand" href="/">
+        PhoneFuturist<span aria-hidden="true">.</span>
+      </a>
+
+      <span>
+        Independent thinking. Informed perspective.<br />
+        Technology, examined.
+      </span>
+
+      <a href="/#about">About the publication ↗</a>
+    </footer>
+  </body>
+</html>
