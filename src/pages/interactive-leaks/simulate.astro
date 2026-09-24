@@ -1,0 +1,36 @@
+---
+import Page from '../../layouts/Page.astro';
+import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
+import '../../styles/lab-simulator.css';
+---
+
+<Page
+  title="Interactive Leaks — Simulator"
+  description="Configure a device, describe its environment, and run PhoneFuturist's deterministic simulation model. Public Beta workspace."
+>
+  <main class="lab-page lab-sim-page">
+    <div class="lab-sim-header">
+      <nav class="lab-sim-crumbs" aria-label="Breadcrumb">
+        <a href="/interactive-leaks">Interactive Leaks</a>
+        <span aria-hidden="true">/</span>
+        <span>Simulate</span>
+      </nav>
+
+      <div class="lab-sim-title">
+        <div>
+          <p class="lab-eyebrow">Simulation workspace · Public Beta</p>
+          <h1>The instrument.</h1>
+        </div>
+
+        <p class="lab-sim-note">
+          Configure the device, describe how it would be used, and run the
+          model. Detailed engineering fields wait behind Advanced.
+        </p>
+      </div>
+    </div>
+
+    <div class="lab-simulator-shell">
+      <InteractiveLeaksSimulator client:load />
+    </div>
+  </main>
+</Page>

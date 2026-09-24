@@ -291,9 +291,6 @@ export interface BatteryExperienceResult {
 
     workloads: BatteryExperienceRuntimeEstimate[];
 
-    /** Runtime of the normalized mixed profile, distinct from each standalone workload. */
-    profileRuntimeHours?: { min?: number; max?: number };
-
     usableEnergyWh?: { value?: number; min?: number; max?: number };
 
     assumptions: BatteryExperienceAssumption[];
