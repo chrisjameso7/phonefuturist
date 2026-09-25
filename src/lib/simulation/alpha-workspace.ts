@@ -1,4 +1,5 @@
-import {buildProfile, COMPONENT_WORKLOADS, numeric, WORKLOAD_LABEL, type WorkloadFields, type WorkspaceRun} from './beta-workspace';
+import {buildProfile, COMPONENT_WORKLOADS, numeric, WORKLOAD_LABEL, type Profile, type WorkloadFields, type WorkspaceRun} from './beta-workspace';
+import {POWER_EVIDENCE_VERSION, resolvePowerEvidence, workloadProvenance, type EvidenceDevice, type ResolvedPowerEvidence} from './power-evidence';
 
 export const USAGE_VERSION = 'daily-usage-1';
 export const ACTIVE_WORKLOADS = ['web_browsing','video_playback','gaming','camera_use'] as const;
@@ -35,16 +36,70 @@ export function deriveUsage(usage:Usage) {
   if(!issues.length){ACTIVE_WORKLOADS.forEach((key,i)=>shares[key]=String(minutes[i]/1440*100));shares.standby=String((1440-active)/1440*100);}
   return {shares,issues,activeMinutes:active,idleMinutes:Math.max(0,1440-active)};
 }
-/** No fitted power model exists in the seed runtime dataset. Never infer watts from usage hours. */
-export function simpleProfile(experience:Experience,power:WorkloadFields) {
+/** Shown when the seed evidence genuinely cannot support a configuration. */
+export const INSUFFICIENT_EVIDENCE_MESSAGE="We don't have enough reference data to simulate this configuration yet.";
+
+/** Build the Simple Mode mixture from reference power evidence. Never invents watts. */
+function evidenceProfile(evidence:ResolvedPowerEvidence,shares:WorkloadFields):Profile {
+  const profile:Profile={mode:'percent',totalPercent:0,issues:[],workloads:{},terms:[]};
+  for(const key of COMPONENT_WORKLOADS){
+    const share=(numeric(shares[key])??0)/100;
+    profile.totalPercent+=share*100;
+    if(share<=0) continue;
+    const power=key==='standby'?evidence.idlePowerW:evidence.screenOnPowerW;
+    const midpoint=(power.min+power.max)/2;
+    profile.terms.push({workload:key,power:midpoint,share});
+    // Whole-device power is explicitly named, never misrepresented as SoC/compute power.
+    profile.workloads[key]={subsystems:{workloadSpecific:{whole_device:{range:{min:power.min,max:power.max},provenance:workloadProvenance(key,evidence)}}},weight:share};
+  }
+  if(!profile.terms.length) profile.issues=[INSUFFICIENT_EVIDENCE_MESSAGE];
+  return profile;
+}
+
+/**
+ * Simple Mode never asks the user for workload wattage.
+ *
+ * Power comes from the PhoneFuturist calibration evidence for the
+ * simulated device; the user's usage profile supplies the mixture. A
+ * user can still explicitly opt into their own Advanced values, which
+ * keeps the unverified input labelled as theirs.
+ */
+export function simpleProfile(experience:Experience,power:WorkloadFields,device:EvidenceDevice={},references?:Parameters<typeof resolvePowerEvidence>[1]) {
   const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
   const derived=deriveUsage(usage);
-  const selected={...power};
-  for(const key of COMPONENT_WORKLOADS) if(!experience.useEnteredPower||Number(derived.shares[key])===0) selected[key]='';
-  const profile=buildProfile(selected,derived.shares,'percent');
-  if(derived.issues.length){profile.issues=derived.issues;return profile;}
-  if(!experience.useEnteredPower) profile.issues=['Device-specific workload power evidence is not available yet. Your usage pattern is saved. Supply known power values in Advanced and explicitly enable them here, or wait for a validated device power model.',...derived.issues];
-  return profile;
+  if(derived.issues.length){const failed=buildProfile({...power,standby:''},derived.shares,'percent');failed.issues=derived.issues;return failed;}
+  if(experience.useEnteredPower){
+    const selected={...power};
+    for(const key of COMPONENT_WORKLOADS) if(Number(derived.shares[key])===0) selected[key]='';
+    return buildProfile(selected,derived.shares,'percent');
+  }
+  const evidence=resolvePowerEvidence(device,references);
+  if(!evidence){const unknown=buildProfile({...power,standby:''},derived.shares,'percent');unknown.issues=[INSUFFICIENT_EVIDENCE_MESSAGE];return unknown;}
+  return evidenceProfile(evidence,derived.shares);
+}
+
+export {POWER_EVIDENCE_VERSION};
+
+/** A usage profile describes one day, so the day is the honest horizon. */
+export const DAY_HOURS=24;
+
+function trimNumber(value:number):string {return String(Number(value.toFixed(1)));}
+
+/**
+ * Present a Simple Mode runtime against a 24-hour day.
+ *
+ * The battery model answers "how long does this draw last", which for a
+ * full-day profile is longer than a day. Saying "250 h of battery life"
+ * would be a category error, so the consumer framing is days-per-charge
+ * whenever the pack outlasts the day.
+ */
+export function simpleRuntimeFraming(runtime:{min?:number;max?:number}|undefined):string|undefined {
+  if(runtime?.min===undefined||runtime.max===undefined||!Number.isFinite(runtime.min)||!Number.isFinite(runtime.max)) return undefined;
+  const [min,max]=[runtime.min,runtime.max].sort((a,b)=>a-b);
+  if(max>=DAY_HOURS){
+    return `A full charge covers the whole ${DAY_HOURS}-hour day — roughly ${trimNumber(min/DAY_HOURS)}–${trimNumber(max/DAY_HOURS)} days of this usage per charge. Treat it as an optimistic upper bound.`;
+  }
+  return `A full charge runs out after about ${trimNumber(min)}–${trimNumber(max)} h, partway through a ${DAY_HOURS}-hour day on this usage pattern.`;
 }
 export type AlphaContext = {mode:Experience['mode'];usageProfile:string;usageVersion:string;usage?:Usage;powerSource:string;usablePercent:string;calibrationVersion:string};
 export type AlphaRun = WorkspaceRun & {context:AlphaContext};

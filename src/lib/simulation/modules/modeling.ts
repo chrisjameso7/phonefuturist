@@ -12,8 +12,20 @@
  * unknown. No helper in this file ever substitutes a default.
  */
 
+/**
+ * Origin of a modeled value.
+ *
+ * 'calibrated' is a value derived by a recorded division or fit from
+ * measured evidence, never a measurement itself. 'reference' is carried
+ * across from another device. 'estimated' is a model output with no direct
+ * evidence behind it. A value with no provenance at all is reported as
+ * unrecorded with unknown origin, which is distinct from all of these.
+ */
 export type ModelProvenanceKind =
   | 'measured'
+  | 'calibrated'
+  | 'reference'
+  | 'estimated'
   | 'reported'
   | 'modeled'
   | 'user';

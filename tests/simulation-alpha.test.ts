@@ -11,7 +11,7 @@ function sample(simple=false):AlphaRun {
 }
 afterEach(()=>vi.unstubAllGlobals());
 describe('Alpha usage translation',()=>{
- it('defaults to Simple and Typical without invented power',()=>{expect(INITIAL_EXPERIENCE).toMatchObject({mode:'simple',preset:'Typical',useEnteredPower:false});expect(simpleProfile(INITIAL_EXPERIENCE,powers).issues[0]).toContain('not available');});
+ it('defaults to Simple and Typical and simulates without any user wattage',()=>{expect(INITIAL_EXPERIENCE).toMatchObject({mode:'simple',preset:'Typical',useEnteredPower:false});const profile=simpleProfile(INITIAL_EXPERIENCE,powers,{energyWh:20,displayAreaCm2:75});expect(profile.issues).toEqual([]);expect(profile.terms.length).toBeGreaterThan(0);expect(runWorkspace(input,'',profile).battery?.result.status).toBe('resolved');});
  it.each(['Light','Typical','Heavy'] as const)('derives complete daily distribution for %s',preset=>{const d=deriveUsage(USAGE_PRESETS[preset]);expect(d.issues).toEqual([]);expect(Object.values(d.shares).reduce((sum,s)=>sum+Number(s),0)).toBeCloseTo(100);expect(d.activeMinutes+d.idleMinutes).toBe(1440);});
  it('preserves custom usage and explicit power consent across mode/preset switches',()=>{
   let state=experienceReducer(INITIAL_EXPERIENCE,{type:'duration',key:'gaming',value:'72.5'});

@@ -1,4 +1,4 @@
-import type {AlphaRun} from './alpha-workspace';
+import {simpleRuntimeFraming,type AlphaRun} from './alpha-workspace';
 import {WORKLOAD_LABEL} from './beta-workspace';
 
 export const DISCLAIMER='Simulated estimate based on supplied specifications and model assumptions.';
@@ -40,10 +40,10 @@ export function receiptSections(run:AlphaRun,generatedAt:string):ExportSection[]
   return [
     {title:'RESULT',lines:[run.input.name||'Untitled concept',`Simulated battery runtime: ${runtimeText(run)}`,`Confidence: ${confidenceText(run)}`]},
     {title:'DEVICE',lines:[`Form factor: ${run.input.formFactor.replaceAll('_',' ')}`,...describe(run.input.dimensions,'Dimensions'),...describe(run.input.displays,'Display'),...describe(run.input.battery,'Rated battery'), 'Processor: Unknown — not supported by this engine schema']},
-    {title:'ENVIRONMENT',lines:[`Usage profile: ${run.context.usageProfile}`,`Usage mapping: ${run.context.usageVersion}`,...(run.context.usage?describe(run.context.usage,'Minutes per day'):[]),...run.profile.terms.map(t=>`${WORKLOAD_LABEL[t.workload]}: ${numberText(t.share*100)}% at ${numberText(t.power)} W whole-device power`),`Power source: ${run.context.powerSource}`,`Usable energy: ${numberText(estimate?.usableEnergyWh?.min)} Wh`,...estimate?.assumptions.map(a=>a.message)??[]]},
+    {title:'ENVIRONMENT',lines:[`Usage profile: ${run.context.usageProfile}`,...(run.context.mode==='simple'?[simpleRuntimeFraming(estimate?.runtimeHours)??'Daily framing: Unknown']:[]),`Usage mapping: ${run.context.usageVersion}`,...(run.context.usage?describe(run.context.usage,'Minutes per day'):[]),...run.profile.terms.map(t=>`${WORKLOAD_LABEL[t.workload]}: ${numberText(t.share*100)}% at ${numberText(t.power)} W whole-device power`),`Power source: ${run.context.powerSource}`,`Usable energy: ${numberText(estimate?.usableEnergyWh?.min)} Wh`,...estimate?.assumptions.map(a=>a.message)??[]]},
     {title:'CAMERAS',lines:describe(run.input.cameras,'Camera')},
     {title:'MODEL',lines:[`Engine v${run.device?.engineVersion??'Unknown'}`,`Battery model ${run.battery?.result.engineVersion??'Unknown'}`,`Calibration: ${run.context.calibrationVersion}`,`Receipt generated: ${generatedAt}`,`Simulation ID: ${simulationId(run)} (reference only, not verification)`]},
-    {title:'ASSUMPTIONS / PROVENANCE',lines:[`Device specifications: user supplied / unverified; illustrative inputs remain assumptions.`,...(estimate?.parameters??[]).map(p=>`${p.parameter}: ${p.value!==undefined?numberText(p.value):'Unknown'} · provenance: ${p.provenanceRecorded?p.provenance?.kind??'unknown':'unknown (no source recorded by the model)'}`),'Equal runtime bounds from point inputs are one estimate, not a measured uncertainty interval.']},
+    {title:'ASSUMPTIONS / PROVENANCE',lines:[`Device specifications: user supplied / unverified; illustrative inputs remain assumptions.`,...(estimate?.parameters??[]).map(p=>`${p.parameter}: ${p.value!==undefined?numberText(p.value):`${numberText(p.range?.min)}–${numberText(p.range?.max)} W`} · provenance: ${p.provenanceRecorded?p.provenance?.kind??'unknown':'unknown (no source recorded by the model)'}${p.provenance?.note?` · ${p.provenance.note}`:''}`),...(estimate?.assumptions??[]).map(a=>`Assumption (${a.provenance?.kind??'modeled'}): ${a.message}`),'Equal runtime bounds from point inputs are one estimate, not a measured uncertainty interval.']},
     {title:'WARNINGS / MISSING INFORMATION',lines:[...run.issues,...run.device?.warnings.map(w=>w.message)??[],...run.battery?.result.confidenceNotes??[],...(run.battery?.warnings??[]).map(w=>w.message),'Missing optional device fields stay Unknown. No measured runtime or calibrated power is claimed.']},
   ];
 }
