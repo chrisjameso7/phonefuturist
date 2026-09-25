@@ -1,13 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode, type WorkspaceRun} from '../../lib/simulation/beta-workspace';
 
 import {
   SIMULATION_ENGINE_VERSION,
-  simulateDevice,
 } from '../../lib/simulation/engine';
 
 import {
   BATTERY_EXPERIENCE_VERSION,
-  simulateBatteryExperience,
 } from '../../lib/simulation/modules/battery-experience';
 
 import type {
@@ -22,8 +21,6 @@ import type {
 
 import type {
   BatteryExperienceWorkload,
-  BatteryExperienceEnergyInput,
-  WorkloadDefinition,
 } from '../../lib/simulation/modules/battery-experience';
 
 type NumericFieldProps = {
@@ -193,16 +190,8 @@ const initialWorkloadInputs: Record<BatteryExperienceWorkload, string> = {
 
 /* ---------------- Formatting helpers ---------------- */
 
-function numeric(value: string): number | undefined {
-  if (value.trim() === '') return undefined;
-
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
 function format(value: number | undefined, digits = 1): string {
-  if (value === undefined) return 'Unknown';
+  if (value === undefined || !Number.isFinite(value)) return 'Unknown';
 
   return value.toLocaleString(undefined, {
     maximumFractionDigits: digits,
@@ -290,10 +279,12 @@ function NumericField({
         type="number"
         inputMode="decimal"
         step={step}
-        value={value}
+        value={value===INVALID_NUMBER?'':value}
+        aria-invalid={value===INVALID_NUMBER || (numeric(value)??0)<0}
         placeholder={placeholder}
-        onChange={(event) => onChange(event.currentTarget.value)}
+        onChange={captureNumericValue(onChange)}
       />
+      <small className="il-input-state">{value===INVALID_NUMBER?'Incomplete number':value.trim()?'User supplied · unverified':'Unknown'}</small>
     </label>
   );
 }
@@ -324,24 +315,6 @@ function SectionHeading({
     </div>
   );
 }
-
-const WORKLOAD_LABEL: Record<BatteryExperienceWorkload, string> = {
-  mixed_use: 'Mixed use',
-  web_browsing: 'Web browsing',
-  video_playback: 'Video playback',
-  gaming: 'Gaming',
-  camera_use: 'Camera use',
-  standby: 'Standby',
-};
-
-const WORKLOAD_ORDER: BatteryExperienceWorkload[] = [
-  'mixed_use',
-  'web_browsing',
-  'video_playback',
-  'gaming',
-  'camera_use',
-  'standby',
-];
 
 function emptyCamera(id: number): CameraDraft {
   return {
@@ -394,37 +367,22 @@ export default function InteractiveLeaksSimulator() {
 
   const [hasSimulated, setHasSimulated] = useState(false);
 
-  const [simulationInput, setSimulationInput] =
-    useState<SimulationInput | null>(null);
-
-  const [batteryInput, setBatteryInput] =
-    useState<BatteryExperienceEnergyInput | null>(null);
-
-  const [batteryWorkloads, setBatteryWorkloads] = useState<Partial<
-    Record<BatteryExperienceWorkload, WorkloadDefinition>
-  > | null>(null);
-
-  const result = useMemo(
-    () => (simulationInput ? simulateDevice(simulationInput) : null),
-    [simulationInput],
-  );
-
-  const battery = useMemo(
-    () =>
-      batteryInput && batteryWorkloads
-        ? simulateBatteryExperience({
-            energy: batteryInput,
-            workloads: batteryWorkloads,
-          })
-        : null,
-    [batteryInput, batteryWorkloads],
-  );
+  const [run, setRun] = useState<WorkspaceRun|null>(null);
+  const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
+  const [dirty,setDirty] = useState(false);
+  const [exampleLoaded,setExampleLoaded] = useState(false);
+  const profile=buildProfile(workloadPower,workloadWeights,profileMode);
+  const simulationInput=run?.input;
+  const result=run?.device;
+  const battery=run?.battery;
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setDirty(true);
     setForm((current) => ({ ...current, [key]: value }));
   }
 
   function updateCamera(id: number, patch: Partial<CameraDraft>) {
+    setDirty(true);
     setCameras((current) =>
       current.map((camera) =>
         camera.id === id ? { ...camera, ...patch } : camera,
@@ -433,6 +391,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function addCamera() {
+    setDirty(true);
     setCameras((current) => [
       ...current,
       emptyCamera(
@@ -444,6 +403,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function removeCamera(id: number) {
+    setDirty(true);
     setCameras((current) =>
       current.filter((camera) => camera.id !== id),
     );
@@ -528,82 +488,38 @@ export default function InteractiveLeaksSimulator() {
     };
   }
 
-  function buildEnergyInput(): BatteryExperienceEnergyInput | null {
-    const packEnergyWh = result?.battery?.totalEnergyWh;
-
-    const capacityMah = numeric(form.batteryCapacityMah);
-
-    const voltageV = numeric(form.batteryVoltageV);
-
-    const manualEnergyWh =
-      capacityMah !== undefined && voltageV !== undefined
-        ? (capacityMah / 1000) * voltageV
-        : undefined;
-
-    const totalEnergy = packEnergyWh ?? manualEnergyWh;
-
-    if (totalEnergy === undefined) return null;
-
-    const usable = numeric(usablePercent);
-
-    return usable !== undefined
-      ? { totalEnergyWh: totalEnergy, usablePercent: usable }
-      : { totalEnergyWh: totalEnergy };
-  }
-
-  function buildWorkloadMap():
-    | Partial<Record<BatteryExperienceWorkload, WorkloadDefinition>>
-    | null {
-    const supplied = WORKLOAD_ORDER.filter(
-      (workload) => numeric(workloadPower[workload]) !== undefined,
-    );
-
-    if (supplied.length === 0) return null;
-
-    const map: Partial<
-      Record<BatteryExperienceWorkload, WorkloadDefinition>
-    > = {};
-
-    for (const workload of supplied) {
-      const weight = numeric(workloadWeights[workload]);
-
-      map[workload] = {
-        subsystems: { compute: numeric(workloadPower[workload]) },
-        ...(weight !== undefined ? { weight } : {}),
-      };
-    }
-
-    return map;
-  }
-
   function simulate() {
-    setSimulationInput(buildInput());
-    setBatteryInput(buildEnergyInput());
-    setBatteryWorkloads(buildWorkloadMap());
+    const {name,formFactor,...fields}=form;
+    const issues=numericIssues(fields);
+    cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
+    setRun(runWorkspace(buildInput(),usablePercent,profile,issues));
     setHasSimulated(true);
+    setDirty(false);
   }
 
   function loadExample() {
+    setExampleLoaded(true);
     setForm(flagshipExample);
     setCameras(flagshipCameras);
     setWorkloadPower({ ...initialWorkloadInputs, gaming: '6' });
     setWorkloadWeights(initialWorkloadInputs);
     setUsablePercent('');
-    setSimulationInput(null);
-    setBatteryInput(null);
-    setBatteryWorkloads(null);
+    setRun(null);
+    setProfileMode('equal');
+    setDirty(false);
     setHasSimulated(false);
   }
 
   function clearSimulation() {
+    setExampleLoaded(false);
     setForm(initialForm);
     setCameras([]);
     setWorkloadPower(initialWorkloadInputs);
     setWorkloadWeights(initialWorkloadInputs);
     setUsablePercent('');
-    setSimulationInput(null);
-    setBatteryInput(null);
-    setBatteryWorkloads(null);
+    setRun(null);
+    setProfileMode('equal');
+    setDirty(false);
     setHasSimulated(false);
   }
 
@@ -620,11 +536,6 @@ export default function InteractiveLeaksSimulator() {
     ? battery.result.estimate
     : undefined;
 
-  const unresolved =
-    battery !== null && battery.result.status === 'unresolved'
-      ? battery.result.unresolved
-      : undefined;
-
   return (
     <div className="il-app">
       <div className="il-toolbar">
@@ -639,7 +550,7 @@ export default function InteractiveLeaksSimulator() {
 
         <div className="il-toolbar-actions">
           <button type="button" className="il-chip" onClick={loadExample}>
-            Load example
+            Load illustrative example
           </button>
 
           <button type="button" className="il-chip" onClick={clearSimulation}>
@@ -648,6 +559,7 @@ export default function InteractiveLeaksSimulator() {
         </div>
       </div>
 
+      {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
       <div className="il-workspace">
         {/* ---------------- Builder column ---------------- */}
         <section className="il-builder" aria-label="Simulation inputs">
@@ -656,7 +568,7 @@ export default function InteractiveLeaksSimulator() {
             <SectionHeading
               index="01"
               title="Device"
-              hint="The physical device. Deterministic geometry, volume and pack math."
+              hint="Enter only values you have. Blank means unknown; typed values are user-supplied, not independently verified."
             />
 
             <div className="il-grid">
@@ -717,7 +629,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Weight"
+                label="Device mass"
                 suffix="g"
                 value={form.weightG}
                 placeholder="195"
@@ -749,7 +661,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Display resolution"
+                label="Resolution width"
                 suffix="px"
                 value={form.resolutionWidthPx}
                 placeholder="1440"
@@ -758,6 +670,14 @@ export default function InteractiveLeaksSimulator() {
               />
             </div>
 
+            <div className="il-grid">                  <NumericField
+                    label="Resolution height"
+                    suffix="px"
+                    value={form.resolutionHeightPx}
+                    placeholder="3200"
+                    step="1"
+                    onChange={(value) => update('resolutionHeightPx', value)}
+                  /></div>
             <details className="il-advanced" open={advancedOpen}>
               <summary
                 onClick={(event) => {
@@ -772,14 +692,7 @@ export default function InteractiveLeaksSimulator() {
                 <p className="il-group-label">Display geometry</p>
 
                 <div className="il-grid">
-                  <NumericField
-                    label="Resolution height"
-                    suffix="px"
-                    value={form.resolutionHeightPx}
-                    placeholder="3200"
-                    step="1"
-                    onChange={(value) => update('resolutionHeightPx', value)}
-                  />
+
 
                   <NumericField
                     label="Aspect width"
@@ -998,6 +911,10 @@ export default function InteractiveLeaksSimulator() {
                         }
                       />
                     </div>
+                    <details className="il-advanced"><summary>Advanced · camera optics and module dimensions</summary><div className="il-grid">
+                      {([['physicalFocalLengthMm','Physical focal length'],['moduleWidthMm','Module width'],['moduleHeightMm','Module height'],['moduleDepthMm','Module depth']] as const).map(([key,label])=><NumericField key={key} label={label} suffix="mm" value={camera[key]} onChange={value=>updateCamera(camera.id,{[key]:value})}/>)}
+                    </div></details>
+                    <p className="il-help">For 1/1.3″ sensor format, enter 1.3. Optical format is an approximation, not a physical sensor diagonal.</p>
                   </article>
                 ))}
               </div>
@@ -1016,87 +933,26 @@ export default function InteractiveLeaksSimulator() {
               hint="How the device is used during the simulated session: per-workload power and pack derating."
             />
 
+            <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
+              <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
+            </select></label>
+            <p className="il-help">Average device power (W) means the whole device's average draw during that workload. It is not charger wattage or a chip's rated power.</p>
             <div className="il-workload-grid">
-              {WORKLOAD_ORDER.map((workload) => {
-                const active =
-                  numeric(workloadPower[workload]) !== undefined;
-
-                return (
-                  <label
-                    className={
-                      active ? 'il-workload active' : 'il-workload'
-                    }
-                    key={workload}
-                  >
-                    <span className="il-workload-name">
-                      {WORKLOAD_LABEL[workload]}
-                    </span>
-
-                    <span className="il-workload-unit">avg W</span>
-
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="any"
-                      min="0"
-                      value={workloadPower[workload]}
-                      placeholder="—"
-                      aria-label={`${WORKLOAD_LABEL[workload]} average power, watts`}
-                      onChange={(event) => {
-                        const value = event.currentTarget.value;
-                        setWorkloadPower((current) => ({
-                          ...current,
-                          [workload]: value,
-                        }));
-                      }}
-                    />
-                  </label>
-                );
-              })}
+              {(profileMode==='manual'?['mixed_use' as const]:COMPONENT_WORKLOADS).map(workload=><label className={workloadPower[workload].trim()?'il-workload active':'il-workload'} key={workload}>
+                <span className="il-workload-name">{WORKLOAD_LABEL[workload]}</span><span className="il-workload-unit">Average device power (W)</span>
+                <input type="number" inputMode="decimal" step="any" value={workloadPower[workload]===INVALID_NUMBER?'':workloadPower[workload]} aria-invalid={workloadPower[workload]===INVALID_NUMBER || (numeric(workloadPower[workload])??1)<=0} placeholder="Unknown" aria-label={WORKLOAD_LABEL[workload]+' average device power (W)'} onChange={captureNumericValue(value=>{setDirty(true);setWorkloadPower(current=>({...current,[workload]:value}));})}/>
+              </label>)}
             </div>
-
-            <div className="il-grid il-derate">
-              <NumericField
-                label="Usable pack energy"
-                suffix="%"
-                value={usablePercent}
-                placeholder="100"
-                onChange={(value) => setUsablePercent(value)}
-              />
-
-              <p className="il-help">
-                Share of rated energy actually usable (protection reserves,
-                voltage cutoff). Leave empty to use the full rated pack.
-              </p>
+            <p className="il-help">{profileMode==='equal'?'Equal shares: only workloads with supplied power participate. Each receives the same share of mixed-use time.':profileMode==='manual'?'The supplied mixed-use power is the entire profile. Individual workloads are not added to it.':'How much each workload contributes to the mixed-use profile. Shares describe percentages of time, not hours or power.'}</p>
+            {profileMode==='percent'&&<details className="il-advanced" open><summary>Advanced · share of mixed use (%)</summary>
+              <p className="il-help">Total must be 100%. Enter 0% to exclude a workload. A positive share always needs a power value.</p>
+              <div className="il-grid">{COMPONENT_WORKLOADS.map(workload=><NumericField key={workload} label={WORKLOAD_LABEL[workload]+' share of mixed use'} suffix="%" value={workloadWeights[workload]} placeholder="Not assigned" onChange={value=>{setDirty(true);setWorkloadWeights(current=>({...current,[workload]:value}));}}/>)}</div>
+              <p className="il-profile-total" role="status">Current total: {format(profile.totalPercent,2)}% {profile.issues.length===0?'— valid profile':'— incomplete or invalid'}</p>
+            </details>}
+            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
+            <div className="il-grid il-derate"><NumericField label="Usable pack energy" suffix="%" value={usablePercent} placeholder="Full rated pack" onChange={value=>{setUsablePercent(value);setDirty(true);}}/>
+              <p className="il-help">Percentage of rated/nominal battery energy available after protection reserves and voltage cutoff. Empty preserves full rated pack energy (100%) under this model; that can make runtime optimistic. This is not the battery's current charge level.</p>
             </div>
-
-            <details className="il-advanced">
-              <summary>Advanced · workload weighting</summary>
-
-              <p className="il-help">
-                Weights set each workload's share inside the mixed profile.
-                Leave empty for equal shares.
-              </p>
-
-              <div className="il-grid">
-                {WORKLOAD_ORDER.map((workload) => (
-                  <NumericField
-                    key={workload}
-                    label={WORKLOAD_LABEL[workload]}
-                    suffix="weight"
-                    value={workloadWeights[workload]}
-                    placeholder="1"
-                    step="any"
-                    onChange={(value) =>
-                      setWorkloadWeights((current) => ({
-                        ...current,
-                        [workload]: value,
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-            </details>
           </div>
 
           {/* 03 · MODEL */}
@@ -1142,7 +998,7 @@ export default function InteractiveLeaksSimulator() {
             >
               Run simulation →
             </button>
-
+            {hasSimulated&&<a className="il-chip" href="#simulation-results">View results ↓</a>}
             <p>
               Device + Environment + Model. Nothing invented between the
               three.
@@ -1151,14 +1007,15 @@ export default function InteractiveLeaksSimulator() {
         </section>
 
         {/* ---------------- Result column ---------------- */}
-        <aside className="il-results" aria-live="polite" aria-label="Simulation results">
+        <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
           <div className="il-results-top">
             <span className="eyebrow">Simulation result</span>
 
             <span>v{SIMULATION_ENGINE_VERSION}</span>
           </div>
 
-          {!hasSimulated || !result ? (
+          {hasSimulated&&dirty&&<p className="il-input-note">Inputs changed. Run again to update these results.</p>}
+          {!hasSimulated ? (
             <div className="il-result-empty">
               <div className="il-orbit" aria-hidden="true">
                 <span />
@@ -1172,7 +1029,7 @@ export default function InteractiveLeaksSimulator() {
                 configuration.
               </p>
             </div>
-          ) : (
+          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p></div> : (
             <>
               <div className="il-result-identity">
                 <span>
@@ -1183,18 +1040,22 @@ export default function InteractiveLeaksSimulator() {
               </div>
 
               {/* Hero runtime card (only when the environment layer ran) */}
-              {battery !== null && (
+              {(
                 <div className="il-runtime-card">
                   <span className="il-runtime-eyebrow">
-                    Simulated battery runtime
+                    Estimated mixed-use runtime
                   </span>
 
-                  {battery.result.status === 'resolved' ? (
+                  {battery?.result.status === 'resolved' ? (
                     <>
                       <p className="il-runtime-value">
                         {hoursLabel(estimate?.runtimeHours)}
                       </p>
 
+                      <p className="il-help">{format(estimate?.usableEnergyWh?.min,2)} Wh usable energy ÷ {wattsLabel(battery.result.comparisonReady?.averagePowerW)} mixed-use average power.</p>
+                      <p className="il-help">{run?.profile.mode==='manual'?'Uses your supplied mixed-use power.':run?.profile.terms.map(term=>WORKLOAD_LABEL[term.workload]+' '+format(term.power,2)+' W × '+format(term.share*100,2)+'%').join(' + ')}</p>
+                      <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
+                      {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
                       <div className="il-runtime-bar" aria-hidden="true">
                         <span
                           style={{
@@ -1218,24 +1079,16 @@ export default function InteractiveLeaksSimulator() {
                   ) : (
                     <>
                       <p className="il-runtime-value il-runtime-unknown">
-                        Unresolved
+                        Cannot estimate yet
                       </p>
 
-                      <p className="il-unresolved-message">
-                        {unresolved?.message}
-                      </p>
-
-                      {unresolved?.missing &&
-                        unresolved.missing.length > 0 && (
-                          <p className="il-unresolved-missing">
-                            Missing: {unresolved.missing.join(', ')}
-                          </p>
-                        )}
+                      <ul className="il-profile-issues">{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>
                     </>
                   )}
                 </div>
               )}
 
+              <details className="il-evidence"><summary>Supporting device and engineering metrics</summary>
               {/* Device-layer deterministic metrics */}
               <div className="il-result-group">
                 <span className="il-result-label">Display</span>
@@ -1389,6 +1242,7 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               )}
 
+              </details>
               {/* Provenance, assumptions, confidence detail */}
               {(estimate?.assumptions.length ?? 0) > 0 && (
                 <details className="il-evidence">
@@ -1440,7 +1294,7 @@ export default function InteractiveLeaksSimulator() {
               )}
 
               {result.warnings.length > 0 && (
-                <div className="il-warnings">
+                <details className="il-warnings"><summary>Constraints and unresolved device inputs ({result.warnings.length})</summary>
                   <span className="il-result-label">Engine notes</span>
 
                   {result.warnings.map((warning, index) => (
@@ -1450,7 +1304,7 @@ export default function InteractiveLeaksSimulator() {
                       <p>{warning.message}</p>
                     </div>
                   ))}
-                </div>
+                </details>
               )}
 
               <div className="il-method">
@@ -1474,9 +1328,8 @@ export default function InteractiveLeaksSimulator() {
 
         <p>
           The deterministic device core and the battery runtime model are
-          live. Performance, thermal and camera-image simulation remain under
-          active development and are coming during Beta — this workspace
-          accepts their inputs but does not pretend to evaluate them.
+          available. This beta does not simulate benchmark scores, thermal
+          behavior or image quality. Camera results describe geometry only.
         </p>
       </div>
     </div>
