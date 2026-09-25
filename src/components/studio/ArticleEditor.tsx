@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   emptyArticle,
   sections,
@@ -27,6 +27,7 @@ export default function ArticleEditor({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [reason, setReason] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const admin = roles.includes('admin');
   const editor = admin || roles.includes('editor');
@@ -34,7 +35,7 @@ export default function ArticleEditor({
     admin || roles.includes('publisher');
 
   const canEdit =
-    editor ||
+    editor || publisher ||
     ((!article || article.creator_id === userId) &&
       roles.includes('writer'));
 
@@ -80,7 +81,7 @@ export default function ArticleEditor({
           id: article?.id,
           version: article?.version,
           action,
-          payload: ['save', 'create'].includes(action)
+          payload: ['save', 'create', 'save_publish'].includes(action)
             ? draft
             : { reason },
         }),
@@ -104,7 +105,7 @@ export default function ArticleEditor({
         );
       }
 
-      if (action === 'create') {
+      if (!article) {
         setDirty(false);
 
         window.location.assign(
@@ -134,7 +135,7 @@ export default function ArticleEditor({
       setMessage(
         action === 'save'
           ? 'Draft saved as a new revision.'
-          : action === 'publish' ||
+          : action === 'publish' || action === 'save_publish' ||
               action === 'override_publish'
             ? 'Published. The canonical article is now available.'
             : 'Action recorded.',
@@ -207,7 +208,7 @@ export default function ArticleEditor({
             </label>
 
             <label>
-              Summary
+              Summary (optional)
 
               <textarea
                 maxLength={500}
@@ -242,7 +243,7 @@ export default function ArticleEditor({
               </label>
 
               <label>
-                Public byline
+                Public byline (optional)
 
                 <input
                   maxLength={160}
@@ -255,7 +256,7 @@ export default function ArticleEditor({
             </div>
 
             <label>
-              URL slug
+              URL slug (generated if blank)
 
               <input
                 maxLength={120}
@@ -283,6 +284,7 @@ export default function ArticleEditor({
             </div>
 
             <RichArticleEditor
+              onUploadingChange={setUploading}
               blocks={draft.blocks}
               disabled={!canEdit || busy}
               onChange={(blocks) => {
@@ -493,7 +495,7 @@ export default function ArticleEditor({
             </label>
 
             <label>
-              Public correction/update note
+              Public correction/update note (optional)
 
               <textarea
                 rows={4}
@@ -513,7 +515,7 @@ export default function ArticleEditor({
             <div className="studio-save-row">
               <button
                 className="studio-save"
-                disabled={busy}
+                disabled={busy || uploading}
                 onClick={() =>
                   act(
                     article
@@ -541,6 +543,8 @@ export default function ArticleEditor({
         <aside className="studio-sidebar">
           <div className="studio-sidebar-inner">
             <h2>Publishing</h2>
+            {canEdit && <button className="studio-publish" disabled={busy || uploading} onClick={()=>act('save_publish')}>{uploading ? 'Finishing image upload…' : busy ? 'Publishing…' : 'Save and publish'}</button>}
+            <p className="studio-help">No review required. Image descriptions, credits and sources are optional and can be added later.</p>
 
             {article ? (
               <>
@@ -563,25 +567,12 @@ export default function ArticleEditor({
                 )}
 
                 <div className="studio-actions">
-                  {canEdit && (
-                    <button
-                      disabled={busy || dirty}
-                      onClick={() =>
-                        act('publish')
-                      }
-                    >
-                      {article.public_revision
-                        ? 'Publish new revision'
-                        : 'Publish article'}
-                    </button>
-                  )}
+                  {canEdit && ['draft','changes_requested'].includes(article.state) && <button disabled={busy || dirty} onClick={()=>act('submit')}>Request review (optional)</button>}
+                  {(editor || publisher) && ['submitted','approved'].includes(article.state) && <>
+                    <button disabled={busy || dirty} onClick={()=>act('approve')}>Approve reviewed revision</button>
+                    <button disabled={busy || dirty || reason.trim().length<5} onClick={()=>act('request_changes')}>Request changes</button>
+                  </>}
 
-                  {dirty && canEdit && (
-                    <small>
-                      Save your changes before
-                      publishing.
-                    </small>
-                  )}
 
                   <label>
                     Publication note / action reason
@@ -596,7 +587,7 @@ export default function ArticleEditor({
                     />
                   </label>
 
-                  {publisher &&
+                  {(canEdit || publisher) &&
                     article.public_revision && (
                       <button
                         disabled={
@@ -673,7 +664,7 @@ export default function ArticleEditor({
               </>
             ) : (
               <p>
-                Create the draft when you're ready.
+                Save a private draft or publish directly when you're ready.
                 Drafts are private and never appear on
                 the publication.
               </p>

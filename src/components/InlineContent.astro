@@ -1,0 +1,7 @@
+---
+import { safeHttps, type InlineText } from '../lib/editorial';
+interface Props { parts: InlineText[] }
+const {parts}=Astro.props;
+---
+{parts.map(part => <span class:list={['inline-text',{bold:part.bold,italic:part.italic,strike:part.strike,code:part.code}]}>{safeHttps(part.href)?<a href={part.href} rel="noopener noreferrer">{part.text}</a>:part.text}</span>)}
+<style>.inline-text{white-space:pre-wrap}.bold{font-weight:700}.italic{font-style:italic}.strike{text-decoration:line-through}.code{font-family:monospace;background:#ffffff12;padding:.08em .2em}</style>

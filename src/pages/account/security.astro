@@ -59,7 +59,7 @@ if (access.can_manage_mfa_exceptions && access.roles.includes('admin') && access
 <Page title="Account security" privatePage>
   <h1>Account security.</h1>
   <p>Your browser remembers a valid session. You do not need a fresh code on each visit. Sign out when using a shared device.</p>
-  {access.mfa_exception ? <p class="notice">Your Admin account has an explicitly approved MFA exception. An authenticator is optional for PhoneFuturist access.</p> : <p>Admin and Publisher access requires an authenticator-verified session.</p>}
+  {access.mfa_exception ? <p class="notice">Your Admin account has an explicitly approved MFA exception. An authenticator is optional for PhoneFuturist access.</p> : <p>{access.mfa_required?'This account requires an authenticator-verified session.':'An authenticator is optional for your Studio role.'}</p>}
   {access.aal === 'aal2' && <p class="notice">This session is already verified. You can return to your account without entering another code.</p>}
   {message && <p class="notice error" role="alert">{message}</p>}
   {qr && <section class="panel"><h2>Set up your authenticator</h2><p>Scan this code, then enter its six-digit code. Keep the QR code private.</p><img class="qr" src={qr} alt="Private authenticator enrollment QR code"/><form class="stack" method="post"><input type="hidden" name="action" value="verify"/><input type="hidden" name="factorId" value={enrollmentId}/><label>Authenticator code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required/></label><button>Verify enrollment</button></form></section>}

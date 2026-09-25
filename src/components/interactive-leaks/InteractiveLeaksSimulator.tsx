@@ -1,9 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode, type WorkspaceRun} from '../../lib/simulation/beta-workspace';
 
 import {
   SIMULATION_ENGINE_VERSION,
-  simulateDevice,
 } from '../../lib/simulation/engine';
+
+import {
+  BATTERY_EXPERIENCE_VERSION,
+} from '../../lib/simulation/modules/battery-experience';
 
 import type {
   DeviceFormFactor,
@@ -14,6 +18,10 @@ import type {
   CameraInput,
   CameraModuleType,
 } from '../../lib/simulation/modules/camera';
+
+import type {
+  BatteryExperienceWorkload,
+} from '../../lib/simulation/modules/battery-experience';
 
 type NumericFieldProps = {
   label: string;
@@ -37,6 +45,8 @@ type CameraDraft = {
   moduleDepthMm: string;
 };
 
+/* ---------------- Device layer ---------------- */
+
 type FormState = {
   name: string;
   formFactor: DeviceFormFactor;
@@ -59,6 +69,7 @@ type FormState = {
 
   batteryCapacityMah: string;
   batteryVoltageV: string;
+
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -93,6 +104,7 @@ const initialForm: FormState = {
 
   batteryCapacityMah: '',
   batteryVoltageV: '',
+
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -127,6 +139,7 @@ const flagshipExample: FormState = {
 
   batteryCapacityMah: '5000',
   batteryVoltageV: '3.85',
+
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
@@ -166,26 +179,86 @@ const flagshipCameras: CameraDraft[] = [
   },
 ];
 
-function numeric(value: string): number | undefined {
-  if (value.trim() === '') return undefined;
+const initialWorkloadInputs: Record<BatteryExperienceWorkload, string> = {
+  mixed_use: '',
+  web_browsing: '',
+  video_playback: '',
+  gaming: '',
+  camera_use: '',
+  standby: '',
+};
 
-  const parsed = Number(value);
+/* ---------------- Formatting helpers ---------------- */
 
-  return Number.isFinite(parsed)
-    ? parsed
-    : undefined;
-}
-
-function format(
-  value: number | undefined,
-  digits = 1,
-): string {
-  if (value === undefined) return 'Unknown';
+function format(value: number | undefined, digits = 1): string {
+  if (value === undefined || !Number.isFinite(value)) return 'Unknown';
 
   return value.toLocaleString(undefined, {
     maximumFractionDigits: digits,
   });
 }
+
+function hoursLabel(
+  runtime: { min?: number; max?: number } | undefined,
+): string {
+  if (!runtime) return 'Unknown';
+
+  const { min, max } = runtime;
+
+  if (min !== undefined && max !== undefined) {
+    if (Math.abs(max - min) < 1e-9) {
+      return `${format(min, 1)} h`;
+    }
+
+    return `${format(min, 1)}–${format(max, 1)} h`;
+  }
+
+  if (min !== undefined) return `${format(min, 1)}+ h`;
+  if (max !== undefined) return `up to ${format(max, 1)} h`;
+
+  return 'Unknown';
+}
+
+function wattsLabel(
+  power: { min?: number; max?: number } | undefined,
+): string {
+  if (!power) return 'Unknown';
+
+  const { min, max } = power;
+
+  if (min !== undefined && max !== undefined) {
+    if (Math.abs(max - min) < 1e-9) {
+      return `${format(min, 2)} W`;
+    }
+
+    return `${format(min, 2)}–${format(max, 2)} W`;
+  }
+
+  if (min !== undefined) return `${format(min, 2)}+ W`;
+  if (max !== undefined) return `up to ${format(max, 2)} W`;
+
+  return 'Unknown';
+}
+
+/* A day-scale reference bar: position of a runtime within 0–30 h. */
+function runtimeBarPercent(
+  runtime: { min?: number; max?: number } | undefined,
+): number | undefined {
+  if (!runtime || runtime.min === undefined) return undefined;
+
+  const REFERENCE_HOURS = 30;
+
+  return Math.min(100, (runtime.min / REFERENCE_HOURS) * 100);
+}
+
+const CONFIDENCE_LABEL: Record<string, string> = {
+  deterministic: 'Deterministic inputs',
+  high: 'High confidence',
+  moderate: 'Moderate confidence',
+  low: 'Low confidence',
+};
+
+/* ---------------- Primitives ---------------- */
 
 function NumericField({
   label,
@@ -206,13 +279,40 @@ function NumericField({
         type="number"
         inputMode="decimal"
         step={step}
-        value={value}
+        value={value===INVALID_NUMBER?'':value}
+        aria-invalid={value===INVALID_NUMBER || (numeric(value)??0)<0}
         placeholder={placeholder}
-        onChange={(event) =>
-          onChange(event.currentTarget.value)
-        }
+        onChange={captureNumericValue(onChange)}
       />
+      <small className="il-input-state">{value===INVALID_NUMBER?'Incomplete number':value.trim()?'User supplied · unverified':'Unknown'}</small>
     </label>
+  );
+}
+
+function SectionHeading({
+  index,
+  title,
+  hint,
+  action,
+}: {
+  index: string;
+  title: string;
+  hint: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="il-section-heading">
+      <span className="il-index">{index}</span>
+
+      <div className="il-heading-copy">
+        <div>
+          <h2>{title}</h2>
+          <p>{hint}</p>
+        </div>
+      </div>
+
+      {action}
+    </div>
   );
 }
 
@@ -231,82 +331,67 @@ function emptyCamera(id: number): CameraDraft {
   };
 }
 
-function cameraInput(
-  camera: CameraDraft,
-): CameraInput {
+function cameraInput(camera: CameraDraft): CameraInput {
   return {
     type: camera.type,
-
-    sensorFormatDenominator: numeric(
-      camera.sensorFormatDenominator,
-    ),
-
+    sensorFormatDenominator: numeric(camera.sensorFormatDenominator),
     resolutionMp: numeric(camera.resolutionMp),
-
-    equivalentFocalLengthMm: numeric(
-      camera.equivalentFocalLengthMm,
-    ),
-
-    physicalFocalLengthMm: numeric(
-      camera.physicalFocalLengthMm,
-    ),
-
-    apertureFNumber: numeric(
-      camera.apertureFNumber,
-    ),
-
+    equivalentFocalLengthMm: numeric(camera.equivalentFocalLengthMm),
+    physicalFocalLengthMm: numeric(camera.physicalFocalLengthMm),
+    apertureFNumber: numeric(camera.apertureFNumber),
     moduleWidthMm: numeric(camera.moduleWidthMm),
     moduleHeightMm: numeric(camera.moduleHeightMm),
     moduleDepthMm: numeric(camera.moduleDepthMm),
   };
 }
 
+/* ---------------- Component ---------------- */
+
 export default function InteractiveLeaksSimulator() {
-  const [form, setForm] =
-    useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(initialForm);
 
-  const [cameras, setCameras] = useState<
-    CameraDraft[]
-  >([]);
+  const [cameras, setCameras] = useState<CameraDraft[]>([]);
 
-  const [hasSimulated, setHasSimulated] =
-    useState(false);
+  /* Environment layer: one average-power field per workload (W). */
+  const [workloadPower, setWorkloadPower] =
+    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
 
-  const [simulationInput, setSimulationInput] =
-    useState<SimulationInput | null>(null);
+  /* Environment layer: usable-pack derating (%). */
+  const [usablePercent, setUsablePercent] = useState<string>('');
 
-  const result = useMemo(
-    () =>
-      simulationInput
-        ? simulateDevice(simulationInput)
-        : null,
-    [simulationInput],
-  );
+  /* Weights are an advanced control: relative share inside the mixture. */
+  const [workloadWeights, setWorkloadWeights] =
+    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
 
-  function update<K extends keyof FormState>(
-    key: K,
-    value: FormState[K],
-  ) {
-    setForm((current) => ({
-      ...current,
-      [key]: value,
-    }));
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
+  const [hasSimulated, setHasSimulated] = useState(false);
+
+  const [run, setRun] = useState<WorkspaceRun|null>(null);
+  const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
+  const [dirty,setDirty] = useState(false);
+  const [exampleLoaded,setExampleLoaded] = useState(false);
+  const profile=buildProfile(workloadPower,workloadWeights,profileMode);
+  const simulationInput=run?.input;
+  const result=run?.device;
+  const battery=run?.battery;
+
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setDirty(true);
+    setForm((current) => ({ ...current, [key]: value }));
   }
 
-  function updateCamera(
-    id: number,
-    patch: Partial<CameraDraft>,
-  ) {
+  function updateCamera(id: number, patch: Partial<CameraDraft>) {
+    setDirty(true);
     setCameras((current) =>
       current.map((camera) =>
-        camera.id === id
-          ? { ...camera, ...patch }
-          : camera,
+        camera.id === id ? { ...camera, ...patch } : camera,
       ),
     );
   }
 
   function addCamera() {
+    setDirty(true);
     setCameras((current) => [
       ...current,
       emptyCamera(
@@ -318,6 +403,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function removeCamera(id: number) {
+    setDirty(true);
     setCameras((current) =>
       current.filter((camera) => camera.id !== id),
     );
@@ -333,15 +419,10 @@ export default function InteractiveLeaksSimulator() {
 
     const primaryDisplay = {
       diagonalInches: numeric(form.diagonalInches),
-      resolutionWidthPx: numeric(
-        form.resolutionWidthPx,
-      ),
-      resolutionHeightPx: numeric(
-        form.resolutionHeightPx,
-      ),
+      resolutionWidthPx: numeric(form.resolutionWidthPx),
+      resolutionHeightPx: numeric(form.resolutionHeightPx),
       aspectWidth: numeric(form.aspectWidth),
       aspectHeight: numeric(form.aspectHeight),
-
       bezelTopMm: numeric(form.bezelTopMm),
       bezelRightMm: numeric(form.bezelRightMm),
       bezelBottomMm: numeric(form.bezelBottomMm),
@@ -365,77 +446,42 @@ export default function InteractiveLeaksSimulator() {
       otherMm3: numeric(form.otherMm3),
     };
 
-    const hasComponentVolume = Object.values(
-      componentVolumes,
-    ).some((value) => value !== undefined);
+    const hasComponentVolume = Object.values(componentVolumes).some(
+      (value) => value !== undefined,
+    );
 
     const hasPackaging =
-      form.reservedVolumePercent.trim() !== '' ||
-      hasComponentVolume;
+      form.reservedVolumePercent.trim() !== '' || hasComponentVolume;
 
     return {
       formFactor: form.formFactor,
-
-      ...(form.name.trim()
-        ? { name: form.name.trim() }
-        : {}),
-
+      ...(form.name.trim() ? { name: form.name.trim() } : {}),
       dimensions,
-
-      displays: {
-        primary: primaryDisplay,
-      },
-
+      displays: { primary: primaryDisplay },
       ...(hasBattery
         ? {
             battery: {
               cells: [
                 {
-                  capacityMah: numeric(
-                    form.batteryCapacityMah,
-                  ),
-
-                  nominalVoltageV: numeric(
-                    form.batteryVoltageV,
-                  ),
-
-                  widthMm: numeric(
-                    form.batteryWidthMm,
-                  ),
-
-                  heightMm: numeric(
-                    form.batteryHeightMm,
-                  ),
-
-                  thicknessMm: numeric(
-                    form.batteryThicknessMm,
-                  ),
-
-                  weightG: numeric(
-                    form.batteryWeightG,
-                  ),
+                  capacityMah: numeric(form.batteryCapacityMah),
+                  nominalVoltageV: numeric(form.batteryVoltageV),
+                  widthMm: numeric(form.batteryWidthMm),
+                  heightMm: numeric(form.batteryHeightMm),
+                  thicknessMm: numeric(form.batteryThicknessMm),
+                  weightG: numeric(form.batteryWeightG),
                 },
               ],
             },
           }
         : {}),
-
       ...(cameras.length > 0
-        ? {
-            cameras: cameras.map(cameraInput),
-          }
+        ? { cameras: cameras.map(cameraInput) }
         : {}),
-
       ...(hasPackaging
         ? {
             packaging: {
-              reservedVolumePercent: numeric(
-                form.reservedVolumePercent,
-              ),
-
-              ...(hasComponentVolume
-                ? { componentVolumes }
-                : {}),
+              reservedVolumePercent: numeric(form.reservedVolumePercent),
+              ...(hasComponentVolume ? { componentVolumes } : {}),
             },
           }
         : {}),
@@ -443,84 +489,87 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function simulate() {
-    setSimulationInput(buildInput());
+    const {name,formFactor,...fields}=form;
+    const issues=numericIssues(fields);
+    cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
+    setRun(runWorkspace(buildInput(),usablePercent,profile,issues));
     setHasSimulated(true);
+    setDirty(false);
   }
 
   function loadExample() {
+    setExampleLoaded(true);
     setForm(flagshipExample);
     setCameras(flagshipCameras);
-    setSimulationInput(null);
+    setWorkloadPower({ ...initialWorkloadInputs, gaming: '6' });
+    setWorkloadWeights(initialWorkloadInputs);
+    setUsablePercent('');
+    setRun(null);
+    setProfileMode('equal');
+    setDirty(false);
     setHasSimulated(false);
   }
 
   function clearSimulation() {
+    setExampleLoaded(false);
     setForm(initialForm);
     setCameras([]);
-    setSimulationInput(null);
+    setWorkloadPower(initialWorkloadInputs);
+    setWorkloadWeights(initialWorkloadInputs);
+    setUsablePercent('');
+    setRun(null);
+    setProfileMode('equal');
+    setDirty(false);
     setHasSimulated(false);
   }
 
   const display = result?.displays.primary;
-  const battery = result?.battery;
+  const pack = result?.battery;
   const packaging = result?.packaging;
 
-  const knownCameraVolumeMm3 =
-    result?.cameras
-      ?.map((camera) => camera.moduleVolumeMm3)
-      .filter(
-        (volume): volume is number =>
-          volume !== undefined,
-      )
-      .reduce((total, volume) => total + volume, 0);
+  const knownCameraVolumeMm3 = result?.cameras
+    ?.map((camera) => camera.moduleVolumeMm3)
+    .filter((volume): volume is number => volume !== undefined)
+    .reduce((total, volume) => total + volume, 0);
+
+  const estimate = battery?.result.status === 'resolved'
+    ? battery.result.estimate
+    : undefined;
 
   return (
     <div className="il-app">
       <div className="il-toolbar">
         <div>
-          <span className="il-status">
-            Simulation workspace
-          </span>
+          <span className="il-status">Instrument · Public Beta</span>
 
           <span className="il-engine">
-            Engine v{SIMULATION_ENGINE_VERSION}
+            Engine v{SIMULATION_ENGINE_VERSION} · Battery model{' '}
+            {BATTERY_EXPERIENCE_VERSION}
           </span>
         </div>
 
         <div className="il-toolbar-actions">
-          <button
-            type="button"
-            className="secondary"
-            onClick={loadExample}
-          >
-            Load example
+          <button type="button" className="il-chip" onClick={loadExample}>
+            Load illustrative example
           </button>
 
-          <button
-            type="button"
-            className="secondary"
-            onClick={clearSimulation}
-          >
+          <button type="button" className="il-chip" onClick={clearSimulation}>
             Clear
           </button>
         </div>
       </div>
 
+      {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
       <div className="il-workspace">
-        <section
-          className="il-builder"
-          aria-label="Simulation inputs"
-        >
+        {/* ---------------- Builder column ---------------- */}
+        <section className="il-builder" aria-label="Simulation inputs">
+          {/* 01 · DEVICE */}
           <div className="il-section">
-            <div className="il-section-heading">
-              <span>01</span>
-              <div>
-                <h2>Device</h2>
-                <p>
-                  Start with the physical envelope.
-                </p>
-              </div>
-            </div>
+            <SectionHeading
+              index="01"
+              title="Device"
+              hint="Enter only values you have. Blank means unknown; typed values are user-supplied, not independently verified."
+            />
 
             <div className="il-grid">
               <label className="il-field il-wide">
@@ -530,12 +579,7 @@ export default function InteractiveLeaksSimulator() {
                   type="text"
                   value={form.name}
                   placeholder="Untitled concept"
-                  onChange={(event) =>
-                    update(
-                      'name',
-                      event.currentTarget.value,
-                    )
-                  }
+                  onChange={(event) => update('name', event.currentTarget.value)}
                 />
               </label>
 
@@ -547,27 +591,16 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(event) =>
                     update(
                       'formFactor',
-                      event.currentTarget
-                        .value as DeviceFormFactor,
+                      event.currentTarget.value as DeviceFormFactor,
                     )
                   }
                 >
                   <option value="phone">Phone</option>
-                  <option value="book_foldable">
-                    Book foldable
-                  </option>
-                  <option value="flip_foldable">
-                    Flip foldable
-                  </option>
-                  <option value="tablet">
-                    Tablet
-                  </option>
-                  <option value="laptop">
-                    Laptop
-                  </option>
-                  <option value="wearable">
-                    Wearable
-                  </option>
+                  <option value="book_foldable">Book foldable</option>
+                  <option value="flip_foldable">Flip foldable</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="laptop">Laptop</option>
+                  <option value="wearable">Wearable</option>
                 </select>
               </label>
 
@@ -576,9 +609,7 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.widthMm}
                 placeholder="75"
-                onChange={(value) =>
-                  update('widthMm', value)
-                }
+                onChange={(value) => update('widthMm', value)}
               />
 
               <NumericField
@@ -586,9 +617,7 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.heightMm}
                 placeholder="160"
-                onChange={(value) =>
-                  update('heightMm', value)
-                }
+                onChange={(value) => update('heightMm', value)}
               />
 
               <NumericField
@@ -596,44 +625,39 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.thicknessMm}
                 placeholder="8"
-                onChange={(value) =>
-                  update('thicknessMm', value)
-                }
+                onChange={(value) => update('thicknessMm', value)}
               />
 
               <NumericField
-                label="Weight"
+                label="Device mass"
                 suffix="g"
                 value={form.weightG}
                 placeholder="195"
-                onChange={(value) =>
-                  update('weightG', value)
-                }
+                onChange={(value) => update('weightG', value)}
               />
-            </div>
-          </div>
 
-          <div className="il-section">
-            <div className="il-section-heading">
-              <span>02</span>
-              <div>
-                <h2>Display</h2>
-                <p>
-                  Define the primary panel and its
-                  geometry.
-                </p>
-              </div>
-            </div>
-
-            <div className="il-grid">
               <NumericField
-                label="Diagonal"
+                label="Battery capacity"
+                suffix="mAh"
+                value={form.batteryCapacityMah}
+                placeholder="5000"
+                onChange={(value) => update('batteryCapacityMah', value)}
+              />
+
+              <NumericField
+                label="Nominal voltage"
+                suffix="V"
+                value={form.batteryVoltageV}
+                placeholder="3.85"
+                onChange={(value) => update('batteryVoltageV', value)}
+              />
+
+              <NumericField
+                label="Display diagonal"
                 suffix="in"
                 value={form.diagonalInches}
                 placeholder="6.7"
-                onChange={(value) =>
-                  update('diagonalInches', value)
-                }
+                onChange={(value) => update('diagonalInches', value)}
               />
 
               <NumericField
@@ -642,213 +666,182 @@ export default function InteractiveLeaksSimulator() {
                 value={form.resolutionWidthPx}
                 placeholder="1440"
                 step="1"
-                onChange={(value) =>
-                  update('resolutionWidthPx', value)
-                }
-              />
-
-              <NumericField
-                label="Resolution height"
-                suffix="px"
-                value={form.resolutionHeightPx}
-                placeholder="3200"
-                step="1"
-                onChange={(value) =>
-                  update('resolutionHeightPx', value)
-                }
-              />
-
-              <NumericField
-                label="Aspect width"
-                value={form.aspectWidth}
-                placeholder="9"
-                onChange={(value) =>
-                  update('aspectWidth', value)
-                }
-              />
-
-              <NumericField
-                label="Aspect height"
-                value={form.aspectHeight}
-                placeholder="20"
-                onChange={(value) =>
-                  update('aspectHeight', value)
-                }
+                onChange={(value) => update('resolutionWidthPx', value)}
               />
             </div>
 
-            <details className="il-advanced">
-              <summary>Advanced bezel geometry</summary>
+            <div className="il-grid">                  <NumericField
+                    label="Resolution height"
+                    suffix="px"
+                    value={form.resolutionHeightPx}
+                    placeholder="3200"
+                    step="1"
+                    onChange={(value) => update('resolutionHeightPx', value)}
+                  /></div>
+            <details className="il-advanced" open={advancedOpen}>
+              <summary
+                onClick={(event) => {
+                  event.preventDefault();
+                  setAdvancedOpen((open) => !open);
+                }}
+              >
+                Advanced · panel, cell & envelope detail
+              </summary>
 
-              <div className="il-grid">
-                <NumericField
-                  label="Top bezel"
-                  suffix="mm"
-                  value={form.bezelTopMm}
-                  placeholder="1.5"
-                  onChange={(value) =>
-                    update('bezelTopMm', value)
-                  }
-                />
+              <div className="il-advanced-body">
+                <p className="il-group-label">Display geometry</p>
 
-                <NumericField
-                  label="Right bezel"
-                  suffix="mm"
-                  value={form.bezelRightMm}
-                  placeholder="1.5"
-                  onChange={(value) =>
-                    update('bezelRightMm', value)
-                  }
-                />
+                <div className="il-grid">
 
-                <NumericField
-                  label="Bottom bezel"
-                  suffix="mm"
-                  value={form.bezelBottomMm}
-                  placeholder="1.5"
-                  onChange={(value) =>
-                    update('bezelBottomMm', value)
-                  }
-                />
 
-                <NumericField
-                  label="Left bezel"
-                  suffix="mm"
-                  value={form.bezelLeftMm}
-                  placeholder="1.5"
-                  onChange={(value) =>
-                    update('bezelLeftMm', value)
-                  }
-                />
-              </div>
-            </details>
-          </div>
+                  <NumericField
+                    label="Aspect width"
+                    value={form.aspectWidth}
+                    placeholder="9"
+                    onChange={(value) => update('aspectWidth', value)}
+                  />
 
-          <div className="il-section">
-            <div className="il-section-heading">
-              <span>03</span>
-              <div>
-                <h2>Battery</h2>
-                <p>
-                  Capacity, energy and physical cell
-                  volume.
+                  <NumericField
+                    label="Aspect height"
+                    value={form.aspectHeight}
+                    placeholder="20"
+                    onChange={(value) => update('aspectHeight', value)}
+                  />
+
+                  <div aria-hidden="true" />
+                </div>
+
+                <p className="il-group-label">Bezels</p>
+
+                <div className="il-grid">
+                  <NumericField
+                    label="Top bezel"
+                    suffix="mm"
+                    value={form.bezelTopMm}
+                    placeholder="1.5"
+                    onChange={(value) => update('bezelTopMm', value)}
+                  />
+
+                  <NumericField
+                    label="Right bezel"
+                    suffix="mm"
+                    value={form.bezelRightMm}
+                    placeholder="1.5"
+                    onChange={(value) => update('bezelRightMm', value)}
+                  />
+
+                  <NumericField
+                    label="Bottom bezel"
+                    suffix="mm"
+                    value={form.bezelBottomMm}
+                    placeholder="1.5"
+                    onChange={(value) => update('bezelBottomMm', value)}
+                  />
+
+                  <NumericField
+                    label="Left bezel"
+                    suffix="mm"
+                    value={form.bezelLeftMm}
+                    placeholder="1.5"
+                    onChange={(value) => update('bezelLeftMm', value)}
+                  />
+                </div>
+
+                <p className="il-group-label">Cell geometry & weight</p>
+
+                <div className="il-grid">
+                  <NumericField
+                    label="Cell width"
+                    suffix="mm"
+                    value={form.batteryWidthMm}
+                    placeholder="60"
+                    onChange={(value) => update('batteryWidthMm', value)}
+                  />
+
+                  <NumericField
+                    label="Cell height"
+                    suffix="mm"
+                    value={form.batteryHeightMm}
+                    placeholder="80"
+                    onChange={(value) => update('batteryHeightMm', value)}
+                  />
+
+                  <NumericField
+                    label="Cell thickness"
+                    suffix="mm"
+                    value={form.batteryThicknessMm}
+                    placeholder="5"
+                    onChange={(value) => update('batteryThicknessMm', value)}
+                  />
+
+                  <NumericField
+                    label="Cell weight"
+                    suffix="g"
+                    value={form.batteryWeightG}
+                    placeholder="70"
+                    onChange={(value) => update('batteryWeightG', value)}
+                  />
+                </div>
+
+                <p className="il-group-label">Internal volume budget</p>
+
+                <div className="il-grid">
+                  <NumericField
+                    label="Reserved volume"
+                    suffix="%"
+                    value={form.reservedVolumePercent}
+                    placeholder="20"
+                    onChange={(value) => update('reservedVolumePercent', value)}
+                  />
+
+                  <NumericField
+                    label="Thermal"
+                    suffix="mm³"
+                    value={form.thermalMm3}
+                    onChange={(value) => update('thermalMm3', value)}
+                  />
+
+                  <NumericField
+                    label="Logic board"
+                    suffix="mm³"
+                    value={form.boardMm3}
+                    onChange={(value) => update('boardMm3', value)}
+                  />
+
+                  <NumericField
+                    label="Speakers"
+                    suffix="mm³"
+                    value={form.speakersMm3}
+                    onChange={(value) => update('speakersMm3', value)}
+                  />
+
+                  <NumericField
+                    label="Other known components"
+                    suffix="mm³"
+                    value={form.otherMm3}
+                    onChange={(value) => update('otherMm3', value)}
+                  />
+                </div>
+
+                <p className="il-help">
+                  Camera modules (type, sensor, optics, module geometry) can be
+                  added below. Module volume is derived from what you supply —
+                  nothing is estimated.
                 </p>
               </div>
-            </div>
+            </details>
 
-            <div className="il-grid">
-              <NumericField
-                label="Capacity"
-                suffix="mAh"
-                value={form.batteryCapacityMah}
-                placeholder="5000"
-                onChange={(value) =>
-                  update(
-                    'batteryCapacityMah',
-                    value,
-                  )
-                }
-              />
-
-              <NumericField
-                label="Nominal voltage"
-                suffix="V"
-                value={form.batteryVoltageV}
-                placeholder="3.85"
-                onChange={(value) =>
-                  update('batteryVoltageV', value)
-                }
-              />
-
-              <NumericField
-                label="Cell width"
-                suffix="mm"
-                value={form.batteryWidthMm}
-                placeholder="60"
-                onChange={(value) =>
-                  update('batteryWidthMm', value)
-                }
-              />
-
-              <NumericField
-                label="Cell height"
-                suffix="mm"
-                value={form.batteryHeightMm}
-                placeholder="80"
-                onChange={(value) =>
-                  update('batteryHeightMm', value)
-                }
-              />
-
-              <NumericField
-                label="Cell thickness"
-                suffix="mm"
-                value={form.batteryThicknessMm}
-                placeholder="5"
-                onChange={(value) =>
-                  update(
-                    'batteryThicknessMm',
-                    value,
-                  )
-                }
-              />
-
-              <NumericField
-                label="Cell weight"
-                suffix="g"
-                value={form.batteryWeightG}
-                placeholder="70"
-                onChange={(value) =>
-                  update('batteryWeightG', value)
-                }
-              />
-            </div>
-          </div>
-
-          <div className="il-section">
-            <div className="il-section-heading il-section-heading-action">
-              <div className="il-heading-copy">
-                <span>04</span>
-                <div>
-                  <h2>Cameras</h2>
-                  <p>
-                    Add only what is actually known.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="secondary"
-                onClick={addCamera}
-              >
-                + Add camera
-              </button>
-            </div>
-
-            {cameras.length === 0 ? (
-              <div className="il-empty">
-                No camera modules added. Camera
-                calculations will remain unknown.
-              </div>
-            ) : (
+            {cameras.length > 0 && (
               <div className="il-camera-list">
                 {cameras.map((camera, index) => (
-                  <article
-                    className="il-camera"
-                    key={camera.id}
-                  >
+                  <article className="il-camera" key={camera.id}>
                     <div className="il-camera-title">
-                      <strong>
-                        Camera {index + 1}
-                      </strong>
+                      <strong>Camera {index + 1}</strong>
 
                       <button
                         type="button"
                         className="il-remove"
-                        onClick={() =>
-                          removeCamera(camera.id)
-                        }
+                        onClick={() => removeCamera(camera.id)}
                       >
                         Remove
                       </button>
@@ -867,39 +860,22 @@ export default function InteractiveLeaksSimulator() {
                             })
                           }
                         >
-                          <option value="wide">
-                            Wide
-                          </option>
-                          <option value="ultrawide">
-                            Ultrawide
-                          </option>
-                          <option value="telephoto">
-                            Telephoto
-                          </option>
-                          <option value="periscope">
-                            Periscope
-                          </option>
-                          <option value="front">
-                            Front
-                          </option>
-                          <option value="other">
-                            Other
-                          </option>
+                          <option value="wide">Wide</option>
+                          <option value="ultrawide">Ultrawide</option>
+                          <option value="telephoto">Telephoto</option>
+                          <option value="periscope">Periscope</option>
+                          <option value="front">Front</option>
+                          <option value="other">Other</option>
                         </select>
                       </label>
 
                       <NumericField
                         label="Sensor format"
                         suffix="1/x″"
-                        value={
-                          camera.sensorFormatDenominator
-                        }
+                        value={camera.sensorFormatDenominator}
                         placeholder="1.3"
                         onChange={(value) =>
-                          updateCamera(camera.id, {
-                            sensorFormatDenominator:
-                              value,
-                          })
+                          updateCamera(camera.id, { sensorFormatDenominator: value })
                         }
                       />
 
@@ -909,23 +885,18 @@ export default function InteractiveLeaksSimulator() {
                         value={camera.resolutionMp}
                         placeholder="50"
                         onChange={(value) =>
-                          updateCamera(camera.id, {
-                            resolutionMp: value,
-                          })
+                          updateCamera(camera.id, { resolutionMp: value })
                         }
                       />
 
                       <NumericField
                         label="Equivalent focal length"
                         suffix="mm"
-                        value={
-                          camera.equivalentFocalLengthMm
-                        }
+                        value={camera.equivalentFocalLengthMm}
                         placeholder="24"
                         onChange={(value) =>
                           updateCamera(camera.id, {
-                            equivalentFocalLengthMm:
-                              value,
+                            equivalentFocalLengthMm: value,
                           })
                         }
                       />
@@ -933,158 +904,90 @@ export default function InteractiveLeaksSimulator() {
                       <NumericField
                         label="Aperture"
                         suffix="f/"
-                        value={
-                          camera.apertureFNumber
-                        }
+                        value={camera.apertureFNumber}
                         placeholder="1.6"
                         onChange={(value) =>
-                          updateCamera(camera.id, {
-                            apertureFNumber: value,
-                          })
+                          updateCamera(camera.id, { apertureFNumber: value })
                         }
                       />
                     </div>
-
-                    <details className="il-advanced">
-                      <summary>
-                        Advanced optical & module data
-                      </summary>
-
-                      <div className="il-grid">
-                        <NumericField
-                          label="Physical focal length"
-                          suffix="mm"
-                          value={
-                            camera.physicalFocalLengthMm
-                          }
-                          placeholder="6.5"
-                          onChange={(value) =>
-                            updateCamera(camera.id, {
-                              physicalFocalLengthMm:
-                                value,
-                            })
-                          }
-                        />
-
-                        <NumericField
-                          label="Module width"
-                          suffix="mm"
-                          value={camera.moduleWidthMm}
-                          placeholder="20"
-                          onChange={(value) =>
-                            updateCamera(camera.id, {
-                              moduleWidthMm: value,
-                            })
-                          }
-                        />
-
-                        <NumericField
-                          label="Module height"
-                          suffix="mm"
-                          value={camera.moduleHeightMm}
-                          placeholder="20"
-                          onChange={(value) =>
-                            updateCamera(camera.id, {
-                              moduleHeightMm: value,
-                            })
-                          }
-                        />
-
-                        <NumericField
-                          label="Module depth"
-                          suffix="mm"
-                          value={camera.moduleDepthMm}
-                          placeholder="6"
-                          onChange={(value) =>
-                            updateCamera(camera.id, {
-                              moduleDepthMm: value,
-                            })
-                          }
-                        />
-                      </div>
-                    </details>
+                    <details className="il-advanced"><summary>Advanced · camera optics and module dimensions</summary><div className="il-grid">
+                      {([['physicalFocalLengthMm','Physical focal length'],['moduleWidthMm','Module width'],['moduleHeightMm','Module height'],['moduleDepthMm','Module depth']] as const).map(([key,label])=><NumericField key={key} label={label} suffix="mm" value={camera[key]} onChange={value=>updateCamera(camera.id,{[key]:value})}/>)}
+                    </div></details>
+                    <p className="il-help">For 1/1.3″ sensor format, enter 1.3. Optical format is an approximation, not a physical sensor diagonal.</p>
                   </article>
                 ))}
               </div>
             )}
+
+            <button type="button" className="il-chip il-add" onClick={addCamera}>
+              + Add camera module
+            </button>
           </div>
 
+          {/* 02 · ENVIRONMENT */}
           <div className="il-section">
-            <div className="il-section-heading">
-              <span>05</span>
-              <div>
-                <h2>Packaging</h2>
-                <p>
-                  Model the known internal volume
-                  budget.
-                </p>
-              </div>
+            <SectionHeading
+              index="02"
+              title="Environment"
+              hint="How the device is used during the simulated session: per-workload power and pack derating."
+            />
+
+            <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
+              <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
+            </select></label>
+            <p className="il-help">Average device power (W) means the whole device's average draw during that workload. It is not charger wattage or a chip's rated power.</p>
+            <div className="il-workload-grid">
+              {(profileMode==='manual'?['mixed_use' as const]:COMPONENT_WORKLOADS).map(workload=><label className={workloadPower[workload].trim()?'il-workload active':'il-workload'} key={workload}>
+                <span className="il-workload-name">{WORKLOAD_LABEL[workload]}</span><span className="il-workload-unit">Average device power (W)</span>
+                <input type="number" inputMode="decimal" step="any" value={workloadPower[workload]===INVALID_NUMBER?'':workloadPower[workload]} aria-invalid={workloadPower[workload]===INVALID_NUMBER || (numeric(workloadPower[workload])??1)<=0} placeholder="Unknown" aria-label={WORKLOAD_LABEL[workload]+' average device power (W)'} onChange={captureNumericValue(value=>{setDirty(true);setWorkloadPower(current=>({...current,[workload]:value}));})}/>
+              </label>)}
             </div>
-
-            <div className="il-grid">
-              <NumericField
-                label="Reserved volume"
-                suffix="%"
-                value={form.reservedVolumePercent}
-                placeholder="20"
-                onChange={(value) =>
-                  update(
-                    'reservedVolumePercent',
-                    value,
-                  )
-                }
-              />
+            <p className="il-help">{profileMode==='equal'?'Equal shares: only workloads with supplied power participate. Each receives the same share of mixed-use time.':profileMode==='manual'?'The supplied mixed-use power is the entire profile. Individual workloads are not added to it.':'How much each workload contributes to the mixed-use profile. Shares describe percentages of time, not hours or power.'}</p>
+            {profileMode==='percent'&&<details className="il-advanced" open><summary>Advanced · share of mixed use (%)</summary>
+              <p className="il-help">Total must be 100%. Enter 0% to exclude a workload. A positive share always needs a power value.</p>
+              <div className="il-grid">{COMPONENT_WORKLOADS.map(workload=><NumericField key={workload} label={WORKLOAD_LABEL[workload]+' share of mixed use'} suffix="%" value={workloadWeights[workload]} placeholder="Not assigned" onChange={value=>{setDirty(true);setWorkloadWeights(current=>({...current,[workload]:value}));}}/>)}</div>
+              <p className="il-profile-total" role="status">Current total: {format(profile.totalPercent,2)}% {profile.issues.length===0?'— valid profile':'— incomplete or invalid'}</p>
+            </details>}
+            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
+            <div className="il-grid il-derate"><NumericField label="Usable pack energy" suffix="%" value={usablePercent} placeholder="Full rated pack" onChange={value=>{setUsablePercent(value);setDirty(true);}}/>
+              <p className="il-help">Percentage of rated/nominal battery energy available after protection reserves and voltage cutoff. Empty preserves full rated pack energy (100%) under this model; that can make runtime optimistic. This is not the battery's current charge level.</p>
             </div>
+          </div>
 
-            <details className="il-advanced">
-              <summary>
-                Known component volumes
-              </summary>
+          {/* 03 · MODEL */}
+          <div className="il-section il-section-last">
+            <SectionHeading
+              index="03"
+              title="Model"
+              hint="What PhoneFuturist currently knows — the versioned engine and battery model that will evaluate this configuration."
+            />
 
-              <p className="il-help">
-                Battery and camera volume are calculated
-                automatically when enough geometry is
-                supplied.
-              </p>
+            <ul className="il-model-list">
+              <li>
+                <strong>Deterministic core</strong>
+                <span>
+                  Engine v{SIMULATION_ENGINE_VERSION} · display PPI, screen-to-body,
+                  pack energy, energy density, internal volume budget
+                </span>
+              </li>
 
-              <div className="il-grid">
-                <NumericField
-                  label="Thermal"
-                  suffix="mm³"
-                  value={form.thermalMm3}
-                  onChange={(value) =>
-                    update('thermalMm3', value)
-                  }
-                />
+              <li>
+                <strong>Battery runtime model</strong>
+                <span>
+                  {BATTERY_EXPERIENCE_VERSION} · workload power mixture,
+                  interval arithmetic, provenance-aware confidence
+                </span>
+              </li>
 
-                <NumericField
-                  label="Logic board"
-                  suffix="mm³"
-                  value={form.boardMm3}
-                  onChange={(value) =>
-                    update('boardMm3', value)
-                  }
-                />
-
-                <NumericField
-                  label="Speakers"
-                  suffix="mm³"
-                  value={form.speakersMm3}
-                  onChange={(value) =>
-                    update('speakersMm3', value)
-                  }
-                />
-
-                <NumericField
-                  label="Other known components"
-                  suffix="mm³"
-                  value={form.otherMm3}
-                  onChange={(value) =>
-                    update('otherMm3', value)
-                  }
-                />
-              </div>
-            </details>
+              <li>
+                <strong>Evidence discipline</strong>
+                <span>
+                  Unknown inputs stay unknown; the result explains every
+                  assumption it made
+                </span>
+              </li>
+            </ul>
           </div>
 
           <div className="il-run">
@@ -1095,30 +998,24 @@ export default function InteractiveLeaksSimulator() {
             >
               Run simulation →
             </button>
-
+            {hasSimulated&&<a className="il-chip" href="#simulation-results">View results ↓</a>}
             <p>
-              Unknown inputs stay unknown. The engine
-              does not silently invent missing data.
+              Device + Environment + Model. Nothing invented between the
+              three.
             </p>
           </div>
         </section>
 
-        <aside
-          className="il-results"
-          aria-live="polite"
-          aria-label="Simulation results"
-        >
+        {/* ---------------- Result column ---------------- */}
+        <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
           <div className="il-results-top">
-            <span className="eyebrow">
-              Simulation result
-            </span>
+            <span className="eyebrow">Simulation result</span>
 
-            <span>
-              v{SIMULATION_ENGINE_VERSION}
-            </span>
+            <span>v{SIMULATION_ENGINE_VERSION}</span>
           </div>
 
-          {!hasSimulated || !result ? (
+          {hasSimulated&&dirty&&<p className="il-input-note">Inputs changed. Run again to update these results.</p>}
+          {!hasSimulated ? (
             <div className="il-result-empty">
               <div className="il-orbit" aria-hidden="true">
                 <span />
@@ -1127,41 +1024,84 @@ export default function InteractiveLeaksSimulator() {
               <h2>Nothing simulated yet.</h2>
 
               <p>
-                Enter the specifications you know, or
-                load the reference example, then run
-                the model.
+                Configure a device, add environment power if you have it, then
+                run the model. Load the example to see a complete
+                configuration.
               </p>
             </div>
-          ) : (
+          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p></div> : (
             <>
               <div className="il-result-identity">
                 <span>
-                  {simulationInput?.formFactor
-                    .replaceAll('_', ' ')
-                    .toUpperCase()}
+                  {simulationInput?.formFactor.replaceAll('_', ' ').toUpperCase()}
                 </span>
 
-                <h2>
-                  {simulationInput?.name ||
-                    'Untitled concept'}
-                </h2>
+                <h2>{simulationInput?.name || 'Untitled concept'}</h2>
               </div>
 
+              {/* Hero runtime card (only when the environment layer ran) */}
+              {(
+                <div className="il-runtime-card">
+                  <span className="il-runtime-eyebrow">
+                    Estimated mixed-use runtime
+                  </span>
+
+                  {battery?.result.status === 'resolved' ? (
+                    <>
+                      <p className="il-runtime-value">
+                        {hoursLabel(estimate?.runtimeHours)}
+                      </p>
+
+                      <p className="il-help">{format(estimate?.usableEnergyWh?.min,2)} Wh usable energy ÷ {wattsLabel(battery.result.comparisonReady?.averagePowerW)} mixed-use average power.</p>
+                      <p className="il-help">{run?.profile.mode==='manual'?'Uses your supplied mixed-use power.':run?.profile.terms.map(term=>WORKLOAD_LABEL[term.workload]+' '+format(term.power,2)+' W × '+format(term.share*100,2)+'%').join(' + ')}</p>
+                      <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
+                      {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
+                      <div className="il-runtime-bar" aria-hidden="true">
+                        <span
+                          style={{
+                            width: `${runtimeBarPercent(estimate?.runtimeHours) ?? 0}%`,
+                          }}
+                        />
+                      </div>
+
+                      <span className="il-runtime-scale">
+                        0 h · 24 h day · 30 h scale
+                      </span>
+
+                      {battery.result.confidence && (
+                        <span
+                          className={`il-confidence il-confidence-${battery.result.confidence}`}
+                        >
+                          {CONFIDENCE_LABEL[battery.result.confidence]}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p className="il-runtime-value il-runtime-unknown">
+                        Cannot estimate yet
+                      </p>
+
+                      <ul className="il-profile-issues">{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <details className="il-evidence"><summary>Supporting device and engineering metrics</summary>
+              {/* Device-layer deterministic metrics */}
               <div className="il-result-group">
-                <span className="il-result-label">
-                  Display
-                </span>
+                <span className="il-result-label">Display</span>
 
                 <div className="il-metrics">
                   <div>
                     <strong>
                       {format(
-                        simulationInput?.displays
-                          .primary.diagonalInches,
+                        simulationInput?.displays.primary.diagonalInches,
                         2,
                       )}
-                      {simulationInput?.displays.primary
-                        .diagonalInches !== undefined
+                      {simulationInput?.displays.primary.diagonalInches !==
+                      undefined
                         ? '″'
                         : ''}
                     </strong>
@@ -1169,22 +1109,14 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <div>
-                    <strong>
-                      {format(display?.ppi, 0)}
-                    </strong>
+                    <strong>{format(display?.ppi, 0)}</strong>
                     <span>PPI</span>
                   </div>
 
                   <div>
                     <strong>
-                      {format(
-                        display?.screenToBodyRatio,
-                        1,
-                      )}
-                      {display?.screenToBodyRatio !==
-                      undefined
-                        ? '%'
-                        : ''}
+                      {format(display?.screenToBodyRatio, 1)}
+                      {display?.screenToBodyRatio !== undefined ? '%' : ''}
                     </strong>
                     <span>Screen to body</span>
                   </div>
@@ -1192,66 +1124,62 @@ export default function InteractiveLeaksSimulator() {
               </div>
 
               <div className="il-result-group">
-                <span className="il-result-label">
-                  Battery
-                </span>
+                <span className="il-result-label">Battery pack</span>
 
                 <div className="il-metrics">
                   <div>
-                    <strong>
-                      {format(
-                        battery?.totalCapacityMah,
-                        0,
-                      )}
-                    </strong>
+                    <strong>{format(pack?.totalCapacityMah, 0)}</strong>
                     <span>mAh</span>
                   </div>
 
                   <div>
-                    <strong>
-                      {format(
-                        battery?.totalEnergyWh,
-                        2,
-                      )}
-                    </strong>
+                    <strong>{format(pack?.totalEnergyWh, 2)}</strong>
                     <span>Wh</span>
                   </div>
 
                   <div>
-                    <strong>
-                      {format(
-                        battery?.totalVolumeCm3,
-                        2,
-                      )}
-                    </strong>
+                    <strong>{format(pack?.totalVolumeCm3, 2)}</strong>
                     <span>cm³</span>
                   </div>
                 </div>
               </div>
 
+              {estimate && estimate.workloads.length > 0 && (
+                <div className="il-result-group">
+                  <span className="il-result-label">Workload mixture</span>
+
+                  <div className="il-workload-results">
+                    {estimate.workloads.map((entry) => (
+                      <div className="il-workload-result" key={entry.workload}>
+                        <div>
+                          <strong>{WORKLOAD_LABEL[entry.workload]}</strong>
+
+                          <span>
+                            {wattsLabel(entry.averagePowerW)} ·{' '}
+                            {Math.round(entry.weightShare * 100)}% of profile
+                          </span>
+                        </div>
+
+                        <b>{wattsLabel(entry.weightedPowerW)}</b>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="il-result-group">
-                <span className="il-result-label">
-                  Camera system
-                </span>
+                <span className="il-result-label">Camera system</span>
 
                 <div className="il-metrics">
                   <div>
-                    <strong>
-                      {result.cameras?.length ??
-                        'Unknown'}
-                    </strong>
+                    <strong>{result.cameras?.length ?? 'Unknown'}</strong>
                     <span>Modules</span>
                   </div>
 
                   <div>
                     <strong>
-                      {knownCameraVolumeMm3 !==
-                      undefined
-                        ? format(
-                            knownCameraVolumeMm3 /
-                              1000,
-                            2,
-                          )
+                      {knownCameraVolumeMm3 !== undefined
+                        ? format(knownCameraVolumeMm3 / 1000, 2)
                         : 'Unknown'}
                     </strong>
                     <span>Known volume cm³</span>
@@ -1260,25 +1188,17 @@ export default function InteractiveLeaksSimulator() {
               </div>
 
               <div className="il-result-group">
-                <span className="il-result-label">
-                  Internal volume
-                </span>
+                <span className="il-result-label">Internal volume</span>
 
                 <div className="il-volume-number">
                   <strong>
-                    {format(
-                      packaging?.knownComponentVolumeCm3,
-                      2,
-                    )}
+                    {format(packaging?.knownComponentVolumeCm3, 2)}
                   </strong>
 
                   <span>/</span>
 
                   <strong>
-                    {format(
-                      packaging?.availableInternalVolumeCm3,
-                      2,
-                    )}
+                    {format(packaging?.availableInternalVolumeCm3, 2)}
                   </strong>
 
                   <small>cm³ known / available</small>
@@ -1286,23 +1206,14 @@ export default function InteractiveLeaksSimulator() {
 
                 <div className="il-metrics">
                   <div>
-                    <strong>
-                      {format(
-                        packaging?.remainingVolumeCm3,
-                        2,
-                      )}
-                    </strong>
+                    <strong>{format(packaging?.remainingVolumeCm3, 2)}</strong>
                     <span>cm³ remaining</span>
                   </div>
 
                   <div>
                     <strong>
-                      {format(
-                        packaging?.usedInternalVolumePercent,
-                        1,
-                      )}
-                      {packaging?.usedInternalVolumePercent !==
-                      undefined
+                      {format(packaging?.usedInternalVolumePercent, 1)}
+                      {packaging?.usedInternalVolumePercent !== undefined
                         ? '%'
                         : ''}
                     </strong>
@@ -1311,13 +1222,10 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               </div>
 
-              {packaging?.fitsAvailableVolume !==
-                undefined && (
+              {packaging?.fitsAvailableVolume !== undefined && (
                 <div
                   className={`il-verdict ${
-                    packaging.fitsAvailableVolume
-                      ? 'passes'
-                      : 'fails'
+                    packaging.fitsAvailableVolume ? 'passes' : 'fails'
                   }`}
                 >
                   <strong>
@@ -1334,44 +1242,95 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               )}
 
+              </details>
+              {/* Provenance, assumptions, confidence detail */}
+              {(estimate?.assumptions.length ?? 0) > 0 && (
+                <details className="il-evidence">
+                  <summary>Assumptions ({estimate?.assumptions.length})</summary>
+
+                  <ul>
+                    {estimate?.assumptions.map((assumption, index) => (
+                      <li key={`${assumption.code}-${index}`}>
+                        <strong>{assumption.code}</strong>
+
+                        <span>{assumption.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+
+              {battery?.result.confidenceNotes &&
+                battery.result.confidenceNotes.length > 0 && (
+                  <details className="il-evidence">
+                    <summary>
+                      Confidence notes ({battery.result.confidenceNotes.length})
+                    </summary>
+
+                    <ul>
+                      {battery.result.confidenceNotes.map((note, index) => (
+                        <li key={index}>
+                          <span>{note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+
+              {(battery?.warnings.length ?? 0) > 0 && (
+                <details className="il-evidence" open>
+                  <summary>Warnings ({battery?.warnings.length})</summary>
+
+                  <ul>
+                    {battery?.warnings.map((warning, index) => (
+                      <li key={`${warning.code}-${index}`}>
+                        <strong>{warning.code}</strong>
+
+                        <span>{warning.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+
               {result.warnings.length > 0 && (
-                <div className="il-warnings">
-                  <span className="il-result-label">
-                    Engine notes
-                  </span>
+                <details className="il-warnings"><summary>Constraints and unresolved device inputs ({result.warnings.length})</summary>
+                  <span className="il-result-label">Engine notes</span>
 
-                  {result.warnings.map(
-                    (warning, index) => (
-                      <div
-                        className="il-warning"
-                        key={`${warning.code}-${index}`}
-                      >
-                        <strong>
-                          {warning.code}
-                        </strong>
+                  {result.warnings.map((warning, index) => (
+                    <div className="il-warning" key={`${warning.code}-${index}`}>
+                      <strong>{warning.code}</strong>
 
-                        <p>{warning.message}</p>
-                      </div>
-                    ),
-                  )}
-                </div>
+                      <p>{warning.message}</p>
+                    </div>
+                  ))}
+                </details>
               )}
 
               <div className="il-method">
-                <strong>
-                  Deterministic model
-                </strong>
+                <strong>Deterministic where it can be.</strong>
 
                 <p>
-                  This result uses only the values
-                  supplied above and calculations
-                  supported by PhoneFuturist Engine
-                  v{SIMULATION_ENGINE_VERSION}.
+                  This result uses only the values supplied above, evaluated by
+                  PhoneFuturist Engine v{SIMULATION_ENGINE_VERSION} and battery
+                  model {BATTERY_EXPERIENCE_VERSION}. The same inputs always
+                  produce the same result.
                 </p>
               </div>
             </>
           )}
         </aside>
+      </div>
+
+      {/* Honest scope: what the Beta does not simulate yet */}
+      <div className="il-scope">
+        <strong>Public Beta scope</strong>
+
+        <p>
+          The deterministic device core and the battery runtime model are
+          available. This beta does not simulate benchmark scores, thermal
+          behavior or image quality. Camera results describe geometry only.
+        </p>
       </div>
     </div>
   );

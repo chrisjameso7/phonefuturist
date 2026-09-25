@@ -2,6 +2,6 @@
 import Page from '../../layouts/Page.astro';
 import ArticleEditor from '../../components/studio/ArticleEditor';
 const roles=Astro.locals.access!.roles;
-if(!roles.some(r=>['admin','editor','writer'].includes(r)))return Astro.redirect('/studio',303);
+if(!roles.some(r=>['admin','editor','writer','publisher'].includes(r)))return Astro.redirect('/studio',303);
 ---
 <Page title="Write an article" privatePage><ArticleEditor client:load article={null} roles={roles} userId={Astro.locals.user!.id}/><noscript>Studio's structured editor requires JavaScript. Public articles do not.</noscript></Page>

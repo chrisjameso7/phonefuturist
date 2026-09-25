@@ -38,9 +38,10 @@ export interface ModelRange {
  * A modeled parameter: an optional point value, an optional
  * uncertainty range, and optional provenance.
  *
- * When both a point value and a range are supplied, the point
- * value is used for calculation and the range is preserved on
- * the parameter for display.
+ * Supplying both a point value and a range is ambiguous for
+ * v0.5.x — the type does not yet distinguish a central estimate
+ * from an uncertainty band — and is rejected fail-closed by
+ * resolution instead of silently preferring the point.
  */
 export interface ModelParameter {
   value?: number;
@@ -119,6 +120,19 @@ export function resolvePositiveParameter(
   }
 
   if (parameter.value !== undefined) {
+    if (parameter.range !== undefined) {
+      // A point value plus a range is ambiguous: the parameter
+      // type does not yet represent a central estimate plus
+      // uncertainty, so fail closed rather than silently
+      // preferring the point and discarding the range.
+      return {
+        issue: {
+          code: issue.code,
+          message: `${label} supplied both a point value and a range; these are ambiguous, so supply one or the other.`,
+        },
+      };
+    }
+
     if (isPositiveFinite(parameter.value)) {
       return { quantity: { kind: 'point', value: parameter.value } };
     }

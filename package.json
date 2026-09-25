@@ -11,7 +11,8 @@
     "check": "astro check",
     "build": "astro build",
     "test": "vitest run",
-    "verify": "npm run check && npm test && npm run build",
+    "verify": "npm run check && npm test && npm run check:calibration && npm run build",
+    "check:calibration": "node data/calibration/battery/validate.mjs",
     "preview": "astro preview",
     "deploy": "npm run build && wrangler deploy"
   },

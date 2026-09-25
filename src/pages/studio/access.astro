@@ -1,0 +1,37 @@
+---
+import Page from '../../layouts/Page.astro';
+import {studioError} from '../../lib/editorial';
+import {boundedForm} from '../../lib/security';
+if(!Astro.locals.access?.can_manage_mfa_exceptions) return new Response('Primary administrator access required.',{status:403});
+let message='';
+if(Astro.request.method==='POST'){
+ let form:URLSearchParams;
+ try{form=await boundedForm(Astro.request);}catch{return new Response('Invalid access request.',{status:400});}
+ const {error}=await Astro.locals.supabase!.rpc('studio_access',{p_email:String(form.get('email')??''),p_role:String(form.get('role')??''),p_revoke:form.get('action')==='revoke'});
+ if(error){message=studioError(error).message;Astro.response.status=studioError(error).status;}
+ else return Astro.redirect('/studio/access?updated=1',303);
+}
+const {data,error}=await Astro.locals.supabase!.rpc('studio_access');
+if(error){Astro.response.status=503;message='Access management could not load. Please retry.';}
+type Member={user_id:string;email:string;role:string;verified:boolean};
+type Event={email:string;action:string;role:string;recorded_at:string};
+const members=(data?.members??[]) as Member[];
+const activity=(data?.activity??[]) as Event[];
+---
+<Page title="Studio access" privatePage>
+<p class="eyebrow">PhoneFuturist Studio / People</p><h1>Your newsroom.</h1>
+<p>Give an existing PhoneFuturist account a role. They sign in normally; Writers, Editors and Publishers do not need authenticator codes.</p>
+<p><a href="/studio">← Back to articles</a></p>
+{message&&<p role="alert" class="notice error">{message}</p>}
+{Astro.url.searchParams.has('updated')&&<p role="status" class="notice">Studio access updated.</p>}
+<form method="post" class="panel stack">
+ <label>Account email<input name="email" type="email" required maxlength="320" autocomplete="off"/></label>
+ <label>Role<select name="role"><option value="writer">Writer — own articles</option><option value="editor">Editor — all articles</option><option value="publisher">Publisher — all articles</option></select></label>
+ <p class="muted">They need an account first. Email confirmation and article ownership protections remain in place. Grants take effect on their next page load.</p>
+ <button name="action" value="grant">Grant Studio access</button>
+</form>
+<h2>Current access</h2><div class="access-members">
+{members.map(member=><section class="panel"><h3>{member.email}</h3><p>{member.role} · {member.verified?'Email verified':'Awaiting email confirmation'}</p>{member.role!=='admin'&&<form method="post"><input type="hidden" name="email" value={member.email}/><input type="hidden" name="role" value={member.role}/><button class="secondary" name="action" value="revoke">Revoke {member.role} role</button></form>}</section>)}
+</div><h2>Recent access changes</h2><ul>{activity.map(event=><li>{event.email}: {event.action==='studio_role_granted'?'granted':'revoked'} {event.role} · {new Date(event.recorded_at).toISOString()}</li>)}</ul>
+</Page>
+<style>.access-members{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:1rem}.access-members .panel{margin:0;overflow-wrap:anywhere}</style>
