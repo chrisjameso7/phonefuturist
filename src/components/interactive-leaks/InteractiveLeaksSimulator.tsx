@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode, type WorkspaceRun} from '../../lib/simulation/beta-workspace';
+import { useState, useReducer } from 'react';
+import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleRuntimeFraming,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
+import {evidenceDeviceFrom,resolvePowerEvidence} from '../../lib/simulation/power-evidence';
+import {receiptSections} from '../../lib/simulation/result-export';
+import ShareResult from './ShareResult';
+import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
 
 import {
   SIMULATION_ENGINE_VERSION,
@@ -367,11 +371,19 @@ export default function InteractiveLeaksSimulator() {
 
   const [hasSimulated, setHasSimulated] = useState(false);
 
-  const [run, setRun] = useState<WorkspaceRun|null>(null);
+  const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
   const [dirty,setDirty] = useState(false);
   const [exampleLoaded,setExampleLoaded] = useState(false);
-  const profile=buildProfile(workloadPower,workloadWeights,profileMode);
+  const [experience,dispatchExperience]=useReducer(experienceReducer,INITIAL_EXPERIENCE);
+  const simple=experience.mode==='simple';
+  const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
+  const usageBreakdown=deriveUsage(usage);
+  /* Simple Mode derives whole-device power from calibration evidence; the usage profile supplies the mixture. */
+  const evidenceDevice=evidenceDeviceFrom(buildInput());
+  const evidence=simple&&!experience.useEnteredPower?resolvePowerEvidence(evidenceDevice):undefined;
+  const profile=simple?simpleProfile(experience,workloadPower,evidenceDevice):buildProfile(workloadPower,workloadWeights,profileMode);
+  function changeExperience(action:Parameters<typeof experienceReducer>[1]){dispatchExperience(action);setDirty(true);}
   const simulationInput=run?.input;
   const result=run?.device;
   const battery=run?.battery;
@@ -492,12 +504,17 @@ export default function InteractiveLeaksSimulator() {
     const {name,formFactor,...fields}=form;
     const issues=numericIssues(fields);
     cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
-    setRun(runWorkspace(buildInput(),usablePercent,profile,issues));
+    setRun(freezeRun(runWorkspace(buildInput(),simple?'':usablePercent,profile,issues),{
+      mode:experience.mode,usageProfile:simple?experience.preset:'Advanced',usageVersion:USAGE_VERSION,
+      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — estimated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
+      usablePercent:simple?'':usablePercent,calibrationVersion:simple&&!experience.useEnteredPower&&evidence?POWER_EVIDENCE_VERSION:'None applied — seed observations are not fitted power coefficients',
+    }));
     setHasSimulated(true);
     setDirty(false);
   }
 
   function loadExample() {
+    dispatchExperience({type:'mode',value:'advanced'});
     setExampleLoaded(true);
     setForm(flagshipExample);
     setCameras(flagshipCameras);
@@ -511,6 +528,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function clearSimulation() {
+    dispatchExperience({type:'reset'});
     setExampleLoaded(false);
     setForm(initialForm);
     setCameras([]);
@@ -559,6 +577,7 @@ export default function InteractiveLeaksSimulator() {
         </div>
       </div>
 
+      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
       <div className="il-workspace">
         {/* ---------------- Builder column ---------------- */}
@@ -571,12 +590,14 @@ export default function InteractiveLeaksSimulator() {
               hint="Enter only values you have. Blank means unknown; typed values are user-supplied, not independently verified."
             />
 
+            <p className="il-help">Use rated battery capacity where known. Advertised/typical capacity is not a substitute; leave rated capacity unknown if unavailable.</p>
             <div className="il-grid">
               <label className="il-field il-wide">
                 <span>Device name</span>
 
                 <input
                   type="text"
+                  maxLength={160}
                   value={form.name}
                   placeholder="Untitled concept"
                   onChange={(event) => update('name', event.currentTarget.value)}
@@ -637,7 +658,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Battery capacity"
+                label="Rated battery capacity"
                 suffix="mAh"
                 value={form.batteryCapacityMah}
                 placeholder="5000"
@@ -836,7 +857,7 @@ export default function InteractiveLeaksSimulator() {
                 {cameras.map((camera, index) => (
                   <article className="il-camera" key={camera.id}>
                     <div className="il-camera-title">
-                      <strong>Camera {index + 1}</strong>
+                      <strong>{({wide:'Main',ultrawide:'Ultrawide',telephoto:'Telephoto',periscope:'Periscope telephoto',front:'Front',other:'Other'})[camera.type]} · Camera {index + 1}</strong>
 
                       <button
                         type="button"
@@ -860,10 +881,10 @@ export default function InteractiveLeaksSimulator() {
                             })
                           }
                         >
-                          <option value="wide">Wide</option>
+                          <option value="wide">Main</option>
                           <option value="ultrawide">Ultrawide</option>
                           <option value="telephoto">Telephoto</option>
-                          <option value="periscope">Periscope</option>
+                          <option value="periscope">Periscope telephoto</option>
                           <option value="front">Front</option>
                           <option value="other">Other</option>
                         </select>
@@ -930,9 +951,20 @@ export default function InteractiveLeaksSimulator() {
             <SectionHeading
               index="02"
               title="Environment"
-              hint="How the device is used during the simulated session: per-workload power and pack derating."
+              hint={simple?'Your daily usage pattern, including idle time.':'How the device is used during the simulated session: per-workload power and pack derating.'}
             />
 
+            {simple?<div className="il-simple-usage">
+              <h3>How do you use this phone?</h3>
+              <p>Tell us how you typically use your phone. Interactive Leaks combines your usage with the device model to estimate battery life.</p>
+              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
+              <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
+              {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
+              <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
+              <label className="il-power-choice"><input type="checkbox" checked={experience.useEnteredPower} onChange={event=>changeExperience({type:'power',value:event.currentTarget.checked})}/>Use power values I entered in Advanced (unverified)</label>
+              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set, adjusted for this device's screen size, and reported as an estimate in View Assumptions — never as a measurement of your device.</p>
+              {evidence?<details className="il-advanced"><summary>View assumptions</summary><p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p><p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p><p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p></details>:<p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE} You can still enter your own measured power values in Advanced mode.</p>}
+            </div>:<>
             <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
               <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
             </select></label>
@@ -949,10 +981,12 @@ export default function InteractiveLeaksSimulator() {
               <div className="il-grid">{COMPONENT_WORKLOADS.map(workload=><NumericField key={workload} label={WORKLOAD_LABEL[workload]+' share of mixed use'} suffix="%" value={workloadWeights[workload]} placeholder="Not assigned" onChange={value=>{setDirty(true);setWorkloadWeights(current=>({...current,[workload]:value}));}}/>)}</div>
               <p className="il-profile-total" role="status">Current total: {format(profile.totalPercent,2)}% {profile.issues.length===0?'— valid profile':'— incomplete or invalid'}</p>
             </details>}
-            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
+
             <div className="il-grid il-derate"><NumericField label="Usable pack energy" suffix="%" value={usablePercent} placeholder="Full rated pack" onChange={value=>{setUsablePercent(value);setDirty(true);}}/>
               <p className="il-help">Percentage of rated/nominal battery energy available after protection reserves and voltage cutoff. Empty preserves full rated pack energy (100%) under this model; that can make runtime optimistic. This is not the battery's current charge level.</p>
             </div>
+            </>}
+            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
           </div>
 
           {/* 03 · MODEL */}
@@ -1029,7 +1063,7 @@ export default function InteractiveLeaksSimulator() {
                 configuration.
               </p>
             </div>
-          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p></div> : (
+          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p>{simple?<p>If the evidence itself is missing, Advanced mode lets you supply your own measured whole-device power instead.</p>:null}</div> : (
             <>
               <div className="il-result-identity">
                 <span>
@@ -1043,7 +1077,7 @@ export default function InteractiveLeaksSimulator() {
               {(
                 <div className="il-runtime-card">
                   <span className="il-runtime-eyebrow">
-                    Estimated mixed-use runtime
+                    Simulated battery runtime
                   </span>
 
                   {battery?.result.status === 'resolved' ? (
@@ -1052,10 +1086,16 @@ export default function InteractiveLeaksSimulator() {
                         {hoursLabel(estimate?.runtimeHours)}
                       </p>
 
+                      <p className="il-help">{run?.context.usageProfile} usage · simulated estimate, not measured battery life.</p>
+                      {simple&&<p className="il-help il-runtime-framing">{simpleRuntimeFraming(estimate?.runtimeHours)}</p>}
+                      {run&&<ShareResult key={JSON.stringify(run)} run={run}/>}
+                      <details className="il-evidence"><summary>View assumptions</summary>
+                      {run&&receiptSections(run,'Not exported').filter(section=>['ENVIRONMENT','MODEL','ASSUMPTIONS / PROVENANCE','WARNINGS / MISSING INFORMATION'].includes(section.title)).map(section=><section key={section.title}><h3>{section.title}</h3><ul>{section.lines.map((line,index)=><li key={index}>{line}</li>)}</ul></section>)}
                       <p className="il-help">{format(estimate?.usableEnergyWh?.min,2)} Wh usable energy ÷ {wattsLabel(battery.result.comparisonReady?.averagePowerW)} mixed-use average power.</p>
                       <p className="il-help">{run?.profile.mode==='manual'?'Uses your supplied mixed-use power.':run?.profile.terms.map(term=>WORKLOAD_LABEL[term.workload]+' '+format(term.power,2)+' W × '+format(term.share*100,2)+'%').join(' + ')}</p>
                       <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
                       {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
+                      </details>
                       <div className="il-runtime-bar" aria-hidden="true">
                         <span
                           style={{

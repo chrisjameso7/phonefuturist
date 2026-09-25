@@ -1096,3 +1096,22 @@
     font-size: 1.9rem;
   }
 }
+
+/* Alpha controls retain the warm graphite instrument palette. */
+.lab-simulator-shell .il-mode {display:flex;flex-wrap:wrap;gap:8px;border:1px solid #777468;border-radius:16px;padding:12px 16px;margin:18px 0;color:#f1eddf;}
+.lab-simulator-shell .il-mode legend {padding:0 8px;font-size:13px;}
+.lab-simulator-shell .il-mode label {display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;border:1px solid #777468;border-radius:24px;cursor:pointer;}
+.lab-simulator-shell .il-mode label:has(:checked) {background:#e9e3d1;color:#242421;}
+.lab-simulator-shell .il-mode input,.lab-simulator-shell .il-power-choice input {min-height:20px;width:20px;accent-color:#bbae7f;}
+.lab-simulator-shell .il-power-choice {display:flex;align-items:center;gap:12px;min-height:48px;margin:20px 0;}
+.lab-simulator-shell .il-share-actions {display:flex;flex-wrap:wrap;gap:10px;}
+.lab-simulator-shell .il-share button {min-height:44px;border:1px solid #a49e8b;border-radius:22px;background:#e9e3d1;color:#252522;padding:10px 16px;cursor:pointer;}
+.lab-simulator-shell .il-share button:disabled {opacity:.6;cursor:wait;}
+.lab-simulator-shell .il-share section {margin:15px 0;padding:16px;border:1px solid #777468;border-radius:14px;}
+.lab-simulator-shell .il-share textarea {width:100%;color:#eee9db;background:#292925;}
+.lab-simulator-shell :is(button,input,select,summary,a,textarea):focus-visible {outline:3px solid #f0d18d;outline-offset:4px;}
+.lab-simulator-shell .il-evidence :is(li,p) {overflow-wrap:anywhere;}
+.lab-simulator-shell .il-evidence h3 {font-size:14px;margin-top:24px;}
+.lab-simulator-shell .il-simple-usage h3 {font-size:25px;}
+@media(max-width:600px){.lab-simulator-shell .il-share-actions {display:grid;grid-template-columns:1fr;width:100%;}.lab-simulator-shell .il-mode {padding:10px;}.lab-simulator-shell .il-mode label {padding:6px 10px;}}
+.lab-simulator-shell .il-export-preview {display:block;max-width:100%;max-height:500px;object-fit:contain;margin:18px auto;}

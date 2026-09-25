@@ -32,7 +32,7 @@ export default defineConfig({
     csp: {
       directives: [
         "default-src 'self'",
-        "img-src 'self' data: https:",
+        "img-src 'self' data: blob: https:",
         "connect-src 'self'",
         "form-action 'self'",
         "base-uri 'self'",
