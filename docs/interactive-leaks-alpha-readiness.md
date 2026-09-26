@@ -1,3 +1,36 @@
+## Correction and development deployment review — 2026-09-26
+
+Current branch: `correction/simple-mode-endurance` (PR #7). This supersedes the historical Alpha preparation notes below. Main/PR #6 and the initial correction still overclaimed daily endurance.
+
+Root cause: continuous web reference power cannot stand in for gaming, video, camera or standby. The initial correction excluded those loads from energy accounting but still promised a full day by comparing total active hours with web runtime. It also inferred device identity from common battery/display dimensions and treated different test protocols as an accuracy backtest.
+
+| Area | Before this correction | After |
+|---|---|---|
+| Light/Typical/Heavy daily outcome | Unsupported “One charge covers your day” | Insufficient evidence; no days-per-charge claim |
+| Idle | Excluded from confidence denominator | Included in the full 24-hour evidence budget |
+| Partial web energy | Exported as an endurance upper bound | Partial reference accounting only; no endurance bound |
+| Device identity | Capacity/area nearest neighbour | Exact user-supplied model name plus compatible specifications; unverified identity |
+| Panel area | Squared width | Width × height from diagonal/aspect ratio |
+| Battery evidence | First cell only | All known cells; unknown cells fail closed |
+| Non-phone configurations | Phone reference silently transferred | No phone evidence applied |
+| Wi-Fi vs cellular | “Held-out accuracy/optimism” | Descriptive protocol gap, not accuracy |
+| Result presentation | Live mode could alter old result semantics | Frozen run context controls UI, card, receipt and summary |
+
+The evidence adapter is now `battery-calibration-2.1` because matching, coverage and result semantics changed. Core engine 0.4.0 and battery 0.5.1-battery.1 are unchanged. No dataset record, fitted multiplier, authentication rule, database schema, service or dependency was changed.
+
+Reproduce the numerical audit with `node scripts/validate-endurance.mjs`. [Generated audit](interactive-leaks-endurance-audit.md) includes all calibration/held-out IDs, five internal leave-one-device-out comparisons, three descriptive cross-protocol pairs and twenty daily-profile checks. It imports the actual resolver. No held-out measurement participates in fitting. Five calibration observations are continuous Notebookcheck Wi-Fi web; three held-out observations are Tom’s Guide cellular web. Neither dataset measures the mixed-use profiles.
+
+Consumer Alpha remains blocked on sourced gaming, video, camera and standby power plus genuinely comparable independent validation. Continuous web comparisons and explicitly supplied Advanced power remain useful, but are not measured real-world endurance. The population extrema are not a validated uncertainty interval. Full rated energy remains an explicit assumption, and reference names supplied by users do not verify hardware identity. No numerical “2× real-world” accuracy claim can be substantiated from the current data.
+
+Verification: `npm.cmd run verify` passed: 82 files checked with zero errors/warnings/hints, 223 tests across 17 files, calibration schema validation (5 calibration + 3 held-out records), and production build. The parallel suite passed without OOM on this run. `git diff --check` passed.
+
+Built-Worker browser checks: named concept in Simple reports insufficient evidence and Low confidence; copy summary matches; result card and 1080 x 6567 receipt generate successfully; switching to Advanced before rerunning preserves the frozen Simple result; rerunning Advanced resolves the illustrative supplied-power example to 3.2 h. The 390 px mobile viewport has no horizontal overflow. Browser error/warning log is empty. Native OS sharing and physical-device testing are not claimed.
+
+Release target: existing `phonefuturist-dev` Worker only. The current direct user request authorizes deployment after this correction; PR #7 remains unmerged. No production domain, DNS, Supabase or environment variable changes.
+
+
+---
+
 
 ## Alpha preparation — implementation and release checklist
 
