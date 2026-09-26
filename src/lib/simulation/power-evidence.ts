@@ -34,9 +34,8 @@
  * multi-use-case protocol, but zero measurements reference it.
  *
  * That absence is the single most important fact about this model, and
- * it is why endurance is reported as a coverage verdict against the one
- * evidenced screen-on budget rather than as a confident days-per-charge
- * figure.
+ * it is why a daily endurance result remains unresolved whenever any
+ * positive-duration workload, including standby, lacks evidence.
  */
 
 import calibrationDevices from '../../../data/calibration/battery/devices.json';
@@ -49,6 +48,8 @@ import type { SimulationInput } from './types';
 
 /**
  * Version of the derived evidence model.
+ * 2.1 removes unsupported daily coverage verdicts, includes standby in
+ * evidence coverage, fixes area arithmetic and requires explicit model names.
  *
  * 2.0 breaks the 1.0 contract in two ways that change published numbers,
  * so a result must never be read as if it came from the other:
@@ -58,27 +59,12 @@ import type { SimulationInput } from './types';
  *     cycle, so Simple Mode no longer publishes a days-per-charge point
  *     estimate.
  */
-export const POWER_EVIDENCE_VERSION = 'battery-calibration-2.0';
+export const POWER_EVIDENCE_VERSION = 'battery-calibration-2.1';
 
 /** Dataset schema the derivation is written against. */
 export const CALIBRATION_DATASET_VERSION = '0.1.0';
 
-/**
- * DEVICE ADJUSTMENT: none.
- *
- * v1.0 scaled reference power by the ratio of panel areas, clamped to
- * 0.75-1.35x. That correction is not supported by the calibration set and
- * points the wrong way. Across the five calibration devices, Pearson
- * r(panel area, measured web power) = -0.974: the larger the panel, the
- * LOWER the measured draw, because the large devices in this set carry
- * the more efficient platforms. A positive area correction therefore
- * inflates power for exactly the devices that measured lowest.
- *
- * The correction is removed rather than re-signed: with five devices all
- * from 2024-2025 and one calibration protocol, there is no defensible
- * basis for ANY device-level power adjustment. Pack size is already
- * handled correctly, by dividing by the simulated device's own energy.
- */
+/** No panel/platform correction: five devices cannot establish a causal power model. */
 export const DEVICE_ADJUSTMENT = 'none' as const;
 
 /**
@@ -108,27 +94,16 @@ export const WEB_ANCHOR_CONDITIONS = {
   powerSavingMeasures: 'activated for this test',
 } as const;
 
-/**
- * Measured optimism of the web anchor, from held-out validation.
- *
- * Three devices carry both a Notebookcheck calibration record and a
- * Tom's Guide cellular web record that is never used to build the model.
- * Predicting those held-out runtimes from the calibrated power is
- * equivalent to predicting the Notebookcheck runtime, because that is
- * what the power was derived from. The held-out cellular runtimes came
- * out 14.2%, 18.1% and 18.0% shorter (mean +16.7% optimistic, n=3).
- *
- * This is a recorded limitation of the anchor, NOT a correction factor.
- * Applying a fitted constant here would consume the validation set as
- * calibration data, which the calibration policy forbids.
+/** Descriptive Wi-Fi/cellular observation gaps, NOT accuracy errors.
+ * Legacy field names retained for compatibility; never used as a correction.
  */
 export const WEB_ANCHOR_HELDOUT_OPTIMISM = {
   measuredDevices: 3,
   meanSignedPercentError: 16.7,
   range: { min: 14.2, max: 18.1 },
-  direction: 'optimistic in every case',
+  direction: 'Wi-Fi observation higher in every paired record',
   reason:
-    'The anchor is a Wi-Fi test; the held-out records are cellular. A radio working a cellular link draws more than one on Wi-Fi.',
+    'The anchor is a Wi-Fi test; the held-out records are cellular. The protocols differ, so these observations do not measure model accuracy or isolate a radio effect.',
 } as const;
 
 // ---------------------------------------------------------
@@ -238,7 +213,8 @@ export function displayAreaCm2(
     return undefined;
   }
 
-  return (diagonalCm * diagonalCm * widthPx * widthPx) / pixels;
+  const area = diagonalCm * diagonalCm * (widthPx / Math.hypot(widthPx, heightPx)) * (heightPx / Math.hypot(widthPx, heightPx));
+  return positiveFinite(area) ? area : undefined;
 }
 
 function buildReferenceDevices(): ReferenceDevice[] {
@@ -271,6 +247,7 @@ function buildReferenceDevices(): ReferenceDevice[] {
     // screen-on power. Anything else is not a runtime observation.
     if (measurement.metric !== 'runtime') continue;
     if (measurement.workload_class !== 'web') continue;
+    if (measurement.protocol_id !== WEB_ANCHOR_CONDITIONS.protocolId) continue;
 
     const device = byId.get(measurement.device_id);
     if (!device) continue;
@@ -335,20 +312,18 @@ export const REFERENCE_DEVICES: readonly ReferenceDevice[] =
 // ---------------------------------------------------------
 
 export interface EvidenceDevice {
+  name?: string;
   energyWh?: number;
   displayAreaCm2?: number;
 }
 
 /** Energy and panel area of the simulated device, or unknown. */
 export function evidenceDeviceFrom(input: SimulationInput): EvidenceDevice {
-  const cell = input.battery?.cells?.[0];
-
-  const energyWh =
-    cell &&
-    positiveFinite(cell.capacityMah) &&
-    positiveFinite(cell.nominalVoltageV)
-      ? (cell.capacityMah * cell.nominalVoltageV) / 1000
-      : undefined;
+  if (input.formFactor !== 'phone') return {};
+  const cells = input.battery?.cells ?? [];
+  const energyWh = cells.length && cells.every(cell => positiveFinite(cell.capacityMah) && positiveFinite(cell.nominalVoltageV))
+    ? cells.reduce((sum, cell) => sum + cell.capacityMah! * cell.nominalVoltageV! / 1000, 0)
+    : undefined;
 
   const primary = input.displays?.primary;
 
@@ -359,7 +334,8 @@ export function evidenceDeviceFrom(input: SimulationInput): EvidenceDevice {
   );
 
   return {
-    ...(energyWh !== undefined ? { energyWh } : {}),
+    name: input.name,
+    ...(positiveFinite(energyWh) ? { energyWh } : {}),
     ...(area !== undefined ? { displayAreaCm2: area } : {}),
   };
 }
@@ -402,25 +378,14 @@ export interface ResolvedPowerEvidence {
   assumptions: string[];
 }
 
-/** Relative pack-energy difference that still counts as the same device. */
+/** Compatibility tolerance after an exact model-name match; not an identity test. */
 const ENERGY_MATCH_TOLERANCE = 0.15;
 
-/** Relative panel-area difference that still counts as the same device. */
+/** Panel compatibility tolerance after an exact model-name match. */
 const AREA_MATCH_TOLERANCE = 0.12;
 
-/**
- * Identify which reference device a configuration is.
- *
- * Identification and adjustment are different questions and are kept
- * strictly apart here. Pack energy and panel area are legitimate ways to
- * recognise WHICH phone this is, so both are used. Neither is used to
- * rescale power, because neither was shown to predict power in this
- * dataset.
- *
- * Area matters for identity because several references share a pack
- * energy: the Galaxy S24 Ultra and S25 Ultra are both 18.84 Wh, and
- * without area they would be separated only by iteration order, which
- * would attribute one device's record to the other.
+/** Require a user-supplied model name plus compatible specifications.
+ * Capacity and geometry alone cannot establish identity. Names remain unverified.
  */
 function matchReference(
   device: EvidenceDevice,
@@ -433,7 +398,10 @@ function matchReference(
   let best: ReferenceDevice | undefined;
   let bestScore = Number.POSITIVE_INFINITY;
 
+  const name = device.name?.trim().toLowerCase();
+  if (!name) return undefined;
   for (const reference of references) {
+    if (name !== reference.model.toLowerCase() && name !== `${reference.manufacturer} ${reference.model}`.toLowerCase()) continue;
     const energyDelta =
       Math.abs(reference.energyWh - device.energyWh) / reference.energyWh;
 
@@ -534,16 +502,16 @@ export function resolvePowerEvidence(
 
   if (matched) {
     notes.push(
-      `This configuration is identified as ${matched.manufacturer} ${matched.model} on pack energy and panel size, so its own measured record (${matched.measurementIds.join(', ')}) is used directly rather than a spread across other phones.`,
+      `The user-supplied name identifies ${matched.manufacturer} ${matched.model}, with compatible pack energy and panel size (identity remains unverified), so its own measured record (${matched.measurementIds.join(', ')}) is used directly rather than a spread across other phones.`,
     );
   } else {
     notes.push(
-      'No reference device matches this pack energy, so the whole calibration spread is used rather than one borrowed device.',
+      'No named reference device matches this configuration, so the whole calibration spread is used rather than one borrowed device.',
     );
   }
 
   notes.push(
-    `The anchor runs ${WEB_ANCHOR_HELDOUT_OPTIMISM.reason} On ${WEB_ANCHOR_HELDOUT_OPTIMISM.measuredDevices} devices with held-out cellular web records, the calibrated power over-predicted runtime by ${WEB_ANCHOR_HELDOUT_OPTIMISM.range.min}–${WEB_ANCHOR_HELDOUT_OPTIMISM.range.max}% (mean ${WEB_ANCHOR_HELDOUT_OPTIMISM.meanSignedPercentError}%). Treat screen-on hours as an upper bound.`,
+    `${WEB_ANCHOR_HELDOUT_OPTIMISM.reason} On ${WEB_ANCHOR_HELDOUT_OPTIMISM.measuredDevices} devices with held-out cellular web records, the Wi-Fi observations are higher than the cellular observations by ${WEB_ANCHOR_HELDOUT_OPTIMISM.range.min}–${WEB_ANCHOR_HELDOUT_OPTIMISM.range.max}% (mean ${WEB_ANCHOR_HELDOUT_OPTIMISM.meanSignedPercentError}%). This is a descriptive cross-protocol gap, not an error rate or guaranteed bound.`,
   );
 
   assumptions.push(
@@ -665,6 +633,7 @@ export function workloadEvidence(
 
 export type EnduranceVerdict =
   /** Active time fits inside the evidenced screen-on budget. */
+  | 'insufficient-evidence'
   | 'covered'
   /** Active time exceeds the evidenced screen-on budget. */
   | 'exceeds-screen-on-budget';
@@ -673,7 +642,7 @@ export type EvidenceConfidence = 'high' | 'moderate' | 'low';
 
 export interface EvidenceConfidenceReport {
   level: EvidenceConfidence;
-  /** Share of the day's active hours that have power evidence. */
+  /** Share of the full day's hours that have power evidence. */
   evidencedShare: number;
   reasons: string[];
 }
@@ -705,21 +674,21 @@ export function simpleEvidenceConfidence(
 
   if (evidence.basis === 'matched-reference') {
     reasons.push(
-      `Pack energy matches ${evidence.reference!.manufacturer} ${evidence.reference!.model}, so the screen-on power anchor comes from that device's own measured record.`,
+      `The user-supplied name and compatible specifications reference ${evidence.reference!.manufacturer} ${evidence.reference!.model}, so the screen-on power anchor comes from that device's own measured record.`,
     );
   } else {
     reasons.push(
-      `No reference device matches this pack energy; the screen-on power is carried across from a spread of ${evidence.referenceCount} other phones.`,
+      `No named reference device matches this configuration; the screen-on power is carried across from a spread of ${evidence.referenceCount} other phones.`,
     );
   }
 
   if (unevidenced.length === 0) {
     reasons.push(
-      'Every active workload in this profile has a calibrated power value.',
+      'Every hour has reference-derived power; this is not independently validated.',
     );
   } else {
     reasons.push(
-      `${unevidenced.length} active workload(s) in this profile have no calibration evidence: ${unevidenced.map((line) => line.workload.replace(/_/g, ' ')).join(', ')}. Their real draw is unmeasured and is at or above the web figure, so the endurance verdict is optimistic.`,
+      `${unevidenced.length} workload(s) in this profile have no calibration evidence: ${unevidenced.map((line) => line.workload.replace(/_/g, ' ')).join(', ')}. Their draw is unknown; no daily endurance verdict can be supported.`,
     );
   }
 
@@ -729,11 +698,11 @@ export function simpleEvidenceConfidence(
 
   let level: EvidenceConfidence;
   if (unevidenced.length === 0 && evidence.basis === 'matched-reference') {
-    level = 'high';
+    level = 'moderate';
   } else if (unevidenced.length === 0) {
-    level = 'moderate';
+    level = 'low';
   } else if (evidencedShare >= 0.5) {
-    level = 'moderate';
+    level = 'low';
   } else {
     level = 'low';
   }
@@ -766,8 +735,7 @@ export interface SimpleEndurance {
 
   /**
    * Energy the day could account for from evidenced workloads only.
-   * Excludes every unevidenced workload, so it is a partial sum and a
-   * lower bound on the real daily energy, not a complete budget.
+   * Excludes every unevidenced workload, so it is a reference-only partial sum, not a validated lower bound on real daily energy.
    */
   accountedEnergyWh?: { min: number; max: number };
 
@@ -780,7 +748,7 @@ export interface SimpleEndurance {
    */
   budgetUseRatio: number;
 
-  /** Unaccounted active hours, because their workload has no evidence. */
+  /** Unaccounted hours including standby, because their workload has no evidence. */
   unevidencedHours: number;
 }
 
@@ -803,6 +771,7 @@ export interface EnduranceInput {
 export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
   const { evidence, minutesPerDay, usableEnergyWh } = input;
 
+  if (!positiveFinite(usableEnergyWh)) throw new RangeError('Usable energy must be positive and finite.');
   const perWorkload = workloadEvidence(evidence);
 
   const dailyBudget: DailyBudgetLine[] = [];
@@ -817,7 +786,8 @@ export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
     }
 
     const minutes = Number(minutesPerDay[workload] ?? 0);
-    const hours = (Number.isFinite(minutes) && minutes > 0 ? minutes : 0) / 60;
+    if (!Number.isFinite(minutes) || minutes < 0) throw new RangeError('Workload minutes must be finite and nonnegative.');
+    const hours = minutes / 60;
     activeHours += hours;
 
     const status = perWorkload[workload];
@@ -846,7 +816,9 @@ export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
     anyAccounted = true;
   }
 
-  const idleHours = Math.max(0, 24 - activeHours);
+  if (activeHours > 24) throw new RangeError('Daily workloads cannot exceed 24 hours.');
+  const idleHours = 24 - activeHours;
+  dailyBudget.push({workload: 'standby', hours: idleHours, status: 'insufficient'});
 
   const budgetMid =
     (evidence.screenOnBudgetHours.min + evidence.screenOnBudgetHours.max) / 2;
@@ -856,7 +828,7 @@ export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
     .reduce((sum, line) => sum + line.hours, 0);
 
   return {
-    verdict: activeHours <= budgetMid ? 'covered' : 'exceeds-screen-on-budget',
+    verdict: unevidencedHours > 0 ? 'insufficient-evidence' : accountedMax <= usableEnergyWh ? 'covered' : 'exceeds-screen-on-budget',
     usableEnergyWh,
     activeHours,
     idleHours,
@@ -865,7 +837,7 @@ export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
       ? {
           accountedEnergyWh: {
             // Idle and unevidenced workloads are unknown, not zero. The
-            // upper bound can only be asserted while they are excluded.
+            // partial sum must never be presented as daily endurance.
             min: accountedMin,
             max: accountedMax,
           },
@@ -877,19 +849,13 @@ export function resolveEndurance(input: EnduranceInput): SimpleEndurance {
   };
 }
 
-/**
- * Upper bound on days per charge, and why it is only an upper bound.
- *
- * days = usable energy / daily energy, so an upper bound needs a LOWER
- * bound on daily energy. The lower bound available here counts only the
- * evidenced web workload at its lowest calibrated power and treats every
- * other hour, including all idle time, as consuming nothing. That is a
- * bound, not an estimate, and it is optimistic by an unknown margin.
+/** Upper endpoint of a fully accounted reference calculation only.
+ * Missing workloads never yield a days-per-charge bound.
  */
 export function enduranceUpperBoundDays(
   endurance: SimpleEndurance,
 ): number | undefined {
-  if (!endurance.accountedEnergyWh) {
+  if (endurance.verdict === 'insufficient-evidence' || !endurance.accountedEnergyWh) {
     return undefined;
   }
 

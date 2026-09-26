@@ -88,7 +88,7 @@ export function simpleProfile(experience:Experience,power:WorkloadFields,device:
  * not have enough reference data.
  */
 export function simpleEndurance(experience:Experience,usableEnergyWh:number|undefined,device:EvidenceDevice={},references?:Parameters<typeof resolvePowerEvidence>[1]):SimpleEndurance|undefined {
-  if(usableEnergyWh===undefined||!Number.isFinite(usableEnergyWh)) return undefined;
+  if(usableEnergyWh===undefined||!Number.isFinite(usableEnergyWh)||usableEnergyWh<=0) return undefined;
   const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
   const derived=deriveUsage(usage);
   if(derived.issues.length) return undefined;
@@ -104,41 +104,15 @@ export const DAY_HOURS=24;
 
 function trimNumber(value:number):string {return String(Number(value.toFixed(1)));}
 
-/**
- * Present a Simple Mode runtime against a 24-hour day.
- *
- * The battery model answers "how long does this draw last", which for a
- * full-day profile is longer than a day. Saying "250 h of battery life"
- * would be a category error, so the consumer framing is days-per-charge
- * whenever the pack outlasts the day.
- */
-export function simpleRuntimeFraming(runtime:{min?:number;max?:number}|undefined):string|undefined {
-  if(runtime?.min===undefined||runtime.max===undefined||!Number.isFinite(runtime.min)||!Number.isFinite(runtime.max)) return undefined;
-  const [min,max]=[runtime.min,runtime.max].sort((a,b)=>a-b);
-  if(max>=DAY_HOURS){
-    return `A full charge covers the whole ${DAY_HOURS}-hour day — roughly ${trimNumber(min/DAY_HOURS)}–${trimNumber(max/DAY_HOURS)} days of this usage per charge. Treat it as an optimistic upper bound.`;
-  }
-  return `A full charge runs out after about ${trimNumber(min)}–${trimNumber(max)} h, partway through a ${DAY_HOURS}-hour day on this usage pattern.`;
-}
-
-/**
- * Primary Simple Mode result: an endurance verdict, not a runtime.
- *
- * "Battery life" from a daily usage profile is a different quantity from
- * "hours of continuous browsing", and the two are never mixed. The verdict
- * compares the day's active hours against the one screen-on budget the
- * calibration set can evidence, and always says which part of the day had
- * no evidence behind it.
- */
+/** Daily endurance requires evidence for every positive-duration workload. */
 export function simpleEnduranceHeadline(endurance:SimpleEndurance|undefined):{headline:string;detail:string}|undefined {
   if(!endurance) return undefined;
-  const covered=endurance.verdict==='covered';
-  const unevidenced=endurance.unevidencedHours>0;
-  const headline=covered?'One charge covers your day':`One charge runs out about ${trimNumber(endurance.activeHours)} h into your day`;
-  const detail=covered
-    ? `Your day has ${trimNumber(endurance.activeHours)} h of active use against an evidenced screen-on budget of ${trimNumber(endurance.screenOnBudgetHours.min)}–${trimNumber(endurance.screenOnBudgetHours.max)} h.`
-    : `Your day has ${trimNumber(endurance.activeHours)} h of active use, more than the evidenced screen-on budget of ${trimNumber(endurance.screenOnBudgetHours.min)}–${trimNumber(endurance.screenOnBudgetHours.max)} h.`;
-  return {headline,detail:detail+(unevidenced?` ${trimNumber(endurance.unevidencedHours)} h of that has no calibration evidence behind it, so the real figure is shorter.`:' Every active hour is covered by a measured web test.')+(covered?` Roughly ${trimNumber(endurance.budgetUseRatio*100)}% of the evidenced screen-on budget.`:'')};
+  if(endurance.verdict==='insufficient-evidence') return {
+    headline: INSUFFICIENT_EVIDENCE_MESSAGE,
+    detail: `Missing power evidence for ${endurance.dailyBudget.filter(line=>line.hours>0&&!line.energyWh).map(line=>line.workload.replaceAll('_',' ')).join(', ')}. Continuous Wi-Fi web reference hours cannot establish daily battery life.`,
+  };
+  const energy=endurance.accountedEnergyWh;
+  return {headline:energy?`${trimNumber(endurance.usableEnergyWh/energy.max)}-${trimNumber(endurance.usableEnergyWh/energy.min)} days per charge`:'Unknown',detail:'All 24 hours accounted for under the reference web protocol; this is not a measured real-world endurance result.'};
 }
 export type AlphaContext = {mode:Experience['mode'];usageProfile:string;usageVersion:string;usage?:Usage;powerSource:string;usablePercent:string;calibrationVersion:string};
 export type AlphaRun = WorkspaceRun & {context:AlphaContext; endurance?:SimpleEndurance; evidence?:ResolvedPowerEvidence};

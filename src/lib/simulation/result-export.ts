@@ -28,12 +28,16 @@ export function isSimpleEndurance(run:AlphaRun):boolean {return run.context.mode
 /** Headline text: an endurance verdict in Simple Mode, hours in Advanced. */
 export function headlineText(run:AlphaRun):string {
   if(isSimpleEndurance(run)) return simpleEnduranceHeadline(run.endurance)?.headline??'Unknown';
+  if(run.context.mode==='simple') {
+    const hours=run.battery?.result.estimate?.runtimeHours;
+    if(hours?.min!==undefined&&hours.max!==undefined) return `${numberText(hours.min/24)}-${numberText(hours.max/24)} days per charge`;
+  }
   return runtimeText(run);
 }
 
 /** Label naming the quantity shown, so the number is never ambiguous. */
 export function headlineLabel(run:AlphaRun):string {
-  return isSimpleEndurance(run)?'ESTIMATED ENDURANCE':'SIMULATED BATTERY RUNTIME';
+  return run.context.mode==='simple'?'ESTIMATED ENDURANCE':'SIMULATED BATTERY RUNTIME';
 }
 export function filename(name:string,receipt=false):string {
   const slug=name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,75).replace(/-$/,'')||'device';
@@ -66,16 +70,16 @@ function enduranceLines(run:AlphaRun):string[] {
   if(!endurance) return [];
   const upper=enduranceUpperBoundDays(endurance);
   const lines:string[]=[
-    `Verdict: ${endurance.verdict==='covered'?'one charge covers the day':'one charge runs out within the day'}`,
+    `Verdict: ${simpleEnduranceHeadline(endurance)?.headline}`,
     `Active use: ${numberText(endurance.activeHours)} h/day`,
     `Idle remainder: ${numberText(endurance.idleHours)} h/day (no calibration evidence for idle draw)`,
     `Evidenced screen-on budget: ${numberText(endurance.screenOnBudgetHours.min)}–${numberText(endurance.screenOnBudgetHours.max)} h of continuous ${WEB_ANCHOR_CONDITIONS.connectivity} web at ~${WEB_ANCHOR_CONDITIONS.brightnessNits} cd/m²`,
   ];
   if(endurance.accountedEnergyWh) lines.push(`Accounted daily energy (evidenced workloads only, partial): ${numberText(endurance.accountedEnergyWh.min)}–${numberText(endurance.accountedEnergyWh.max)} Wh`);
-  if(upper!==undefined) lines.push(`Endurance upper bound: ${numberText(upper,1)} days per charge. This is a bound, not an estimate: it treats every unevidenced hour and all idle time as consuming nothing.`);
+  if(upper!==undefined) lines.push(`Reference calculation upper endpoint: ${numberText(upper,1)} days per charge. All 24 hours are accounted for; this is not a measured real-world uncertainty bound.`);
   for(const line of endurance.dailyBudget) lines.push(`${WORKLOAD_LABEL[line.workload]}: ${numberText(line.hours)} h/day · evidence: ${line.status==='insufficient'?'NONE IN DATASET':line.status}${line.energyWh?` · ${numberText(line.energyWh.min)}–${numberText(line.energyWh.max)} Wh`:''}`);
-  lines.push(`Anchor held-out optimism: ${WEB_ANCHOR_HELDOUT_OPTIMISM.meanSignedPercentError}% mean (${WEB_ANCHOR_HELDOUT_OPTIMISM.range.min}–${WEB_ANCHOR_HELDOUT_OPTIMISM.range.max}%, n=${WEB_ANCHOR_HELDOUT_OPTIMISM.measuredDevices}) — recorded, not corrected`);
-  if(run.evidence){const confidence=simpleEvidenceConfidence(run.evidence,endurance);lines.push(`Evidence confidence: ${confidence.level} (${(confidence.evidencedShare*100).toFixed(0)}% of active hours have power evidence)`);for(const reason of confidence.reasons) lines.push(`  · ${reason}`);}
+  lines.push(`Cross-protocol observed gap (not model accuracy): ${WEB_ANCHOR_HELDOUT_OPTIMISM.meanSignedPercentError}% mean (${WEB_ANCHOR_HELDOUT_OPTIMISM.range.min}–${WEB_ANCHOR_HELDOUT_OPTIMISM.range.max}%, n=${WEB_ANCHOR_HELDOUT_OPTIMISM.measuredDevices}) — recorded, not corrected`);
+  if(run.evidence){const confidence=simpleEvidenceConfidence(run.evidence,endurance);lines.push(`Evidence confidence: ${confidence.level} (${(confidence.evidencedShare*100).toFixed(0)}% of the full day has power evidence)`);for(const reason of confidence.reasons) lines.push(`  · ${reason}`);}
   return lines;
 }
 
@@ -116,9 +120,9 @@ export async function renderPng(run:AlphaRun,kind:'card'|'receipt',generatedAt=n
     const name=run.input.name?.trim()||'Untitled concept';add(name, name.length>70?32:54,'#fffaf0',true,45);
     add(headlineLabel(run),23,'#c6c0b0',false,12);
     if(isSimpleEndurance(run)){
-      add(headlineText(run),headlineText(run).length>28?54:72,'#eee9db',true,10);
-      add(`Equivalent to about ${numberText(run.battery?.result.estimate?.runtimeHours?.min,1)}–${numberText(run.battery?.result.estimate?.runtimeHours?.max,1)} h of continuous web browsing`,24,'#c6c0b0',false,20);
-    }else add(runtimeText(run),100,'#eee9db',true,35);
+      add(headlineText(run),headlineText(run).length>60?38:headlineText(run).length>28?54:72,'#eee9db',true,10);
+      add(`Reference-only: ${numberText(run.battery?.result.estimate?.runtimeHours?.min,1)}–${numberText(run.battery?.result.estimate?.runtimeHours?.max,1)} h of continuous Wi-Fi web browsing`,24,'#c6c0b0',false,20);
+    }else add(headlineText(run),run.context.mode==='simple'?54:100,'#eee9db',true,35);
     add(`Usage profile  ·  ${run.context.usageProfile}`,30);add(`Confidence  ·  ${confidenceText(run)}`,30,undefined,false,30);
     const cell=run.input.battery?.cells?.[0];add(`Rated battery: ${numberText(cell?.capacityMah)} mAh`,25);add(`Display: ${numberText(run.input.displays.primary.diagonalInches)} in`,25);
     y=Math.max(y+30,1050);add(DISCLAIMER,23,'#d6d0c1',false,26);add(`Interactive Leaks · Public Beta | Engine v${run.device?.engineVersion}`,20);add('phonefuturist',24,'#eee9db',true,0);

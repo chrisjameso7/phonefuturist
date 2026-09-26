@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {
   DAY_HOURS,
+  USAGE_PRESETS,
   INITIAL_EXPERIENCE,
   INSUFFICIENT_EVIDENCE_MESSAGE,
   simpleEndurance,
@@ -51,7 +52,7 @@ function build(input:SimulationInput,experience=INITIAL_EXPERIENCE){
   const evidence=resolvePowerEvidence(evidenceDeviceFrom(input));
   return {profile,workspace,endurance,evidence,run:freezeRun(workspace,{
     mode:'simple',usageProfile:experience.preset,usageVersion:'daily-usage-1',
-    usage:{...(experience.preset==='Custom'?experience.custom:{web_browsing:'0',video_playback:'0',gaming:'0',camera_use:'0'})},
+    usage:{...(experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset])},
     powerSource:'Calibrated from reference measurements',usablePercent:'',calibrationVersion:POWER_EVIDENCE_VERSION,
   },endurance&&evidence?{endurance,evidence}:undefined)};
 }
@@ -111,11 +112,11 @@ describe('Evidence inventory: what the dataset actually contains',()=>{
   });
 });
 
-describe('BACKTEST 1: held-out cellular web records (never used to build the model)',()=>{
+describe('Descriptive cross-protocol comparison (not an accuracy backtest)',()=>{
   const heldOut=measurements.measurements.filter(m=>m.dataset_role==='validation');
 
   it.each(heldOut.map(m=>[devices.devices.find(d=>d.id===m.device_id)!.model,m] as const))(
-    'over-predicts %s runtime, and the model says so',
+    'reports the protocol gap for %s without calling it accuracy',
     (model,measurement)=>{
       const device=devices.devices.find(d=>d.id===measurement.device_id)!;
       const energy=REFERENCE_DEVICES.find(r=>r.id===measurement.device_id)!.energyWh;
@@ -132,7 +133,7 @@ describe('BACKTEST 1: held-out cellular web records (never used to build the mod
       expect(errorPercent).toBeGreaterThan(0);
       expect(errorPercent).toBeGreaterThanOrEqual(WEB_ANCHOR_HELDOUT_OPTIMISM.range.min-1);
       expect(errorPercent).toBeLessThanOrEqual(WEB_ANCHOR_HELDOUT_OPTIMISM.range.max+1);
-      expect(evidence.notes.join(' ')).toContain('over-predicted runtime');
+      expect(evidence.notes.join(' ')).toContain('cross-protocol gap');
       expect(device.model).toBe(model);
     },
   );
@@ -209,7 +210,7 @@ describe('Endurance semantics are separated from continuous runtime',()=>{
     const {run}=preset(s25,'Typical');
     expect(isSimpleEndurance(run)).toBe(true);
     expect(headlineLabel(run)).toBe('ESTIMATED ENDURANCE');
-    expect(headlineText(run)).toContain('charge');
+    expect(headlineText(run)).toContain('enough reference data');
     expect(headlineText(run)).not.toMatch(/\d+(\.\d+)?\s*h of battery life/);
   });
 
@@ -226,11 +227,11 @@ describe('Endurance semantics are separated from continuous runtime',()=>{
   it('never reports a precise days-per-charge as an estimate',()=>{
     const {endurance,run}=preset(s25,'Heavy');
     const upper=enduranceUpperBoundDays(endurance!)!;
-    expect(upper).toBeGreaterThan(1);
+    expect(upper).toBeUndefined();
     // The receipt must call it a bound, and say what it assumes.
     const receipt=JSON.stringify(receiptSections(run,'now'));
-    expect(receipt).toContain('Endurance upper bound');
-    expect(receipt).toContain('a bound, not an estimate');
+    expect(receipt).not.toContain('Endurance upper bound');
+    expect(receipt).toContain('enough reference data');
   });
 
   it('compares a day against the evidenced screen-on budget',()=>{
@@ -243,8 +244,8 @@ describe('Endurance semantics are separated from continuous runtime',()=>{
 
   it('reports a headline and never a bare number of hours',()=>{
     const headline=simpleEnduranceHeadline(preset(s25,'Typical').endurance)!;
-    expect(headline.headline).toContain('One charge');
-    expect(headline.detail).toContain('screen-on budget');
+    expect(headline.headline).toContain('enough reference data');
+    expect(headline.detail).toContain('Continuous Wi-Fi web');
     expect(simpleEnduranceHeadline(undefined)).toBeUndefined();
   });
 });
@@ -256,10 +257,10 @@ describe('Daily energy budget accounts only for evidenced workloads',()=>{
     expect(byWorkload.web_browsing.energyWh).toBeDefined();
     expect(byWorkload.gaming.energyWh).toBeUndefined();
     expect(byWorkload.gaming.status).toBe('insufficient');
-    expect(byWorkload.standby).toBeUndefined();
+    expect(byWorkload.standby.status).toBe('insufficient');
     // The accounted sum is explicitly partial and excludes idle.
     expect(endurance!.accountedEnergyWh).toBeDefined();
-    expect(endurance!.unevidencedHours).toBeCloseTo((90+45+15)/60,10);
+    expect(endurance!.unevidencedHours).toBeCloseTo(22,10);
   });
 
   it('never assigns an unevidenced workload a multiplier of web',()=>{
@@ -276,14 +277,14 @@ describe('Daily energy budget accounts only for evidenced workloads',()=>{
   it('resolves a verdict with no energy evidence at all',()=>{
     const evidence=resolvePowerEvidence(evidenceDeviceFrom(s25))!;
     const endurance=resolveEndurance({evidence,minutesPerDay:{web_browsing:'0',video_playback:'0',gaming:'0',camera_use:'0'},usableEnergyWh:18.84});
-    expect(endurance.verdict).toBe('covered');
+    expect(endurance.verdict).toBe('insufficient-evidence');
     expect(endurance.accountedEnergyWh).toBeUndefined();
-    expect(endurance.unevidencedHours).toBe(0);
+    expect(endurance.unevidencedHours).toBe(24);
   });
 });
 
 describe('Predefined presets order correctly, from the model not from constants',()=>{
-  it('Heavy < Typical < Light endurance',()=>{
+  it('preset active use rises without inventing endurance',()=>{
     const light=preset(s25,'Light').endurance!;
     const typical=preset(s25,'Typical').endurance!;
     const heavy=preset(s25,'Heavy').endurance!;
@@ -292,16 +293,16 @@ describe('Predefined presets order correctly, from the model not from constants'
     expect(typical.budgetUseRatio).toBeLessThan(heavy.budgetUseRatio);
     // Expressed as days-per-charge upper bounds, the ordering is identical.
     const days=(e:typeof light)=>enduranceUpperBoundDays(e)!;
-    expect(days(light)).toBeGreaterThan(days(typical));
-    expect(days(typical)).toBeGreaterThan(days(heavy));
+    expect(days(light)).toBeUndefined();
+    expect(days(heavy)).toBeUndefined();
   });
 
   it('holds across every calibration reference device',()=>{
     for(const reference of REFERENCE_DEVICES){
       const input:SimulationInput={name:reference.model,formFactor:'phone',displays:{primary:{}},battery:{cells:[{capacityMah:reference.energyWh*1000,nominalVoltageV:1}]}};
       const days=(p:UsagePreset)=>enduranceUpperBoundDays(preset(input,p).endurance!)!;
-      expect(days('Light')).toBeGreaterThan(days('Typical'));
-      expect(days('Typical')).toBeGreaterThan(days('Heavy'));
+      expect(days('Light')).toBeUndefined();
+      expect(days('Heavy')).toBeUndefined();
     }
   });
 
@@ -315,17 +316,18 @@ describe('Predefined presets order correctly, from the model not from constants'
     const base={web_browsing:'60',video_playback:'30',gaming:'0',camera_use:'0'};
     const without=customRun(s25,{...base,...extra}).endurance!;
     const withMore=customRun(s25,{...base,...{gaming:'360',video_playback:'330',camera_use:'120'}}).endurance!;
-    expect(withMore.unevidencedHours).toBeGreaterThan(without.unevidencedHours);
+    expect(withMore.unevidencedHours).toBe(without.unevidencedHours);
     const evidence=resolvePowerEvidence(evidenceDeviceFrom(s25))!;
     expect(simpleEvidenceConfidence(evidence,withMore).evidencedShare)
-      .toBeLessThan(simpleEvidenceConfidence(evidence,without).evidencedShare);
+      .toBe(simpleEvidenceConfidence(evidence,without).evidencedShare);
   });
 
-  it('more web time reduces the endurance bound because web is priced',()=>{
+  it('more web time cannot resolve unknown standby power',()=>{
     const light=customRun(s25,{web_browsing:'60',video_playback:'0',gaming:'0',camera_use:'0'}).endurance!;
     const heavy=customRun(s25,{web_browsing:'600',video_playback:'0',gaming:'0',camera_use:'0'}).endurance!;
     const days=(e:typeof light)=>enduranceUpperBoundDays(e)!;
-    expect(days(light)).toBeGreaterThan(days(heavy));
+    expect(days(light)).toBeUndefined();
+    expect(days(heavy)).toBeUndefined();
   });
 
   it('more web time raises accounted energy',()=>{
@@ -344,14 +346,14 @@ describe('Confidence reflects evidence quality',()=>{
     expect(report.reasons.join(' ')).toContain('no calibration evidence');
   });
 
-  it('rises when the profile is entirely evidenced and matched',()=>{
+  it('stays low when web is evidenced but standby is not',()=>{
     const webOnly=customRun(s25,{web_browsing:'300',video_playback:'0',gaming:'0',camera_use:'0'});
-    expect(simpleEvidenceConfidence(webOnly.evidence!,webOnly.endurance!).level).toBe('high');
+    expect(simpleEvidenceConfidence(webOnly.evidence!,webOnly.endurance!).level).toBe('low');
   });
 
   it('never reaches high without a matched reference',()=>{
     const unmatched=build({...s25,battery:{cells:[{capacityMah:3000,nominalVoltageV:3.8}]}},{...INITIAL_EXPERIENCE,preset:'Custom',custom:{web_browsing:'300',video_playback:'0',gaming:'0',camera_use:'0'}});
-    expect(simpleEvidenceConfidence(unmatched.evidence!,unmatched.endurance!).level).toBe('moderate');
+    expect(simpleEvidenceConfidence(unmatched.evidence!,unmatched.endurance!).level).toBe('low');
   });
 
   it('is surfaced in the UI, summary and receipt',()=>{
@@ -446,7 +448,7 @@ describe('Determinism and output hygiene',()=>{
     const a=preset(s25,'Heavy');
     const b=preset(s25,'Heavy');
     expect(JSON.stringify(a.run)).toBe(JSON.stringify(b.run));
-    expect(POWER_EVIDENCE_VERSION).toBe('battery-calibration-2.0');
+    expect(POWER_EVIDENCE_VERSION).toBe('battery-calibration-2.1');
   });
 
   it('produces no NaN, Infinity, undefined or null anywhere in the result',()=>{
@@ -522,7 +524,7 @@ describe('Result card and receipt use the corrected semantics',() => {
       const text=drawn.join(' ');
       expect(text).toContain('ESTIMATED ENDURANCE');
       expect(text).not.toContain('SIMULATED BATTERY RUNTIME');
-      expect(text).toContain('continuous web browsing');
+      expect(text).toContain('continuous Wi-Fi web browsing');
       expect(text).toContain('Heavy');
       expect(text).toContain('Galaxy S25 Ultra');
     }finally{delete g.document;}
@@ -541,5 +543,37 @@ describe('Unknown inputs stay unknown',() => {
     expect(displayAreaCm2(undefined,1440,3120)).toBeUndefined();
     expect(displayAreaCm2(6.9,0,3120)).toBeUndefined();
     expect(evidenceDeviceFrom({formFactor:'phone',displays:{primary:{}}})).toEqual({});
+  });
+});
+
+describe('Evidence integrity regressions',()=>{
+  it('does not identify an arbitrary concept from equal pack energy and geometry',()=>{
+    const evidence=resolvePowerEvidence(evidenceDeviceFrom({...s25,name:'Unreleased concept'}))!;
+    expect(evidence.basis).toBe('reference-population');
+    expect(evidence.reference).toBeUndefined();
+  });
+  it('computes rectangular panel area from both sides',()=>{
+    expect(displayAreaCm2(5,3,4)).toBeCloseTo(3*4*2.54**2,10);
+    expect(displayAreaCm2(5,4,3)).toBeCloseTo(displayAreaCm2(5,3,4)!,10);
+  });
+  it('uses every known battery cell and never a partial pack',()=>{
+    const input={...s25,battery:{cells:[{capacityMah:2000,nominalVoltageV:4},{capacityMah:2500,nominalVoltageV:4}]}};
+    expect(evidenceDeviceFrom(input).energyWh).toBe(18);
+    expect(evidenceDeviceFrom({...input,battery:{cells:[input.battery.cells[0],{capacityMah:2500}]}}).energyWh).toBeUndefined();
+  });
+  it('does not transfer phone evidence to tablets',()=>{
+    expect(resolvePowerEvidence(evidenceDeviceFrom({...s25,formFactor:'tablet'}))).toBeUndefined();
+  });
+  it.each([NaN,Infinity,-1,1441])('rejects invalid daily minutes %s',minutes=>{
+    expect(()=>resolveEndurance({evidence:resolvePowerEvidence(evidenceDeviceFrom(s25))!,minutesPerDay:{web_browsing:minutes},usableEnergyWh:18.84})).toThrow(RangeError);
+  });
+  it('only computes days when the entire day has evidence',()=>{
+    const partial=customRun(s25,{web_browsing:'300',video_playback:'0',gaming:'0',camera_use:'0'}).endurance!;
+    expect(partial.verdict).toBe('insufficient-evidence');
+    expect(enduranceUpperBoundDays(partial)).toBeUndefined();
+    const full=customRun(s25,{web_browsing:'1440',video_playback:'0',gaming:'0',camera_use:'0'}).endurance!;
+    expect(full.unevidencedHours).toBe(0);
+    expect(enduranceUpperBoundDays(full)).toBeCloseTo(full.usableEnergyWh/full.accountedEnergyWh!.min,10);
+    expect(simpleEnduranceHeadline(full)?.headline).toContain('days per charge');
   });
 });

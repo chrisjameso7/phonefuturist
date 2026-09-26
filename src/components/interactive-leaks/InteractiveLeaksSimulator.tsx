@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react';
 import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
 import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
-import {receiptSections} from '../../lib/simulation/result-export';
+import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
 import ShareResult from './ShareResult';
 import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
 
@@ -984,7 +984,7 @@ export default function InteractiveLeaksSimulator() {
                 <ul className="il-evidence-list">{Object.values(workloadEvidence(evidence)).map(entry=><li key={entry.workload}><strong>{WORKLOAD_LABEL[entry.workload]}</strong>: {entry.powerW?`${format(entry.powerW.min,2)}–${format(entry.powerW.max,2)} W`:'no power value'} · {entry.provenance?.kind??entry.status}<small> {entry.note}</small></li>)}</ul>
                 <p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p>
               </details>
-              {endurancePreview&&<p className="il-help">Estimated: {format(endurancePreview.activeHours,1)} h active/day, {format(endurancePreview.unevidencedHours,1)} h of which has no calibration evidence. Screen-on budget {format(evidence.screenOnBudgetHours.min,1)}–{format(evidence.screenOnBudgetHours.max,1)} h.</p>}</>
+              {endurancePreview&&<p className="il-help">Profile: {format(endurancePreview.activeHours,1)} h active/day; {format(endurancePreview.unevidencedHours,1)} h of the full day lacks power evidence. Reference-only continuous Wi-Fi web {format(evidence.screenOnBudgetHours.min,1)}–{format(evidence.screenOnBudgetHours.max,1)} h.</p>}</>
               :<><p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE}</p><p className="il-help">You can <button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>open Advanced Mode</button> to supply your own measured power values instead.</p></>}
             </div>:<>
             <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
@@ -1099,18 +1099,19 @@ export default function InteractiveLeaksSimulator() {
               {(
                 <div className="il-runtime-card">
                   <span className="il-runtime-eyebrow">
-                    Simulated battery runtime
+                    {run ? headlineLabel(run) : "Simulation result"}
                   </span>
 
                   {battery?.result.status === 'resolved' ? (
                     <>
-                      <p className="il-runtime-value">
-                        {hoursLabel(estimate?.runtimeHours)}
+                      <p className={`il-runtime-value${run?.context.mode==='simple'?' il-runtime-unknown':''}`}>
+                        {run ? headlineText(run) : hoursLabel(estimate?.runtimeHours)}
                       </p>
 
                       <p className="il-help">{run?.context.usageProfile} usage · simulated estimate, not measured battery life.</p>
-                      {simple&&<p className="il-help il-runtime-framing">{enduranceHeadline?.headline}</p>}
-                      {simple&&<p className="il-help">{enduranceHeadline?.detail}</p>}
+
+                      {run?.endurance&&<p className="il-help">{enduranceHeadline?.detail}</p>}
+                      {run?.endurance?.verdict==='insufficient-evidence'&&<button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Open Advanced Mode</button>}
                       {run&&<ShareResult key={JSON.stringify(run)} run={run}/>}
                       <details className="il-evidence"><summary>View assumptions</summary>
                       {run&&receiptSections(run,'Not exported').filter(section=>['ENVIRONMENT','MODEL','ASSUMPTIONS / PROVENANCE','WARNINGS / MISSING INFORMATION'].includes(section.title)).map(section=><section key={section.title}><h3>{section.title}</h3><ul>{section.lines.map((line,index)=><li key={index}>{line}</li>)}</ul></section>)}
@@ -1119,7 +1120,7 @@ export default function InteractiveLeaksSimulator() {
                       <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
                       {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
                       </details>
-                      <div className="il-runtime-bar" aria-hidden="true">
+                      {run?.context.mode==='advanced'&&<><div className="il-runtime-bar" aria-hidden="true">
                         <span
                           style={{
                             width: `${runtimeBarPercent(estimate?.runtimeHours) ?? 0}%`,
@@ -1131,6 +1132,7 @@ export default function InteractiveLeaksSimulator() {
                         0 h · 24 h day · 30 h scale
                       </span>
 
+                      </>}
                       {(evidenceConfidence||battery.result.confidence) && (
                         <span
                           className={`il-confidence il-confidence-${evidenceConfidence??battery.result.confidence}`}
