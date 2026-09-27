@@ -1115,3 +1115,12 @@
 .lab-simulator-shell .il-simple-usage h3 {font-size:25px;}
 @media(max-width:600px){.lab-simulator-shell .il-share-actions {display:grid;grid-template-columns:1fr;width:100%;}.lab-simulator-shell .il-mode {padding:10px;}.lab-simulator-shell .il-mode label {padding:6px 10px;}}
 .lab-simulator-shell .il-export-preview {display:block;max-width:100%;max-height:500px;object-fit:contain;margin:18px auto;}
+
+/* Simple Mode endurance framing and per-workload evidence listing. */
+.lab-simulator-shell .il-runtime-framing {color:#eee9db;font-size:1.05rem;font-weight:600;margin:6px 0 2px;}
+.lab-simulator-shell .il-evidence-list {list-style:none;margin:8px 0;padding:0;display:grid;gap:6px;}
+.lab-simulator-shell .il-evidence-list li {border-left:2px solid #6b6455;padding:4px 0 4px 10px;color:#d6d0c1;}
+.lab-simulator-shell .il-evidence-list strong {color:#eee9db;}
+.lab-simulator-shell .il-evidence-list small {display:block;opacity:0.75;margin-top:2px;}
+.lab-simulator-shell .il-link {background:none;border:0;padding:0;color:#c6b98a;font:inherit;text-decoration:underline;cursor:pointer;}
+.lab-simulator-shell .il-link:hover {color:#eee9db;}

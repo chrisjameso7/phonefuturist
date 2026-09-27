@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react';
-import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleRuntimeFraming,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
-import {evidenceDeviceFrom,resolvePowerEvidence} from '../../lib/simulation/power-evidence';
-import {receiptSections} from '../../lib/simulation/result-export';
+import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
+import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
+import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
 import ShareResult from './ShareResult';
 import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
 
@@ -262,6 +262,12 @@ const CONFIDENCE_LABEL: Record<string, string> = {
   low: 'Low confidence',
 };
 
+const EVIDENCE_CONFIDENCE_LABEL: Record<string, string> = {
+  high: 'High evidence confidence',
+  moderate: 'Moderate evidence confidence',
+  low: 'Low evidence confidence',
+};
+
 /* ---------------- Primitives ---------------- */
 
 function NumericField({
@@ -383,6 +389,10 @@ export default function InteractiveLeaksSimulator() {
   const evidenceDevice=evidenceDeviceFrom(buildInput());
   const evidence=simple&&!experience.useEnteredPower?resolvePowerEvidence(evidenceDevice):undefined;
   const profile=simple?simpleProfile(experience,workloadPower,evidenceDevice):buildProfile(workloadPower,workloadWeights,profileMode);
+  const endurancePreview=simple&&!experience.useEnteredPower?simpleEndurance(experience,evidenceDevice.energyWh,evidenceDevice):undefined;
+  const enduranceHeadline=simpleEnduranceHeadline(run?.endurance);
+  /* Simple Mode grades on evidence quality; Advanced keeps the battery model's own grading. */
+  const evidenceConfidence=run?.endurance&&run.evidence?simpleEvidenceConfidence(run.evidence,run.endurance).level:undefined;
   function changeExperience(action:Parameters<typeof experienceReducer>[1]){dispatchExperience(action);setDirty(true);}
   const simulationInput=run?.input;
   const result=run?.device;
@@ -504,11 +514,15 @@ export default function InteractiveLeaksSimulator() {
     const {name,formFactor,...fields}=form;
     const issues=numericIssues(fields);
     cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
-    setRun(freezeRun(runWorkspace(buildInput(),simple?'':usablePercent,profile,issues),{
+    const built=buildInput();
+    const workspace=runWorkspace(built,simple?'':usablePercent,profile,issues);
+    /* Endurance is resolved from the same frozen run, so the receipt and the card can never disagree with the screen. */
+    const resolvedEndurance=simple&&!experience.useEnteredPower?simpleEndurance(experience,workspace.device?.battery?.totalEnergyWh,evidenceDeviceFrom(built)):undefined;
+    setRun(freezeRun(workspace,{
       mode:experience.mode,usageProfile:simple?experience.preset:'Advanced',usageVersion:USAGE_VERSION,
-      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — estimated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
+      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — calibrated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
       usablePercent:simple?'':usablePercent,calibrationVersion:simple&&!experience.useEnteredPower&&evidence?POWER_EVIDENCE_VERSION:'None applied — seed observations are not fitted power coefficients',
-    }));
+    },resolvedEndurance?{endurance:resolvedEndurance,evidence:resolvePowerEvidence(evidenceDeviceFrom(built))}:undefined));
     setHasSimulated(true);
     setDirty(false);
   }
@@ -962,8 +976,16 @@ export default function InteractiveLeaksSimulator() {
               {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
               <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
               <label className="il-power-choice"><input type="checkbox" checked={experience.useEnteredPower} onChange={event=>changeExperience({type:'power',value:event.currentTarget.checked})}/>Use power values I entered in Advanced (unverified)</label>
-              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set, adjusted for this device's screen size, and reported as an estimate in View Assumptions — never as a measurement of your device.</p>
-              {evidence?<details className="il-advanced"><summary>View assumptions</summary><p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p><p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p><p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p></details>:<p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE} You can still enter your own measured power values in Advanced mode.</p>}
+              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set and is reported as calibrated — never as a measurement of your device.</p>
+              {evidence?<><details className="il-advanced"><summary>View assumptions</summary>
+                <p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p>
+                <p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p>
+                <h3>Evidence per workload</h3>
+                <ul className="il-evidence-list">{Object.values(workloadEvidence(evidence)).map(entry=><li key={entry.workload}><strong>{WORKLOAD_LABEL[entry.workload]}</strong>: {entry.powerW?`${format(entry.powerW.min,2)}–${format(entry.powerW.max,2)} W`:'no power value'} · {entry.provenance?.kind??entry.status}<small> {entry.note}</small></li>)}</ul>
+                <p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p>
+              </details>
+              {endurancePreview&&<p className="il-help">Profile: {format(endurancePreview.activeHours,1)} h active/day; {format(endurancePreview.unevidencedHours,1)} h of the full day lacks power evidence. Reference-only continuous Wi-Fi web {format(evidence.screenOnBudgetHours.min,1)}–{format(evidence.screenOnBudgetHours.max,1)} h.</p>}</>
+              :<><p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE}</p><p className="il-help">You can <button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>open Advanced Mode</button> to supply your own measured power values instead.</p></>}
             </div>:<>
             <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
               <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
@@ -1077,17 +1099,19 @@ export default function InteractiveLeaksSimulator() {
               {(
                 <div className="il-runtime-card">
                   <span className="il-runtime-eyebrow">
-                    Simulated battery runtime
+                    {run ? headlineLabel(run) : "Simulation result"}
                   </span>
 
                   {battery?.result.status === 'resolved' ? (
                     <>
-                      <p className="il-runtime-value">
-                        {hoursLabel(estimate?.runtimeHours)}
+                      <p className={`il-runtime-value${run?.context.mode==='simple'?' il-runtime-unknown':''}`}>
+                        {run ? headlineText(run) : hoursLabel(estimate?.runtimeHours)}
                       </p>
 
                       <p className="il-help">{run?.context.usageProfile} usage · simulated estimate, not measured battery life.</p>
-                      {simple&&<p className="il-help il-runtime-framing">{simpleRuntimeFraming(estimate?.runtimeHours)}</p>}
+
+                      {run?.endurance&&<p className="il-help">{enduranceHeadline?.detail}</p>}
+                      {run?.endurance?.verdict==='insufficient-evidence'&&<button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Open Advanced Mode</button>}
                       {run&&<ShareResult key={JSON.stringify(run)} run={run}/>}
                       <details className="il-evidence"><summary>View assumptions</summary>
                       {run&&receiptSections(run,'Not exported').filter(section=>['ENVIRONMENT','MODEL','ASSUMPTIONS / PROVENANCE','WARNINGS / MISSING INFORMATION'].includes(section.title)).map(section=><section key={section.title}><h3>{section.title}</h3><ul>{section.lines.map((line,index)=><li key={index}>{line}</li>)}</ul></section>)}
@@ -1096,7 +1120,7 @@ export default function InteractiveLeaksSimulator() {
                       <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
                       {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
                       </details>
-                      <div className="il-runtime-bar" aria-hidden="true">
+                      {run?.context.mode==='advanced'&&<><div className="il-runtime-bar" aria-hidden="true">
                         <span
                           style={{
                             width: `${runtimeBarPercent(estimate?.runtimeHours) ?? 0}%`,
@@ -1108,11 +1132,12 @@ export default function InteractiveLeaksSimulator() {
                         0 h · 24 h day · 30 h scale
                       </span>
 
-                      {battery.result.confidence && (
+                      </>}
+                      {(evidenceConfidence||battery.result.confidence) && (
                         <span
-                          className={`il-confidence il-confidence-${battery.result.confidence}`}
+                          className={`il-confidence il-confidence-${evidenceConfidence??battery.result.confidence}`}
                         >
-                          {CONFIDENCE_LABEL[battery.result.confidence]}
+                          {evidenceConfidence?EVIDENCE_CONFIDENCE_LABEL[evidenceConfidence]:CONFIDENCE_LABEL[battery.result.confidence!]}
                         </span>
                       )}
                     </>

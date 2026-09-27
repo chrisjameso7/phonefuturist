@@ -1,5 +1,5 @@
 import {buildProfile, COMPONENT_WORKLOADS, numeric, WORKLOAD_LABEL, type Profile, type WorkloadFields, type WorkspaceRun} from './beta-workspace';
-import {POWER_EVIDENCE_VERSION, resolvePowerEvidence, workloadProvenance, type EvidenceDevice, type ResolvedPowerEvidence} from './power-evidence';
+import {POWER_EVIDENCE_VERSION, resolveEndurance, resolvePowerEvidence, workloadEvidence, type EvidenceDevice, type ResolvedPowerEvidence, type SimpleEndurance} from './power-evidence';
 
 export const USAGE_VERSION = 'daily-usage-1';
 export const ACTIVE_WORKLOADS = ['web_browsing','video_playback','gaming','camera_use'] as const;
@@ -39,20 +39,22 @@ export function deriveUsage(usage:Usage) {
 /** Shown when the seed evidence genuinely cannot support a configuration. */
 export const INSUFFICIENT_EVIDENCE_MESSAGE="We don't have enough reference data to simulate this configuration yet.";
 
-/** Build the Simple Mode mixture from reference power evidence. Never invents watts. */
-function evidenceProfile(evidence:ResolvedPowerEvidence,shares:WorkloadFields):Profile {
-  const profile:Profile={mode:'percent',totalPercent:0,issues:[],workloads:{},terms:[]};
-  for(const key of COMPONENT_WORKLOADS){
-    const share=(numeric(shares[key])??0)/100;
-    profile.totalPercent+=share*100;
-    if(share<=0) continue;
-    const power=key==='standby'?evidence.idlePowerW:evidence.screenOnPowerW;
-    const midpoint=(power.min+power.max)/2;
-    profile.terms.push({workload:key,power:midpoint,share});
-    // Whole-device power is explicitly named, never misrepresented as SoC/compute power.
-    profile.workloads[key]={subsystems:{workloadSpecific:{whole_device:{range:{min:power.min,max:power.max},provenance:workloadProvenance(key,evidence)}}},weight:share};
-  }
-  if(!profile.terms.length) profile.issues=[INSUFFICIENT_EVIDENCE_MESSAGE];
+/**
+ * Build the Simple Mode profile from reference power evidence.
+ *
+ * Only workloads the calibration set can actually account for are given a
+ * power value. Video, gaming, camera and idle have no measured duty cycle
+ * in this repository, so they are left out of the mixture entirely rather
+ * than filled in from web browsing. The profile therefore evaluates the
+ * one continuous duty cycle the evidence supports, and the usage profile
+ * is accounted for separately by resolveEndurance.
+ */
+function evidenceProfile(evidence:ResolvedPowerEvidence):Profile {
+  const power=evidence.webPowerW;
+  const profile:Profile={mode:'percent',totalPercent:100,issues:[],workloads:{},terms:[]};
+  profile.terms.push({workload:'web_browsing',power:(power.min+power.max)/2,share:1});
+  // Whole-device power is explicitly named, never misrepresented as SoC/compute power.
+  profile.workloads.web_browsing={subsystems:{workloadSpecific:{whole_device:{range:{min:power.min,max:power.max},provenance:workloadEvidence(evidence).web_browsing.provenance}}},weight:1};
   return profile;
 }
 
@@ -75,7 +77,24 @@ export function simpleProfile(experience:Experience,power:WorkloadFields,device:
   }
   const evidence=resolvePowerEvidence(device,references);
   if(!evidence){const unknown=buildProfile({...power,standby:''},derived.shares,'percent');unknown.issues=[INSUFFICIENT_EVIDENCE_MESSAGE];return unknown;}
-  return evidenceProfile(evidence,derived.shares);
+  return evidenceProfile(evidence);
+}
+
+/**
+ * Resolve Simple Mode endurance for the selected usage pattern.
+ *
+ * Returns undefined when the evidence cannot support any estimate, which
+ * is the single condition under which Simple Mode reports that it does
+ * not have enough reference data.
+ */
+export function simpleEndurance(experience:Experience,usableEnergyWh:number|undefined,device:EvidenceDevice={},references?:Parameters<typeof resolvePowerEvidence>[1]):SimpleEndurance|undefined {
+  if(usableEnergyWh===undefined||!Number.isFinite(usableEnergyWh)||usableEnergyWh<=0) return undefined;
+  const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
+  const derived=deriveUsage(usage);
+  if(derived.issues.length) return undefined;
+  const evidence=resolvePowerEvidence(device,references);
+  if(!evidence) return undefined;
+  return resolveEndurance({evidence,minutesPerDay:usage,usableEnergyWh});
 }
 
 export {POWER_EVIDENCE_VERSION};
@@ -85,26 +104,20 @@ export const DAY_HOURS=24;
 
 function trimNumber(value:number):string {return String(Number(value.toFixed(1)));}
 
-/**
- * Present a Simple Mode runtime against a 24-hour day.
- *
- * The battery model answers "how long does this draw last", which for a
- * full-day profile is longer than a day. Saying "250 h of battery life"
- * would be a category error, so the consumer framing is days-per-charge
- * whenever the pack outlasts the day.
- */
-export function simpleRuntimeFraming(runtime:{min?:number;max?:number}|undefined):string|undefined {
-  if(runtime?.min===undefined||runtime.max===undefined||!Number.isFinite(runtime.min)||!Number.isFinite(runtime.max)) return undefined;
-  const [min,max]=[runtime.min,runtime.max].sort((a,b)=>a-b);
-  if(max>=DAY_HOURS){
-    return `A full charge covers the whole ${DAY_HOURS}-hour day — roughly ${trimNumber(min/DAY_HOURS)}–${trimNumber(max/DAY_HOURS)} days of this usage per charge. Treat it as an optimistic upper bound.`;
-  }
-  return `A full charge runs out after about ${trimNumber(min)}–${trimNumber(max)} h, partway through a ${DAY_HOURS}-hour day on this usage pattern.`;
+/** Daily endurance requires evidence for every positive-duration workload. */
+export function simpleEnduranceHeadline(endurance:SimpleEndurance|undefined):{headline:string;detail:string}|undefined {
+  if(!endurance) return undefined;
+  if(endurance.verdict==='insufficient-evidence') return {
+    headline: INSUFFICIENT_EVIDENCE_MESSAGE,
+    detail: `Missing power evidence for ${endurance.dailyBudget.filter(line=>line.hours>0&&!line.energyWh).map(line=>line.workload.replaceAll('_',' ')).join(', ')}. Continuous Wi-Fi web reference hours cannot establish daily battery life.`,
+  };
+  const energy=endurance.accountedEnergyWh;
+  return {headline:energy?`${trimNumber(endurance.usableEnergyWh/energy.max)}-${trimNumber(endurance.usableEnergyWh/energy.min)} days per charge`:'Unknown',detail:'All 24 hours accounted for under the reference web protocol; this is not a measured real-world endurance result.'};
 }
 export type AlphaContext = {mode:Experience['mode'];usageProfile:string;usageVersion:string;usage?:Usage;powerSource:string;usablePercent:string;calibrationVersion:string};
-export type AlphaRun = WorkspaceRun & {context:AlphaContext};
-export function freezeRun(run:WorkspaceRun,context:AlphaContext):AlphaRun {
-  const snapshot=structuredClone({...run,context});
+export type AlphaRun = WorkspaceRun & {context:AlphaContext; endurance?:SimpleEndurance; evidence?:ResolvedPowerEvidence};
+export function freezeRun(run:WorkspaceRun,context:AlphaContext,extras?:{endurance?:SimpleEndurance;evidence?:ResolvedPowerEvidence}):AlphaRun {
+  const snapshot=structuredClone({...run,context,...(extras?.endurance?{endurance:extras.endurance}:{}),...(extras?.evidence?{evidence:extras.evidence}:{})});
   function freeze(value:unknown){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}}
   freeze(snapshot);return snapshot;
 }
