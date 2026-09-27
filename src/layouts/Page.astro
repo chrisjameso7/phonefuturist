@@ -1,7 +1,9 @@
 ---
 import '../styles/global.css';
 import '../styles/observatory.css';
-import { navigationFor } from '../lib/navigation';
+import '../styles/navigation-glass.css';
+import '../styles/optical-pointer.css';
+import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
   title: string;
@@ -28,6 +30,7 @@ const { signedIn, showStudio } = navigationFor(
   Astro.locals.user,
   Astro.locals.access,
 );
+const active = activeNavigation(Astro.url);
 ---
 
 <!doctype html>
@@ -36,7 +39,7 @@ const { signedIn, showStudio } = navigationFor(
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta name="description" content={description} />
     <meta
@@ -48,6 +51,7 @@ const { signedIn, showStudio } = navigationFor(
 
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    <div class="header-scroll-sentinel" aria-hidden="true"></div>
 
     <header class="site-header">
       <div class="header-brand-row">
@@ -56,7 +60,7 @@ const { signedIn, showStudio } = navigationFor(
         </a>
 
         <details class="mobile-nav">
-          <summary aria-label="Open navigation">
+          <summary aria-label="Navigation menu" aria-controls="mobile-navigation-panel">
             <span class="mobile-menu-label">Menu</span>
 
             <span class="mobile-menu-icon" aria-hidden="true">
@@ -65,30 +69,30 @@ const { signedIn, showStudio } = navigationFor(
             </span>
           </summary>
 
-          <div class="mobile-menu-panel">
+          <div class="mobile-menu-panel" id="mobile-navigation-panel">
             <nav class="mobile-menu-primary" aria-label="Mobile">
-              <a href="/" aria-current={home ? 'page' : undefined}>
+              <a href="/" aria-current={active==='home' ? 'page' : undefined}>
                 <span>Home</span>
                 <span aria-hidden="true">↗</span>
               </a>
 
               {
                 links.map(([name, key]) => (
-                  <a href={'/articles?section=' + key}>
+                  <a href={'/articles?section=' + key} aria-current={active===key?'page':undefined}>
                     <span>{name}</span>
                     <span aria-hidden="true">↗</span>
                   </a>
                 ))
               }
 
-              <a href="/interactive-leaks">
+              <a href="/interactive-leaks" aria-current={active==='lab'?'page':undefined}>
                 <span>The Lab</span>
                 <span aria-hidden="true">↗</span>
               </a>
 
               {
                 showStudio && (
-                  <a href="/studio">
+                  <a href="/studio" aria-current={active==='studio'?'page':undefined}>
                     <span>The Studio</span>
                     <span aria-hidden="true">↗</span>
                   </a>
@@ -130,17 +134,17 @@ const { signedIn, showStudio } = navigationFor(
       </div>
 
       <nav class="desktop-nav" aria-label="Main">
-        <a href="/" aria-current={home ? 'page' : undefined}>Home</a>
+        <a href="/" aria-current={active==='home' ? 'page' : undefined}>Home</a>
 
         {
           links.map(([name, key]) => (
-            <a href={'/articles?section=' + key}>{name}</a>
+            <a href={'/articles?section=' + key} aria-current={active===key?'page':undefined}>{name}</a>
           ))
         }
 
-        <a href="/interactive-leaks">The Lab</a>
+        <a href="/interactive-leaks" aria-current={active==='lab'?'page':undefined}>The Lab</a>
 
-        {showStudio && <a href="/studio">Studio</a>}
+        {showStudio && <a href="/studio" aria-current={active==='studio'?'page':undefined}>Studio</a>}
       </nav>
 
       <div class="header-actions">
@@ -183,3 +187,11 @@ const { signedIn, showStudio } = navigationFor(
     </footer>
   </body>
 </html>
+
+<script>
+  import { enhanceNavigation } from '../lib/navigation-client';
+  import { enhanceOpticalPointer } from '../lib/optical-pointer-client';
+
+  enhanceNavigation();
+  enhanceOpticalPointer();
+</script>
