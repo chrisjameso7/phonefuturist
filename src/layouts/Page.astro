@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/observatory.css';
 import '../styles/navigation-glass.css';
 import '../styles/optical-pointer.css';
+import '../styles/brand-theme.css';
 import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
   description?: string;
   privatePage?: boolean;
   home?: boolean;
+  productMode?: boolean;
 }
 
 const {
@@ -17,6 +19,7 @@ const {
   description = 'Independent technology journalism, analysis and intelligence.',
   privatePage = false,
   home = false,
+  productMode = false,
 } = Astro.props;
 
 const links = [
@@ -30,6 +33,7 @@ const { signedIn, showStudio } = navigationFor(
   Astro.locals.user,
   Astro.locals.access,
 );
+
 const active = activeNavigation(Astro.url);
 ---
 
@@ -37,154 +41,263 @@ const active = activeNavigation(Astro.url);
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+
+    <script is:inline src="/theme-init.js"></script>
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+
     <meta name="description" content={description} />
+
     <meta
       name="robots"
       content={privatePage ? 'noindex, nofollow' : 'noindex'}
     />
+
     <title>{title} · PhoneFuturist</title>
   </head>
 
-  <body>
+  <body class:list={{ 'product-mode': productMode }}>
     <a class="skip" href="#main">Skip to content</a>
-    <div class="header-scroll-sentinel" aria-hidden="true"></div>
 
-    <header class="site-header">
-      <div class="header-brand-row">
-        <a class="brand" href="/">
-          PhoneFuturist<span aria-hidden="true">.</span>
-        </a>
+    {
+      !productMode && (
+        <>
+          <div class="header-scroll-sentinel" aria-hidden="true"></div>
 
-        <details class="mobile-nav">
-          <summary aria-label="Navigation menu" aria-controls="mobile-navigation-panel">
-            <span class="mobile-menu-label">Menu</span>
+          <header class="site-header">
+            <div class="header-brand-row">
+              <a class="brand" href="/">
+                PhoneFuturist<span aria-hidden="true">.</span>
+              </a>
 
-            <span class="mobile-menu-icon" aria-hidden="true">
-              <span></span>
-              <span></span>
-            </span>
-          </summary>
+              <details class="mobile-nav">
+                <summary
+                  aria-label="Navigation menu"
+                  aria-controls="mobile-navigation-panel"
+                >
+                  <span class="mobile-menu-label">Menu</span>
 
-          <div class="mobile-menu-panel" id="mobile-navigation-panel">
-            <nav class="mobile-menu-primary" aria-label="Mobile">
-              <a href="/" aria-current={active==='home' ? 'page' : undefined}>
-                <span>Home</span>
-                <span aria-hidden="true">↗</span>
+                  <span class="mobile-menu-icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                  </span>
+                </summary>
+
+                <div class="mobile-menu-panel" id="mobile-navigation-panel">
+                  <nav class="mobile-menu-primary" aria-label="Mobile">
+                    <a
+                      href="/"
+                      aria-current={active === 'home' ? 'page' : undefined}
+                    >
+                      <span>Home</span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
+
+                    {
+                      links.map(([name, key]) => (
+                        <a
+                          href={'/articles?section=' + key}
+                          aria-current={active === key ? 'page' : undefined}
+                        >
+                          <span>{name}</span>
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      ))
+                    }
+
+                    <a
+                      href="/interactive-leaks"
+                      aria-current={active === 'lab' ? 'page' : undefined}
+                    >
+                      <span>The Lab</span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
+
+                    {
+                      showStudio && (
+                        <a
+                          href="/studio"
+                          aria-current={active === 'studio' ? 'page' : undefined}
+                        >
+                          <span>The Studio</span>
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      )
+                    }
+                  </nav>
+
+                  <div class="mobile-account">
+                    <label class="theme-choice">
+                      <span>Appearance</span>
+
+                      <select
+                        data-theme-choice
+                        aria-label="Color theme"
+                      >
+                        <option value="system">System</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                      </select>
+                    </label>
+
+                    <span class="mobile-account-label">Account</span>
+
+                    {
+                      signedIn ? (
+                        <div class="mobile-account-actions">
+                          <a
+                            class="mobile-account-primary"
+                            href="/account"
+                          >
+                            My account
+                          </a>
+
+                          <form action="/auth/signout" method="post">
+                            <button
+                              type="submit"
+                              class="mobile-account-secondary"
+                            >
+                              Sign out
+                            </button>
+                          </form>
+                        </div>
+                      ) : (
+                        <div class="mobile-account-actions">
+                          <a
+                            class="mobile-account-secondary"
+                            href="/login"
+                          >
+                            Sign in
+                          </a>
+
+                          <a
+                            class="mobile-account-primary"
+                            href="/join"
+                          >
+                            Get started
+                          </a>
+                        </div>
+                      )
+                    }
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <nav class="desktop-nav" aria-label="Main">
+              <a
+                href="/"
+                aria-current={active === 'home' ? 'page' : undefined}
+              >
+                Home
               </a>
 
               {
                 links.map(([name, key]) => (
-                  <a href={'/articles?section=' + key} aria-current={active===key?'page':undefined}>
-                    <span>{name}</span>
-                    <span aria-hidden="true">↗</span>
+                  <a
+                    href={'/articles?section=' + key}
+                    aria-current={active === key ? 'page' : undefined}
+                  >
+                    {name}
                   </a>
                 ))
               }
 
-              <a href="/interactive-leaks" aria-current={active==='lab'?'page':undefined}>
-                <span>The Lab</span>
-                <span aria-hidden="true">↗</span>
+              <a
+                href="/interactive-leaks"
+                aria-current={active === 'lab' ? 'page' : undefined}
+              >
+                The Lab
               </a>
 
               {
                 showStudio && (
-                  <a href="/studio" aria-current={active==='studio'?'page':undefined}>
-                    <span>The Studio</span>
-                    <span aria-hidden="true">↗</span>
+                  <a
+                    href="/studio"
+                    aria-current={active === 'studio' ? 'page' : undefined}
+                  >
+                    Studio
                   </a>
                 )
               }
             </nav>
 
-            <div class="mobile-account">
-              <span class="mobile-account-label">Account</span>
-
+            <div class="header-actions">
               {
                 signedIn ? (
-                  <div class="mobile-account-actions">
-                    <a class="mobile-account-primary" href="/account">
-                      My account
+                  <>
+                    <a class="button" href="/account">
+                      My account <span aria-hidden="true">↗</span>
                     </a>
 
                     <form action="/auth/signout" method="post">
-                      <button type="submit" class="mobile-account-secondary">
+                      <button class="secondary" type="submit">
                         Sign out
                       </button>
                     </form>
-                  </div>
+                  </>
                 ) : (
-                  <div class="mobile-account-actions">
-                    <a class="mobile-account-secondary" href="/login">
+                  <>
+                    <a class="sign-in" href="/login">
                       Sign in
                     </a>
 
-                    <a class="mobile-account-primary" href="/join">
+                    <a class="button" href="/join">
                       Get started
                     </a>
-                  </div>
+                  </>
                 )
               }
             </div>
-          </div>
-        </details>
-      </div>
+          </header>
+        </>
+      )
+    }
 
-      <nav class="desktop-nav" aria-label="Main">
-        <a href="/" aria-current={active==='home' ? 'page' : undefined}>Home</a>
-
-        {
-          links.map(([name, key]) => (
-            <a href={'/articles?section=' + key} aria-current={active===key?'page':undefined}>{name}</a>
-          ))
-        }
-
-        <a href="/interactive-leaks" aria-current={active==='lab'?'page':undefined}>The Lab</a>
-
-        {showStudio && <a href="/studio" aria-current={active==='studio'?'page':undefined}>Studio</a>}
-      </nav>
-
-      <div class="header-actions">
-        {
-          signedIn ? (
-            <>
-              <a class="button" href="/account">
-                My account <span aria-hidden="true">↗</span>
-              </a>
-
-              <form action="/auth/signout" method="post">
-                <button class="secondary">Sign out</button>
-              </form>
-            </>
-          ) : (
-            <>
-              <a class="sign-in" href="/login">Sign in</a>
-              <a class="button" href="/join">Get started</a>
-            </>
-          )
-        }
-      </div>
-    </header>
-
-    <main id="main" class:list={{ 'home-page': home }}>
+    <main
+      id="main"
+      class:list={{
+        'home-page': home,
+        'product-main': productMode,
+      }}
+    >
       <slot />
     </main>
 
-    <footer>
-      <a class="brand" href="/">
-        PhoneFuturist<span aria-hidden="true">.</span>
-      </a>
+    {
+      !productMode && (
+        <footer>
+          <label class="theme-choice">
+            <span>Appearance</span>
 
-      <span>
-        Independent thinking. Informed perspective.<br />
-        Technology, examined.
-      </span>
+            <select
+              data-theme-choice
+              aria-label="Color theme"
+            >
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
 
-      <a href="/#about">About the publication ↗</a>
-    </footer>
+          <a class="brand" href="/">
+            PhoneFuturist<span aria-hidden="true">.</span>
+          </a>
+
+          <span>
+            Independent thinking. Informed perspective.<br />
+            Technology, examined.
+          </span>
+
+          <a href="/#about">
+            About the publication ↗
+          </a>
+        </footer>
+      )
+    }
   </body>
 </html>
 

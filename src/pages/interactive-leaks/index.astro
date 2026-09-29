@@ -244,7 +244,7 @@ import '../../styles/lab-simulator.css';
 
   .lab-hero h1 span {
     display: block;
-    color: #d3d0bd;
+    color: var(--muted);
   }
 
   .lab-intro {
@@ -279,9 +279,9 @@ import '../../styles/lab-simulator.css';
 
   .lab-principles span {
     padding: 9px 13px;
-    border: 1px solid #ffffff26;
+    border: 1px solid color-mix(in srgb,var(--ink) 15%,transparent);
     border-radius: 999px;
-    background: #ffffff08;
+    background: color-mix(in srgb,var(--ink) 3%,transparent);
     color: var(--muted);
     font-size: 0.74rem;
   }
@@ -300,13 +300,13 @@ import '../../styles/lab-simulator.css';
     width: 460px;
     height: 460px;
     border-radius: 50%;
-    background: radial-gradient(circle, #c9c9a42e, transparent 70%);
+    background: radial-gradient(circle, color-mix(in srgb,var(--accent) 18%,transparent), transparent 70%);
     pointer-events: none;
   }
 
   .lab-orbit {
     position: absolute;
-    border: 1px solid #e2dfc146;
+    border: 1px solid color-mix(in srgb,var(--accent) 27%,transparent);
     border-radius: 50%;
   }
 
@@ -326,12 +326,12 @@ import '../../styles/lab-simulator.css';
     height: 436px;
     position: relative;
     z-index: 2;
-    border: 1px solid #ffffff2e;
+    border: 1px solid color-mix(in srgb,var(--ink) 18%,transparent);
     border-radius: 40px;
-    background: linear-gradient(150deg, #3d3e3b, #232422 62%, #1c1d1b);
+    background: linear-gradient(150deg, var(--surface), var(--surface-deep) 62%, var(--surface-deep));
     box-shadow:
-      0 45px 90px #201d1973,
-      inset 0 1px #ffffff14;
+      0 45px 90px color-mix(in srgb,var(--surface) 45%,transparent),
+      inset 0 1px color-mix(in srgb,var(--ink) 8%,transparent);
     transform: rotate(7deg);
   }
 
@@ -339,7 +339,7 @@ import '../../styles/lab-simulator.css';
     content: "";
     position: absolute;
     inset: 9px;
-    border: 1px solid #ffffff0d;
+    border: 1px solid color-mix(in srgb,var(--ink) 5%,transparent);
     border-radius: 32px;
   }
 
@@ -347,7 +347,7 @@ import '../../styles/lab-simulator.css';
     position: absolute;
     inset: 12px;
     border-radius: 30px;
-    background: linear-gradient(165deg, #171a1d, #101316 70%);
+    background: linear-gradient(165deg, var(--surface-deep), var(--surface-deep) 70%);
     overflow: hidden;
   }
 
@@ -358,14 +358,14 @@ import '../../styles/lab-simulator.css';
     top: 46px;
     height: 10px;
     border-radius: 5px;
-    background: #e4e3cb26;
+    background: color-mix(in srgb,var(--accent) 15%,transparent);
   }
 
   .lab-screen-line-short {
     top: 68px;
     right: 96px;
     height: 7px;
-    background: #e4e3cb1a;
+    background: color-mix(in srgb,var(--accent) 10%,transparent);
   }
 
   .lab-camera {
@@ -373,10 +373,10 @@ import '../../styles/lab-simulator.css';
     z-index: 3;
     width: 52px;
     height: 52px;
-    border: 7px solid #2a2d31;
+    border: 7px solid var(--surface);
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #59667533 0 4%, #121820 18%, #06080a 57%);
-    box-shadow: 0 0 0 1px #ffffff14, 0 8px 18px #00000040;
+    background: radial-gradient(circle at 40% 35%, color-mix(in srgb,var(--surface) 20%,transparent) 0 4%, var(--surface-deep) 18%, var(--surface-deep) 57%);
+    box-shadow: 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent), 0 8px 18px #00000040;
   }
 
   .lab-camera-one { top: 30px; left: 27px; }
@@ -391,7 +391,7 @@ import '../../styles/lab-simulator.css';
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #ddd7b8;
+    background: var(--accent);
   }
 
   .lab-mark {
@@ -407,7 +407,7 @@ import '../../styles/lab-simulator.css';
   }
 
   .lab-mark strong {
-    color: #f2efdf;
+    color: var(--ink);
     font-size: 1.25rem;
     letter-spacing: -0.05em;
   }
@@ -421,7 +421,7 @@ import '../../styles/lab-simulator.css';
 
   .lab-capabilities {
     padding: 88px 0;
-    border-top: 1px solid #ffffff1f;
+    border-top: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
   }
 
   .lab-capabilities-heading h2,
@@ -438,7 +438,7 @@ import '../../styles/lab-simulator.css';
   .lab-capabilities-heading h2 span,
   .lab-entry-card h2 span {
     display: block;
-    color: #d3d0bd;
+    color: var(--muted);
   }
 
   .lab-cap-grid {
@@ -453,13 +453,13 @@ import '../../styles/lab-simulator.css';
     flex-direction: column;
     min-height: 320px;
     padding: 26px;
-    border: 1px solid #ffffff26;
+    border: 1px solid color-mix(in srgb,var(--ink) 15%,transparent);
     border-radius: 24px;
-    background: linear-gradient(150deg, #3a3b38, #2b2c29);
+    background: linear-gradient(150deg, var(--surface), var(--surface-deep));
   }
 
   .lab-cap-index {
-    color: #e0dfc8;
+    color: var(--accent);
     font-size: 0.66rem;
     font-weight: 700;
     letter-spacing: 0.18em;
@@ -482,14 +482,14 @@ import '../../styles/lab-simulator.css';
   .lab-cap ul {
     margin: 18px 0 0;
     padding: 16px 0 0;
-    border-top: 1px solid #ffffff1a;
+    border-top: 1px solid color-mix(in srgb,var(--ink) 10%,transparent);
     list-style: none;
     display: grid;
     gap: 7px;
   }
 
   .lab-cap li {
-    color: #d6d4c6;
+    color: var(--muted);
     font-size: 0.74rem;
     letter-spacing: 0.02em;
   }
@@ -497,7 +497,7 @@ import '../../styles/lab-simulator.css';
   .lab-cap li::before {
     content: "—";
     margin-right: 8px;
-    color: #b9b7a2;
+    color: var(--muted);
   }
 
   /* ---------------- ENGINE STATUS ---------------- */
@@ -514,14 +514,14 @@ import '../../styles/lab-simulator.css';
     align-items: flex-start;
     gap: 14px;
     padding: 22px 24px;
-    border: 1px solid #d6d8ba40;
+    border: 1px solid color-mix(in srgb,var(--accent) 25%,transparent);
     border-radius: 20px;
-    background: #65655f;
+    background: var(--surface-raised);
   }
 
   .lab-status-muted {
-    background: #3b3c39;
-    border-color: #ffffff24;
+    background: var(--surface);
+    border-color: color-mix(in srgb,var(--ink) 14%,transparent);
   }
 
   .lab-status-card strong {
@@ -543,12 +543,12 @@ import '../../styles/lab-simulator.css';
     height: 9px;
     margin-top: 6px;
     border-radius: 50%;
-    background: #d9dbb5;
-    box-shadow: 0 0 12px #d9dbb580;
+    background: var(--accent);
+    box-shadow: 0 0 12px color-mix(in srgb,var(--accent) 50%,transparent);
   }
 
   .lab-status-dot-muted {
-    background: #8e9188;
+    background: var(--surface-raised);
     box-shadow: none;
   }
 
@@ -564,17 +564,17 @@ import '../../styles/lab-simulator.css';
     justify-content: space-between;
     gap: 36px;
     padding: 44px 40px;
-    border: 1px solid #d6d8ba4d;
+    border: 1px solid color-mix(in srgb,var(--accent) 30%,transparent);
     border-radius: 28px;
     background:
-      radial-gradient(circle at 88% 12%, #c9c9a42b, transparent 55%),
-      #4a4b45;
+      radial-gradient(circle at 88% 12%, color-mix(in srgb,var(--accent) 17%,transparent), transparent 55%),
+      var(--surface);
   }
 
   .lab-entry-copy {
     max-width: 520px;
     margin: 18px 0 0;
-    color: #e0ddd4;
+    color: var(--muted);
     font-size: 0.94rem;
     line-height: 1.7;
   }
@@ -587,7 +587,7 @@ import '../../styles/lab-simulator.css';
 
   .lab-methodology {
     padding: 88px 0 30px;
-    border-top: 1px solid #ffffff1f;
+    border-top: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
   }
 
   .lab-methodology-heading {
@@ -599,8 +599,8 @@ import '../../styles/lab-simulator.css';
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1px;
     margin-top: 50px;
-    background: #ffffff1f;
-    border: 1px solid #ffffff1f;
+    background: color-mix(in srgb,var(--ink) 12%,transparent);
+    border: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
     border-radius: 24px;
     overflow: hidden;
   }
@@ -608,11 +608,11 @@ import '../../styles/lab-simulator.css';
   .lab-method-grid article {
     min-height: 235px;
     padding: 26px;
-    background: #333431;
+    background: var(--surface);
   }
 
   .lab-method-grid article > span {
-    color: #e0dfc8;
+    color: var(--accent);
     font-size: 0.66rem;
     letter-spacing: 0.14em;
   }
