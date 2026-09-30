@@ -1,9 +1,12 @@
 /* Resolve appearance before paint while keeping preference and rendered theme separate. */
+/** @typedef {'light' | 'dark' | 'amoled'} ResolvedTheme */
+/** @typedef {ResolvedTheme | 'system'} ThemePreference */
 (() => {
   const storageKey = 'phonefuturist-theme';
   const systemQuery = matchMedia('(prefers-color-scheme: dark)');
-  const validPreferences = new Set(['system', 'light', 'dark']);
+  const validPreferences = new Set(['system', 'light', 'dark', 'amoled']);
 
+  /** @type {ThemePreference} */
   let preference = 'system';
 
   const sanitize = (value) =>
@@ -15,6 +18,7 @@
     preference = 'system';
   }
 
+  /** @returns {ResolvedTheme} */
   const resolvedTheme = () =>
     preference === 'system'
       ? (systemQuery.matches ? 'dark' : 'light')
