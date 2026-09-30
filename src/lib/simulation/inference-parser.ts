@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   SIMULATION_INFERENCE_SCHEMA_VERSION,
+  type BatteryInferenceArtifact,
   type BatteryInferenceEnvelope,
 } from './inference';
 
@@ -17,6 +18,7 @@ const evidenceReferenceSchema = z
   .object({
     evidenceId: z.string().min(1),
     title: z.string().min(1),
+
     strength: z.enum([
       'confirmed',
       'measured',
@@ -25,7 +27,12 @@ const evidenceReferenceSchema = z
       'reported',
       'estimated',
     ]),
-    sourceUrl: z.string().min(1).optional(),
+
+    sourceUrl: z
+      .string()
+      .min(1)
+      .optional(),
+
     supports: z.string().min(1),
   })
   .strict();
@@ -39,17 +46,27 @@ const brightnessSchema = z
 
 const workloadSchema = z
   .object({
-    webSocialPercent: z.number().optional(),
-    videoPercent: z.number().optional(),
-    gamingPercent: z.number().optional(),
-    cameraPercent: z.number().optional(),
-    idlePercent: z.number().optional(),
+    webSocialPercent:
+      z.number().optional(),
+
+    videoPercent:
+      z.number().optional(),
+
+    gamingPercent:
+      z.number().optional(),
+
+    cameraPercent:
+      z.number().optional(),
+
+    idlePercent:
+      z.number().optional(),
   })
   .strict();
 
 const scenarioSchema = z
   .object({
-    deviceName: z.string().min(1).optional(),
+    deviceName:
+      z.string().min(1).optional(),
 
     usageProfile: z.enum([
       'light',
@@ -58,7 +75,8 @@ const scenarioSchema = z
       'custom',
     ]),
 
-    brightness: brightnessSchema.optional(),
+    brightness:
+      brightnessSchema.optional(),
 
     network: z
       .enum([
@@ -68,11 +86,11 @@ const scenarioSchema = z
       ])
       .optional(),
 
-    ambientTemperatureC: z
-      .number()
-      .optional(),
+    ambientTemperatureC:
+      z.number().optional(),
 
-    workload: workloadSchema.optional(),
+    workload:
+      workloadSchema.optional(),
   })
   .strict();
 
@@ -80,7 +98,9 @@ const assumptionSchema = z
   .object({
     id: z.string().min(1),
     label: z.string().min(1),
-    range: inferenceRangeSchema,
+
+    range:
+      inferenceRangeSchema,
 
     confidence: z.enum([
       'low',
@@ -88,7 +108,8 @@ const assumptionSchema = z
       'high',
     ]),
 
-    reasoning: z.string().min(1),
+    reasoning:
+      z.string().min(1),
 
     evidenceIds: z.array(
       z.string().min(1),
@@ -109,7 +130,8 @@ const batteryArtifactSchema = z
       'insufficient_evidence',
     ]),
 
-    scenario: scenarioSchema,
+    scenario:
+      scenarioSchema,
 
     evidence: z.array(
       evidenceReferenceSchema,
@@ -130,34 +152,44 @@ const batteryArtifactSchema = z
       ])
       .optional(),
 
-    factors: z.array(z.string()),
+    factors:
+      z.array(z.string()),
 
-    limitations: z.array(z.string()),
+    limitations:
+      z.array(z.string()),
   })
   .strict();
 
 const receiptSchema = z
   .object({
-    artifactId: z.string().min(1),
+    artifactId:
+      z.string().min(1),
 
     schemaVersion: z.literal(
       SIMULATION_INFERENCE_SCHEMA_VERSION,
     ),
 
-    inferenceModel: z.string().min(1),
+    inferenceModel:
+      z.string().min(1),
 
-    promptVersion: z.string().min(1),
+    promptVersion:
+      z.string().min(1),
 
-    evidenceSnapshotId: z.string().min(1),
+    evidenceSnapshotId:
+      z.string().min(1),
 
-    createdAt: z.string().min(1),
+    createdAt:
+      z.string().min(1),
   })
   .strict();
 
 const batteryInferenceEnvelopeSchema = z
   .object({
-    artifact: batteryArtifactSchema,
-    receipt: receiptSchema,
+    artifact:
+      batteryArtifactSchema,
+
+    receipt:
+      receiptSchema,
   })
   .strict();
 
@@ -165,6 +197,17 @@ export interface InferenceParseIssue {
   path: string;
   message: string;
 }
+
+export type BatteryInferenceArtifactParseResult =
+  | {
+      success: true;
+      data: BatteryInferenceArtifact;
+      issues: [];
+    }
+  | {
+      success: false;
+      issues: InferenceParseIssue[];
+    };
 
 export type BatteryInferenceParseResult =
   | {
@@ -177,15 +220,66 @@ export type BatteryInferenceParseResult =
       issues: InferenceParseIssue[];
     };
 
+function parseIssues(
+  issues: z.core.$ZodIssue[],
+): InferenceParseIssue[] {
+  return issues.map(
+    (issue) => ({
+      path:
+        issue.path.length > 0
+          ? issue.path.join('.')
+          : '$',
+
+      message: issue.message,
+    }),
+  );
+}
+
 /**
- * Runtime boundary for untrusted inference output.
+ * Runtime boundary for an untrusted provider artifact.
  *
- * Raw provider output must pass this parser before it may be
- * treated as a BatteryInferenceEnvelope.
+ * Providers return only the inference artifact. Receipt
+ * metadata is created by PhoneFuturist after the provider
+ * response has passed this structural boundary.
+ *
+ * This validates runtime structure only. Evidence
+ * relationships and simulation semantics remain the
+ * responsibility of validateBatteryInference().
+ */
+export function parseBatteryInferenceArtifact(
+  input: unknown,
+): BatteryInferenceArtifactParseResult {
+  const result =
+    batteryArtifactSchema.safeParse(
+      input,
+    );
+
+  if (!result.success) {
+    return {
+      success: false,
+      issues: parseIssues(
+        result.error.issues,
+      ),
+    };
+  }
+
+  return {
+    success: true,
+    data: result.data,
+    issues: [],
+  };
+}
+
+/**
+ * Runtime boundary for a complete inference envelope.
+ *
+ * This remains the boundary for persisted or otherwise
+ * externally supplied envelopes containing both an
+ * artifact and a PhoneFuturist receipt.
  *
  * This layer validates runtime structure only.
- * Evidence relationships and simulation semantics remain the
- * responsibility of validateBatteryInference().
+ * Evidence relationships and simulation semantics remain
+ * the responsibility of validateBatteryInference().
  */
 export function parseBatteryInference(
   input: unknown,
@@ -198,14 +292,8 @@ export function parseBatteryInference(
   if (!result.success) {
     return {
       success: false,
-      issues: result.error.issues.map(
-        (issue) => ({
-          path:
-            issue.path.length > 0
-              ? issue.path.join('.')
-              : '$',
-          message: issue.message,
-        }),
+      issues: parseIssues(
+        result.error.issues,
       ),
     };
   }
