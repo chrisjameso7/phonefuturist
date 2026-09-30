@@ -38,10 +38,6 @@ export interface BatteryInferenceProvider {
    * Stable provider/model identifier recorded by
    * PhoneFuturist in the inference receipt.
    *
-   * Examples later might look like:
-   *   openai:gpt-x
-   *   anthropic:claude-x
-   *
    * The inference model itself does not control this.
    */
   readonly modelId: string;
@@ -143,6 +139,94 @@ function providerErrorMessage(
   return 'Battery inference provider failed.';
 }
 
+function allowedEvidenceIds(
+  snapshot: BatteryEvidenceSnapshot,
+): Set<string> {
+  return new Set(
+    snapshot.references.flatMap(
+      (reference) =>
+        reference.measurementIds,
+    ),
+  );
+}
+
+function validateSnapshotEvidence(
+  artifact: BatteryInferenceArtifact,
+  snapshot: BatteryEvidenceSnapshot,
+): string[] {
+  const allowed =
+    allowedEvidenceIds(snapshot);
+
+  const issues: string[] = [];
+
+  artifact.evidence.forEach(
+    (evidence, index) => {
+      if (
+        !allowed.has(
+          evidence.evidenceId,
+        )
+      ) {
+        issues.push(
+          [
+            `artifact.evidence[${index}].evidenceId:`,
+            `Evidence ID "${evidence.evidenceId}"`,
+            'does not exist in the frozen evidence snapshot.',
+          ].join(' '),
+        );
+      }
+    },
+  );
+
+  artifact.assumptions.forEach(
+    (assumption, assumptionIndex) => {
+      assumption.evidenceIds.forEach(
+        (
+          evidenceId,
+          evidenceIndex,
+        ) => {
+          if (
+            !allowed.has(evidenceId)
+          ) {
+            issues.push(
+              [
+                `artifact.assumptions[${assumptionIndex}].evidenceIds[${evidenceIndex}]:`,
+                `Evidence ID "${evidenceId}"`,
+                'does not exist in the frozen evidence snapshot.',
+              ].join(' '),
+            );
+          }
+        },
+      );
+    },
+  );
+
+  return issues;
+}
+
+function trustedScenario(
+  scenario: SimpleBatteryScenario,
+): SimpleBatteryScenario {
+  return {
+    ...scenario,
+
+    ...(scenario.workload
+      ? {
+          workload: {
+            ...scenario.workload,
+          },
+        }
+      : {}),
+
+    ...(scenario.brightness
+      ? {
+          brightness: {
+            ...scenario.brightness,
+          },
+        }
+      : {}),
+  };
+}
+
 export function createBatteryInferenceService(
   dependencies: BatteryInferenceServiceDependencies,
 ) {
@@ -174,6 +258,7 @@ export function createBatteryInferenceService(
       } catch (error) {
         return {
           status: 'provider_error',
+
           message:
             providerErrorMessage(error),
         };
@@ -199,35 +284,57 @@ export function createBatteryInferenceService(
         };
       }
 
+      /*
+       * Create a new trusted artifact instead of
+       * mutating the provider-owned parsed object.
+       *
+       * The provider may reason about the scenario,
+       * but PhoneFuturist remains authoritative for
+       * what the user actually requested.
+       */
       const artifact:
-        BatteryInferenceArtifact =
-          parsed.data;
+        BatteryInferenceArtifact = {
+          ...parsed.data,
+
+          scenario:
+            trustedScenario(
+              request.scenario,
+            ),
+        };
 
       /*
-       * The scenario is supplied by PhoneFuturist.
-       * The model may reason about it, but it may not
-       * silently rewrite what the user asked to model.
+       * Evidence IDs are not trusted merely because
+       * the provider produced an internally consistent
+       * artifact.
+       *
+       * Every evidence reference used by the artifact
+       * must originate from a measurement frozen into
+       * this exact evidence snapshot.
        */
-      artifact.scenario = {
-        ...request.scenario,
+      const snapshotIssues =
+        validateSnapshotEvidence(
+          artifact,
+          request.evidence,
+        );
 
-        ...(request.scenario.workload
-          ? {
-              workload: {
-                ...request.scenario.workload,
-              },
-            }
-          : {}),
+      if (
+        snapshotIssues.length > 0
+      ) {
+        return {
+          status:
+            'invalid_provider_output',
 
-        ...(request.scenario.brightness
-          ? {
-              brightness: {
-                ...request.scenario.brightness,
-              },
-            }
-          : {}),
-      };
+          issues:
+            snapshotIssues,
+        };
+      }
 
+      /*
+       * Receipt metadata is generated exclusively by
+       * PhoneFuturist after provider output has passed
+       * structural parsing and snapshot provenance
+       * checks.
+       */
       const envelope:
         BatteryInferenceEnvelope = {
           artifact,
@@ -263,13 +370,14 @@ export function createBatteryInferenceService(
           status:
             'invalid_provider_output',
 
-          issues: validation.issues.map(
-            (issue) =>
-              issueText(
-                issue.path,
-                issue.message,
-              ),
-          ),
+          issues:
+            validation.issues.map(
+              (issue) =>
+                issueText(
+                  issue.path,
+                  issue.message,
+                ),
+            ),
         };
       }
 
@@ -280,6 +388,7 @@ export function createBatteryInferenceService(
         return {
           status:
             'insufficient_evidence',
+
           envelope,
         };
       }
