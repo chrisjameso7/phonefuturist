@@ -113,7 +113,12 @@ footer .theme-choice { flex-shrink:0; }
 :root[data-theme='amoled'] .site-header .theme-choice select {
   background:var(--glass-fallback); border-color:var(--control-border);
 }
-:root[data-theme='amoled'] :is(.observatory .hero,.observatory .hero-copy) { background-color:#000000; }
+:root[data-theme='amoled'] .observatory { background:transparent; border-color:transparent; }
+:root[data-theme='amoled'] .observatory .hero { background-color:#000000; border-color:var(--line); }
+:root[data-theme='amoled'] .observatory .hero-copy { background:transparent; }
+@media (max-width:760px) {
+  :root[data-theme='amoled'] .observatory .hero-copy { background:#000000; }
+}
 :root[data-theme='amoled'] .observatory .hero::after {
   background:linear-gradient(90deg,rgb(0 0 0 / .94),rgb(0 0 0 / .2) 75%),linear-gradient(0deg,rgb(0 0 0 / .82),transparent 65%);
 }
