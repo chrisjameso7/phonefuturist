@@ -60,10 +60,12 @@ function boot(saved: string | null = null, denied = false) {
     },
   });
 
+  const beforeReady = { ...dataset };
   events.DOMContentLoaded();
 
   return {
     dataset,
+    beforeReady,
     system,
     events,
     choices,
@@ -177,5 +179,60 @@ describe('theme preference integration', () => {
 
     expect(browser.dataset.themePreference).toBe('system');
     expect(browser.dataset.theme).toBe('dark');
+  });
+});
+
+describe('AMOLED preference', () => {
+  it('can be explicitly selected and survives a reload', () => {
+    const browser = boot();
+    browser.choices[0].value = 'amoled';
+    browser.events.choice();
+    expect(browser.dataset).toEqual({ theme:'amoled', themePreference:'amoled' });
+    expect(browser.stored()).toBe('amoled');
+    const reloaded = boot(browser.stored());
+    expect(reloaded.dataset).toEqual(browser.dataset);
+    expect(reloaded.beforeReady).toEqual(browser.dataset);
+    expect(reloaded.choices[0].value).toBe('amoled');
+  });
+  it('synchronizes to another tab', () => {
+    const source = boot();
+    const other = boot('light');
+    source.choices[0].value = 'amoled'; source.events.choice();
+    other.events.storage({key:'phonefuturist-theme',newValue:source.stored()});
+    expect(other.dataset.theme).toBe('amoled');
+    expect(other.dataset.themePreference).toBe('amoled');
+    expect(other.choices[0].value).toBe('amoled');
+  });
+  it('is not overridden by either OS appearance', () => {
+    const browser = boot('amoled');
+    for (const dark of [false,true,false]) {
+      browser.system.matches=dark; browser.events.system();
+      expect(browser.dataset.theme).toBe('amoled');
+      expect(browser.dataset.themePreference).toBe('amoled');
+    }
+  });
+  it('returns from AMOLED to System without resolving System to AMOLED', () => {
+    const browser=boot('amoled');
+    browser.choices[0].value='system'; browser.events.choice();
+    for (const dark of [false,true,false]) {
+      browser.system.matches=dark; browser.events.system();
+      expect(browser.dataset.theme).toBe(dark?'dark':'light');
+      expect(browser.dataset.themePreference).toBe('system');
+    }
+  });
+  it('falls back safely for invalid cross-tab values and storage clearing', () => {
+    const browser=boot('amoled');
+    browser.system.matches=false;
+    for (const value of ['AMOLED','black','invalid',null]) {
+      browser.events.storage({key:'phonefuturist-theme',newValue:value});
+      expect(browser.dataset.themePreference).toBe('system');
+      expect(browser.dataset.theme).toBe('light');
+    }
+  });
+  it('allows session-only AMOLED when storage is blocked', () => {
+    const browser=boot(null,true);
+    browser.choices[0].value='amoled';
+    expect(()=>browser.events.choice()).not.toThrow();
+    expect(browser.dataset.theme).toBe('amoled');
   });
 });
