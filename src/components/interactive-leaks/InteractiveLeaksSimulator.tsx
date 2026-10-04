@@ -1,16 +1,52 @@
-import { useState, useReducer } from 'react';
-import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
-import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
-import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
-import ShareResult from './ShareResult';
-import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
+import { useReducer, useState } from 'react';
 
 import {
-  SIMULATION_ENGINE_VERSION,
-} from '../../lib/simulation/engine';
+  ACTIVE_WORKLOADS,
+  INITIAL_EXPERIENCE,
+  INSUFFICIENT_EVIDENCE_MESSAGE,
+  POWER_EVIDENCE_VERSION,
+  USAGE_PRESETS,
+  USAGE_VERSION,
+  deriveUsage,
+  experienceReducer,
+  freezeRun,
+  simpleEndurance,
+  simpleEnduranceHeadline,
+  simpleProfile,
+  type AlphaRun,
+  type UsagePreset,
+} from '../../lib/simulation/alpha-workspace';
+
+import {
+  evidenceDeviceFrom,
+  resolvePowerEvidence,
+  simpleEvidenceConfidence,
+  workloadEvidence,
+} from '../../lib/simulation/power-evidence';
+
+import {
+  runtimeText,
+  receiptSections,
+} from '../../lib/simulation/result-export';
+
+import {
+  COMPONENT_WORKLOADS,
+  INVALID_NUMBER,
+  WORKLOAD_LABEL,
+  buildProfile,
+  captureNumericValue,
+  captureValue,
+  numeric,
+  numericIssues,
+  runWorkspace,
+  type ProfileMode,
+} from '../../lib/simulation/beta-workspace';
+
+import { SIMULATION_ENGINE_VERSION } from '../../lib/simulation/engine';
 
 import {
   BATTERY_EXPERIENCE_VERSION,
+  type BatteryExperienceWorkload,
 } from '../../lib/simulation/modules/battery-experience';
 
 import type {
@@ -19,13 +55,16 @@ import type {
 } from '../../lib/simulation/types';
 
 import type {
+  BatteryInferenceEnvelope,
+  SimpleBatteryScenario,
+} from '../../lib/simulation/inference';
+
+import type {
   CameraInput,
   CameraModuleType,
 } from '../../lib/simulation/modules/camera';
 
-import type {
-  BatteryExperienceWorkload,
-} from '../../lib/simulation/modules/battery-experience';
+import ShareResult from './ShareResult';
 
 type NumericFieldProps = {
   label: string;
@@ -35,21 +74,6 @@ type NumericFieldProps = {
   step?: string;
   onChange: (value: string) => void;
 };
-
-type CameraDraft = {
-  id: number;
-  type: CameraModuleType;
-  sensorFormatDenominator: string;
-  resolutionMp: string;
-  equivalentFocalLengthMm: string;
-  physicalFocalLengthMm: string;
-  apertureFNumber: string;
-  moduleWidthMm: string;
-  moduleHeightMm: string;
-  moduleDepthMm: string;
-};
-
-/* ---------------- Device layer ---------------- */
 
 type FormState = {
   name: string;
@@ -85,6 +109,46 @@ type FormState = {
   speakersMm3: string;
   otherMm3: string;
 };
+
+type CameraDraft = {
+  id: number;
+  type: CameraModuleType;
+  sensorFormatDenominator: string;
+  resolutionMp: string;
+  equivalentFocalLengthMm: string;
+  physicalFocalLengthMm: string;
+  apertureFNumber: string;
+  moduleWidthMm: string;
+  moduleHeightMm: string;
+  moduleDepthMm: string;
+};
+
+type SimpleInferenceState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | {
+      status: 'ready';
+      envelope: BatteryInferenceEnvelope;
+    }
+  | {
+      status: 'insufficient_evidence';
+      envelope: BatteryInferenceEnvelope;
+    }
+  | {
+      status: 'error';
+      message: string;
+    };
+
+type BatteryInferenceApiResponse =
+  | {
+      status: 'ready' | 'insufficient_evidence';
+      envelope: BatteryInferenceEnvelope;
+    }
+  | {
+      status?: string;
+      error?: string;
+      message?: string;
+    };
 
 const initialForm: FormState = {
   name: '',
@@ -156,34 +220,10 @@ const flagshipExample: FormState = {
   otherMm3: '7000',
 };
 
-const flagshipCameras: CameraDraft[] = [
-  {
-    id: 1,
-    type: 'wide',
-    sensorFormatDenominator: '1.3',
-    resolutionMp: '50',
-    equivalentFocalLengthMm: '24',
-    physicalFocalLengthMm: '6.5',
-    apertureFNumber: '1.6',
-    moduleWidthMm: '20',
-    moduleHeightMm: '20',
-    moduleDepthMm: '6',
-  },
-  {
-    id: 2,
-    type: 'periscope',
-    sensorFormatDenominator: '2.5',
-    resolutionMp: '50',
-    equivalentFocalLengthMm: '120',
-    physicalFocalLengthMm: '20',
-    apertureFNumber: '2.8',
-    moduleWidthMm: '20',
-    moduleHeightMm: '15',
-    moduleDepthMm: '6',
-  },
-];
-
-const initialWorkloadInputs: Record<BatteryExperienceWorkload, string> = {
+const initialWorkloadInputs: Record<
+  BatteryExperienceWorkload,
+  string
+> = {
   mixed_use: '',
   web_browsing: '',
   video_playback: '',
@@ -192,83 +232,62 @@ const initialWorkloadInputs: Record<BatteryExperienceWorkload, string> = {
   standby: '',
 };
 
-/* ---------------- Formatting helpers ---------------- */
-
-function format(value: number | undefined, digits = 1): string {
-  if (value === undefined || !Number.isFinite(value)) return 'Unknown';
+function format(
+  value: number | undefined,
+  digits = 1,
+): string {
+  if (
+    value === undefined ||
+    !Number.isFinite(value)
+  ) {
+    return 'Unknown';
+  }
 
   return value.toLocaleString(undefined, {
     maximumFractionDigits: digits,
   });
 }
 
-function hoursLabel(
-  runtime: { min?: number; max?: number } | undefined,
-): string {
-  if (!runtime) return 'Unknown';
-
-  const { min, max } = runtime;
-
-  if (min !== undefined && max !== undefined) {
-    if (Math.abs(max - min) < 1e-9) {
-      return `${format(min, 1)} h`;
-    }
-
-    return `${format(min, 1)}–${format(max, 1)} h`;
-  }
-
-  if (min !== undefined) return `${format(min, 1)}+ h`;
-  if (max !== undefined) return `up to ${format(max, 1)} h`;
-
-  return 'Unknown';
-}
-
 function wattsLabel(
-  power: { min?: number; max?: number } | undefined,
+  power:
+    | {
+        min?: number;
+        max?: number;
+      }
+    | undefined,
 ): string {
   if (!power) return 'Unknown';
 
-  const { min, max } = power;
-
-  if (min !== undefined && max !== undefined) {
-    if (Math.abs(max - min) < 1e-9) {
-      return `${format(min, 2)} W`;
+  if (
+    power.min !== undefined &&
+    power.max !== undefined
+  ) {
+    if (
+      Math.abs(power.max - power.min) <
+      1e-9
+    ) {
+      return `${format(power.min, 2)} W`;
     }
 
-    return `${format(min, 2)}–${format(max, 2)} W`;
+    return `${format(power.min, 2)}–${format(
+      power.max,
+      2,
+    )} W`;
   }
 
-  if (min !== undefined) return `${format(min, 2)}+ W`;
-  if (max !== undefined) return `up to ${format(max, 2)} W`;
+  if (power.min !== undefined) {
+    return `${format(power.min, 2)}+ W`;
+  }
+
+  if (power.max !== undefined) {
+    return `up to ${format(
+      power.max,
+      2,
+    )} W`;
+  }
 
   return 'Unknown';
 }
-
-/* A day-scale reference bar: position of a runtime within 0–30 h. */
-function runtimeBarPercent(
-  runtime: { min?: number; max?: number } | undefined,
-): number | undefined {
-  if (!runtime || runtime.min === undefined) return undefined;
-
-  const REFERENCE_HOURS = 30;
-
-  return Math.min(100, (runtime.min / REFERENCE_HOURS) * 100);
-}
-
-const CONFIDENCE_LABEL: Record<string, string> = {
-  deterministic: 'Deterministic inputs',
-  high: 'High confidence',
-  moderate: 'Moderate confidence',
-  low: 'Low confidence',
-};
-
-const EVIDENCE_CONFIDENCE_LABEL: Record<string, string> = {
-  high: 'High evidence confidence',
-  moderate: 'Moderate evidence confidence',
-  low: 'Low evidence confidence',
-};
-
-/* ---------------- Primitives ---------------- */
 
 function NumericField({
   label,
@@ -282,19 +301,37 @@ function NumericField({
     <label className="il-field">
       <span>
         {label}
-        {suffix ? <small>{suffix}</small> : null}
+        {suffix ? (
+          <small>{suffix}</small>
+        ) : null}
       </span>
 
       <input
         type="number"
         inputMode="decimal"
         step={step}
-        value={value===INVALID_NUMBER?'':value}
-        aria-invalid={value===INVALID_NUMBER || (numeric(value)??0)<0}
+        value={
+          value === INVALID_NUMBER
+            ? ''
+            : value
+        }
+        aria-invalid={
+          value === INVALID_NUMBER ||
+          (numeric(value) ?? 0) < 0
+        }
         placeholder={placeholder}
-        onChange={captureNumericValue(onChange)}
+        onChange={captureNumericValue(
+          onChange,
+        )}
       />
-      <small className="il-input-state">{value===INVALID_NUMBER?'Incomplete number':value.trim()?'User supplied · unverified':'Unknown'}</small>
+
+      <small className="il-input-state">
+        {value === INVALID_NUMBER
+          ? 'Incomplete number'
+          : value.trim()
+            ? 'User supplied · unverified'
+            : 'Unknown'}
+      </small>
     </label>
   );
 }
@@ -303,30 +340,28 @@ function SectionHeading({
   index,
   title,
   hint,
-  action,
 }: {
   index: string;
   title: string;
   hint: string;
-  action?: React.ReactNode;
 }) {
   return (
     <div className="il-section-heading">
-      <span className="il-index">{index}</span>
+      <span className="il-index">
+        {index}
+      </span>
 
       <div className="il-heading-copy">
-        <div>
-          <h2>{title}</h2>
-          <p>{hint}</p>
-        </div>
+        <h2>{title}</h2>
+        <p>{hint}</p>
       </div>
-
-      {action}
     </div>
   );
 }
 
-function emptyCamera(id: number): CameraDraft {
+function emptyCamera(
+  id: number,
+): CameraDraft {
   return {
     id,
     type: 'wide',
@@ -341,706 +376,2300 @@ function emptyCamera(id: number): CameraDraft {
   };
 }
 
-function cameraInput(camera: CameraDraft): CameraInput {
+function cameraInput(
+  camera: CameraDraft,
+): CameraInput {
   return {
     type: camera.type,
-    sensorFormatDenominator: numeric(camera.sensorFormatDenominator),
-    resolutionMp: numeric(camera.resolutionMp),
-    equivalentFocalLengthMm: numeric(camera.equivalentFocalLengthMm),
-    physicalFocalLengthMm: numeric(camera.physicalFocalLengthMm),
-    apertureFNumber: numeric(camera.apertureFNumber),
-    moduleWidthMm: numeric(camera.moduleWidthMm),
-    moduleHeightMm: numeric(camera.moduleHeightMm),
-    moduleDepthMm: numeric(camera.moduleDepthMm),
+    sensorFormatDenominator: numeric(
+      camera.sensorFormatDenominator,
+    ),
+    resolutionMp: numeric(
+      camera.resolutionMp,
+    ),
+    equivalentFocalLengthMm: numeric(
+      camera.equivalentFocalLengthMm,
+    ),
+    physicalFocalLengthMm: numeric(
+      camera.physicalFocalLengthMm,
+    ),
+    apertureFNumber: numeric(
+      camera.apertureFNumber,
+    ),
+    moduleWidthMm: numeric(
+      camera.moduleWidthMm,
+    ),
+    moduleHeightMm: numeric(
+      camera.moduleHeightMm,
+    ),
+    moduleDepthMm: numeric(
+      camera.moduleDepthMm,
+    ),
   };
 }
 
-/* ---------------- Component ---------------- */
-
 export default function InteractiveLeaksSimulator() {
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] =
+    useState<FormState>(
+      initialForm,
+    );
 
-  const [cameras, setCameras] = useState<CameraDraft[]>([]);
+  const [cameras, setCameras] =
+    useState<CameraDraft[]>([]);
 
-  /* Environment layer: one average-power field per workload (W). */
-  const [workloadPower, setWorkloadPower] =
-    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
+  const [
+    workloadPower,
+    setWorkloadPower,
+  ] = useState<
+    Record<
+      BatteryExperienceWorkload,
+      string
+    >
+  >(initialWorkloadInputs);
 
-  /* Environment layer: usable-pack derating (%). */
-  const [usablePercent, setUsablePercent] = useState<string>('');
+  const [
+    workloadWeights,
+    setWorkloadWeights,
+  ] = useState<
+    Record<
+      BatteryExperienceWorkload,
+      string
+    >
+  >(initialWorkloadInputs);
 
-  /* Weights are an advanced control: relative share inside the mixture. */
-  const [workloadWeights, setWorkloadWeights] =
-    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
+  const [
+    usablePercent,
+    setUsablePercent,
+  ] = useState('');
 
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [
+    profileMode,
+    setProfileMode,
+  ] =
+    useState<ProfileMode>('equal');
 
-  const [hasSimulated, setHasSimulated] = useState(false);
+  const [
+    hasSimulated,
+    setHasSimulated,
+  ] = useState(false);
 
-  const [run, setRun] = useState<AlphaRun|null>(null);
-  const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
-  const [dirty,setDirty] = useState(false);
-  const [exampleLoaded,setExampleLoaded] = useState(false);
-  const [experience,dispatchExperience]=useReducer(experienceReducer,INITIAL_EXPERIENCE);
-  const simple=experience.mode==='simple';
-  const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
-  const usageBreakdown=deriveUsage(usage);
-  /* Simple Mode derives whole-device power from calibration evidence; the usage profile supplies the mixture. */
-  const evidenceDevice=evidenceDeviceFrom(buildInput());
-  const evidence=simple&&!experience.useEnteredPower?resolvePowerEvidence(evidenceDevice):undefined;
-  const profile=simple?simpleProfile(experience,workloadPower,evidenceDevice):buildProfile(workloadPower,workloadWeights,profileMode);
-  const endurancePreview=simple&&!experience.useEnteredPower?simpleEndurance(experience,evidenceDevice.energyWh,evidenceDevice):undefined;
-  const enduranceHeadline=simpleEnduranceHeadline(run?.endurance);
-  /* Simple Mode grades on evidence quality; Advanced keeps the battery model's own grading. */
-  const evidenceConfidence=run?.endurance&&run.evidence?simpleEvidenceConfidence(run.evidence,run.endurance).level:undefined;
-  function changeExperience(action:Parameters<typeof experienceReducer>[1]){dispatchExperience(action);setDirty(true);}
-  const simulationInput=run?.input;
-  const result=run?.device;
-  const battery=run?.battery;
+  const [dirty, setDirty] =
+    useState(false);
 
-  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setDirty(true);
-    setForm((current) => ({ ...current, [key]: value }));
+  const [
+    exampleLoaded,
+    setExampleLoaded,
+  ] = useState(false);
+
+  const [run, setRun] =
+    useState<AlphaRun | null>(
+      null,
+    );
+
+  const [
+    simpleInference,
+    setSimpleInference,
+  ] =
+    useState<SimpleInferenceState>({
+      status: 'idle',
+    });
+
+  const [
+    experience,
+    dispatchExperience,
+  ] = useReducer(
+    experienceReducer,
+    INITIAL_EXPERIENCE,
+  );
+
+  const simple =
+    experience.mode === 'simple';
+
+  const usage =
+    experience.preset === 'Custom'
+      ? experience.custom
+      : USAGE_PRESETS[
+          experience.preset
+        ];
+
+  const usageBreakdown =
+    deriveUsage(usage);
+
+  function buildInput(): SimulationInput {
+    const componentVolumes = {
+      thermalMm3: numeric(
+        form.thermalMm3,
+      ),
+      boardMm3: numeric(
+        form.boardMm3,
+      ),
+      speakersMm3: numeric(
+        form.speakersMm3,
+      ),
+      otherMm3: numeric(
+        form.otherMm3,
+      ),
+    };
+
+    const hasComponentVolume =
+      Object.values(
+        componentVolumes,
+      ).some(
+        (value) =>
+          value !== undefined,
+      );
+
+    const hasPackaging =
+      form.reservedVolumePercent.trim() !==
+        '' || hasComponentVolume;
+
+    const hasBattery = [
+      form.batteryCapacityMah,
+      form.batteryVoltageV,
+      form.batteryWidthMm,
+      form.batteryHeightMm,
+      form.batteryThicknessMm,
+      form.batteryWeightG,
+    ].some(
+      (value) =>
+        value.trim() !== '',
+    );
+
+    return {
+      formFactor:
+        form.formFactor,
+
+      ...(form.name.trim()
+        ? {
+            name: form.name.trim(),
+          }
+        : {}),
+
+      dimensions: {
+        widthMm: numeric(
+          form.widthMm,
+        ),
+        heightMm: numeric(
+          form.heightMm,
+        ),
+        thicknessMm: numeric(
+          form.thicknessMm,
+        ),
+        weightG: numeric(
+          form.weightG,
+        ),
+      },
+
+      displays: {
+        primary: {
+          diagonalInches: numeric(
+            form.diagonalInches,
+          ),
+          resolutionWidthPx:
+            numeric(
+              form.resolutionWidthPx,
+            ),
+          resolutionHeightPx:
+            numeric(
+              form.resolutionHeightPx,
+            ),
+          aspectWidth: numeric(
+            form.aspectWidth,
+          ),
+          aspectHeight: numeric(
+            form.aspectHeight,
+          ),
+          bezelTopMm: numeric(
+            form.bezelTopMm,
+          ),
+          bezelRightMm: numeric(
+            form.bezelRightMm,
+          ),
+          bezelBottomMm: numeric(
+            form.bezelBottomMm,
+          ),
+          bezelLeftMm: numeric(
+            form.bezelLeftMm,
+          ),
+        },
+      },
+
+      ...(hasBattery
+        ? {
+            battery: {
+              cells: [
+                {
+                  capacityMah:
+                    numeric(
+                      form.batteryCapacityMah,
+                    ),
+                  nominalVoltageV:
+                    numeric(
+                      form.batteryVoltageV,
+                    ),
+                  widthMm:
+                    numeric(
+                      form.batteryWidthMm,
+                    ),
+                  heightMm:
+                    numeric(
+                      form.batteryHeightMm,
+                    ),
+                  thicknessMm:
+                    numeric(
+                      form.batteryThicknessMm,
+                    ),
+                  weightG:
+                    numeric(
+                      form.batteryWeightG,
+                    ),
+                },
+              ],
+            },
+          }
+        : {}),
+
+      ...(cameras.length
+        ? {
+            cameras:
+              cameras.map(
+                cameraInput,
+              ),
+          }
+        : {}),
+
+      ...(hasPackaging
+        ? {
+            packaging: {
+              reservedVolumePercent:
+                numeric(
+                  form.reservedVolumePercent,
+                ),
+
+              ...(hasComponentVolume
+                ? {
+                    componentVolumes,
+                  }
+                : {}),
+            },
+          }
+        : {}),
+    };
   }
 
-  function updateCamera(id: number, patch: Partial<CameraDraft>) {
+  const evidenceDevice =
+    evidenceDeviceFrom(
+      buildInput(),
+    );
+
+  const evidence =
+    simple &&
+    !experience.useEnteredPower
+      ? resolvePowerEvidence(
+          evidenceDevice,
+        )
+      : undefined;
+
+  const profile = simple
+    ? simpleProfile(
+        experience,
+        workloadPower,
+        evidenceDevice,
+      )
+    : buildProfile(
+        workloadPower,
+        workloadWeights,
+        profileMode,
+      );
+
+  const endurancePreview =
+    simple &&
+    !experience.useEnteredPower
+      ? simpleEndurance(
+          experience,
+          evidenceDevice.energyWh,
+          evidenceDevice,
+        )
+      : undefined;
+
+  const [receiptGeneratedAt, setReceiptGeneratedAt] = useState('');
+
+  const enduranceHeadline =
+    simpleEnduranceHeadline(
+      run?.endurance,
+    );
+
+  const evidenceConfidence =
+    run?.endurance &&
+    run.evidence
+      ? simpleEvidenceConfidence(
+          run.evidence,
+          run.endurance,
+        ).level
+      : undefined;
+
+  const simulationInput =
+    run?.input;
+
+  const result =
+    run?.device;
+
+  const battery =
+    run?.battery;
+
+  const estimate =
+    battery?.result.status ===
+    'resolved'
+      ? battery.result.estimate
+      : undefined;
+
+  const display =
+    result?.displays.primary;
+
+  const pack =
+    result?.battery;
+
+  const packaging =
+    result?.packaging;
+
+  function changeExperience(
+    action: Parameters<
+      typeof experienceReducer
+    >[1],
+  ) {
+    dispatchExperience(action);
+
+    setSimpleInference({
+      status: 'idle',
+    });
+
     setDirty(true);
+  }
+
+  function update<
+    K extends keyof FormState,
+  >(
+    key: K,
+    value: FormState[K],
+  ) {
+    setSimpleInference({
+      status: 'idle',
+    });
+
+    setDirty(true);
+
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function updateCamera(
+    id: number,
+    patch: Partial<CameraDraft>,
+  ) {
+    setDirty(true);
+
     setCameras((current) =>
       current.map((camera) =>
-        camera.id === id ? { ...camera, ...patch } : camera,
+        camera.id === id
+          ? {
+              ...camera,
+              ...patch,
+            }
+          : camera,
       ),
     );
   }
 
   function addCamera() {
     setDirty(true);
+
     setCameras((current) => [
       ...current,
       emptyCamera(
-        current.length === 0
-          ? 1
-          : Math.max(...current.map((c) => c.id)) + 1,
+        current.length
+          ? Math.max(
+              ...current.map(
+                (camera) =>
+                  camera.id,
+              ),
+            ) + 1
+          : 1,
       ),
     ]);
   }
 
-  function removeCamera(id: number) {
+  function removeCamera(
+    id: number,
+  ) {
     setDirty(true);
+
     setCameras((current) =>
-      current.filter((camera) => camera.id !== id),
+      current.filter(
+        (camera) =>
+          camera.id !== id,
+      ),
     );
   }
 
-  function buildInput(): SimulationInput {
-    const dimensions = {
-      widthMm: numeric(form.widthMm),
-      heightMm: numeric(form.heightMm),
-      thicknessMm: numeric(form.thicknessMm),
-      weightG: numeric(form.weightG),
-    };
+  async function simulate() {
+    const {
+      name: _name,
+      formFactor: _formFactor,
+      ...fields
+    } = form;
 
-    const primaryDisplay = {
-      diagonalInches: numeric(form.diagonalInches),
-      resolutionWidthPx: numeric(form.resolutionWidthPx),
-      resolutionHeightPx: numeric(form.resolutionHeightPx),
-      aspectWidth: numeric(form.aspectWidth),
-      aspectHeight: numeric(form.aspectHeight),
-      bezelTopMm: numeric(form.bezelTopMm),
-      bezelRightMm: numeric(form.bezelRightMm),
-      bezelBottomMm: numeric(form.bezelBottomMm),
-      bezelLeftMm: numeric(form.bezelLeftMm),
-    };
+    const issues =
+      numericIssues(fields);
 
-    const hasBattery =
-      [
-        form.batteryCapacityMah,
-        form.batteryVoltageV,
-        form.batteryWidthMm,
-        form.batteryHeightMm,
-        form.batteryThicknessMm,
-        form.batteryWeightG,
-      ].some((value) => value.trim() !== '');
-
-    const componentVolumes = {
-      thermalMm3: numeric(form.thermalMm3),
-      boardMm3: numeric(form.boardMm3),
-      speakersMm3: numeric(form.speakersMm3),
-      otherMm3: numeric(form.otherMm3),
-    };
-
-    const hasComponentVolume = Object.values(componentVolumes).some(
-      (value) => value !== undefined,
+    cameras.forEach(
+      (
+        {
+          id: _id,
+          type: _type,
+          ...cameraFields
+        },
+        index,
+      ) => {
+        issues.push(
+          ...numericIssues(
+            cameraFields,
+            `Camera ${
+              index + 1
+            } — `,
+          ),
+        );
+      },
     );
 
-    const hasPackaging =
-      form.reservedVolumePercent.trim() !== '' || hasComponentVolume;
+    const built =
+      buildInput();
 
-    return {
-      formFactor: form.formFactor,
-      ...(form.name.trim() ? { name: form.name.trim() } : {}),
-      dimensions,
-      displays: { primary: primaryDisplay },
-      ...(hasBattery
-        ? {
-            battery: {
-              cells: [
+    if (
+      simple &&
+      !experience.useEnteredPower
+    ) {
+      const capacityMah =
+        numeric(
+          form.batteryCapacityMah,
+        );
+
+      if (
+        capacityMah ===
+          undefined ||
+        capacityMah <= 0
+      ) {
+        setSimpleInference({
+          status: 'error',
+          message:
+            'Enter a positive rated battery capacity before running Simple Mode.',
+        });
+
+        setRun(null);
+        setHasSimulated(true);
+        setDirty(false);
+        return;
+      }
+
+      if (issues.length) {
+        setSimpleInference({
+          status: 'error',
+          message:
+            issues[0] ??
+            'Check the entered values and try again.',
+        });
+
+        setRun(null);
+        setHasSimulated(true);
+        setDirty(false);
+        return;
+      }
+
+      const activeMinutes =
+        usageBreakdown.activeMinutes >
+        0
+          ? usageBreakdown.activeMinutes
+          : 1;
+
+      const workload = {
+        webSocialPercent:
+          (Number(
+            usage.web_browsing,
+          ) /
+            activeMinutes) *
+          100,
+
+        videoPercent:
+          (Number(
+            usage.video_playback,
+          ) /
+            activeMinutes) *
+          100,
+
+        gamingPercent:
+          (Number(
+            usage.gaming,
+          ) /
+            activeMinutes) *
+          100,
+
+        cameraPercent:
+          (Number(
+            usage.camera_use,
+          ) /
+            activeMinutes) *
+          100,
+
+        idlePercent: 0,
+      };
+
+      const scenario: SimpleBatteryScenario =
+        {
+          deviceName:
+            form.name.trim() ||
+            undefined,
+
+          usageProfile:
+            experience.preset.toLowerCase() as SimpleBatteryScenario['usageProfile'],
+
+          workload,
+        };
+
+      const device =
+        evidenceDeviceFrom(
+          built,
+        );
+
+      setSimpleInference({
+        status: 'loading',
+      });
+
+      setRun(null);
+      setHasSimulated(true);
+      setDirty(false);
+
+      try {
+        const response =
+          await fetch(
+            '/api/simulation/battery-inference',
+            {
+              method: 'POST',
+
+              headers: {
+                'content-type':
+                  'application/json',
+              },
+
+              body: JSON.stringify(
                 {
-                  capacityMah: numeric(form.batteryCapacityMah),
-                  nominalVoltageV: numeric(form.batteryVoltageV),
-                  widthMm: numeric(form.batteryWidthMm),
-                  heightMm: numeric(form.batteryHeightMm),
-                  thicknessMm: numeric(form.batteryThicknessMm),
-                  weightG: numeric(form.batteryWeightG),
-                },
-              ],
-            },
-          }
-        : {}),
-      ...(cameras.length > 0
-        ? { cameras: cameras.map(cameraInput) }
-        : {}),
-      ...(hasPackaging
-        ? {
-            packaging: {
-              reservedVolumePercent: numeric(form.reservedVolumePercent),
-              ...(hasComponentVolume ? { componentVolumes } : {}),
-            },
-          }
-        : {}),
-    };
-  }
+                  scenario,
 
-  function simulate() {
-    const {name,formFactor,...fields}=form;
-    const issues=numericIssues(fields);
-    cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
-    const built=buildInput();
-    const workspace=runWorkspace(built,simple?'':usablePercent,profile,issues);
-    /* Endurance is resolved from the same frozen run, so the receipt and the card can never disagree with the screen. */
-    const resolvedEndurance=simple&&!experience.useEnteredPower?simpleEndurance(experience,workspace.device?.battery?.totalEnergyWh,evidenceDeviceFrom(built)):undefined;
-    setRun(freezeRun(workspace,{
-      mode:experience.mode,usageProfile:simple?experience.preset:'Advanced',usageVersion:USAGE_VERSION,
-      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — calibrated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
-      usablePercent:simple?'':usablePercent,calibrationVersion:simple&&!experience.useEnteredPower&&evidence?POWER_EVIDENCE_VERSION:'None applied — seed observations are not fitted power coefficients',
-    },resolvedEndurance?{endurance:resolvedEndurance,evidence:resolvePowerEvidence(evidenceDeviceFrom(built))}:undefined));
+                  device: {
+                    ...(form.name.trim()
+                      ? {
+                          name: form.name.trim(),
+                        }
+                      : {}),
+
+                    ...(device.energyWh !==
+                    undefined
+                      ? {
+                          energyWh:
+                            device.energyWh,
+                        }
+                      : {}),
+
+                    ...(device.displayAreaCm2 !==
+                    undefined
+                      ? {
+                          displayAreaCm2:
+                            device.displayAreaCm2,
+                        }
+                      : {}),
+                  },
+                },
+              ),
+            },
+          );
+
+        const payload =
+          (await response.json()) as BatteryInferenceApiResponse;
+
+        if (!response.ok) {
+          const message =
+            'error' in payload &&
+            payload.error
+              ? payload.error
+              : 'Simple Mode could not complete this simulation.';
+
+          setSimpleInference({
+            status: 'error',
+            message,
+          });
+
+          return;
+        }
+
+        if (
+          'envelope' in
+            payload &&
+          payload.status ===
+            'ready'
+        ) {
+          setSimpleInference({
+            status: 'ready',
+            envelope:
+              payload.envelope,
+          });
+
+          return;
+        }
+
+        if (
+          'envelope' in
+            payload &&
+          payload.status ===
+            'insufficient_evidence'
+        ) {
+          setSimpleInference({
+            status:
+              'insufficient_evidence',
+            envelope:
+              payload.envelope,
+          });
+
+          return;
+        }
+
+        setSimpleInference({
+          status: 'error',
+          message:
+            'Simple Mode received an unexpected response.',
+        });
+      } catch {
+        setSimpleInference({
+          status: 'error',
+          message:
+            'Simple Mode is temporarily unavailable. Your configuration has been preserved.',
+        });
+      } finally {
+        requestAnimationFrame(
+          () => {
+            document
+              .getElementById(
+                'simulation-results',
+              )
+              ?.scrollIntoView({
+                behavior:
+                  'smooth',
+                block: 'start',
+              });
+          },
+        );
+      }
+
+      return;
+    }
+
+    setSimpleInference({
+      status: 'idle',
+    });
+
+    const workspace =
+      runWorkspace(
+        built,
+        usablePercent,
+        profile,
+        issues,
+      );
+
+    setReceiptGeneratedAt(new Date().toISOString());
+    setRun(
+      freezeRun(
+        workspace,
+        {
+          mode:
+            experience.mode,
+
+          usageProfile:
+            'Advanced',
+
+          usageVersion:
+            USAGE_VERSION,
+
+          powerSource:
+            'User supplied in Advanced; unverified',
+
+          usablePercent,
+
+          calibrationVersion:
+            'None applied — seed observations are not fitted power coefficients',
+        },
+      ),
+    );
+
     setHasSimulated(true);
     setDirty(false);
+
+    requestAnimationFrame(
+      () => {
+        document
+          .getElementById(
+            'simulation-results',
+          )
+          ?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+      },
+    );
   }
 
   function loadExample() {
-    dispatchExperience({type:'mode',value:'advanced'});
-    setExampleLoaded(true);
-    setForm(flagshipExample);
-    setCameras(flagshipCameras);
-    setWorkloadPower({ ...initialWorkloadInputs, gaming: '6' });
-    setWorkloadWeights(initialWorkloadInputs);
+    dispatchExperience({
+      type: 'mode',
+      value: 'advanced',
+    });
+
+    setForm(
+      flagshipExample,
+    );
+
+    setCameras([]);
+
+    setWorkloadPower({
+      ...initialWorkloadInputs,
+      gaming: '6',
+    });
+
+    setWorkloadWeights(
+      initialWorkloadInputs,
+    );
+
     setUsablePercent('');
+
+    setProfileMode(
+      'equal',
+    );
+
     setRun(null);
-    setProfileMode('equal');
+
+    setSimpleInference({
+      status: 'idle',
+    });
+
     setDirty(false);
     setHasSimulated(false);
+    setExampleLoaded(true);
   }
 
   function clearSimulation() {
-    dispatchExperience({type:'reset'});
-    setExampleLoaded(false);
+    dispatchExperience({
+      type: 'reset',
+    });
+
     setForm(initialForm);
     setCameras([]);
-    setWorkloadPower(initialWorkloadInputs);
-    setWorkloadWeights(initialWorkloadInputs);
+
+    setWorkloadPower(
+      initialWorkloadInputs,
+    );
+
+    setWorkloadWeights(
+      initialWorkloadInputs,
+    );
+
     setUsablePercent('');
+
+    setProfileMode(
+      'equal',
+    );
+
     setRun(null);
-    setProfileMode('equal');
+
+    setSimpleInference({
+      status: 'idle',
+    });
+
     setDirty(false);
     setHasSimulated(false);
+    setExampleLoaded(false);
   }
 
-  const display = result?.displays.primary;
-  const pack = result?.battery;
-  const packaging = result?.packaging;
-
-  const knownCameraVolumeMm3 = result?.cameras
-    ?.map((camera) => camera.moduleVolumeMm3)
-    .filter((volume): volume is number => volume !== undefined)
-    .reduce((total, volume) => total + volume, 0);
-
-  const estimate = battery?.result.status === 'resolved'
-    ? battery.result.estimate
-    : undefined;
-
   return (
-    <div className="il-app">
+    <div
+      className={`il-app ${
+        simple
+          ? 'il-simple-mode'
+          : 'il-advanced-mode'
+      }`}
+    >
       <div className="il-toolbar">
-        <div>
-          <span className="il-status">Instrument · Public Beta</span>
+        <div className="il-toolbar-copy">
+          <span className="il-status">
+            Simulation Laboratory
+          </span>
 
           <span className="il-engine">
-            Engine v{SIMULATION_ENGINE_VERSION} · Battery model{' '}
-            {BATTERY_EXPERIENCE_VERSION}
+            Engine v
+            {SIMULATION_ENGINE_VERSION}{' '}
+            · Battery{' '}
+            {
+              BATTERY_EXPERIENCE_VERSION
+            }
           </span>
         </div>
 
         <div className="il-toolbar-actions">
-          <button type="button" className="il-chip" onClick={loadExample}>
-            Load illustrative example
+          <button
+            type="button"
+            className="il-chip"
+            onClick={loadExample}
+          >
+            Load example
           </button>
 
-          <button type="button" className="il-chip" onClick={clearSimulation}>
+          <button
+            type="button"
+            className="il-chip"
+            onClick={
+              clearSimulation
+            }
+          >
             Clear
           </button>
         </div>
       </div>
 
-      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
-      {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
+      <div className="il-mode-switcher">
+        <div>
+          <strong>
+            Simulation mode
+          </strong>
+
+          <span>
+            {simple
+              ? 'Fast configuration with evidence-backed assumptions.'
+              : 'Direct engineering inputs and deterministic controls.'}
+          </span>
+        </div>
+
+        <fieldset className="il-mode">
+          <legend>
+            Simulation mode
+          </legend>
+
+          {(
+            [
+              'simple',
+              'advanced',
+            ] as const
+          ).map((mode) => (
+            <label key={mode}>
+              <input
+                type="radio"
+                name="simulation-mode"
+                checked={
+                  experience.mode ===
+                  mode
+                }
+                onChange={() =>
+                  changeExperience({
+                    type: 'mode',
+                    value: mode,
+                  })
+                }
+              />
+
+              <span>
+                {mode ===
+                'simple'
+                  ? 'Simple'
+                  : 'Advanced'}
+              </span>
+            </label>
+          ))}
+        </fieldset>
+      </div>
+
+      {exampleLoaded ? (
+        <p className="il-input-note">
+          Illustrative example
+          only. These values do
+          not represent a real
+          device, leak or measured
+          benchmark.
+        </p>
+      ) : null}
+
       <div className="il-workspace">
-        {/* ---------------- Builder column ---------------- */}
-        <section className="il-builder" aria-label="Simulation inputs">
-          {/* 01 · DEVICE */}
-          <div className="il-section">
+        <section
+          className="il-builder"
+          aria-label="Simulation configuration"
+        >
+          <div className="il-builder-intro">
+            <div>
+              <span className="il-kicker">
+                Configuration
+              </span>
+
+              <h2>
+                {simple
+                  ? 'Build your device.'
+                  : 'Define the engineering model.'}
+              </h2>
+            </div>
+
+            <p>
+              {simple
+                ? 'Enter what you know. Unknown values stay unknown.'
+                : 'Advanced Mode exposes the physical and power assumptions used by the deterministic engine.'}
+            </p>
+          </div>
+
+          <div className="il-section il-config-card">
             <SectionHeading
               index="01"
               title="Device"
-              hint="Enter only values you have. Blank means unknown; typed values are user-supplied, not independently verified."
+              hint={
+                simple
+                  ? 'The basics needed to identify the device and its battery.'
+                  : 'Physical device envelope, battery and display configuration.'
+              }
             />
 
-            <p className="il-help">Use rated battery capacity where known. Advertised/typical capacity is not a substitute; leave rated capacity unknown if unavailable.</p>
             <div className="il-grid">
               <label className="il-field il-wide">
-                <span>Device name</span>
+                <span>
+                  Device name
+                </span>
 
                 <input
                   type="text"
                   maxLength={160}
-                  value={form.name}
-                  placeholder="Untitled concept"
-                  onChange={(event) => update('name', event.currentTarget.value)}
+                  value={
+                    form.name
+                  }
+                  placeholder="Untitled device"
+                  onChange={(
+                    event,
+                  ) =>
+                    update(
+                      'name',
+                      event
+                        .currentTarget
+                        .value,
+                    )
+                  }
                 />
               </label>
 
               <label className="il-field">
-                <span>Form factor</span>
+                <span>
+                  Form factor
+                </span>
 
                 <select
-                  value={form.formFactor}
-                  onChange={(event) =>
+                  value={
+                    form.formFactor
+                  }
+                  onChange={(
+                    event,
+                  ) =>
                     update(
                       'formFactor',
-                      event.currentTarget.value as DeviceFormFactor,
+                      event
+                        .currentTarget
+                        .value as DeviceFormFactor,
                     )
                   }
                 >
-                  <option value="phone">Phone</option>
-                  <option value="book_foldable">Book foldable</option>
-                  <option value="flip_foldable">Flip foldable</option>
-                  <option value="tablet">Tablet</option>
-                  <option value="laptop">Laptop</option>
-                  <option value="wearable">Wearable</option>
+                  <option value="phone">
+                    Phone
+                  </option>
+
+                  <option value="book_foldable">
+                    Book foldable
+                  </option>
+
+                  <option value="flip_foldable">
+                    Flip foldable
+                  </option>
+
+                  <option value="tablet">
+                    Tablet
+                  </option>
+
+                  <option value="laptop">
+                    Laptop
+                  </option>
+
+                  <option value="wearable">
+                    Wearable
+                  </option>
                 </select>
               </label>
 
               <NumericField
-                label="Width"
-                suffix="mm"
-                value={form.widthMm}
-                placeholder="75"
-                onChange={(value) => update('widthMm', value)}
-              />
-
-              <NumericField
-                label="Height"
-                suffix="mm"
-                value={form.heightMm}
-                placeholder="160"
-                onChange={(value) => update('heightMm', value)}
-              />
-
-              <NumericField
-                label="Thickness"
-                suffix="mm"
-                value={form.thicknessMm}
-                placeholder="8"
-                onChange={(value) => update('thicknessMm', value)}
-              />
-
-              <NumericField
-                label="Device mass"
-                suffix="g"
-                value={form.weightG}
-                placeholder="195"
-                onChange={(value) => update('weightG', value)}
-              />
-
-              <NumericField
-                label="Rated battery capacity"
+                label="Rated battery"
                 suffix="mAh"
-                value={form.batteryCapacityMah}
+                value={
+                  form.batteryCapacityMah
+                }
                 placeholder="5000"
-                onChange={(value) => update('batteryCapacityMah', value)}
+                onChange={(
+                  value,
+                ) =>
+                  update(
+                    'batteryCapacityMah',
+                    value,
+                  )
+                }
               />
 
               <NumericField
-                label="Nominal voltage"
-                suffix="V"
-                value={form.batteryVoltageV}
-                placeholder="3.85"
-                onChange={(value) => update('batteryVoltageV', value)}
-              />
-
-              <NumericField
-                label="Display diagonal"
+                label="Display size"
                 suffix="in"
-                value={form.diagonalInches}
+                value={
+                  form.diagonalInches
+                }
                 placeholder="6.7"
-                onChange={(value) => update('diagonalInches', value)}
+                onChange={(
+                  value,
+                ) =>
+                  update(
+                    'diagonalInches',
+                    value,
+                  )
+                }
               />
 
               <NumericField
                 label="Resolution width"
                 suffix="px"
-                value={form.resolutionWidthPx}
-                placeholder="1440"
                 step="1"
-                onChange={(value) => update('resolutionWidthPx', value)}
+                value={
+                  form.resolutionWidthPx
+                }
+                placeholder="1440"
+                onChange={(
+                  value,
+                ) =>
+                  update(
+                    'resolutionWidthPx',
+                    value,
+                  )
+                }
               />
+
+              <NumericField
+                label="Resolution height"
+                suffix="px"
+                step="1"
+                value={
+                  form.resolutionHeightPx
+                }
+                placeholder="3200"
+                onChange={(
+                  value,
+                ) =>
+                  update(
+                    'resolutionHeightPx',
+                    value,
+                  )
+                }
+              />
+
+              {!simple ? (
+                <>
+                  <NumericField
+                    label="Nominal voltage"
+                    suffix="V"
+                    value={
+                      form.batteryVoltageV
+                    }
+                    placeholder="3.85"
+                    onChange={(
+                      value,
+                    ) =>
+                      update(
+                        'batteryVoltageV',
+                        value,
+                      )
+                    }
+                  />
+
+                  <NumericField
+                    label="Width"
+                    suffix="mm"
+                    value={
+                      form.widthMm
+                    }
+                    placeholder="75"
+                    onChange={(
+                      value,
+                    ) =>
+                      update(
+                        'widthMm',
+                        value,
+                      )
+                    }
+                  />
+
+                  <NumericField
+                    label="Height"
+                    suffix="mm"
+                    value={
+                      form.heightMm
+                    }
+                    placeholder="160"
+                    onChange={(
+                      value,
+                    ) =>
+                      update(
+                        'heightMm',
+                        value,
+                      )
+                    }
+                  />
+
+                  <NumericField
+                    label="Thickness"
+                    suffix="mm"
+                    value={
+                      form.thicknessMm
+                    }
+                    placeholder="8"
+                    onChange={(
+                      value,
+                    ) =>
+                      update(
+                        'thicknessMm',
+                        value,
+                      )
+                    }
+                  />
+
+                  <NumericField
+                    label="Device mass"
+                    suffix="g"
+                    value={
+                      form.weightG
+                    }
+                    placeholder="195"
+                    onChange={(
+                      value,
+                    ) =>
+                      update(
+                        'weightG',
+                        value,
+                      )
+                    }
+                  />
+                </>
+              ) : null}
             </div>
 
-            <div className="il-grid">                  <NumericField
-                    label="Resolution height"
-                    suffix="px"
-                    value={form.resolutionHeightPx}
-                    placeholder="3200"
-                    step="1"
-                    onChange={(value) => update('resolutionHeightPx', value)}
-                  /></div>
-            <details className="il-advanced" open={advancedOpen}>
-              <summary
-                onClick={(event) => {
-                  event.preventDefault();
-                  setAdvancedOpen((open) => !open);
-                }}
-              >
-                Advanced · panel, cell & envelope detail
-              </summary>
+            {simple ? (
+              <p className="il-help il-card-note">
+                Use rated battery
+                capacity where known.
+                Advertised or typical
+                capacity should not be
+                substituted for a rated
+                value.
+              </p>
+            ) : (
+              <details className="il-advanced">
+                <summary>
+                  Panel, battery cell
+                  and packaging detail
+                </summary>
 
-              <div className="il-advanced-body">
-                <p className="il-group-label">Display geometry</p>
+                <div className="il-advanced-body">
+                  <p className="il-group-label">
+                    Display geometry
+                  </p>
 
-                <div className="il-grid">
+                  <div className="il-grid">
+                    <NumericField
+                      label="Aspect width"
+                      value={
+                        form.aspectWidth
+                      }
+                      placeholder="9"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'aspectWidth',
+                          value,
+                        )
+                      }
+                    />
 
+                    <NumericField
+                      label="Aspect height"
+                      value={
+                        form.aspectHeight
+                      }
+                      placeholder="20"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'aspectHeight',
+                          value,
+                        )
+                      }
+                    />
 
-                  <NumericField
-                    label="Aspect width"
-                    value={form.aspectWidth}
-                    placeholder="9"
-                    onChange={(value) => update('aspectWidth', value)}
-                  />
+                    <NumericField
+                      label="Top bezel"
+                      suffix="mm"
+                      value={
+                        form.bezelTopMm
+                      }
+                      placeholder="1.5"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'bezelTopMm',
+                          value,
+                        )
+                      }
+                    />
 
-                  <NumericField
-                    label="Aspect height"
-                    value={form.aspectHeight}
-                    placeholder="20"
-                    onChange={(value) => update('aspectHeight', value)}
-                  />
+                    <NumericField
+                      label="Right bezel"
+                      suffix="mm"
+                      value={
+                        form.bezelRightMm
+                      }
+                      placeholder="1.5"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'bezelRightMm',
+                          value,
+                        )
+                      }
+                    />
 
-                  <div aria-hidden="true" />
+                    <NumericField
+                      label="Bottom bezel"
+                      suffix="mm"
+                      value={
+                        form.bezelBottomMm
+                      }
+                      placeholder="1.5"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'bezelBottomMm',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Left bezel"
+                      suffix="mm"
+                      value={
+                        form.bezelLeftMm
+                      }
+                      placeholder="1.5"
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'bezelLeftMm',
+                          value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <p className="il-group-label">
+                    Cell geometry
+                  </p>
+
+                  <div className="il-grid">
+                    <NumericField
+                      label="Cell width"
+                      suffix="mm"
+                      value={
+                        form.batteryWidthMm
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'batteryWidthMm',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Cell height"
+                      suffix="mm"
+                      value={
+                        form.batteryHeightMm
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'batteryHeightMm',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Cell thickness"
+                      suffix="mm"
+                      value={
+                        form.batteryThicknessMm
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'batteryThicknessMm',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Cell mass"
+                      suffix="g"
+                      value={
+                        form.batteryWeightG
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'batteryWeightG',
+                          value,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <p className="il-group-label">
+                    Internal volume
+                  </p>
+
+                  <div className="il-grid">
+                    <NumericField
+                      label="Reserved volume"
+                      suffix="%"
+                      value={
+                        form.reservedVolumePercent
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'reservedVolumePercent',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Thermal system"
+                      suffix="mm³"
+                      value={
+                        form.thermalMm3
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'thermalMm3',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Logic board"
+                      suffix="mm³"
+                      value={
+                        form.boardMm3
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'boardMm3',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Speakers"
+                      suffix="mm³"
+                      value={
+                        form.speakersMm3
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'speakersMm3',
+                          value,
+                        )
+                      }
+                    />
+
+                    <NumericField
+                      label="Other components"
+                      suffix="mm³"
+                      value={
+                        form.otherMm3
+                      }
+                      onChange={(
+                        value,
+                      ) =>
+                        update(
+                          'otherMm3',
+                          value,
+                        )
+                      }
+                    />
+                  </div>
                 </div>
-
-                <p className="il-group-label">Bezels</p>
-
-                <div className="il-grid">
-                  <NumericField
-                    label="Top bezel"
-                    suffix="mm"
-                    value={form.bezelTopMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelTopMm', value)}
-                  />
-
-                  <NumericField
-                    label="Right bezel"
-                    suffix="mm"
-                    value={form.bezelRightMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelRightMm', value)}
-                  />
-
-                  <NumericField
-                    label="Bottom bezel"
-                    suffix="mm"
-                    value={form.bezelBottomMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelBottomMm', value)}
-                  />
-
-                  <NumericField
-                    label="Left bezel"
-                    suffix="mm"
-                    value={form.bezelLeftMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelLeftMm', value)}
-                  />
-                </div>
-
-                <p className="il-group-label">Cell geometry & weight</p>
-
-                <div className="il-grid">
-                  <NumericField
-                    label="Cell width"
-                    suffix="mm"
-                    value={form.batteryWidthMm}
-                    placeholder="60"
-                    onChange={(value) => update('batteryWidthMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell height"
-                    suffix="mm"
-                    value={form.batteryHeightMm}
-                    placeholder="80"
-                    onChange={(value) => update('batteryHeightMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell thickness"
-                    suffix="mm"
-                    value={form.batteryThicknessMm}
-                    placeholder="5"
-                    onChange={(value) => update('batteryThicknessMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell weight"
-                    suffix="g"
-                    value={form.batteryWeightG}
-                    placeholder="70"
-                    onChange={(value) => update('batteryWeightG', value)}
-                  />
-                </div>
-
-                <p className="il-group-label">Internal volume budget</p>
-
-                <div className="il-grid">
-                  <NumericField
-                    label="Reserved volume"
-                    suffix="%"
-                    value={form.reservedVolumePercent}
-                    placeholder="20"
-                    onChange={(value) => update('reservedVolumePercent', value)}
-                  />
-
-                  <NumericField
-                    label="Thermal"
-                    suffix="mm³"
-                    value={form.thermalMm3}
-                    onChange={(value) => update('thermalMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Logic board"
-                    suffix="mm³"
-                    value={form.boardMm3}
-                    onChange={(value) => update('boardMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Speakers"
-                    suffix="mm³"
-                    value={form.speakersMm3}
-                    onChange={(value) => update('speakersMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Other known components"
-                    suffix="mm³"
-                    value={form.otherMm3}
-                    onChange={(value) => update('otherMm3', value)}
-                  />
-                </div>
-
-                <p className="il-help">
-                  Camera modules (type, sensor, optics, module geometry) can be
-                  added below. Module volume is derived from what you supply —
-                  nothing is estimated.
-                </p>
-              </div>
-            </details>
-
-            {cameras.length > 0 && (
-              <div className="il-camera-list">
-                {cameras.map((camera, index) => (
-                  <article className="il-camera" key={camera.id}>
-                    <div className="il-camera-title">
-                      <strong>{({wide:'Main',ultrawide:'Ultrawide',telephoto:'Telephoto',periscope:'Periscope telephoto',front:'Front',other:'Other'})[camera.type]} · Camera {index + 1}</strong>
-
-                      <button
-                        type="button"
-                        className="il-remove"
-                        onClick={() => removeCamera(camera.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div className="il-grid">
-                      <label className="il-field">
-                        <span>Type</span>
-
-                        <select
-                          value={camera.type}
-                          onChange={(event) =>
-                            updateCamera(camera.id, {
-                              type: event.currentTarget
-                                .value as CameraModuleType,
-                            })
-                          }
-                        >
-                          <option value="wide">Main</option>
-                          <option value="ultrawide">Ultrawide</option>
-                          <option value="telephoto">Telephoto</option>
-                          <option value="periscope">Periscope telephoto</option>
-                          <option value="front">Front</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </label>
-
-                      <NumericField
-                        label="Sensor format"
-                        suffix="1/x″"
-                        value={camera.sensorFormatDenominator}
-                        placeholder="1.3"
-                        onChange={(value) =>
-                          updateCamera(camera.id, { sensorFormatDenominator: value })
-                        }
-                      />
-
-                      <NumericField
-                        label="Resolution"
-                        suffix="MP"
-                        value={camera.resolutionMp}
-                        placeholder="50"
-                        onChange={(value) =>
-                          updateCamera(camera.id, { resolutionMp: value })
-                        }
-                      />
-
-                      <NumericField
-                        label="Equivalent focal length"
-                        suffix="mm"
-                        value={camera.equivalentFocalLengthMm}
-                        placeholder="24"
-                        onChange={(value) =>
-                          updateCamera(camera.id, {
-                            equivalentFocalLengthMm: value,
-                          })
-                        }
-                      />
-
-                      <NumericField
-                        label="Aperture"
-                        suffix="f/"
-                        value={camera.apertureFNumber}
-                        placeholder="1.6"
-                        onChange={(value) =>
-                          updateCamera(camera.id, { apertureFNumber: value })
-                        }
-                      />
-                    </div>
-                    <details className="il-advanced"><summary>Advanced · camera optics and module dimensions</summary><div className="il-grid">
-                      {([['physicalFocalLengthMm','Physical focal length'],['moduleWidthMm','Module width'],['moduleHeightMm','Module height'],['moduleDepthMm','Module depth']] as const).map(([key,label])=><NumericField key={key} label={label} suffix="mm" value={camera[key]} onChange={value=>updateCamera(camera.id,{[key]:value})}/>)}
-                    </div></details>
-                    <p className="il-help">For 1/1.3″ sensor format, enter 1.3. Optical format is an approximation, not a physical sensor diagonal.</p>
-                  </article>
-                ))}
-              </div>
+              </details>
             )}
-
-            <button type="button" className="il-chip il-add" onClick={addCamera}>
-              + Add camera module
-            </button>
           </div>
+          {!simple ? (
+            <div className="il-section il-config-card">
+              <SectionHeading
+                index="02"
+                title="Camera system"
+                hint="Optional camera geometry. No image-quality score is inferred."
+              />
 
-          {/* 02 · ENVIRONMENT */}
-          <div className="il-section">
+              {cameras.length ? (
+                <div className="il-camera-list">
+                  {cameras.map(
+                    (camera, index) => (
+                      <article
+                        className="il-camera"
+                        key={camera.id}
+                      >
+                        <div className="il-camera-title">
+                          <strong>
+                            Camera {index + 1}
+                          </strong>
+
+                          <button
+                            type="button"
+                            className="il-remove"
+                            onClick={() =>
+                              removeCamera(
+                                camera.id,
+                              )
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+
+                        <div className="il-grid">
+                          <label className="il-field">
+                            <span>Type</span>
+
+                            <select
+                              value={
+                                camera.type
+                              }
+                              onChange={(
+                                event,
+                              ) =>
+                                updateCamera(
+                                  camera.id,
+                                  {
+                                    type: event
+                                      .currentTarget
+                                      .value as CameraModuleType,
+                                  },
+                                )
+                              }
+                            >
+                              <option value="wide">
+                                Main
+                              </option>
+
+                              <option value="ultrawide">
+                                Ultrawide
+                              </option>
+
+                              <option value="telephoto">
+                                Telephoto
+                              </option>
+
+                              <option value="periscope">
+                                Periscope
+                              </option>
+
+                              <option value="front">
+                                Front
+                              </option>
+
+                              <option value="other">
+                                Other
+                              </option>
+                            </select>
+                          </label>
+
+                          <NumericField
+                            label="Sensor format"
+                            suffix="1/x″"
+                            value={
+                              camera.sensorFormatDenominator
+                            }
+                            placeholder="1.3"
+                            onChange={(
+                              value,
+                            ) =>
+                              updateCamera(
+                                camera.id,
+                                {
+                                  sensorFormatDenominator:
+                                    value,
+                                },
+                              )
+                            }
+                          />
+
+                          <NumericField
+                            label="Resolution"
+                            suffix="MP"
+                            value={
+                              camera.resolutionMp
+                            }
+                            placeholder="50"
+                            onChange={(
+                              value,
+                            ) =>
+                              updateCamera(
+                                camera.id,
+                                {
+                                  resolutionMp:
+                                    value,
+                                },
+                              )
+                            }
+                          />
+
+                          <NumericField
+                            label="Equivalent focal length"
+                            suffix="mm"
+                            value={
+                              camera.equivalentFocalLengthMm
+                            }
+                            placeholder="24"
+                            onChange={(
+                              value,
+                            ) =>
+                              updateCamera(
+                                camera.id,
+                                {
+                                  equivalentFocalLengthMm:
+                                    value,
+                                },
+                              )
+                            }
+                          />
+
+                          <NumericField
+                            label="Aperture"
+                            suffix="f/"
+                            value={
+                              camera.apertureFNumber
+                            }
+                            placeholder="1.6"
+                            onChange={(
+                              value,
+                            ) =>
+                              updateCamera(
+                                camera.id,
+                                {
+                                  apertureFNumber:
+                                    value,
+                                },
+                              )
+                            }
+                          />
+                        </div>
+
+                        <details className="il-advanced">
+                          <summary>
+                            Module dimensions
+                          </summary>
+
+                          <div className="il-grid">
+                            <NumericField
+                              label="Physical focal length"
+                              suffix="mm"
+                              value={
+                                camera.physicalFocalLengthMm
+                              }
+                              onChange={(
+                                value,
+                              ) =>
+                                updateCamera(
+                                  camera.id,
+                                  {
+                                    physicalFocalLengthMm:
+                                      value,
+                                  },
+                                )
+                              }
+                            />
+
+                            <NumericField
+                              label="Module width"
+                              suffix="mm"
+                              value={
+                                camera.moduleWidthMm
+                              }
+                              onChange={(
+                                value,
+                              ) =>
+                                updateCamera(
+                                  camera.id,
+                                  {
+                                    moduleWidthMm:
+                                      value,
+                                  },
+                                )
+                              }
+                            />
+
+                            <NumericField
+                              label="Module height"
+                              suffix="mm"
+                              value={
+                                camera.moduleHeightMm
+                              }
+                              onChange={(
+                                value,
+                              ) =>
+                                updateCamera(
+                                  camera.id,
+                                  {
+                                    moduleHeightMm:
+                                      value,
+                                  },
+                                )
+                              }
+                            />
+
+                            <NumericField
+                              label="Module depth"
+                              suffix="mm"
+                              value={
+                                camera.moduleDepthMm
+                              }
+                              onChange={(
+                                value,
+                              ) =>
+                                updateCamera(
+                                  camera.id,
+                                  {
+                                    moduleDepthMm:
+                                      value,
+                                  },
+                                )
+                              }
+                            />
+                          </div>
+                        </details>
+                      </article>
+                    ),
+                  )}
+                </div>
+              ) : (
+                <p className="il-help">
+                  No camera modules added.
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="il-chip il-add"
+                onClick={addCamera}
+              >
+                + Add camera module
+              </button>
+            </div>
+          ) : null}
+
+          <div className="il-section il-config-card">
             <SectionHeading
-              index="02"
-              title="Environment"
-              hint={simple?'Your daily usage pattern, including idle time.':'How the device is used during the simulated session: per-workload power and pack derating.'}
+              index={
+                simple ? '02' : '03'
+              }
+              title={
+                simple
+                  ? 'Usage'
+                  : 'Power model'
+              }
+              hint={
+                simple
+                  ? 'Choose the pattern that best resembles a normal day.'
+                  : 'Supply whole-device power measurements for the workloads you want to model.'
+              }
             />
 
-            {simple?<div className="il-simple-usage">
-              <h3>How do you use this phone?</h3>
-              <p>Tell us how you typically use your phone. Interactive Leaks combines your usage with the device model to estimate battery life.</p>
-              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
-              <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
-              {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
-              <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
-              <label className="il-power-choice"><input type="checkbox" checked={experience.useEnteredPower} onChange={event=>changeExperience({type:'power',value:event.currentTarget.checked})}/>Use power values I entered in Advanced (unverified)</label>
-              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set and is reported as calibrated — never as a measurement of your device.</p>
-              {evidence?<><details className="il-advanced"><summary>View assumptions</summary>
-                <p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p>
-                <p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p>
-                <h3>Evidence per workload</h3>
-                <ul className="il-evidence-list">{Object.values(workloadEvidence(evidence)).map(entry=><li key={entry.workload}><strong>{WORKLOAD_LABEL[entry.workload]}</strong>: {entry.powerW?`${format(entry.powerW.min,2)}–${format(entry.powerW.max,2)} W`:'no power value'} · {entry.provenance?.kind??entry.status}<small> {entry.note}</small></li>)}</ul>
-                <p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p>
-              </details>
-              {endurancePreview&&<p className="il-help">Profile: {format(endurancePreview.activeHours,1)} h active/day; {format(endurancePreview.unevidencedHours,1)} h of the full day lacks power evidence. Reference-only continuous Wi-Fi web {format(evidence.screenOnBudgetHours.min,1)}–{format(evidence.screenOnBudgetHours.max,1)} h.</p>}</>
-              :<><p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE}</p><p className="il-help">You can <button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>open Advanced Mode</button> to supply your own measured power values instead.</p></>}
-            </div>:<>
-            <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
-              <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
-            </select></label>
-            <p className="il-help">Average device power (W) means the whole device's average draw during that workload. It is not charger wattage or a chip's rated power.</p>
-            <div className="il-workload-grid">
-              {(profileMode==='manual'?['mixed_use' as const]:COMPONENT_WORKLOADS).map(workload=><label className={workloadPower[workload].trim()?'il-workload active':'il-workload'} key={workload}>
-                <span className="il-workload-name">{WORKLOAD_LABEL[workload]}</span><span className="il-workload-unit">Average device power (W)</span>
-                <input type="number" inputMode="decimal" step="any" value={workloadPower[workload]===INVALID_NUMBER?'':workloadPower[workload]} aria-invalid={workloadPower[workload]===INVALID_NUMBER || (numeric(workloadPower[workload])??1)<=0} placeholder="Unknown" aria-label={WORKLOAD_LABEL[workload]+' average device power (W)'} onChange={captureNumericValue(value=>{setDirty(true);setWorkloadPower(current=>({...current,[workload]:value}));})}/>
-              </label>)}
-            </div>
-            <p className="il-help">{profileMode==='equal'?'Equal shares: only workloads with supplied power participate. Each receives the same share of mixed-use time.':profileMode==='manual'?'The supplied mixed-use power is the entire profile. Individual workloads are not added to it.':'How much each workload contributes to the mixed-use profile. Shares describe percentages of time, not hours or power.'}</p>
-            {profileMode==='percent'&&<details className="il-advanced" open><summary>Advanced · share of mixed use (%)</summary>
-              <p className="il-help">Total must be 100%. Enter 0% to exclude a workload. A positive share always needs a power value.</p>
-              <div className="il-grid">{COMPONENT_WORKLOADS.map(workload=><NumericField key={workload} label={WORKLOAD_LABEL[workload]+' share of mixed use'} suffix="%" value={workloadWeights[workload]} placeholder="Not assigned" onChange={value=>{setDirty(true);setWorkloadWeights(current=>({...current,[workload]:value}));}}/>)}</div>
-              <p className="il-profile-total" role="status">Current total: {format(profile.totalPercent,2)}% {profile.issues.length===0?'— valid profile':'— incomplete or invalid'}</p>
-            </details>}
+            {simple ? (
+              <div className="il-simple-usage">
+                <div className="il-simple-usage-intro">
+                  <h3>
+                    How do you use this phone?
+                  </h3>
 
-            <div className="il-grid il-derate"><NumericField label="Usable pack energy" suffix="%" value={usablePercent} placeholder="Full rated pack" onChange={value=>{setUsablePercent(value);setDirty(true);}}/>
-              <p className="il-help">Percentage of rated/nominal battery energy available after protection reserves and voltage cutoff. Empty preserves full rated pack energy (100%) under this model; that can make runtime optimistic. This is not the battery's current charge level.</p>
-            </div>
-            </>}
-            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
+                  <p>
+                    Choose the daily usage pattern
+                    that best matches you.
+                  </p>
+                </div>
+
+                <div className="il-profile-picker">
+                  {(
+                    [
+                      'Light',
+                      'Typical',
+                      'Heavy',
+                      'Custom',
+                    ] as UsagePreset[]
+                  ).map(
+                    (preset) => (
+                      <label
+                        className={
+                          experience.preset ===
+                          preset
+                            ? 'il-profile-option active'
+                            : 'il-profile-option'
+                        }
+                        key={preset}
+                      >
+                        <input
+                          type="radio"
+                          name="usage-profile"
+                          checked={
+                            experience.preset ===
+                            preset
+                          }
+                          onChange={() =>
+                            changeExperience(
+                              {
+                                type: 'preset',
+                                value:
+                                  preset,
+                              },
+                            )
+                          }
+                        />
+
+                        <strong>
+                          {preset}
+                        </strong>
+
+                        <span>
+                          {preset ===
+                          'Light'
+                            ? 'Calls, messaging and occasional browsing'
+                            : preset ===
+                                'Typical'
+                              ? 'Balanced everyday use'
+                              : preset ===
+                                  'Heavy'
+                                ? 'Longer active sessions and demanding use'
+                                : 'Define your own daily activity'}
+                        </span>
+                      </label>
+                    ),
+                  )}
+                </div>
+
+                {experience.preset ===
+                'Custom' ? (
+                  <div className="il-grid il-custom-usage">
+                    {ACTIVE_WORKLOADS.map(
+                      (key) => (
+                        <label
+                          className="il-field"
+                          key={key}
+                        >
+                          <span>
+                            {key ===
+                            'web_browsing'
+                              ? 'Web / social'
+                              : WORKLOAD_LABEL[
+                                  key
+                                ]}
+
+                            <small>
+                              min/day
+                            </small>
+                          </span>
+
+                          <input
+                            type="number"
+                            min="0"
+                            max="1440"
+                            step="any"
+                            inputMode="decimal"
+                            value={
+                              usage[
+                                key
+                              ] ===
+                              INVALID_NUMBER
+                                ? ''
+                                : usage[
+                                    key
+                                  ]
+                            }
+                            onChange={captureNumericValue(
+                              (
+                                value,
+                              ) =>
+                                changeExperience(
+                                  {
+                                    type: 'duration',
+                                    key,
+                                    value,
+                                  },
+                                ),
+                            )}
+                          />
+                        </label>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <div className="il-profile-summary">
+                    {ACTIVE_WORKLOADS.map(
+                      (key) => (
+                        <span key={key}>
+                          <strong>
+                            {
+                              usage[
+                                key
+                              ]
+                            }{' '}
+                            min
+                          </strong>
+
+                          {key ===
+                          'web_browsing'
+                            ? 'Web / social'
+                            : WORKLOAD_LABEL[
+                                key
+                              ]}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                )}
+
+                <div className="il-usage-meta">
+                  <span>
+                    Idle
+                    <strong>
+                      {usageBreakdown
+                        .issues
+                        .length
+                        ? 'Unknown'
+                        : `${format(
+                            usageBreakdown.idleMinutes /
+                              60,
+                            1,
+                          )} h`}
+                    </strong>
+                  </span>
+
+                  <span>
+                    Evidence
+                    <strong>
+                      {evidence
+                        ? `${evidence.referenceCount} references`
+                        : 'Insufficient'}
+                    </strong>
+                  </span>
+
+                  <span>
+                    Model
+                    <strong>
+                      {
+                        POWER_EVIDENCE_VERSION
+                      }
+                    </strong>
+                  </span>
+                </div>
+
+                {evidence ? (
+                  <details className="il-advanced">
+                    <summary>
+                      Evidence &amp; assumptions
+                    </summary>
+
+                    <div className="il-advanced-body">
+                      <ul className="il-evidence-list">
+                        {Object.values(
+                          workloadEvidence(
+                            evidence,
+                          ),
+                        ).map(
+                          (entry) => (
+                            <li
+                              key={
+                                entry.workload
+                              }
+                            >
+                              <strong>
+                                {
+                                  WORKLOAD_LABEL[
+                                    entry
+                                      .workload
+                                  ]
+                                }
+                              </strong>
+
+                              <span>
+                                {entry.powerW
+                                  ? `${format(
+                                      entry
+                                        .powerW
+                                        .min,
+                                      2,
+                                    )}–${format(
+                                      entry
+                                        .powerW
+                                        .max,
+                                      2,
+                                    )} W`
+                                  : 'No supported power value'}
+                              </span>
+
+                              <small>
+                                {
+                                  entry.note
+                                }
+                              </small>
+                            </li>
+                          ),
+                        )}
+                      </ul>
+
+                      {endurancePreview ? (
+                        <p className="il-help">
+                          {format(
+                            endurancePreview.activeHours,
+                            1,
+                          )}{' '}
+                          h active/day.{' '}
+                          {format(
+                            endurancePreview.unevidencedHours,
+                            1,
+                          )}{' '}
+                          h of the full day
+                          currently lacks power
+                          evidence.
+                        </p>
+                      ) : null}
+                    </div>
+                  </details>
+                ) : (
+                  <div className="il-insufficient-inline">
+                    <strong>
+                      Not enough evidence
+                    </strong>
+
+                    <p>
+                      {
+                        INSUFFICIENT_EVIDENCE_MESSAGE
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <label className="il-field">
+                  <span>
+                    Mixed-use model
+                  </span>
+
+                  <select
+                    value={
+                      profileMode
+                    }
+                    onChange={captureValue(
+                      (value) => {
+                        setProfileMode(
+                          value as ProfileMode,
+                        );
+
+                        setDirty(
+                          true,
+                        );
+                      },
+                    )}
+                  >
+                    <option value="equal">
+                      Equal shares
+                    </option>
+
+                    <option value="percent">
+                      Custom percentage shares
+                    </option>
+
+                    <option value="manual">
+                      Known mixed-use average
+                      power
+                    </option>
+                  </select>
+                </label>
+
+                <div className="il-workload-grid">
+                  {(profileMode ===
+                  'manual'
+                    ? ([
+                        'mixed_use',
+                      ] as const)
+                    : COMPONENT_WORKLOADS
+                  ).map(
+                    (workload) => (
+                      <label
+                        className={
+                          workloadPower[
+                            workload
+                          ].trim()
+                            ? 'il-workload active'
+                            : 'il-workload'
+                        }
+                        key={
+                          workload
+                        }
+                      >
+                        <span className="il-workload-name">
+                          {
+                            WORKLOAD_LABEL[
+                              workload
+                            ]
+                          }
+                        </span>
+
+                        <span className="il-workload-unit">
+                          Average device power
+                        </span>
+
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="any"
+                          value={
+                            workloadPower[
+                              workload
+                            ] ===
+                            INVALID_NUMBER
+                              ? ''
+                              : workloadPower[
+                                  workload
+                                ]
+                          }
+                          placeholder="Unknown"
+                          onChange={captureNumericValue(
+                            (
+                              value,
+                            ) => {
+                              setDirty(
+                                true,
+                              );
+
+                              setWorkloadPower(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+                                  [workload]:
+                                    value,
+                                }),
+                              );
+                            },
+                          )}
+                        />
+                      </label>
+                    ),
+                  )}
+                </div>
+
+                {profileMode ===
+                'percent' ? (
+                  <details
+                    className="il-advanced"
+                    open
+                  >
+                    <summary>
+                      Workload shares
+                    </summary>
+
+                    <div className="il-grid">
+                      {COMPONENT_WORKLOADS.map(
+                        (
+                          workload,
+                        ) => (
+                          <NumericField
+                            key={
+                              workload
+                            }
+                            label={
+                              WORKLOAD_LABEL[
+                                workload
+                              ]
+                            }
+                            suffix="%"
+                            value={
+                              workloadWeights[
+                                workload
+                              ]
+                            }
+                            onChange={(
+                              value,
+                            ) => {
+                              setDirty(
+                                true,
+                              );
+
+                              setWorkloadWeights(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+                                  [workload]:
+                                    value,
+                                }),
+                              );
+                            }}
+                          />
+                        ),
+                      )}
+                    </div>
+
+                    <p className="il-profile-total">
+                      Total:{' '}
+                      {format(
+                        profile.totalPercent,
+                        2,
+                      )}
+                      %
+                    </p>
+                  </details>
+                ) : null}
+
+                <div className="il-grid il-derate">
+                  <NumericField
+                    label="Usable pack energy"
+                    suffix="%"
+                    value={
+                      usablePercent
+                    }
+                    placeholder="Full rated pack"
+                    onChange={(
+                      value,
+                    ) => {
+                      setUsablePercent(
+                        value,
+                      );
+
+                      setDirty(
+                        true,
+                      );
+                    }}
+                  />
+                </div>
+
+                {profile.issues
+                  .length ? (
+                  <ul className="il-profile-issues">
+                    {profile.issues.map(
+                      (
+                        issue,
+                        index,
+                      ) => (
+                        <li
+                          key={
+                            index
+                          }
+                        >
+                          {issue}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                ) : null}
+              </>
+            )}
           </div>
 
-          {/* 03 · MODEL */}
-          <div className="il-section il-section-last">
+          <div className="il-section il-config-card il-model-card">
             <SectionHeading
-              index="03"
+              index={
+                simple ? '03' : '04'
+              }
               title="Model"
-              hint="What PhoneFuturist currently knows — the versioned engine and battery model that will evaluate this configuration."
+              hint="The versions and evidence rules applied to this run."
             />
 
             <ul className="il-model-list">
               <li>
-                <strong>Deterministic core</strong>
+                <strong>
+                  Simulation engine
+                </strong>
+
                 <span>
-                  Engine v{SIMULATION_ENGINE_VERSION} · display PPI, screen-to-body,
-                  pack energy, energy density, internal volume budget
+                  v
+                  {
+                    SIMULATION_ENGINE_VERSION
+                  }
                 </span>
               </li>
 
               <li>
-                <strong>Battery runtime model</strong>
+                <strong>
+                  Battery model
+                </strong>
+
                 <span>
-                  {BATTERY_EXPERIENCE_VERSION} · workload power mixture,
-                  interval arithmetic, provenance-aware confidence
+                  {
+                    BATTERY_EXPERIENCE_VERSION
+                  }
                 </span>
               </li>
 
               <li>
-                <strong>Evidence discipline</strong>
+                <strong>
+                  Evidence rule
+                </strong>
+
                 <span>
-                  Unknown inputs stay unknown; the result explains every
-                  assumption it made
+                  Unsupported conclusions
+                  remain unresolved.
                 </span>
               </li>
             </ul>
@@ -1050,353 +2679,1031 @@ export default function InteractiveLeaksSimulator() {
             <button
               type="button"
               className="il-simulate"
-              onClick={simulate}
+              onClick={() =>
+                void simulate()
+              }
+              disabled={
+                simpleInference.status ===
+                'loading'
+              }
             >
-              Run simulation →
+              <span>
+                {simpleInference.status ===
+                'loading'
+                  ? 'Running model…'
+                  : 'Run simulation'}
+              </span>
+
+              <span aria-hidden="true">
+                →
+              </span>
             </button>
-            {hasSimulated&&<a className="il-chip" href="#simulation-results">View results ↓</a>}
+
             <p>
-              Device + Environment + Model. Nothing invented between the
-              three.
+              {simple
+                ? 'We calculate only what the current evidence can support.'
+                : 'Advanced results use the engineering values you supplied.'}
             </p>
           </div>
         </section>
 
-        {/* ---------------- Result column ---------------- */}
-        <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
+        <aside
+          id="simulation-results"
+          className="il-results"
+          aria-live="polite"
+          aria-label="Simulation results"
+        >
           <div className="il-results-top">
-            <span className="eyebrow">Simulation result</span>
+            <span className="eyebrow">
+              Simulation result
+            </span>
 
-            <span>v{SIMULATION_ENGINE_VERSION}</span>
+            <span>
+              Engine v
+              {
+                SIMULATION_ENGINE_VERSION
+              }
+            </span>
           </div>
 
-          {hasSimulated&&dirty&&<p className="il-input-note">Inputs changed. Run again to update these results.</p>}
-          {!hasSimulated ? (
+          {hasSimulated &&
+          dirty ? (
+            <div className="il-stale-result">
+              Inputs changed. Run again
+              to refresh this result.
+            </div>
+          ) : null}
+
+          {simple &&
+          simpleInference.status ===
+            'loading' ? (
             <div className="il-result-empty">
-              <div className="il-orbit" aria-hidden="true">
+              <div
+                className="il-orbit"
+                aria-hidden="true"
+              >
                 <span />
               </div>
 
-              <h2>Nothing simulated yet.</h2>
+              <span className="il-result-empty-kicker">
+                Model running
+              </span>
+
+              <h2>
+                Interpreting the evidence.
+              </h2>
 
               <p>
-                Configure a device, add environment power if you have it, then
-                run the model. Load the example to see a complete
-                configuration.
+                Simple Mode is building a
+                bounded estimate from the
+                frozen PhoneFuturist
+                evidence set.
               </p>
             </div>
-          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p>{simple?<p>If the evidence itself is missing, Advanced mode lets you supply your own measured whole-device power instead.</p>:null}</div> : (
+          ) : simple &&
+            simpleInference.status ===
+              'error' ? (
+            <div className="il-result-empty">
+              <span className="il-result-empty-kicker">
+                Simulation unavailable
+              </span>
+
+              <h2>
+                We could not complete this
+                run.
+              </h2>
+
+              <p>
+                {
+                  simpleInference.message
+                }
+              </p>
+            </div>
+          ) : simple &&
+            simpleInference.status ===
+              'insufficient_evidence' ? (
+            <div className="il-result-empty">
+              <span className="il-result-empty-kicker">
+                Insufficient evidence
+              </span>
+
+              <h2>
+                Not enough evidence for a
+                defensible estimate.
+              </h2>
+
+              <ul className="il-profile-issues">
+                {simpleInference.envelope.artifact.limitations.map(
+                  (
+                    limitation,
+                    index,
+                  ) => (
+                    <li
+                      key={index}
+                    >
+                      {limitation}
+                    </li>
+                  ),
+                )}
+              </ul>
+
+              <p>
+                No battery-life number has
+                been invented. Add stronger
+                evidence or use Advanced
+                Mode with measured
+                engineering inputs.
+              </p>
+            </div>
+          ) : simple &&
+            simpleInference.status ===
+              'ready' ? (
             <>
               <div className="il-result-identity">
                 <span>
-                  {simulationInput?.formFactor.replaceAll('_', ' ').toUpperCase()}
+                  SIMPLE MODE ·
+                  MODEL-DERIVED
                 </span>
 
-                <h2>{simulationInput?.name || 'Untitled concept'}</h2>
+                <h2>
+                  {form.name.trim() ||
+                    'Untitled device'}
+                </h2>
               </div>
 
-              {/* Hero runtime card (only when the environment layer ran) */}
-              {(
-                <div className="il-runtime-card">
+              <div className="il-runtime-card">
+                <div className="il-runtime-header">
                   <span className="il-runtime-eyebrow">
-                    {run ? headlineLabel(run) : "Simulation result"}
+                    Whole-device power
+                    estimate
                   </span>
 
-                  {battery?.result.status === 'resolved' ? (
-                    <>
-                      <p className={`il-runtime-value${run?.context.mode==='simple'?' il-runtime-unknown':''}`}>
-                        {run ? headlineText(run) : hoursLabel(estimate?.runtimeHours)}
-                      </p>
-
-                      <p className="il-help">{run?.context.usageProfile} usage · simulated estimate, not measured battery life.</p>
-
-                      {run?.endurance&&<p className="il-help">{enduranceHeadline?.detail}</p>}
-                      {run?.endurance?.verdict==='insufficient-evidence'&&<button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Open Advanced Mode</button>}
-                      {run&&<ShareResult key={JSON.stringify(run)} run={run}/>}
-                      <details className="il-evidence"><summary>View assumptions</summary>
-                      {run&&receiptSections(run,'Not exported').filter(section=>['ENVIRONMENT','MODEL','ASSUMPTIONS / PROVENANCE','WARNINGS / MISSING INFORMATION'].includes(section.title)).map(section=><section key={section.title}><h3>{section.title}</h3><ul>{section.lines.map((line,index)=><li key={index}>{line}</li>)}</ul></section>)}
-                      <p className="il-help">{format(estimate?.usableEnergyWh?.min,2)} Wh usable energy ÷ {wattsLabel(battery.result.comparisonReady?.averagePowerW)} mixed-use average power.</p>
-                      <p className="il-help">{run?.profile.mode==='manual'?'Uses your supplied mixed-use power.':run?.profile.terms.map(term=>WORKLOAD_LABEL[term.workload]+' '+format(term.power,2)+' W × '+format(term.share*100,2)+'%').join(' + ')}</p>
-                      <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
-                      {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
-                      </details>
-                      {run?.context.mode==='advanced'&&<><div className="il-runtime-bar" aria-hidden="true">
-                        <span
-                          style={{
-                            width: `${runtimeBarPercent(estimate?.runtimeHours) ?? 0}%`,
-                          }}
-                        />
-                      </div>
-
-                      <span className="il-runtime-scale">
-                        0 h · 24 h day · 30 h scale
-                      </span>
-
-                      </>}
-                      {(evidenceConfidence||battery.result.confidence) && (
-                        <span
-                          className={`il-confidence il-confidence-${evidenceConfidence??battery.result.confidence}`}
-                        >
-                          {evidenceConfidence?EVIDENCE_CONFIDENCE_LABEL[evidenceConfidence]:CONFIDENCE_LABEL[battery.result.confidence!]}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <p className="il-runtime-value il-runtime-unknown">
-                        Cannot estimate yet
-                      </p>
-
-                      <ul className="il-profile-issues">{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>
-                    </>
-                  )}
+                  <span
+                    className={`il-confidence il-confidence-${simpleInference.envelope.artifact.confidence}`}
+                  >
+                    {
+                      simpleInference
+                        .envelope
+                        .artifact
+                        .confidence
+                    }{' '}
+                    confidence
+                  </span>
                 </div>
-              )}
 
-              <details className="il-evidence"><summary>Supporting device and engineering metrics</summary>
-              {/* Device-layer deterministic metrics */}
-              <div className="il-result-group">
-                <span className="il-result-label">Display</span>
+                <p className="il-runtime-value">
+                  {simpleInference
+                    .envelope
+                    .artifact
+                    .averagePowerW
+                    ? `${format(
+                        simpleInference
+                          .envelope
+                          .artifact
+                          .averagePowerW
+                          .min,
+                        2,
+                      )}–${format(
+                        simpleInference
+                          .envelope
+                          .artifact
+                          .averagePowerW
+                          .max,
+                        2,
+                      )} W`
+                    : 'Unresolved'}
+                </p>
 
-                <div className="il-metrics">
-                  <div>
+                <p className="il-runtime-framing">
+                  {experience.preset}{' '}
+                  usage
+                </p>
+
+                <p className="il-help">
+                  Model-derived estimate
+                  from frozen
+                  PhoneFuturist evidence,
+                  not a measured
+                  benchmark.
+                </p>
+
+                {evidenceDevice.energyWh ===
+                undefined ? (
+                  <div className="il-insufficient-result">
+                    <strong>
+                      Battery endurance
+                      remains unresolved
+                    </strong>
+
+                    <p>
+                      Rated capacity in mAh
+                      does not uniquely
+                      determine energy in
+                      Wh. Simple Mode will
+                      not assume a hidden
+                      cell voltage, so it
+                      reports power without
+                      inventing a runtime.
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="il-result-summary-grid">
+                <div>
+                  <span>
+                    Battery
+                  </span>
+
+                  <strong>
+                    {form.batteryCapacityMah ||
+                      'Unknown'}
+                    {form.batteryCapacityMah
+                      ? ' mAh'
+                      : ''}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Energy
+                  </span>
+
+                  <strong>
+                    {evidenceDevice.energyWh !==
+                    undefined
+                      ? `${format(
+                          evidenceDevice.energyWh,
+                          2,
+                        )} Wh`
+                      : 'Unknown'}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Display
+                  </span>
+
+                  <strong>
+                    {form.diagonalInches ||
+                      'Unknown'}
+                    {form.diagonalInches
+                      ? '″'
+                      : ''}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Evidence
+                  </span>
+
+                  <strong>
+                    {
+                      simpleInference
+                        .envelope
+                        .artifact
+                        .evidence
+                        .length
+                    }
+                  </strong>
+                </div>
+              </div>
+
+              <details className="il-evidence">
+                <summary>
+                  Why this result?
+                </summary>
+
+                <section>
+                  <h3>
+                    ASSUMPTIONS /
+                    PROVENANCE
+                  </h3>
+
+                  <ul>
+                    {simpleInference.envelope.artifact.assumptions.map(
+                      (
+                        assumption,
+                      ) => (
+                        <li
+                          key={
+                            assumption.id
+                          }
+                        >
+                          <strong>
+                            {
+                              assumption.label
+                            }
+                            :
+                          </strong>{' '}
+                          {
+                            assumption.reasoning
+                          }
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                </section>
+
+                <section>
+                  <h3>
+                    EVIDENCE
+                  </h3>
+
+                  <ul>
+                    {simpleInference.envelope.artifact.evidence.map(
+                      (item) => (
+                        <li
+                          key={
+                            item.evidenceId
+                          }
+                        >
+                          <strong>
+                            {item.title}
+                            :
+                          </strong>{' '}
+                          {
+                            item.supports
+                          }
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                </section>
+
+                <section>
+                  <h3>
+                    MODEL RECEIPT
+                  </h3>
+
+                  <ul>
+                    <li>
+                      Artifact:{' '}
+                      {
+                        simpleInference
+                          .envelope
+                          .receipt
+                          .artifactId
+                      }
+                    </li>
+
+                    <li>
+                      Inference model:{' '}
+                      {
+                        simpleInference
+                          .envelope
+                          .receipt
+                          .inferenceModel
+                      }
+                    </li>
+
+                    <li>
+                      Evidence snapshot:{' '}
+                      {
+                        simpleInference
+                          .envelope
+                          .receipt
+                          .evidenceSnapshotId
+                      }
+                    </li>
+                  </ul>
+                </section>
+              </details>
+            </>
+          ) : !hasSimulated ? (
+            <div className="il-result-empty">
+              <div
+                className="il-orbit"
+                aria-hidden="true"
+              >
+                <span />
+              </div>
+
+              <span className="il-result-empty-kicker">
+                Awaiting configuration
+              </span>
+
+              <h2>
+                Your result will appear
+                here.
+              </h2>
+
+              <p>
+                Configure the device and
+                usage profile, then run
+                the simulation.
+                Unsupported conclusions
+                will remain unresolved
+                instead of being
+                invented.
+              </p>
+            </div>
+          ) : !result ? (
+            <div className="il-result-empty">
+              <span className="il-result-empty-kicker">
+                Unresolved
+              </span>
+
+              <h2>
+                Cannot estimate yet.
+              </h2>
+
+              <ul className="il-profile-issues">
+                {run?.issues.map(
+                  (
+                    issue,
+                    index,
+                  ) => (
+                    <li
+                      key={index}
+                    >
+                      {issue}
+                    </li>
+                  ),
+                )}
+              </ul>
+
+              <p>
+                Your configuration is
+                preserved. Correct the
+                unresolved inputs and run
+                again.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="il-result-identity">
+                <span>
+                  {simulationInput?.formFactor
+                    .replaceAll(
+                      '_',
+                      ' ',
+                    )
+                    .toUpperCase()}
+                </span>
+
+                <h2>
+                  {simulationInput?.name ||
+                    'Untitled device'}
+                </h2>
+              </div>
+              <div className="il-runtime-card">
+                <div className="il-runtime-header">
+                  <span className="il-runtime-eyebrow">
+                    {simple
+                      ? 'Estimated endurance'
+                      : 'Deterministic endurance'}
+                  </span>
+
+                  {simple &&
+                  evidenceConfidence ? (
+                    <span
+                      className={`il-confidence il-confidence-${evidenceConfidence}`}
+                    >
+                      {
+                        evidenceConfidence
+                      }{' '}
+                      confidence
+                    </span>
+                  ) : null}
+                </div>
+
+                <p className="il-runtime-value">
+                  {simple
+                    ? enduranceHeadline?.headline ?? 'Unresolved'
+                    : estimate
+                      ? run ? runtimeText(run) : 'Unresolved'
+                      : 'Unresolved'}
+                </p>
+
+                <p className="il-runtime-framing">
+                  {simple
+                    ? enduranceHeadline?.detail ?? 'No supported endurance calculation'
+                    : estimate
+                      ? estimate.workloads.map((workload) => `${WORKLOAD_LABEL[workload.workload]} · ${wattsLabel(workload.averagePowerW)}`).join(' / ')
+                      : 'No supported runtime calculation'}
+                </p>
+
+                {simple &&
+                run?.endurance ? (
+                  <div className="il-runtime-range">
+                    <span>
+                      Continuous web reference
+                    </span>
+
                     <strong>
                       {format(
-                        simulationInput?.displays.primary.diagonalInches,
-                        2,
+                        run.endurance
+                          .screenOnBudgetHours.min,
+                        1,
                       )}
-                      {simulationInput?.displays.primary.diagonalInches !==
-                      undefined
-                        ? '″'
-                        : ''}
+                      –
+                      {format(
+                        run.endurance
+                          .screenOnBudgetHours.max,
+                        1,
+                      )}{' '}
+                      hours
                     </strong>
-                    <span>Diagonal</span>
                   </div>
+                ) : null}
 
-                  <div>
-                    <strong>{format(display?.ppi, 0)}</strong>
-                    <span>PPI</span>
-                  </div>
+                {simple &&
+                run?.endurance ? (
+                  <p className="il-help">
+                    {format(
+                      run.endurance
+                        .activeHours,
+                      1,
+                    )}{' '}
+                    h active/day ·{' '}
+                    {format(
+                      run.endurance
+                        .idleHours,
+                      1,
+                    )}{' '}
+                    h idle/day
+                  </p>
+                ) : null}
 
-                  <div>
+                {simple &&
+                estimate?.assumptions.some((assumption) => assumption.code === 'NO_USABLE_PERCENT_SUPPLIED') ? (
+                  <p className="il-result-warning">
+                    Optimistic bound: no
+                    measured usable-energy
+                    fraction is available,
+                    so the current model
+                    uses the full rated
+                    pack.
+                  </p>
+                ) : null}
+
+                {!simple &&
+                battery?.result.status ===
+                  'unresolved' ? (
+                  <div className="il-insufficient-result">
                     <strong>
-                      {format(display?.screenToBodyRatio, 1)}
-                      {display?.screenToBodyRatio !== undefined ? '%' : ''}
+                      Not enough evidence
                     </strong>
-                    <span>Screen to body</span>
+
+                    <p>
+                      {
+                        battery.result.unresolved?.message ?? 'Required battery inputs remain unresolved.'
+                      }
+                    </p>
                   </div>
+                ) : null}
+              </div>
+
+              <div className="il-result-summary-grid">
+                <div>
+                  <span>
+                    Battery
+                  </span>
+
+                  <strong>
+                    {pack?.totalCapacityMah !==
+                    undefined
+                      ? `${format(
+                          pack.totalCapacityMah,
+                          0,
+                        )} mAh`
+                      : 'Unknown'}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Energy
+                  </span>
+
+                  <strong>
+                    {pack?.totalEnergyWh !==
+                    undefined
+                      ? `${format(
+                          pack.totalEnergyWh,
+                          2,
+                        )} Wh`
+                      : 'Unknown'}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Display
+                  </span>
+
+                  <strong>
+                    {simulationInput?.displays.primary.diagonalInches !==
+                    undefined
+                      ? `${format(
+                          simulationInput.displays.primary.diagonalInches,
+                          2,
+                        )}″`
+                      : 'Unknown'}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Density
+                  </span>
+
+                  <strong>
+                    {display?.ppi !==
+                    undefined
+                      ? `${format(
+                          display.ppi,
+                          0,
+                        )} ppi`
+                      : 'Unknown'}
+                  </strong>
                 </div>
               </div>
 
-              <div className="il-result-group">
-                <span className="il-result-label">Battery pack</span>
+              <div className="il-result-block">
+                <div className="il-result-block-head">
+                  <h3>
+                    Physical model
+                  </h3>
 
-                <div className="il-metrics">
-                  <div>
-                    <strong>{format(pack?.totalCapacityMah, 0)}</strong>
-                    <span>mAh</span>
-                  </div>
-
-                  <div>
-                    <strong>{format(pack?.totalEnergyWh, 2)}</strong>
-                    <span>Wh</span>
-                  </div>
-
-                  <div>
-                    <strong>{format(pack?.totalVolumeCm3, 2)}</strong>
-                    <span>cm³</span>
-                  </div>
+                  <span>
+                    Deterministic
+                  </span>
                 </div>
+
+                <dl className="il-metrics">
+                  <div>
+                    <dt>
+                      Display area
+                    </dt>
+
+                    <dd>
+                      {display?.areaMm2 !==
+                      undefined
+                        ? `${format(
+                            display.areaMm2 / 100,
+                            1,
+                          )} cm²`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>
+                      Screen-to-body
+                    </dt>
+
+                    <dd>
+                      {display?.screenToBodyRatio !==
+                      undefined
+                        ? `${format(
+                            display.screenToBodyRatio,
+                            1,
+                          )}%`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>
+                      Device volume
+                    </dt>
+
+                    <dd>
+                      {packaging?.externalVolumeMm3 !==
+                      undefined
+                        ? `${format(
+                            packaging.externalVolumeMm3 /
+                              1000,
+                            1,
+                          )} cm³`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>
+                      Battery volume
+                    </dt>
+
+                    <dd>
+                      {pack?.totalVolumeMm3 !==
+                      undefined
+                        ? `${format(
+                            pack.totalVolumeMm3 /
+                              1000,
+                            1,
+                          )} cm³`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>
+                      Battery density
+                    </dt>
+
+                    <dd>
+                      {pack?.volumetricEnergyDensityWhL !==
+                      undefined
+                        ? `${format(
+                            pack.volumetricEnergyDensityWhL,
+                            0,
+                          )} Wh/L`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>
+                      Remaining volume
+                    </dt>
+
+                    <dd>
+                      {packaging?.remainingVolumeMm3 !==
+                      undefined
+                        ? `${format(
+                            packaging.remainingVolumeMm3 /
+                              1000,
+                            1,
+                          )} cm³`
+                        : 'Unknown'}
+                    </dd>
+                  </div>
+                </dl>
               </div>
 
-              {estimate && estimate.workloads.length > 0 && (
-                <div className="il-result-group">
-                  <span className="il-result-label">Workload mixture</span>
+              {result.cameras?.length ? (
+                <div className="il-result-block">
+                  <div className="il-result-block-head">
+                    <h3>
+                      Camera geometry
+                    </h3>
 
-                  <div className="il-workload-results">
-                    {estimate.workloads.map((entry) => (
-                      <div className="il-workload-result" key={entry.workload}>
-                        <div>
-                          <strong>{WORKLOAD_LABEL[entry.workload]}</strong>
+                    <span>
+                      {
+                        result.cameras
+                          .length
+                      }{' '}
+                      modules
+                    </span>
+                  </div>
+
+                  <div className="il-camera-results">
+                    {result.cameras.map(
+                      (
+                        camera,
+                        index,
+                      ) => (
+                        <article
+                          key={`${camera.type}-${index}`}
+                        >
+                          <strong>
+                            {camera.type
+                              .replaceAll(
+                                '_',
+                                ' ',
+                              )
+                              .toUpperCase()}
+                          </strong>
 
                           <span>
-                            {wattsLabel(entry.averagePowerW)} ·{' '}
-                            {Math.round(entry.weightShare * 100)}% of profile
+                            Approx. sensor diagonal{' '}
+                            {camera.approximateSensorDiagonalMm !==
+                            undefined
+                              ? `${format(
+                                  camera.approximateSensorDiagonalMm,
+                                  1,
+                                )} mm`
+                              : 'Unknown'}
                           </span>
-                        </div>
 
-                        <b>{wattsLabel(entry.weightedPowerW)}</b>
-                      </div>
-                    ))}
+                          <span>
+                            Crop{' '}
+                            {camera.cropFactor !==
+                            undefined
+                              ? `${format(
+                                  camera.cropFactor,
+                                  2,
+                                )}×`
+                              : 'Unknown'}
+                          </span>
+
+                          <span>
+                            Pixel pitch{' '}
+                            Unknown (not modeled)
+                          </span>
+
+                          <span>
+                            Module volume{' '}
+                            {camera.moduleVolumeMm3 !==
+                            undefined
+                              ? `${format(
+                                  camera.moduleVolumeMm3,
+                                  0,
+                                )} mm³`
+                              : 'Unknown'}
+                          </span>
+                        </article>
+                      ),
+                    )}
                   </div>
                 </div>
-              )}
+              ) : null}
 
-              <div className="il-result-group">
-                <span className="il-result-label">Camera system</span>
+              {run?.issues.length ? (
+                <div className="il-result-block il-result-issues">
+                  <div className="il-result-block-head">
+                    <h3>
+                      Unresolved inputs
+                    </h3>
 
-                <div className="il-metrics">
-                  <div>
-                    <strong>{result.cameras?.length ?? 'Unknown'}</strong>
-                    <span>Modules</span>
+                    <span>
+                      {
+                        run.issues
+                          .length
+                      }
+                    </span>
                   </div>
-
-                  <div>
-                    <strong>
-                      {knownCameraVolumeMm3 !== undefined
-                        ? format(knownCameraVolumeMm3 / 1000, 2)
-                        : 'Unknown'}
-                    </strong>
-                    <span>Known volume cm³</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="il-result-group">
-                <span className="il-result-label">Internal volume</span>
-
-                <div className="il-volume-number">
-                  <strong>
-                    {format(packaging?.knownComponentVolumeCm3, 2)}
-                  </strong>
-
-                  <span>/</span>
-
-                  <strong>
-                    {format(packaging?.availableInternalVolumeCm3, 2)}
-                  </strong>
-
-                  <small>cm³ known / available</small>
-                </div>
-
-                <div className="il-metrics">
-                  <div>
-                    <strong>{format(packaging?.remainingVolumeCm3, 2)}</strong>
-                    <span>cm³ remaining</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {format(packaging?.usedInternalVolumePercent, 1)}
-                      {packaging?.usedInternalVolumePercent !== undefined
-                        ? '%'
-                        : ''}
-                    </strong>
-                    <span>Known allocation</span>
-                  </div>
-                </div>
-              </div>
-
-              {packaging?.fitsAvailableVolume !== undefined && (
-                <div
-                  className={`il-verdict ${
-                    packaging.fitsAvailableVolume ? 'passes' : 'fails'
-                  }`}
-                >
-                  <strong>
-                    {packaging.fitsAvailableVolume
-                      ? 'Volume budget passes'
-                      : 'Volume budget exceeded'}
-                  </strong>
-
-                  <p>
-                    {packaging.fitsAvailableVolume
-                      ? 'Known components do not exceed the calculated internal volume budget. This does not prove their physical shapes can be packaged together.'
-                      : 'Known component volume exceeds the calculated internal volume available in this device envelope.'}
-                  </p>
-                </div>
-              )}
-
-              </details>
-              {/* Provenance, assumptions, confidence detail */}
-              {(estimate?.assumptions.length ?? 0) > 0 && (
-                <details className="il-evidence">
-                  <summary>Assumptions ({estimate?.assumptions.length})</summary>
 
                   <ul>
-                    {estimate?.assumptions.map((assumption, index) => (
-                      <li key={`${assumption.code}-${index}`}>
-                        <strong>{assumption.code}</strong>
-
-                        <span>{assumption.message}</span>
-                      </li>
-                    ))}
+                    {run.issues.map(
+                      (
+                        issue,
+                        index,
+                      ) => (
+                        <li
+                          key={index}
+                        >
+                          {issue}
+                        </li>
+                      ),
+                    )}
                   </ul>
-                </details>
-              )}
+                </div>
+              ) : null}
 
-              {battery?.result.confidenceNotes &&
-                battery.result.confidenceNotes.length > 0 && (
-                  <details className="il-evidence">
-                    <summary>
-                      Confidence notes ({battery.result.confidenceNotes.length})
-                    </summary>
+              {simple &&
+              run?.evidence ? (
+                <details className="il-evidence">
+                  <summary>
+                    Why this result?
+                  </summary>
+
+                  <section>
+                    <h3>
+                      EVIDENCE
+                    </h3>
 
                     <ul>
-                      {battery.result.confidenceNotes.map((note, index) => (
-                        <li key={index}>
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-
-              {(battery?.warnings.length ?? 0) > 0 && (
-                <details className="il-evidence" open>
-                  <summary>Warnings ({battery?.warnings.length})</summary>
-
-                  <ul>
-                    {battery?.warnings.map((warning, index) => (
-                      <li key={`${warning.code}-${index}`}>
-                        <strong>{warning.code}</strong>
-
-                        <span>{warning.message}</span>
+                      <li>
+                        Basis:{' '}
+                        {
+                          run.evidence
+                            .basis
+                        }
                       </li>
-                    ))}
-                  </ul>
+
+                      <li>
+                        Reference
+                        devices:{' '}
+                        {
+                          run.evidence
+                            .referenceCount
+                        }
+                      </li>
+
+                      <li>
+                        Web power:{' '}
+                        {wattsLabel(
+                          run.evidence
+                            .webPowerW,
+                        )}
+                      </li>
+
+                      <li>
+                        Evidence
+                        version:{' '}
+                        {
+                          POWER_EVIDENCE_VERSION
+                        }
+                      </li>
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3>
+                      WORKLOAD SUPPORT
+                    </h3>
+
+                    <ul>
+                      {Object.values(
+                        workloadEvidence(
+                          run.evidence,
+                        ),
+                      ).map(
+                        (entry) => (
+                          <li
+                            key={
+                              entry.workload
+                            }
+                          >
+                            <strong>
+                              {
+                                WORKLOAD_LABEL[
+                                  entry
+                                    .workload
+                                ]
+                              }
+                              :
+                            </strong>{' '}
+                            {
+                              entry.note
+                            }
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </section>
                 </details>
-              )}
+              ) : null}
 
-              {result.warnings.length > 0 && (
-                <details className="il-warnings"><summary>Constraints and unresolved device inputs ({result.warnings.length})</summary>
-                  <span className="il-result-label">Engine notes</span>
+              {run ? (
+                <details className="il-receipt">
+                  <summary>
+                    View simulation receipt
+                  </summary>
 
-                  {result.warnings.map((warning, index) => (
-                    <div className="il-warning" key={`${warning.code}-${index}`}>
-                      <strong>{warning.code}</strong>
+                  <div className="il-receipt-body">
+                    {receiptSections(
+                      run,
+                      receiptGeneratedAt,
+                    ).map(
+                      (section) => (
+                        <section
+                          key={
+                            section.title
+                          }
+                        >
+                          <h3>
+                            {
+                              section.title
+                            }
+                          </h3>
 
-                      <p>{warning.message}</p>
-                    </div>
-                  ))}
+                          <ul>
+                            {section.lines.map(
+                              (
+                                item,
+                                index,
+                              ) => (
+                                <li
+                                  key={`${section.title}-${index}`}
+                                >
+                                  {
+                                    item
+                                  }
+                                </li>
+                              ),
+                            )}
+                          </ul>
+                        </section>
+                      ),
+                    )}
+                  </div>
                 </details>
-              )}
+              ) : null}
 
-              <div className="il-method">
-                <strong>Deterministic where it can be.</strong>
-
-                <p>
-                  This result uses only the values supplied above, evaluated by
-                  PhoneFuturist Engine v{SIMULATION_ENGINE_VERSION} and battery
-                  model {BATTERY_EXPERIENCE_VERSION}. The same inputs always
-                  produce the same result.
-                </p>
-              </div>
+              {run ? (
+                <ShareResult run={run} />
+              ) : null}
             </>
           )}
         </aside>
       </div>
 
-      {/* Honest scope: what the Beta does not simulate yet */}
-      <div className="il-scope">
-        <strong>Public Beta scope</strong>
+      <section className="il-scope">
+        <strong>
+          What this model does
+        </strong>
 
         <p>
-          The deterministic device core and the battery runtime model are
-          available. This beta does not simulate benchmark scores, thermal
-          behavior or image quality. Camera results describe geometry only.
+          It calculates geometry,
+          display density, battery
+          energy, packaging,
+          camera geometry and
+          battery endurance where
+          the supplied inputs or
+          evidence are sufficient.
+          It does not infer image
+          quality, benchmark scores
+          or undocumented hardware
+          behavior.
         </p>
-      </div>
+      </section>
     </div>
   );
 }
