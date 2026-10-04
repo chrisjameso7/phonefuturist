@@ -1,65 +1,48 @@
 /* ================================================================
-   INTERACTIVE LEAKS / SIMULATION LABORATORY
-   Dedicated product environment.
-
-   Liquid Graphite remains an interaction material.
-   The workspace itself uses deep technical surfaces, restrained
-   cyan/violet illumination and high-information-density typography.
-   ================================================================ */
-
-
-/* ================================================================
-   PRODUCT SURFACE
+   PHONEFUTURIST / INTERACTIVE LEAKS
+   SIMULATION LABORATORY
+   Frosted Optical Glass + technical workstation
    ================================================================ */
 
 .lab-product {
-  --lab-cyan: var(--accent);
-  --lab-violet: var(--violet);
-  --lab-border: color-mix(in srgb, var(--ink) 12%, transparent);
-  --lab-border-strong: color-mix(in srgb, var(--ink) 20%, transparent);
-  --lab-panel: color-mix(in srgb, var(--surface) 82%, transparent);
-  --lab-panel-solid: var(--surface);
-  --lab-panel-deep: var(--surface-deep);
-  --lab-soft: color-mix(in srgb, var(--ink) 4%, transparent);
+  --lab-cyan: #75e8ff;
+  --lab-violet: #a994ff;
+  --lab-green: #77f2bd;
+  --lab-border: color-mix(in srgb, var(--ink) 10%, transparent);
+  --lab-border-strong: color-mix(in srgb, var(--ink) 18%, transparent);
+  --lab-soft: color-mix(in srgb, var(--ink) 3%, transparent);
+  --lab-glass: color-mix(in srgb, var(--surface) 76%, transparent);
 
-  width: 100%;
   min-height: 100vh;
-  padding: 22px clamp(18px, 3vw, 52px) 48px;
+  padding: 18px 22px 44px;
   position: relative;
   overflow: clip;
   background:
     radial-gradient(
-      circle at 76% -8%,
-      color-mix(in srgb, var(--violet) 12%, transparent),
-      transparent 31rem
+      circle at 12% -5%,
+      color-mix(in srgb, var(--lab-cyan) 9%, transparent),
+      transparent 30rem
     ),
     radial-gradient(
-      circle at 17% 9%,
-      color-mix(in srgb, var(--accent) 9%, transparent),
-      transparent 28rem
+      circle at 90% 8%,
+      color-mix(in srgb, var(--lab-violet) 9%, transparent),
+      transparent 34rem
     ),
     var(--paper);
-  color: var(--ink);
 }
 
 .lab-product::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.28;
+  opacity: 0.22;
   background-image:
-    linear-gradient(
-      color-mix(in srgb, var(--ink) 3%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--ink) 3%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 56px 56px;
-  mask-image: linear-gradient(to bottom, black, transparent 48rem);
+    linear-gradient(var(--lab-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lab-border) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, black, transparent 76%);
 }
 
 .lab-product > * {
@@ -74,37 +57,35 @@
 
 .lab-product-header {
   width: min(1600px, 100%);
-  min-height: 68px;
+  min-height: 62px;
   margin: 0 auto;
-  padding: 10px 4px 18px;
+  padding: 9px 4px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   border-bottom: 1px solid var(--lab-border);
 }
 
-.lab-product-brand {
-  min-width: 0;
+.lab-product-brand,
+.lab-product-meta {
   display: flex;
   align-items: center;
-  gap: 18px;
+}
+
+.lab-product-brand {
+  gap: 15px;
 }
 
 .lab-product-mark {
-  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 7px;
   color: var(--ink);
-  text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-}
-
-.lab-product-mark:hover {
-  color: var(--lab-cyan);
+  text-decoration: none;
 }
 
 .lab-product-mark-pf {
@@ -113,7 +94,6 @@
 
 .lab-product-mark-divider {
   color: var(--muted);
-  font-weight: 400;
 }
 
 .lab-product-mark-lab {
@@ -121,211 +101,205 @@
 }
 
 .lab-product-identity {
-  min-width: 0;
-  padding-left: 18px;
+  padding-left: 15px;
   display: grid;
-  gap: 2px;
-  border-left: 1px solid var(--lab-border-strong);
+  gap: 1px;
+  border-left: 1px solid var(--lab-border);
 }
 
 .lab-product-identity span {
   color: var(--muted);
-  font-size: 0.61rem;
-  font-weight: 650;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.58rem;
 }
 
 .lab-product-identity strong {
-  overflow: hidden;
   color: var(--ink);
-  font-size: 0.79rem;
+  font-size: 0.7rem;
   font-weight: 650;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .lab-product-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.lab-product-beta,
-.lab-product-exit {
-  min-height: 38px;
-  padding: 8px 13px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--lab-border);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 0.67rem;
-  font-weight: 650;
-  text-decoration: none;
+  gap: 12px;
 }
 
 .lab-product-beta {
-  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.61rem;
+  font-weight: 650;
 }
 
 .lab-product-live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--lab-cyan);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--lab-cyan) 80%, transparent);
+  background: var(--lab-green);
+  box-shadow: 0 0 14px var(--lab-green);
 }
 
 .lab-product-exit {
+  min-height: 38px;
+  padding: 8px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--lab-border);
+  border-radius: 999px;
   color: var(--ink);
-  transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+  background: var(--lab-glass);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  font-size: 0.64rem;
+  font-weight: 650;
+  text-decoration: none;
 }
 
 .lab-product-exit:hover {
-  border-color: color-mix(in srgb, var(--lab-cyan) 42%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 7%, transparent);
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--lab-cyan) 38%, transparent);
 }
 
 
 /* ================================================================
-   PRODUCT INTRO
+   COMPACT LAB INTRO
    ================================================================ */
 
 .lab-product-intro {
   width: min(1600px, 100%);
   margin: 0 auto;
-  padding: clamp(42px, 6vw, 88px) 4px clamp(38px, 5vw, 66px);
+  padding: 40px 4px 32px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(270px, 390px);
+  grid-template-columns: minmax(0, 1fr) 320px;
   align-items: end;
-  gap: clamp(40px, 7vw, 120px);
-}
-
-.lab-product-intro-copy {
-  max-width: 880px;
+  gap: 48px;
 }
 
 .lab-product-kicker {
-  margin: 0 0 18px;
+  margin: 0 0 11px;
   color: var(--lab-cyan);
-  font-size: 0.65rem;
+  font-size: 0.61rem;
   font-weight: 750;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .lab-product-intro h1 {
-  max-width: 900px;
+  max-width: 840px;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(2.75rem, 6vw, 6.8rem);
-  font-weight: 560;
-  line-height: 0.91;
+  font-size: clamp(2.7rem, 5vw, 5.3rem);
+  font-weight: 570;
+  line-height: 0.92;
   letter-spacing: -0.065em;
 }
 
 .lab-product-intro h1 span {
-  color: color-mix(in srgb, var(--ink) 44%, var(--muted));
+  color: var(--muted);
 }
 
 .lab-product-description {
-  max-width: 650px;
-  margin: 28px 0 0;
+  max-width: 680px;
+  margin: 19px 0 0;
   color: var(--muted);
-  font-size: clamp(0.88rem, 1.1vw, 1rem);
+  font-size: 0.79rem;
   line-height: 1.7;
 }
 
 .lab-product-system {
-  padding: 20px;
-  border: 1px solid var(--lab-border);
-  border-radius: 20px;
+  padding: 17px;
+  border: 1px solid var(--lab-border-strong);
+  border-radius: 18px;
   background:
     linear-gradient(
-      145deg,
+      135deg,
       color-mix(in srgb, var(--lab-cyan) 6%, transparent),
-      transparent 45%
+      color-mix(in srgb, var(--lab-violet) 5%, transparent)
     ),
-    color-mix(in srgb, var(--surface) 58%, transparent);
-  backdrop-filter: blur(18px);
+    var(--lab-glass);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 10%, transparent),
+    0 20px 55px color-mix(in srgb, black 10%, transparent);
+  backdrop-filter: blur(28px) saturate(145%);
+  -webkit-backdrop-filter: blur(28px) saturate(145%);
 }
 
 .lab-product-system-head {
-  padding-bottom: 14px;
+  padding-bottom: 12px;
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   border-bottom: 1px solid var(--lab-border);
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .lab-product-system-state {
-  color: var(--lab-cyan);
+  color: var(--lab-green);
 }
 
 .lab-product-system dl {
-  margin: 6px 0 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 9px;
 }
 
 .lab-product-system dl div {
-  padding: 11px 0;
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
 }
 
-.lab-product-system dl div:last-child {
-  border-bottom: 0;
+.lab-product-system dt,
+.lab-product-system dd {
+  margin: 0;
+  font-size: 0.64rem;
 }
 
 .lab-product-system dt {
   color: var(--muted);
-  font-size: 0.69rem;
 }
 
 .lab-product-system dd {
-  margin: 0;
   color: var(--ink);
-  font-size: 0.69rem;
   font-weight: 650;
 }
 
 
 /* ================================================================
-   PROCESS RAIL
+   LAB PIPELINE
    ================================================================ */
 
 .lab-product-rule {
   width: min(1600px, 100%);
-  margin: 0 auto 14px;
-  padding: 0 4px;
+  margin: 0 auto 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  color: var(--muted);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-}
-
-.lab-product-rule span {
-  padding: 10px 0;
   border-top: 1px solid var(--lab-border);
 }
 
-.lab-product-rule span:first-child {
-  color: var(--lab-cyan);
-  border-color: color-mix(in srgb, var(--lab-cyan) 50%, transparent);
+.lab-product-rule span {
+  padding: 11px 4px 0;
+  position: relative;
+  color: var(--muted);
+  font-size: 0.55rem;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+}
+
+.lab-product-rule span::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  position: absolute;
+  top: -3px;
+  left: 4px;
+  border-radius: 50%;
+  background: var(--lab-cyan);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lab-cyan) 65%, transparent);
 }
 
 
@@ -339,241 +313,311 @@
 }
 
 .lab-simulator-shell {
-  position: relative;
   overflow: hidden;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 26px;
-  background:
-    linear-gradient(
-      140deg,
-      color-mix(in srgb, var(--lab-cyan) 3%, transparent),
-      transparent 28%
-    ),
-    var(--lab-panel);
+  border-radius: 24px;
+  background: var(--surface);
   box-shadow:
-    0 36px 100px color-mix(in srgb, #000 34%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent);
-}
-
-.lab-simulator-shell::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: 8%;
-  width: 38%;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--lab-cyan) 80%, transparent),
-    transparent
-  );
+    0 34px 90px color-mix(in srgb, black 17%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
 }
 
 .lab-simulator-shell .il-app {
-  width: 100%;
-  position: relative;
-  z-index: 1;
+  color: var(--ink);
 }
 
 
 /* ================================================================
-   SIMULATOR TOOLBAR
+   TOOLBAR
    ================================================================ */
 
 .lab-simulator-shell .il-toolbar {
-  min-height: 72px;
-  padding: 16px 22px;
+  min-height: 67px;
+  padding: 13px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
   border-bottom: 1px solid var(--lab-border);
-  background: color-mix(in srgb, var(--surface-deep) 72%, transparent);
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--lab-cyan) 5%, transparent),
+      color-mix(in srgb, var(--lab-violet) 4%, transparent)
+    ),
+    var(--lab-glass);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
 }
 
-.lab-simulator-shell .il-toolbar > div:first-child {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+.lab-simulator-shell .il-toolbar-copy {
+  display: grid;
+  gap: 3px;
 }
 
 .lab-simulator-shell .il-status {
   color: var(--ink);
-  font-size: 0.78rem;
-  font-weight: 750;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .lab-simulator-shell .il-engine {
-  padding-left: 10px;
-  border-left: 1px solid var(--lab-border);
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.58rem;
 }
 
 .lab-simulator-shell .il-toolbar-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
 .lab-simulator-shell .il-chip {
-  width: auto;
   min-height: 36px;
-  margin: 0;
-  padding: 8px 13px;
-  border: 1px solid var(--lab-border-strong);
+  padding: 8px 12px;
+  border: 1px solid var(--lab-border);
   border-radius: 999px;
-  background: transparent;
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
   color: var(--ink);
   font: inherit;
-  font-size: 0.68rem;
-  font-weight: 600;
+  font-size: 0.63rem;
+  font-weight: 650;
   cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
 }
 
 .lab-simulator-shell .il-chip:hover {
-  border-color: color-mix(in srgb, var(--lab-cyan) 42%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 6%, transparent);
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--lab-cyan) 40%, transparent);
+  background: color-mix(in srgb, var(--lab-cyan) 7%, var(--surface));
+}
+
+
+/* ================================================================
+   MODE SWITCHER
+   ================================================================ */
+
+.lab-simulator-shell .il-mode-switcher {
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--lab-border);
+  background: var(--surface-deep);
+}
+
+.lab-simulator-shell .il-mode-switcher > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.lab-simulator-shell .il-mode-switcher strong {
+  color: var(--ink);
+  font-size: 0.68rem;
+}
+
+.lab-simulator-shell .il-mode-switcher > div:first-child > span {
+  color: var(--muted);
+  font-size: 0.59rem;
+}
+
+.lab-simulator-shell .il-mode {
+  margin: 0;
+  padding: 4px;
+  display: inline-flex;
+  gap: 3px;
+  border: 1px solid var(--lab-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.lab-simulator-shell .il-mode legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.lab-simulator-shell .il-mode label {
+  position: relative;
+  cursor: pointer;
+}
+
+.lab-simulator-shell .il-mode input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lab-simulator-shell .il-mode label span {
+  min-width: 90px;
+  min-height: 32px;
+  padding: 7px 13px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.lab-simulator-shell .il-mode input:checked + span {
+  color: var(--ink);
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--lab-cyan) 12%, transparent),
+      color-mix(in srgb, var(--lab-violet) 10%, transparent)
+    ),
+    var(--surface);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--lab-cyan) 22%, transparent),
+    0 5px 18px color-mix(in srgb, black 10%, transparent);
 }
 
 
 /* ================================================================
    WORKSPACE COLUMNS
+   Simple = compact controls + dominant result.
+   Advanced = more room for engineering inputs.
    ================================================================ */
 
 .lab-simulator-shell .il-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.52fr) minmax(350px, 0.72fr);
-  align-items: stretch;
+  align-items: start;
+}
+
+.lab-simulator-shell .il-simple-mode .il-workspace {
+  grid-template-columns:
+    minmax(350px, 0.72fr)
+    minmax(0, 1.28fr);
+}
+
+.lab-simulator-shell .il-advanced-mode .il-workspace {
+  grid-template-columns:
+    minmax(0, 1.12fr)
+    minmax(390px, 0.88fr);
 }
 
 .lab-simulator-shell .il-builder {
   min-width: 0;
-  padding: 4px 34px 34px;
+  padding: 24px;
   border-right: 1px solid var(--lab-border);
 }
 
 .lab-simulator-shell .il-results {
   min-width: 0;
-  align-self: start;
+  min-height: 760px;
+  padding: 24px;
   position: sticky;
-  top: 94px;
-  padding: 28px;
-  background:
-    radial-gradient(
-      circle at 40% 0%,
-      color-mix(in srgb, var(--lab-cyan) 10%, transparent),
-      transparent 320px
-    ),
-    color-mix(in srgb, var(--surface-deep) 62%, transparent);
+  top: 0;
 }
 
 
 /* ================================================================
-   INPUT / PROFILE NOTES
+   BUILDER INTRO
    ================================================================ */
 
-.lab-simulator-shell .il-input-note {
-  margin: 0;
-  padding: 14px 22px;
+.lab-simulator-shell .il-builder-intro {
+  margin-bottom: 22px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
   border-bottom: 1px solid var(--lab-border);
-  background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
+}
+
+.lab-simulator-shell .il-kicker {
+  color: var(--lab-cyan);
+  font-size: 0.55rem;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.lab-simulator-shell .il-builder-intro h2 {
+  margin: 5px 0 0;
   color: var(--ink);
-  font-size: 0.78rem;
+  font-size: 1.35rem;
+  font-weight: 620;
+  letter-spacing: -0.04em;
+}
+
+.lab-simulator-shell .il-builder-intro > p {
+  max-width: 260px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.63rem;
   line-height: 1.55;
 }
 
-.lab-simulator-shell .il-input-state {
-  display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 0.64rem;
-  font-weight: 400;
-  letter-spacing: 0;
-}
-
-.lab-simulator-shell .il-profile-issues {
-  padding-left: 20px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-.lab-simulator-shell .il-profile-total {
-  padding: 12px 14px;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 30%, transparent);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
-  color: var(--ink);
-  font-size: 0.8rem;
-}
-
 
 /* ================================================================
-   SECTIONS
+   CONFIGURATION CARDS
    ================================================================ */
 
 .lab-simulator-shell .il-section {
-  padding: 30px 0;
-  border-bottom: 1px solid var(--lab-border);
+  margin-top: 14px;
 }
 
-.lab-simulator-shell .il-section-last {
-  border-bottom: 0;
+.lab-simulator-shell .il-config-card {
+  padding: 18px;
+  border: 1px solid var(--lab-border);
+  border-radius: 17px;
+  background: var(--surface-deep);
+}
+
+.lab-simulator-shell .il-config-card + .il-config-card {
+  margin-top: 12px;
 }
 
 .lab-simulator-shell .il-section-heading {
-  margin-bottom: 21px;
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
 }
 
 .lab-simulator-shell .il-index {
-  flex: 0 0 auto;
-  padding-top: 4px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--lab-cyan) 25%, transparent);
+  border-radius: 8px;
   color: var(--lab-cyan);
-  font-size: 0.59rem;
+  background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
+  font-size: 0.55rem;
   font-weight: 750;
-  letter-spacing: 0.14em;
 }
 
 .lab-simulator-shell .il-heading-copy h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 1.25rem;
-  font-weight: 620;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
 }
 
 .lab-simulator-shell .il-heading-copy p {
-  max-width: 620px;
-  margin: 6px 0 0;
+  max-width: 560px;
+  margin: 4px 0 0;
   color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.55;
+  font-size: 0.61rem;
+  line-height: 1.5;
 }
 
 
 /* ================================================================
-   FIELDS
+   FORM SYSTEM
    ================================================================ */
 
 .lab-simulator-shell .il-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: 13px;
+  gap: 10px;
 }
 
 .lab-simulator-shell .il-wide {
@@ -582,154 +626,105 @@
 
 .lab-simulator-shell .il-field {
   min-width: 0;
-  display: block;
+  display: grid;
+  gap: 6px;
 }
 
 .lab-simulator-shell .il-field > span {
-  min-height: 18px;
-  margin: 0 0 7px;
+  min-height: 15px;
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   color: var(--muted);
-  font-size: 0.69rem;
-  font-weight: 620;
+  font-size: 0.61rem;
+  font-weight: 650;
 }
 
 .lab-simulator-shell .il-field > span small {
-  color: color-mix(in srgb, var(--muted) 80%, transparent);
-  font-size: 0.6rem;
-  font-weight: 500;
+  color: color-mix(in srgb, var(--muted) 75%, transparent);
+  font-size: 0.53rem;
+  font-weight: 600;
 }
 
 .lab-simulator-shell .il-field input,
 .lab-simulator-shell .il-field select,
 .lab-simulator-shell textarea {
-  box-sizing: border-box;
   width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  margin: 0;
-  padding: 10px 13px;
-  border: 1px solid var(--lab-border-strong);
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--surface-deep) 86%, transparent);
+  min-height: 43px;
+  padding: 10px 11px;
+  border: 1px solid var(--lab-border);
+  border-radius: 10px;
+  outline: 0;
+  background: color-mix(in srgb, var(--paper) 42%, var(--surface));
   color: var(--ink);
   font: inherit;
-  font-size: 0.8rem;
-  outline: none;
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    background 150ms ease;
+  font-size: 0.73rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .lab-simulator-shell .il-field input:hover,
 .lab-simulator-shell .il-field select:hover {
-  border-color: color-mix(in srgb, var(--ink) 30%, transparent);
+  border-color: var(--lab-border-strong);
 }
 
 .lab-simulator-shell .il-field input:focus,
 .lab-simulator-shell .il-field select:focus,
 .lab-simulator-shell textarea:focus {
-  border-color: var(--lab-cyan);
-  background: var(--surface-deep);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lab-cyan) 11%, transparent);
+  border-color: color-mix(in srgb, var(--lab-cyan) 60%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--lab-cyan) 8%, transparent);
 }
 
-.lab-simulator-shell [aria-invalid="true"] {
-  border-color: var(--error);
+.lab-simulator-shell .il-field input[aria-invalid="true"] {
+  border-color: color-mix(in srgb, var(--error) 50%, transparent);
 }
 
-.lab-simulator-shell .il-field input::placeholder,
-.lab-simulator-shell textarea::placeholder {
+.lab-simulator-shell .il-input-state {
+  min-height: 12px;
   color: var(--muted);
+  font-size: 0.51rem;
+}
+
+.lab-simulator-shell .il-help,
+.lab-simulator-shell .il-card-note {
+  color: var(--muted);
+  font-size: 0.61rem;
+  line-height: 1.55;
+}
+
+.lab-simulator-shell .il-card-note {
+  margin: 13px 0 0;
+}
+
+.lab-simulator-shell .il-group-label {
+  margin: 17px 0 9px;
+  color: var(--ink);
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 
 /* ================================================================
-   MODE CONTROL
-   ================================================================ */
-
-.lab-simulator-shell .il-mode {
-  margin: 18px 0;
-  padding: 7px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  border: 1px solid var(--lab-border);
-  border-radius: 15px;
-  background: color-mix(in srgb, var(--surface-deep) 60%, transparent);
-  color: var(--ink);
-}
-
-.lab-simulator-shell .il-mode legend {
-  padding: 0 8px;
-  color: var(--muted);
-  font-size: 0.66rem;
-}
-
-.lab-simulator-shell .il-mode label {
-  min-height: 42px;
-  padding: 7px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    color 150ms ease,
-    border-color 150ms ease,
-    background 150ms ease;
-}
-
-.lab-simulator-shell .il-mode label:hover {
-  color: var(--ink);
-  background: var(--lab-soft);
-}
-
-.lab-simulator-shell .il-mode label:has(:checked) {
-  border-color: color-mix(in srgb, var(--lab-cyan) 35%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 9%, transparent);
-  color: var(--ink);
-}
-
-.lab-simulator-shell .il-mode input,
-.lab-simulator-shell .il-power-choice input {
-  width: 18px;
-  min-height: 18px;
-  accent-color: var(--lab-cyan);
-}
-
-.lab-simulator-shell .il-power-choice {
-  min-height: 48px;
-  margin: 18px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
-
-/* ================================================================
-   ADVANCED DISCLOSURE
+   ADVANCED DISCLOSURES
    ================================================================ */
 
 .lab-simulator-shell .il-advanced {
-  margin-top: 17px;
+  margin-top: 14px;
+  border: 1px solid var(--lab-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
 }
 
 .lab-simulator-shell .il-advanced summary {
-  width: fit-content;
-  min-height: 40px;
-  padding: 9px 0;
+  min-height: 45px;
+  padding: 11px 13px;
   display: flex;
   align-items: center;
-  color: var(--lab-cyan);
-  font-size: 0.7rem;
+  color: var(--muted);
+  font-size: 0.65rem;
   font-weight: 650;
   cursor: pointer;
   list-style: none;
@@ -742,490 +737,570 @@
 .lab-simulator-shell .il-advanced summary::before {
   content: "＋";
   margin-right: 8px;
+  color: var(--lab-cyan);
 }
 
 .lab-simulator-shell .il-advanced[open] summary::before {
   content: "－";
 }
 
-.lab-simulator-shell .il-advanced[open] summary {
-  margin-bottom: 12px;
-}
-
 .lab-simulator-shell .il-advanced-body {
-  padding: 18px;
-  border: 1px solid var(--lab-border);
-  border-radius: 15px;
-  background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
-}
-
-.lab-simulator-shell .il-group-label {
-  margin: 15px 0 8px;
-  color: var(--muted);
-  font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.lab-simulator-shell .il-group-label:first-child {
-  margin-top: 0;
-}
-
-.lab-simulator-shell .il-help {
-  margin: 12px 0 0;
-  color: var(--muted);
-  font-size: 0.76rem;
-  line-height: 1.6;
+  padding: 0 13px 14px;
+  border-top: 1px solid var(--lab-border);
 }
 
 
 /* ================================================================
-   WORKLOADS
+   SIMPLE USAGE PROFILE
    ================================================================ */
 
-.lab-simulator-shell .il-workload-grid {
+.lab-simulator-shell .il-profile-picker {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
-.lab-simulator-shell .il-workload {
-  min-width: 0;
-  min-height: 88px;
-  padding: 13px;
+.lab-simulator-shell .il-profile-option {
+  min-height: 82px;
+  padding: 12px;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 3px 8px;
-  align-items: center;
+  align-content: center;
+  gap: 4px;
+  position: relative;
   border: 1px solid var(--lab-border);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
-  cursor: text;
-  transition:
-    border-color 150ms ease,
-    background 150ms ease;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+  cursor: pointer;
 }
 
-.lab-simulator-shell .il-workload:hover {
+.lab-simulator-shell .il-profile-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lab-simulator-shell .il-profile-option strong {
+  color: var(--ink);
+  font-size: 0.72rem;
+}
+
+.lab-simulator-shell .il-profile-option span {
+  color: var(--muted);
+  font-size: 0.57rem;
+  line-height: 1.4;
+}
+
+.lab-simulator-shell .il-profile-option:hover {
   border-color: var(--lab-border-strong);
 }
 
+.lab-simulator-shell .il-profile-option.active {
+  border-color: color-mix(in srgb, var(--lab-cyan) 40%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--lab-cyan) 8%, transparent),
+      color-mix(in srgb, var(--lab-violet) 5%, transparent)
+    ),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lab-cyan) 8%, transparent);
+}
+
+.lab-simulator-shell .il-profile-summary {
+  margin-top: 11px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.lab-simulator-shell .il-profile-summary > span {
+  padding: 9px 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--lab-border);
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 0.55rem;
+}
+
+.lab-simulator-shell .il-profile-summary strong {
+  color: var(--ink);
+  font-size: 0.58rem;
+}
+
+.lab-simulator-shell .il-custom-usage {
+  margin-top: 12px;
+}
+
+.lab-simulator-shell .il-usage-meta {
+  margin-top: 11px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--lab-border);
+  border-radius: 11px;
+  overflow: hidden;
+}
+
+.lab-simulator-shell .il-usage-meta > span {
+  min-width: 0;
+  padding: 9px;
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 0.52rem;
+}
+
+.lab-simulator-shell .il-usage-meta > span + span {
+  border-left: 1px solid var(--lab-border);
+}
+
+.lab-simulator-shell .il-usage-meta strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink);
+  font-size: 0.57rem;
+  white-space: nowrap;
+}
+
+
+/* ================================================================
+   ADVANCED POWER / WORKLOADS
+   ================================================================ */
+
+.lab-simulator-shell .il-workload-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lab-simulator-shell .il-workload {
+  padding: 11px;
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--lab-border);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+}
+
 .lab-simulator-shell .il-workload.active {
-  border-color: color-mix(in srgb, var(--lab-cyan) 38%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 6%, transparent);
+  border-color: color-mix(in srgb, var(--lab-cyan) 30%, transparent);
 }
 
 .lab-simulator-shell .il-workload-name {
-  color: var(--muted);
-  font-size: 0.7rem;
+  color: var(--ink);
+  font-size: 0.66rem;
   font-weight: 650;
 }
 
 .lab-simulator-shell .il-workload-unit {
   color: var(--muted);
-  font-size: 0.62rem;
-  line-height: 1.35;
-  letter-spacing: 0.04em;
-  white-space: normal;
+  font-size: 0.53rem;
 }
 
 .lab-simulator-shell .il-workload input {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
   min-height: 38px;
-  margin: 4px 0 0;
-  padding: 7px 10px;
-  border: 1px solid var(--lab-border-strong);
-  border-radius: 9px;
-  background: var(--surface-deep);
+  padding: 8px 9px;
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  outline: 0;
+  background: var(--surface);
   color: var(--ink);
   font: inherit;
-  font-size: 0.82rem;
-  outline: none;
-}
-
-.lab-simulator-shell .il-workload input:focus {
-  border-color: var(--lab-cyan);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lab-cyan) 10%, transparent);
+  font-size: 0.69rem;
 }
 
 .lab-simulator-shell .il-derate {
   margin-top: 12px;
-  grid-template-columns: minmax(0, 220px) 1fr;
+}
+
+.lab-simulator-shell .il-profile-total {
+  padding: 0 13px 13px;
+  color: var(--muted);
+  font-size: 0.6rem;
+}
+
+.lab-simulator-shell .il-profile-issues {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--error);
+  font-size: 0.64rem;
+  line-height: 1.5;
 }
 
 
 /* ================================================================
-   MODEL LIST
+   CAMERA
+   ================================================================ */
+
+.lab-simulator-shell .il-camera-list {
+  display: grid;
+  gap: 10px;
+}
+
+.lab-simulator-shell .il-camera {
+  padding: 13px;
+  border: 1px solid var(--lab-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+}
+
+.lab-simulator-shell .il-camera-title {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lab-simulator-shell .il-camera-title strong {
+  color: var(--ink);
+  font-size: 0.68rem;
+}
+
+.lab-simulator-shell .il-remove {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.59rem;
+  cursor: pointer;
+}
+
+.lab-simulator-shell .il-remove:hover {
+  color: var(--error);
+}
+
+.lab-simulator-shell .il-add {
+  margin-top: 12px;
+}
+
+
+/* ================================================================
+   MODEL
    ================================================================ */
 
 .lab-simulator-shell .il-model-list {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
   list-style: none;
 }
 
 .lab-simulator-shell .il-model-list li {
-  padding: 13px 15px;
+  padding: 10px 0;
   display: grid;
-  gap: 4px;
-  border: 1px solid var(--lab-border);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--surface-deep) 48%, transparent);
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--lab-border);
+}
+
+.lab-simulator-shell .il-model-list li:first-child {
+  border-top: 0;
 }
 
 .lab-simulator-shell .il-model-list strong {
   color: var(--ink);
-  font-size: 0.76rem;
+  font-size: 0.6rem;
 }
 
 .lab-simulator-shell .il-model-list span {
   color: var(--muted);
-  font-size: 0.7rem;
-  line-height: 1.5;
+  font-size: 0.58rem;
+  line-height: 1.45;
 }
 
 
 /* ================================================================
-   CAMERAS
-   ================================================================ */
-
-.lab-simulator-shell .il-camera-list {
-  margin-top: 16px;
-  display: grid;
-  gap: 11px;
-}
-
-.lab-simulator-shell .il-camera {
-  padding: 16px;
-  border: 1px solid var(--lab-border);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
-}
-
-.lab-simulator-shell .il-camera-title {
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.lab-simulator-shell .il-camera-title strong {
-  color: var(--ink);
-  font-size: 0.78rem;
-}
-
-.lab-simulator-shell .il-remove {
-  width: auto;
-  min-height: 31px;
-  margin: 0;
-  padding: 5px 10px;
-  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--error);
-  font: inherit;
-  font-size: 0.64rem;
-  cursor: pointer;
-}
-
-.lab-simulator-shell .il-add {
-  margin-top: 14px;
-}
-
-
-/* ================================================================
-   RUN SIMULATION
+   RUN
    ================================================================ */
 
 .lab-simulator-shell .il-run {
-  padding: 25px 0 0;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
+  margin-top: 15px;
+  padding: 13px;
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  border: 1px solid var(--lab-border-strong);
+  border-radius: 16px;
+  background:
+    linear-gradient(
+      115deg,
+      color-mix(in srgb, var(--lab-cyan) 6%, transparent),
+      color-mix(in srgb, var(--lab-violet) 5%, transparent)
+    ),
+    color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: 0 18px 45px color-mix(in srgb, black 17%, transparent);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
 }
 
 .lab-simulator-shell .il-simulate {
-  width: auto;
-  min-height: 50px;
-  margin: 0;
-  padding: 12px 22px;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 70%, var(--ink));
-  border-radius: 999px;
+  width: 100%;
+  min-height: 49px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid color-mix(in srgb, var(--lab-cyan) 42%, transparent);
+  border-radius: 12px;
   background:
     linear-gradient(
-      120deg,
-      var(--lab-cyan),
-      color-mix(in srgb, var(--lab-cyan) 74%, var(--lab-violet))
+      105deg,
+      color-mix(in srgb, var(--lab-cyan) 18%, var(--surface)),
+      color-mix(in srgb, var(--lab-violet) 13%, var(--surface))
     );
-  color: var(--on-accent);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--lab-cyan) 13%, transparent);
+  color: var(--ink);
   font: inherit;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 750;
   cursor: pointer;
-  transition:
-    transform 150ms ease,
-    box-shadow 150ms ease;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
 }
 
 .lab-simulator-shell .il-simulate:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 38px color-mix(in srgb, var(--lab-cyan) 20%, transparent);
+  border-color: color-mix(in srgb, var(--lab-cyan) 72%, transparent);
+  transform: translateY(-1px);
 }
 
 .lab-simulator-shell .il-run p {
-  flex: 1 1 240px;
-  margin: 0;
+  margin: 8px 2px 0;
   color: var(--muted);
-  font-size: 0.7rem;
-  line-height: 1.55;
-}
-
-.lab-simulator-shell .il-run a {
-  display: inline-block;
-  padding: 10px;
+  font-size: 0.55rem;
+  line-height: 1.45;
 }
 
 
 /* ================================================================
-   RESULTS
+   RESULT WORKSPACE
    ================================================================ */
 
+.lab-simulator-shell .il-results {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--lab-violet) 5%, transparent),
+      transparent 25rem
+    ),
+    var(--surface);
+}
+
 .lab-simulator-shell .il-results-top {
-  padding-bottom: 16px;
+  padding-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   border-bottom: 1px solid var(--lab-border);
   color: var(--muted);
-  font-size: 0.63rem;
+  font-size: 0.56rem;
 }
 
 .lab-simulator-shell .il-results-top .eyebrow {
-  margin: 0;
   color: var(--lab-cyan);
-  font-size: 0.6rem;
+  font-size: 0.57rem;
   font-weight: 750;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
+.lab-simulator-shell .il-stale-result,
+.lab-simulator-shell .il-input-note {
+  margin: 10px 0;
+  padding: 9px 11px;
+  border: 1px solid color-mix(in srgb, var(--lab-violet) 24%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--lab-violet) 5%, transparent);
+  color: var(--muted);
+  font-size: 0.59rem;
+}
+
+
+/* ================================================================
+   EMPTY RESULT
+   ================================================================ */
+
 .lab-simulator-shell .il-result-empty {
-  min-height: 470px;
+  min-height: 620px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
 }
 
-.lab-simulator-shell .il-result-empty h2 {
-  margin: 26px 0 8px;
-  color: var(--ink);
-  font-size: 1.35rem;
-  font-weight: 620;
-  letter-spacing: -0.04em;
+.lab-simulator-shell .il-orbit {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 26px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--lab-cyan) 30%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    0 0 60px color-mix(in srgb, var(--lab-cyan) 7%, transparent),
+    inset 0 0 40px color-mix(in srgb, var(--lab-violet) 5%, transparent);
 }
 
-.lab-simulator-shell .il-result-empty p {
-  max-width: 300px;
+.lab-simulator-shell .il-orbit::before {
+  content: "";
+  width: 106px;
+  height: 40px;
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--lab-violet) 25%, transparent);
+  border-radius: 50%;
+  transform: rotate(-22deg);
+}
+
+.lab-simulator-shell .il-orbit span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--lab-cyan);
+  box-shadow: 0 0 22px var(--lab-cyan);
+}
+
+.lab-simulator-shell .il-result-empty-kicker {
+  color: var(--lab-cyan);
+  font-size: 0.56rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lab-simulator-shell .il-result-empty h2 {
+  max-width: 560px;
+  margin: 8px 0 10px;
+  color: var(--ink);
+  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  font-weight: 580;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.lab-simulator-shell .il-result-empty > p {
+  max-width: 470px;
   margin: 0;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   line-height: 1.65;
 }
 
 
 /* ================================================================
-   RESULT ORBIT
-   ================================================================ */
-
-.lab-simulator-shell .il-orbit {
-  width: 64px;
-  height: 64px;
-  position: relative;
-  display: grid;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 38%, transparent);
-  border-radius: 50%;
-  box-shadow:
-    0 0 40px color-mix(in srgb, var(--lab-cyan) 8%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--lab-cyan) 5%, transparent);
-}
-
-.lab-simulator-shell .il-orbit::before {
-  content: "";
-  position: absolute;
-  width: 88px;
-  height: 34px;
-  border: 1px solid color-mix(in srgb, var(--lab-violet) 22%, transparent);
-  border-radius: 50%;
-  transform: rotate(28deg);
-}
-
-.lab-simulator-shell .il-orbit::after {
-  content: "";
-  position: absolute;
-  width: 88px;
-  height: 34px;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 22%, transparent);
-  border-radius: 50%;
-  transform: rotate(-28deg);
-}
-
-.lab-simulator-shell .il-orbit span {
-  width: 7px;
-  height: 7px;
-  position: relative;
-  z-index: 2;
-  border-radius: 50%;
-  background: var(--lab-cyan);
-  box-shadow: 0 0 18px var(--lab-cyan);
-}
-
-
-/* ================================================================
-   RESULT IDENTITY
+   RESULT IDENTITY + HERO
    ================================================================ */
 
 .lab-simulator-shell .il-result-identity {
-  padding: 22px 0 16px;
+  padding: 21px 0 15px;
 }
 
 .lab-simulator-shell .il-result-identity > span {
   color: var(--muted);
-  font-size: 0.59rem;
+  font-size: 0.54rem;
   font-weight: 750;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.12em;
 }
 
 .lab-simulator-shell .il-result-identity h2 {
-  margin: 7px 0 0;
+  margin: 6px 0 0;
   color: var(--ink);
-  font-size: 1.55rem;
-  font-weight: 620;
-  line-height: 1.08;
-  letter-spacing: -0.045em;
+  font-size: clamp(1.5rem, 2.3vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
 }
 
-
-/* ================================================================
-   RUNTIME HERO
-   ================================================================ */
-
 .lab-simulator-shell .il-runtime-card {
-  margin-bottom: 18px;
-  padding: 21px;
+  padding: clamp(20px, 3vw, 32px);
   position: relative;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 32%, transparent);
-  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--lab-cyan) 28%, transparent);
+  border-radius: 20px;
   background:
     radial-gradient(
-      circle at 12% 0%,
-      color-mix(in srgb, var(--lab-cyan) 15%, transparent),
-      transparent 64%
+      circle at 0 0,
+      color-mix(in srgb, var(--lab-cyan) 13%, transparent),
+      transparent 60%
     ),
     linear-gradient(
       145deg,
-      color-mix(in srgb, var(--lab-violet) 5%, transparent),
+      color-mix(in srgb, var(--lab-violet) 6%, transparent),
       transparent
     ),
-    var(--surface);
+    var(--surface-deep);
 }
 
 .lab-simulator-shell .il-runtime-card::after {
   content: "";
+  width: 250px;
+  height: 250px;
   position: absolute;
-  top: -60px;
-  right: -70px;
-  width: 180px;
-  height: 180px;
+  top: -120px;
+  right: -110px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 10%, transparent);
   border-radius: 50%;
   pointer-events: none;
 }
 
+.lab-simulator-shell .il-runtime-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .lab-simulator-shell .il-runtime-eyebrow {
-  display: block;
   color: var(--lab-cyan);
-  font-size: 0.59rem;
+  font-size: 0.56rem;
   font-weight: 750;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
 .lab-simulator-shell .il-runtime-value {
-  margin: 11px 0 0;
+  max-width: 680px;
+  margin: 17px 0 0;
   color: var(--ink);
-  font-size: clamp(2.25rem, 3vw, 3.15rem);
-  font-weight: 580;
-  line-height: 0.95;
-  letter-spacing: -0.055em;
+  font-size: clamp(2.7rem, 5vw, 5.8rem);
+  font-weight: 560;
+  line-height: 0.92;
+  letter-spacing: -0.065em;
   font-variant-numeric: tabular-nums;
 }
 
 .lab-simulator-shell .il-runtime-unknown {
-  color: var(--muted);
-  font-size: 1.55rem;
+  max-width: 620px;
+  font-size: clamp(1.65rem, 3.3vw, 3.4rem);
+  line-height: 1;
 }
 
 .lab-simulator-shell .il-runtime-framing {
-  margin: 7px 0 2px;
+  margin: 13px 0 0;
   color: var(--ink);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.lab-simulator-shell .il-runtime-bar {
-  height: 6px;
-  margin-top: 18px;
-  overflow: hidden;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
-}
-
-.lab-simulator-shell .il-runtime-bar span {
-  height: 100%;
-  display: block;
-  border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    var(--lab-cyan),
-    var(--lab-violet)
-  );
-  box-shadow: 0 0 18px color-mix(in srgb, var(--lab-cyan) 28%, transparent);
-  transition: width 400ms ease;
-}
-
-.lab-simulator-shell .il-runtime-scale {
-  margin-top: 7px;
-  display: block;
-  color: var(--muted);
-  font-size: 0.58rem;
-  letter-spacing: 0.07em;
-}
-
-.lab-simulator-shell .il-confidence {
-  margin-top: 12px;
-  padding: 5px 10px;
-  display: inline-block;
-  border: 1px solid var(--lab-border-strong);
-  border-radius: 999px;
-  color: var(--ink);
-  font-size: 0.61rem;
+  font-size: 0.77rem;
   font-weight: 650;
 }
 
-.lab-simulator-shell .il-confidence-deterministic {
-  border-color: color-mix(in srgb, var(--lab-cyan) 38%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 8%, transparent);
+.lab-simulator-shell .il-confidence {
+  padding: 5px 9px;
+  border: 1px solid var(--lab-border-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.54rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.lab-simulator-shell .il-confidence-high {
+  border-color: color-mix(in srgb, var(--lab-green) 35%, transparent);
+  color: var(--lab-green);
+}
+
+.lab-simulator-shell .il-confidence-moderate {
+  border-color: color-mix(in srgb, var(--lab-cyan) 35%, transparent);
+  color: var(--lab-cyan);
 }
 
 .lab-simulator-shell .il-confidence-low {
@@ -1233,192 +1308,89 @@
   color: var(--error);
 }
 
-.lab-simulator-shell .il-unresolved-message {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.55;
+
+/* ================================================================
+   INSUFFICIENT EVIDENCE
+   ================================================================ */
+
+.lab-simulator-shell .il-insufficient-inline,
+.lab-simulator-shell .il-insufficient-result {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--lab-violet) 25%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--lab-violet) 5%, transparent);
 }
 
-.lab-simulator-shell .il-unresolved-missing {
-  margin: 8px 0 0;
+.lab-simulator-shell .il-insufficient-inline strong,
+.lab-simulator-shell .il-insufficient-result strong {
+  color: var(--ink);
+  font-size: 0.66rem;
+}
+
+.lab-simulator-shell .il-insufficient-inline p,
+.lab-simulator-shell .il-insufficient-result p {
+  margin: 5px 0 0;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.61rem;
+  line-height: 1.55;
 }
 
 
 /* ================================================================
-   RESULT GROUPS / METRICS
+   RESULT SUMMARY
    ================================================================ */
 
-.lab-simulator-shell .il-result-group {
-  padding: 17px 0;
-  border-top: 1px solid var(--lab-border);
-}
-
-.lab-simulator-shell .il-result-label {
-  margin-bottom: 10px;
-  display: block;
-  color: var(--muted);
-  font-size: 0.59rem;
-  font-weight: 750;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.lab-simulator-shell .il-metrics {
+.lab-simulator-shell .il-result-summary-grid {
+  margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.lab-simulator-shell .il-metrics > div {
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
-}
-
-.lab-simulator-shell .il-metrics strong {
-  display: block;
-  overflow-wrap: anywhere;
-  color: var(--ink);
-  font-size: 1rem;
-  font-weight: 620;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-  font-variant-numeric: tabular-nums;
-}
-
-.lab-simulator-shell .il-metrics span {
-  margin-top: 5px;
-  display: block;
-  color: var(--muted);
-  font-size: 0.59rem;
-  line-height: 1.35;
-}
-
-.lab-simulator-shell .il-workload-results {
-  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 7px;
 }
 
-.lab-simulator-shell .il-workload-result {
-  padding: 11px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
+.lab-simulator-shell .il-result-summary-grid > div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--lab-border);
   border-radius: 11px;
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  background: var(--surface-deep);
 }
 
-.lab-simulator-shell .il-workload-result strong {
+.lab-simulator-shell .il-result-summary-grid span {
   display: block;
+  color: var(--muted);
+  font-size: 0.53rem;
+}
+
+.lab-simulator-shell .il-result-summary-grid strong {
+  margin-top: 5px;
+  display: block;
+  overflow-wrap: anywhere;
   color: var(--ink);
-  font-size: 0.73rem;
-}
-
-.lab-simulator-shell .il-workload-result span {
-  margin-top: 2px;
-  display: block;
-  color: var(--muted);
-  font-size: 0.61rem;
-}
-
-.lab-simulator-shell .il-workload-result b {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font-size: 0.73rem;
+  font-size: 0.85rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 
-.lab-simulator-shell .il-volume-number {
-  margin-bottom: 10px;
-  padding: 14px;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 6px;
-  border: 1px solid color-mix(in srgb, var(--lab-cyan) 23%, transparent);
-  border-radius: 13px;
-  background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
-}
-
-.lab-simulator-shell .il-volume-number strong {
-  color: var(--ink);
-  font-size: 1.3rem;
-  font-weight: 620;
-  letter-spacing: -0.04em;
-}
-
-.lab-simulator-shell .il-volume-number > span,
-.lab-simulator-shell .il-volume-number small {
-  color: var(--muted);
-}
-
-.lab-simulator-shell .il-volume-number small {
-  flex-basis: 100%;
-  font-size: 0.6rem;
-}
-
 
 /* ================================================================
-   VERDICT
-   ================================================================ */
-
-.lab-simulator-shell .il-verdict {
-  margin-top: 16px;
-  padding: 14px;
-  border: 1px solid var(--lab-border);
-  border-radius: 12px;
-  background: var(--lab-soft);
-}
-
-.lab-simulator-shell .il-verdict.passes {
-  border-color: color-mix(in srgb, var(--lab-cyan) 32%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 6%, transparent);
-}
-
-.lab-simulator-shell .il-verdict.fails {
-  border-color: color-mix(in srgb, var(--error) 30%, transparent);
-  background: color-mix(in srgb, var(--error) 6%, transparent);
-}
-
-.lab-simulator-shell .il-verdict strong {
-  color: var(--ink);
-  font-size: 0.75rem;
-}
-
-.lab-simulator-shell .il-verdict p {
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 0.68rem;
-  line-height: 1.55;
-}
-
-
-/* ================================================================
-   EVIDENCE
+   EVIDENCE / RESULT DETAILS
    ================================================================ */
 
 .lab-simulator-shell .il-evidence {
-  margin-top: 12px;
+  margin-top: 10px;
   border: 1px solid var(--lab-border);
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--surface-deep) 45%, transparent);
+  border-radius: 12px;
+  background: var(--surface-deep);
 }
 
 .lab-simulator-shell .il-evidence summary {
-  min-height: 44px;
+  min-height: 46px;
   padding: 12px 13px;
   display: flex;
   align-items: center;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 650;
   cursor: pointer;
   list-style: none;
@@ -1438,182 +1410,196 @@
   content: "－";
 }
 
+.lab-simulator-shell .il-evidence section,
+.lab-simulator-shell .il-evidence > .il-result-group {
+  margin: 0 13px;
+  padding: 12px 0;
+  border-top: 1px solid var(--lab-border);
+}
+
+.lab-simulator-shell .il-evidence h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 0.59rem;
+  letter-spacing: 0.05em;
+}
+
 .lab-simulator-shell .il-evidence ul,
 .lab-simulator-shell .il-evidence-list {
   margin: 0;
-  padding: 2px 13px 13px;
+  padding: 0 13px 13px;
   display: grid;
-  gap: 8px;
+  gap: 6px;
   list-style: none;
+}
+
+.lab-simulator-shell .il-evidence section ul {
+  padding: 0;
 }
 
 .lab-simulator-shell .il-evidence li,
 .lab-simulator-shell .il-evidence-list li {
-  padding: 9px 10px;
+  padding: 8px 9px;
   display: grid;
   gap: 3px;
-  overflow-wrap: anywhere;
-  border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+  color: var(--muted);
+  font-size: 0.58rem;
+  line-height: 1.45;
 }
 
-.lab-simulator-shell .il-evidence strong,
+.lab-simulator-shell .il-evidence li strong,
 .lab-simulator-shell .il-evidence-list strong {
   color: var(--ink);
-  font-size: 0.63rem;
-  letter-spacing: 0.02em;
-}
-
-.lab-simulator-shell .il-evidence span,
-.lab-simulator-shell .il-evidence-list li {
-  color: var(--muted);
-  font-size: 0.66rem;
-  line-height: 1.5;
+  font-size: 0.59rem;
 }
 
 .lab-simulator-shell .il-evidence-list small {
-  margin-top: 2px;
-  display: block;
-  opacity: 0.75;
-}
-
-.lab-simulator-shell .il-evidence h3 {
-  margin-top: 22px;
-  font-size: 0.78rem;
+  opacity: 0.8;
 }
 
 
 /* ================================================================
-   WARNINGS / METHOD
+   METRICS
    ================================================================ */
 
-.lab-simulator-shell .il-warnings {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--lab-border);
-}
-
-.lab-simulator-shell .il-warnings > summary {
-  min-height: 44px;
-  cursor: pointer;
+.lab-simulator-shell .il-result-label {
+  margin-bottom: 8px;
+  display: block;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.53rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.lab-simulator-shell .il-warning {
-  margin-top: 9px;
-  padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--error) 25%, transparent);
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--error) 5%, transparent);
+.lab-simulator-shell .il-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
 }
 
-.lab-simulator-shell .il-warning strong {
-  color: var(--error);
+.lab-simulator-shell .il-metrics > div {
+  padding: 10px;
+  border: 1px solid var(--lab-border);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+}
+
+.lab-simulator-shell .il-metrics strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.lab-simulator-shell .il-metrics span {
+  margin-top: 4px;
+  display: block;
+  color: var(--muted);
+  font-size: 0.53rem;
+}
+
+.lab-simulator-shell .il-workload-results {
+  display: grid;
+  gap: 6px;
+}
+
+.lab-simulator-shell .il-workload-result {
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--lab-border);
+  border-radius: 9px;
+}
+
+.lab-simulator-shell .il-workload-result strong {
+  display: block;
+  color: var(--ink);
   font-size: 0.62rem;
 }
 
-.lab-simulator-shell .il-warning p {
-  margin: 5px 0 0;
+.lab-simulator-shell .il-workload-result span {
   color: var(--muted);
-  font-size: 0.65rem;
-  line-height: 1.5;
+  font-size: 0.53rem;
 }
 
+.lab-simulator-shell .il-workload-result b {
+  color: var(--muted);
+  font-size: 0.61rem;
+  font-weight: 650;
+}
+
+
+/* ================================================================
+   METHOD / SHARE
+   ================================================================ */
+
 .lab-simulator-shell .il-method {
-  margin-top: 18px;
-  padding-top: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--lab-border);
 }
 
 .lab-simulator-shell .il-method strong {
   color: var(--ink);
-  font-size: 0.7rem;
+  font-size: 0.63rem;
 }
 
 .lab-simulator-shell .il-method p {
-  margin: 7px 0 0;
+  margin: 5px 0 0;
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.57rem;
   line-height: 1.55;
 }
 
-
-/* ================================================================
-   SCOPE
-   ================================================================ */
-
-.lab-simulator-shell .il-scope {
-  padding: 18px 24px;
-  border-top: 1px solid var(--lab-border);
-  background: color-mix(in srgb, var(--surface-deep) 55%, transparent);
+.lab-simulator-shell .il-share {
+  margin-top: 16px;
 }
-
-.lab-simulator-shell .il-scope strong {
-  color: var(--ink);
-  font-size: 0.69rem;
-  letter-spacing: 0.02em;
-}
-
-.lab-simulator-shell .il-scope p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-size: 0.67rem;
-  line-height: 1.6;
-}
-
-
-/* ================================================================
-   SHARE / EXPORT
-   ================================================================ */
 
 .lab-simulator-shell .il-share-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
+  gap: 7px;
 }
 
 .lab-simulator-shell .il-share button {
-  min-height: 42px;
-  padding: 9px 14px;
-  border: 1px solid var(--lab-border-strong);
+  min-height: 37px;
+  padding: 8px 11px;
+  border: 1px solid var(--lab-border);
   border-radius: 999px;
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   cursor: pointer;
 }
 
 .lab-simulator-shell .il-share button:hover {
-  border-color: color-mix(in srgb, var(--lab-cyan) 38%, transparent);
-  background: color-mix(in srgb, var(--lab-cyan) 6%, transparent);
-}
-
-.lab-simulator-shell .il-share button:disabled {
-  opacity: 0.55;
-  cursor: wait;
+  border-color: color-mix(in srgb, var(--lab-cyan) 35%, transparent);
 }
 
 .lab-simulator-shell .il-share section {
-  margin: 15px 0;
-  padding: 15px;
+  margin-top: 12px;
+  padding: 12px;
   border: 1px solid var(--lab-border);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--lab-soft);
 }
 
 .lab-simulator-shell .il-share textarea {
   width: 100%;
-  color: var(--ink);
-  background: var(--surface-deep);
+  min-height: 130px;
 }
 
 .lab-simulator-shell .il-export-preview {
   max-width: 100%;
   max-height: 500px;
-  margin: 18px auto;
+  margin: 15px auto;
   display: block;
   object-fit: contain;
   border-radius: 12px;
@@ -1629,20 +1615,33 @@
   cursor: pointer;
 }
 
-.lab-simulator-shell .il-link:hover {
-  color: var(--ink);
-}
-
 
 /* ================================================================
-   SIMPLE MODE
+   SCOPE
    ================================================================ */
 
-.lab-simulator-shell .il-simple-usage h3 {
-  color: var(--ink);
-  font-size: 1.35rem;
-  font-weight: 620;
-  letter-spacing: -0.035em;
+.lab-simulator-shell .il-scope {
+  padding: 15px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 13px;
+  border-top: 1px solid var(--lab-border);
+  background: var(--surface-deep);
+}
+
+.lab-simulator-shell .il-scope strong {
+  flex: 0 0 auto;
+  color: var(--lab-cyan);
+  font-size: 0.57rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-simulator-shell .il-scope p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.57rem;
+  line-height: 1.5;
 }
 
 
@@ -1652,8 +1651,8 @@
 
 .lab-product-footer {
   width: min(1600px, 100%);
-  margin: 22px auto 0;
-  padding: 20px 4px 0;
+  margin: 20px auto 0;
+  padding: 18px 4px 0;
   display: flex;
   justify-content: space-between;
   gap: 30px;
@@ -1664,22 +1663,103 @@
 .lab-product-footer > div {
   display: flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 13px;
 }
 
 .lab-product-footer-mark {
   flex: 0 0 auto;
   color: var(--lab-cyan);
-  font-size: 0.61rem;
+  font-size: 0.56rem;
   font-weight: 750;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
 }
 
 .lab-product-footer p {
   max-width: 540px;
   margin: 0;
-  font-size: 0.65rem;
-  line-height: 1.55;
+  font-size: 0.58rem;
+  line-height: 1.5;
+}
+
+
+/* ================================================================
+   LIGHT MODE
+   ================================================================ */
+
+:root[data-theme="light"] .lab-product {
+  --lab-border: color-mix(in srgb, var(--ink) 10%, transparent);
+  --lab-border-strong: color-mix(in srgb, var(--ink) 17%, transparent);
+  --lab-glass: color-mix(in srgb, white 72%, transparent);
+
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      color-mix(in srgb, var(--accent) 7%, transparent),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 90% 8%,
+      color-mix(in srgb, var(--violet) 7%, transparent),
+      transparent 34rem
+    ),
+    var(--paper);
+}
+
+:root[data-theme="light"] .lab-simulator-shell {
+  box-shadow:
+    0 30px 80px color-mix(in srgb, var(--ink) 9%, transparent),
+    inset 0 1px 0 white;
+}
+
+
+/* ================================================================
+   AMOLED
+   True black page, near-black data surfaces.
+   ================================================================ */
+
+:root[data-theme="amoled"] .lab-product {
+  --lab-border: rgba(255, 255, 255, 0.09);
+  --lab-border-strong: rgba(255, 255, 255, 0.15);
+  --lab-soft: rgba(255, 255, 255, 0.025);
+  --lab-glass: rgba(8, 11, 15, 0.76);
+
+  background:
+    radial-gradient(
+      circle at 10% -5%,
+      rgba(117, 232, 255, 0.065),
+      transparent 27rem
+    ),
+    radial-gradient(
+      circle at 92% 5%,
+      rgba(169, 148, 255, 0.055),
+      transparent 31rem
+    ),
+    #000;
+}
+
+:root[data-theme="amoled"] .lab-simulator-shell {
+  background: #030303;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="amoled"] .lab-simulator-shell .il-results {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(169, 148, 255, 0.04),
+      transparent 24rem
+    ),
+    #030303;
+}
+
+:root[data-theme="amoled"] .lab-simulator-shell .il-config-card,
+:root[data-theme="amoled"] .lab-simulator-shell .il-evidence,
+:root[data-theme="amoled"] .lab-simulator-shell .il-result-summary-grid > div,
+:root[data-theme="amoled"] .lab-simulator-shell .il-mode-switcher,
+:root[data-theme="amoled"] .lab-simulator-shell .il-scope {
+  background-color: #080808;
 }
 
 
@@ -1697,42 +1777,7 @@
 ):focus-visible,
 .lab-product :is(a, button):focus-visible {
   outline: 2px solid var(--lab-cyan);
-  outline-offset: 4px;
-}
-
-
-/* ================================================================
-   LIGHT MODE
-   Technical workstation rather than simple inversion.
-   ================================================================ */
-
-:root[data-theme="light"] .lab-product {
-  --lab-border: color-mix(in srgb, var(--ink) 11%, transparent);
-  --lab-border-strong: color-mix(in srgb, var(--ink) 18%, transparent);
-
-  background:
-    radial-gradient(
-      circle at 76% -8%,
-      color-mix(in srgb, var(--violet) 9%, transparent),
-      transparent 32rem
-    ),
-    radial-gradient(
-      circle at 17% 8%,
-      color-mix(in srgb, var(--accent) 8%, transparent),
-      transparent 29rem
-    ),
-    var(--paper);
-}
-
-:root[data-theme="light"] .lab-simulator-shell {
-  box-shadow:
-    0 32px 80px color-mix(in srgb, var(--ink) 10%, transparent),
-    inset 0 1px 0 #ffffff;
-}
-
-:root[data-theme="light"] .lab-product-system,
-:root[data-theme="light"] .lab-simulator-shell .il-toolbar {
-  backdrop-filter: blur(18px);
+  outline-offset: 3px;
 }
 
 
@@ -1743,18 +1788,15 @@
 @media (max-width: 1080px) {
   .lab-product-intro {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 22px;
   }
 
   .lab-product-system {
     max-width: 620px;
   }
 
-  .lab-product-rule {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .lab-simulator-shell .il-workspace {
+  .lab-simulator-shell .il-simple-mode .il-workspace,
+  .lab-simulator-shell .il-advanced-mode .il-workspace {
     grid-template-columns: 1fr;
   }
 
@@ -1763,12 +1805,13 @@
   }
 
   .lab-simulator-shell .il-results {
+    min-height: auto;
     position: static;
     border-top: 1px solid var(--lab-border);
   }
 
   .lab-simulator-shell .il-result-empty {
-    min-height: 300px;
+    min-height: 390px;
   }
 }
 
@@ -1779,7 +1822,7 @@
 
 @media (max-width: 720px) {
   .lab-product {
-    padding: 12px 12px 34px;
+    padding: 10px 10px 30px;
   }
 
   .lab-product::before {
@@ -1787,25 +1830,20 @@
   }
 
   .lab-product-header {
-    min-height: 58px;
-    padding: 8px 2px 13px;
+    min-height: 56px;
+    padding: 7px 2px 11px;
   }
 
   .lab-product-brand {
-    gap: 10px;
+    gap: 9px;
   }
 
   .lab-product-identity {
-    padding-left: 10px;
+    padding-left: 9px;
   }
 
   .lab-product-identity span {
     display: none;
-  }
-
-  .lab-product-identity strong {
-    max-width: 150px;
-    font-size: 0.7rem;
   }
 
   .lab-product-beta {
@@ -1813,48 +1851,38 @@
   }
 
   .lab-product-exit {
-    min-height: 36px;
+    min-height: 35px;
     padding: 7px 10px;
-    font-size: 0.63rem;
   }
 
   .lab-product-intro {
-    padding: 38px 2px 32px;
-    gap: 26px;
+    padding: 30px 2px 25px;
   }
 
   .lab-product-intro h1 {
-    font-size: clamp(2.7rem, 13vw, 4.4rem);
-    line-height: 0.94;
+    font-size: clamp(2.4rem, 12vw, 3.8rem);
   }
 
   .lab-product-description {
-    margin-top: 22px;
-    font-size: 0.82rem;
+    margin-top: 15px;
+    font-size: 0.75rem;
   }
 
   .lab-product-system {
-    padding: 16px;
-    border-radius: 16px;
+    padding: 14px;
   }
 
   .lab-product-rule {
-    margin-bottom: 10px;
-    padding: 0 2px;
     overflow-x: auto;
-    grid-template-columns: repeat(4, minmax(105px, 1fr));
-  }
-
-  .lab-product-rule span {
-    font-size: 0.54rem;
+    grid-template-columns: repeat(4, minmax(95px, 1fr));
   }
 
   .lab-simulator-shell {
-    border-radius: 18px;
+    border-radius: 17px;
   }
 
   .lab-simulator-shell .il-toolbar {
-    padding: 14px 15px;
+    padding: 13px;
     align-items: flex-start;
     flex-direction: column;
   }
@@ -1867,13 +1895,46 @@
     flex: 1;
   }
 
-  .lab-simulator-shell .il-builder,
-  .lab-simulator-shell .il-results {
-    padding-left: 16px;
-    padding-right: 16px;
+  .lab-simulator-shell .il-mode-switcher {
+    padding: 12px 13px;
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .lab-simulator-shell .il-grid {
+  .lab-simulator-shell .il-mode {
+    width: 100%;
+  }
+
+  .lab-simulator-shell .il-mode label {
+    flex: 1;
+  }
+
+  .lab-simulator-shell .il-mode label span {
+    width: 100%;
+  }
+
+  .lab-simulator-shell .il-builder,
+  .lab-simulator-shell .il-results {
+    padding: 15px;
+  }
+
+  .lab-simulator-shell .il-builder-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lab-simulator-shell .il-builder-intro > p {
+    max-width: none;
+  }
+
+  .lab-simulator-shell .il-config-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .lab-simulator-shell .il-grid,
+  .lab-simulator-shell .il-workload-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1883,42 +1944,85 @@
 
   .lab-simulator-shell .il-field input,
   .lab-simulator-shell .il-field select,
-  .lab-simulator-shell textarea {
+  .lab-simulator-shell textarea,
+  .lab-simulator-shell .il-workload input {
     font-size: 16px;
   }
 
-  .lab-simulator-shell .il-field > span {
-    font-size: 0.79rem;
-  }
-
-  .lab-simulator-shell .il-workload-grid {
+  .lab-simulator-shell .il-profile-picker {
     grid-template-columns: 1fr;
   }
 
-  .lab-simulator-shell .il-derate {
+  .lab-simulator-shell .il-profile-option {
+    min-height: 72px;
+  }
+
+  .lab-simulator-shell .il-profile-summary {
     grid-template-columns: 1fr;
   }
 
-  .lab-simulator-shell .il-advanced summary {
-    font-size: 0.8rem;
+  .lab-simulator-shell .il-usage-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-simulator-shell .il-usage-meta > span + span {
+    border-top: 1px solid var(--lab-border);
+    border-left: 0;
+  }
+
+  .lab-simulator-shell .il-model-list li {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .lab-simulator-shell .il-run {
+    bottom: 8px;
+  }
+
+  .lab-simulator-shell .il-result-empty {
+    min-height: 360px;
+  }
+
+  .lab-simulator-shell .il-result-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lab-simulator-shell .il-runtime-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .lab-simulator-shell .il-runtime-value {
-    font-size: 2.2rem;
+    font-size: clamp(2.25rem, 11vw, 4rem);
+  }
+
+  .lab-simulator-shell .il-runtime-unknown {
+    font-size: clamp(1.55rem, 8vw, 2.6rem);
+  }
+
+  .lab-simulator-shell .il-scope {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
   }
 
   .lab-product-footer {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .lab-product-footer > div {
     align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
   }
 }
+
+
+/* ================================================================
+   SMALL MOBILE
+   ================================================================ */
 
 @media (max-width: 480px) {
   .lab-product-identity {
@@ -1926,31 +2030,21 @@
   }
 
   .lab-product-intro h1 {
-    font-size: clamp(2.45rem, 13vw, 3.5rem);
+    font-size: clamp(2.25rem, 12vw, 3.25rem);
   }
 
+  .lab-simulator-shell .il-result-summary-grid,
   .lab-simulator-shell .il-metrics {
     grid-template-columns: 1fr 1fr;
   }
 
   .lab-simulator-shell .il-share-actions {
-    width: 100%;
     display: grid;
     grid-template-columns: 1fr;
   }
 
   .lab-simulator-shell .il-share button {
     width: 100%;
-  }
-
-  .lab-simulator-shell .il-mode {
-    padding: 6px;
-  }
-
-  .lab-simulator-shell .il-mode label {
-    flex: 1 1 calc(50% - 6px);
-    justify-content: center;
-    padding: 6px 9px;
   }
 }
 
