@@ -1,3 +1,4 @@
+import { logVirtualFailure, VirtualProviderError } from './virtual-diagnostics';
 import { z } from 'zod';
 import { virtualParameterSchema, virtualDeviceConfigurationSchema, virtualDeviceSchema,
   VIRTUAL_DEVICE_SCHEMA_VERSION, type VirtualParameter, type VirtualDeviceModel } from './virtual-device';
@@ -68,7 +69,7 @@ export function createVirtualDeviceInferenceService(dependencies: {
   const catalog = deepFreeze(virtualEvidenceCatalogSchema.parse(dependencies.catalog));
   return {
     async generate(input: unknown, previous?: VirtualDeviceModel): Promise<VirtualGenerationResult> {
-      const rejected = (stage: Extract<VirtualGenerationResult, {status:'rejected'}>['stage'], issues: string[]): VirtualGenerationResult => ({ status: 'rejected', stage, issues });
+      const rejected = (stage: Extract<VirtualGenerationResult, {status:'rejected'}>['stage'], issues: string[]): VirtualGenerationResult => { logVirtualFailure(stage, `${stage}_rejected`); return { status: 'rejected', stage, issues }; };
       const parsed = virtualDeviceConfigurationSchema.safeParse(input);
       if (!parsed.success) return rejected('configuration', parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`));
       const configuration = deepFreeze(parsed.data);
@@ -81,7 +82,11 @@ export function createVirtualDeviceInferenceService(dependencies: {
       } catch { return rejected('evidence', ['Authoritative evidence assembly failed. Review server catalog and clock.']); }
       let output: unknown;
       try { output = await dependencies.provider.propose(deepFreeze({ configuration, evidence })); }
-      catch { return rejected('provider', ['Model proposal unavailable. No model was accepted.']); }
+      catch (error) {
+        const stage = error instanceof VirtualProviderError && error.code === 'model_json' ? 'parse' : 'provider';
+        logVirtualFailure(stage, error instanceof VirtualProviderError ? error.code : 'provider_transport', error instanceof VirtualProviderError ? error.httpStatus : undefined);
+        return { status: 'rejected', stage, issues: ['Model proposal unavailable. No model was accepted.'] };
+      }
       const proposal = parseVirtualDeviceProposal(output);
       if (!proposal.success) return rejected('parse', proposal.error.issues.map(i => `${i.path.join('.')}: ${i.message}`));
       const issues: string[] = [];

@@ -1,3 +1,4 @@
+import { logVirtualFailure } from '../../../lib/simulation/virtual-diagnostics';
 import type { APIRoute } from 'astro';
 import { virtualDeviceInferenceSettings } from '../../../lib/simulation/inference-settings';
 import { createGoogleVirtualDeviceProvider } from '../../../lib/simulation/providers/google-virtual-device-provider';
@@ -20,7 +21,7 @@ export const POST:APIRoute=async({request,locals})=>{
   let input:unknown;
   try{input=await boundedBody(request);}catch(error){return json({error:'Send a valid device configuration under 32 KB.'},error instanceof Error&&error.message==='size'?413:400);}
   if(!virtualLaunchInputSchema.safeParse(input).success)return json({error:'Check the device inputs and try again.'},400);
-  const settings=virtualDeviceInferenceSettings();if(!settings)return json({error:'Virtual device generation is not available yet. Please try again later.'},503);
+  const settings=virtualDeviceInferenceSettings();if(!settings)return json({error:'Virtual device generation is not available yet. Please try again later.',code:'generation_not_configured'},503);
   const now=Date.now();for(const [id,at]of recent)if(now-at>60000)recent.delete(id);
   if(recent.has(locals.user.id)||recent.size>=1000)return json({error:'Please wait a minute before generating another device.'},429);
   recent.set(locals.user.id,now);
@@ -28,5 +29,5 @@ export const POST:APIRoute=async({request,locals})=>{
     const result=await generateVirtualLaunch(input,createGoogleVirtualDeviceProvider(settings));
     if(result.status!=='complete')return json({error:'We could not validate a virtual device from the available evidence. Please retry later.'},502);
     return json(result);
-  }catch{return json({error:'Virtual device generation is temporarily unavailable. Please retry later.'},502);}
+  }catch{logVirtualFailure('provider','generation_exception');return json({error:'Virtual device generation is temporarily unavailable. Please retry later.'},502);}
 };

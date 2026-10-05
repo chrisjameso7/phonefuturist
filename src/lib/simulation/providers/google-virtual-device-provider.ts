@@ -1,3 +1,4 @@
+import { VirtualProviderError } from '../virtual-diagnostics';
 import { z } from 'zod';
 import { buildVirtualDevicePrompt } from '../virtual-device-prompt';
 import type { VirtualDeviceProvider } from '../virtual-device-inference';
@@ -31,14 +32,16 @@ export function createGoogleVirtualDeviceProvider(settings: GoogleVirtualSetting
           generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 32768 },
         } : { messages: [{ role: 'system', content: prompt.system }, { role: 'user', content: prompt.user }], stream: false, max_tokens: 32768 }),
       });
-      if (!response.ok) throw new Error(`Virtual device provider HTTP ${response.status}.`);
+      if (!response.ok) throw new VirtualProviderError('provider_http', response.status);
       // Bound the response without including provider diagnostics or secrets in errors.
-      const reader = response.body?.getReader(); if (!reader) throw new Error('Empty provider response.');
+      const reader = response.body?.getReader(); if (!reader) throw new VirtualProviderError('provider_response_format');
       let text = ''; let length = 0; const decoder = new TextDecoder();
-      try { while (true) { const next = await reader.read(); if (next.done) break; length += next.value.byteLength; if (length > 524288) { await reader.cancel(); throw new Error('Provider response too large.'); } text += decoder.decode(next.value, { stream: true }); } text += decoder.decode(); } finally { reader.releaseLock(); }
-      const envelope: unknown = JSON.parse(text);
-      const output = gemini ? geminiResponse.parse(envelope).candidates[0].content.parts.filter(part => !part.thought).map(part => part.text ?? '').join('') : gemmaResponse.parse(envelope).result.response;
-      return JSON.parse(output);
+      try { while (true) { const next = await reader.read(); if (next.done) break; length += next.value.byteLength; if (length > 524288) { await reader.cancel(); throw new VirtualProviderError('provider_response_size'); } text += decoder.decode(next.value, { stream: true }); } text += decoder.decode(); } finally { reader.releaseLock(); }
+      let envelope: unknown;
+      try { envelope = JSON.parse(text); } catch { throw new VirtualProviderError('provider_response_format'); }
+      let output: string;
+      try { output = gemini ? geminiResponse.parse(envelope).candidates[0].content.parts.filter(part => !part.thought).map(part => part.text ?? '').join('') : gemmaResponse.parse(envelope).result.response; } catch { throw new VirtualProviderError('provider_response_format'); }
+      try { return JSON.parse(output); } catch { throw new VirtualProviderError('model_json'); }
     },
   };
 }

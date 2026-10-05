@@ -5,7 +5,7 @@ vi.mock('../src/lib/simulation/inference-settings',()=>({virtualDeviceInferenceS
 vi.mock('../src/lib/simulation/providers/google-virtual-device-provider',()=>({createGoogleVirtualDeviceProvider:mocks.provider}));
 import {POST} from '../src/pages/api/simulation/virtual-device';
 beforeEach(()=>{mocks.settings.mockReturnValue({accountId:'fixture',apiToken:'fixture',model:'fixture'});mocks.provider.mockReturnValue(fixtureProvider);});
-const body=()=>({configuration:acceptanceConfiguration(),scenario:acceptanceScenario});
+const body=()=>{ const configuration=acceptanceConfiguration(); configuration.deviceContext={...configuration.deviceContext!,chipset:'Unknown',cooling:'Unknown',software:'Unknown'}; return {configuration,scenario:acceptanceScenario}; };
 let n=0;
 async function call(payload:unknown=body(),options:{user?:boolean;active?:boolean;verified?:boolean;id?:string;raw?:string}={}){
   const request=new Request('https://example.com/api/simulation/virtual-device',{method:'POST',headers:{'Content-Type':'application/json','Origin':'https://example.com'},body:options.raw??JSON.stringify(payload)});
@@ -21,7 +21,7 @@ describe('authenticated Virtual Device endpoint',()=>{
   it('rejects client authority, evidence and submitted artifacts',async()=>expect((await call({...body(),model:{accepted:true},evidence:[]})).status).toBe(400));
   it('bounds streaming request bodies',async()=>expect((await call(null,{raw:'x'.repeat(33000)})).status).toBe(413));
   it('rejects malformed JSON',async()=>expect((await call(null,{raw:'{'})).status).toBe(400));
-  it('handles missing configuration without leaking secrets',async()=>{mocks.settings.mockReturnValue(null);expect((await call()).status).toBe(503);});
+  it('reproduces 503 before any provider call when runtime settings are unavailable',async()=>{mocks.settings.mockReturnValue(null);mocks.provider.mockClear();const response=await call();expect(response.status).toBe(503);expect(await response.json()).toMatchObject({code:'generation_not_configured'});expect(mocks.provider).not.toHaveBeenCalled();});
   it('sanitizes provider failures',async()=>{mocks.provider.mockImplementation(()=>{throw new Error('secret provider diagnostic');});const response=await call();expect(response.status).toBe(502);expect(await response.text()).not.toContain('secret');});
   it('limits repeated generations per signed-in account',async()=>{const id='rate-test';expect((await call(body(),{id})).status).toBe(200);expect((await call(body(),{id})).status).toBe(429);});
 });

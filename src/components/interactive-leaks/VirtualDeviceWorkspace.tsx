@@ -22,7 +22,7 @@ export default function VirtualDeviceWorkspace({onAdvanced}:{onAdvanced:()=>void
       const response=await fetch('/api/simulation/virtual-device',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},signal:controller.signal,
         body:JSON.stringify({configuration:parsed.data,scenario:{usage,network,brightnessNits:Number(form.brightness),ambientC:Number(form.ambient)}})});
       if(controller.signal.aborted||current!==revision.current)return;
-      if(!response.ok){setError(response.status===401?'Sign in to generate your virtual device.':response.status===403?'A verified, active account is required.':response.status===429?'Please wait a minute before generating another model.':'Generation is unavailable or could not be validated. Your inputs are kept; please try again later.');return;}
+      if(!response.ok){setError(response.status===401?'Sign in to generate your virtual device.':response.status===403?'A verified, active account is required.':response.status===503?'Virtual device generation is not configured. Please contact the administrator.':response.status===429?'Please wait a minute before generating another model.':'Generation is unavailable or could not be validated. Your inputs are kept; please try again later.');return;}
       const payload:unknown=await response.json();
       const result=launchResponseSchema.safeParse(payload);
       if(controller.signal.aborted||current!==revision.current)return;

@@ -1,3 +1,4 @@
+import { logVirtualFailure } from './virtual-diagnostics';
 import {
   getSecret,
 } from 'astro:env/server';
@@ -58,15 +59,19 @@ export function batteryInferenceSettings():
 export function virtualDeviceInferenceSettings(): import('./providers/google-virtual-device-provider').GoogleVirtualSettings | null {
   const provider = value('VIRTUAL_DEVICE_PROVIDER');
   const model = value('VIRTUAL_DEVICE_MODEL');
-  if (!model) return null;
+  if (!provider) { logVirtualFailure('configuration', 'provider_missing'); return null; }
+  if (!model) { logVirtualFailure('configuration', 'model_missing'); return null; }
   if (provider === 'gemini') {
     const apiKey = value('GEMINI_API_KEY');
-    return apiKey ? { provider, apiKey, model } : null;
+    if (!apiKey) { logVirtualFailure('configuration', 'gemini_key_missing'); return null; }
+    return { provider, apiKey, model };
   }
   if (provider === 'gemma') {
     const accountId = value('CLOUDFLARE_ACCOUNT_ID');
     const apiToken = value('CLOUDFLARE_AI_API_TOKEN');
-    return accountId && apiToken ? { provider, accountId, apiToken, model } : null;
+    if (!accountId || !apiToken) { logVirtualFailure('configuration', 'gemma_credentials_missing'); return null; }
+    return { provider, accountId, apiToken, model };
   }
+  logVirtualFailure('configuration', 'provider_unsupported');
   return null;
 }
