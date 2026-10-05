@@ -5,7 +5,7 @@ import {
   type AnalogyAssessment, type TestConditions,
 } from './virtual-device';
 
-export const VIRTUAL_EVIDENCE_POLICY_VERSION = '1.0.0';
+export const VIRTUAL_EVIDENCE_POLICY_VERSION = '1.1.0';
 const identifier = z.string().trim().min(1).max(160);
 const relationshipSchema = z.object({
   target: identifier, reference: identifier,
@@ -23,6 +23,12 @@ export const virtualEvidenceCatalogSchema = z.object({
     rationale: z.string().trim().min(1).max(2000),
     // A reviewed engineering envelope, not a multiplier fitted by the LLM.
     referenceIds: z.array(identifier).min(2).max(100),
+    // Explicit server-reviewed transfer: original observations keep their original quantity/conditions.
+    transfer: z.object({
+      version: identifier, sourceKeys: z.array(parameterKeySchema).min(1).max(17),
+      rationale: z.string().trim().min(1).max(2000),
+      assumptions: z.array(z.string().trim().min(1).max(2000)).min(1).max(20),
+    }).strict().optional(),
   }).strict()).max(500),
 }).strict();
 export type VirtualEvidenceCatalog = z.infer<typeof virtualEvidenceCatalogSchema>;
@@ -87,7 +93,8 @@ export function assembleVirtualEvidence(configuration: VirtualDeviceConfiguratio
       const records = snapshot.records.filter(r => policy.referenceIds.includes(r.id));
       const sufficient = records.length === policy.referenceIds.length && new Set(policy.referenceIds).size === policy.referenceIds.length &&
         new Set(records.map(r => r.subjectId)).size >= 2 && records.every(r =>
-          r.subjectId !== configuration.subjectId && r.key === key && r.lineage === 'evidence' && sameConditions(r.conditions, policy.conditions) &&
+          r.subjectId !== configuration.subjectId && r.lineage === 'evidence' &&
+          (policy.transfer ? policy.transfer.sourceKeys.includes(r.key) : r.key === key && sameConditions(r.conditions, policy.conditions)) &&
           related.some(link => link.reference === r.subjectId && link.kind !== 'same-brand'));
       decisions.push(`${policy.id}: ${sufficient ? 'sufficient' : 'insufficient'}; ${policy.rationale}`);
       if (!sufficient) continue;
@@ -99,6 +106,6 @@ export function assembleVirtualEvidence(configuration: VirtualDeviceConfiguratio
     if (!slots.some(s => s.key === key)) slots.push({ id: `${key}:unknown`, key,
       fixed: { id: `${key}:unknown`, key, status: 'unknown', reason: 'No direct evidence or sufficient application-approved analogy at a defined operating point.' } });
   }
-  return deepFreeze({ snapshot, slots, analogies, decisions, relationships: related, catalogVersion: catalog.version, policyVersion: VIRTUAL_EVIDENCE_POLICY_VERSION });
+  return deepFreeze({ snapshot, slots, analogies, decisions, relationships: related, reviewedPolicies: policies, snapshotRevision: 1, catalogVersion: catalog.version, policyVersion: VIRTUAL_EVIDENCE_POLICY_VERSION });
 }
 export type AssembledVirtualEvidence = ReturnType<typeof assembleVirtualEvidence>;

@@ -2074,3 +2074,26 @@
     box-shadow: none;
   }
 }
+/* Shared-model Simple Mode: existing optical surfaces, responsive two-column workspace. */
+.pf-virtual-grid{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:1.5rem;align-items:start}
+.pf-virtual .il-builder,.pf-virtual-results{padding:1.5rem;border:1px solid var(--line);border-radius:1.4rem;background:var(--surface);min-width:0}
+.pf-virtual-fields{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.pf-virtual-fields label{display:grid;gap:.4rem;font-size:.85rem;color:var(--muted);min-width:0}
+.pf-virtual-fields input,.pf-virtual-fields select{width:100%;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:.65rem;padding:.65rem;min-width:0;font:inherit}
+.pf-virtual-fields label:first-child{grid-column:1/-1}
+.pf-virtual .il-run-button{margin-top:1rem;width:100%;padding:.9rem;border-radius:999px;background:var(--accent);color:var(--paper);border:0;font:inherit;font-weight:700;cursor:pointer}
+.pf-virtual .il-run-button:disabled{opacity:.65;cursor:wait}
+.pf-virtual-tests{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.3rem 0}
+.pf-virtual-tests button,.pf-virtual-tests>span{padding:.65rem 1rem;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:inherit}
+.pf-virtual-tests button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.pf-virtual-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.pf-virtual-metrics>div{display:grid;gap:.5rem;padding:1.25rem;border:1px solid var(--line);border-radius:1rem}
+.pf-virtual-metrics strong{font-size:clamp(1.25rem,2vw,2rem);color:var(--ink)}
+.pf-virtual-metrics span,.pf-virtual-metrics small{color:var(--muted)}
+.pf-virtual-empty{padding:2rem 0;min-height:300px}
+.pf-virtual details{margin:1rem 0;padding:1rem 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.pf-virtual summary{cursor:pointer;font-weight:600}
+.pf-virtual-table{overflow-x:auto;max-height:320px}.pf-virtual td,.pf-virtual th{padding:.5rem;text-align:left}
+.pf-virtual :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:800px){.pf-virtual-grid{grid-template-columns:1fr}.pf-virtual .il-mode-switcher{align-items:flex-start;flex-direction:column}.pf-virtual-results{padding:1rem}}
+@media(max-width:380px){.pf-virtual-fields{grid-template-columns:1fr}.pf-virtual-fields label:first-child{grid-column:auto}}

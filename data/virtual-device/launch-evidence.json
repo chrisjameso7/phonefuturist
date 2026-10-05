@@ -1,0 +1,199 @@
+{
+  "version": "launch-evidence-1",
+  "records": [
+    {
+      "id": "nc-s24-cpu.singleCore",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "cpu.singleCore",
+      "unit": "score",
+      "range": {
+        "min": 2287,
+        "max": 2287
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S24 Ultra published CPU score; source table currently labelled 6.7",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "Geekbench",
+        "version": "6.7-source-table",
+        "workload": "cpu"
+      }
+    },
+    {
+      "id": "nc-s24-cpu.multiCore",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "cpu.multiCore",
+      "unit": "score",
+      "range": {
+        "min": 7102,
+        "max": 7102
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S24 Ultra published CPU score; source table currently labelled 6.7",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "Geekbench",
+        "version": "6.7-source-table",
+        "workload": "cpu"
+      }
+    },
+    {
+      "id": "nc-s25-cpu.singleCore",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "cpu.singleCore",
+      "unit": "score",
+      "range": {
+        "min": 3200,
+        "max": 3200
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S25 Ultra published CPU score; source table currently labelled 6.7",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "Geekbench",
+        "version": "6.7-source-table",
+        "workload": "cpu"
+      }
+    },
+    {
+      "id": "nc-s25-cpu.multiCore",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "cpu.multiCore",
+      "unit": "score",
+      "range": {
+        "min": 10020,
+        "max": 10020
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S25 Ultra published CPU score; source table currently labelled 6.7",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "Geekbench",
+        "version": "6.7-source-table",
+        "workload": "cpu"
+      }
+    },
+    {
+      "id": "nc-galaxy-s25-ultra-aztec",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "gpu.frameRate",
+      "unit": "fps",
+      "range": {
+        "min": 107,
+        "max": 107
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck galaxy-s25-ultra GFXBench comparison; not a game FPS measurement",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "GFXBench",
+        "version": "source-table-2026-10-04",
+        "workload": "Aztec Ruins High Tier Offscreen",
+        "resolution": {
+          "width": 2560,
+          "height": 1440
+        },
+        "quality": "High Tier"
+      }
+    },
+    {
+      "id": "nc-honor-magic7-pro-aztec",
+      "revision": 1,
+      "subjectId": "honor-magic7-pro",
+      "key": "gpu.frameRate",
+      "unit": "fps",
+      "range": {
+        "min": 90,
+        "max": 90
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck honor-magic7-pro GFXBench comparison; not a game FPS measurement",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "GFXBench",
+        "version": "source-table-2026-10-04",
+        "workload": "Aztec Ruins High Tier Offscreen",
+        "resolution": {
+          "width": 2560,
+          "height": 1440
+        },
+        "quality": "High Tier"
+      }
+    },
+    {
+      "id": "nc-s24-charging",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "charging.peakPower",
+      "unit": "W",
+      "range": {
+        "min": 45,
+        "max": 45
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S24 Ultra wired input rating, not battery accepted power",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "wired-input-rating",
+        "version": "source-table-2026-10-04",
+        "workload": "charging"
+      }
+    },
+    {
+      "id": "nc-s25-charging",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "charging.peakPower",
+      "unit": "W",
+      "range": {
+        "min": 45,
+        "max": 45
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck S25 Ultra wired input rating, not battery accepted power",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "wired-input-rating",
+        "version": "source-table-2026-10-04",
+        "workload": "charging"
+      }
+    }
+  ]
+}

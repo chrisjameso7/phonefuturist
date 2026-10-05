@@ -126,6 +126,11 @@ export function toLegacyParameter(parameter: VirtualParameter): import('./module
 export const virtualDeviceConfigurationSchema = z.object({
   id, revision: z.number().int().positive(), parentRevision: z.number().int().positive().nullable(),
   subjectId: id, name: text,
+  deviceContext: z.object({
+    origin: z.literal('user-supplied'), displayInches: z.number().positive().max(20),
+    resolution: z.object({ width: z.number().int().positive(), height: z.number().int().positive() }).strict(),
+    refreshHz: z.number().positive().max(1000), chipset: text, cooling: text, software: text,
+  }).strict().optional(),
   assertions: z.array(z.object({
     key: parameterKeySchema, unit: text, range: rangeSchema,
     origin: z.literal('user-supplied'), evidence: z.array(evidenceRef).max(100),

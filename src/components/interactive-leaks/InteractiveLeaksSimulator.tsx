@@ -65,6 +65,7 @@ import type {
 } from '../../lib/simulation/modules/camera';
 
 import ShareResult from './ShareResult';
+import VirtualDeviceWorkspace from './VirtualDeviceWorkspace';
 
 type NumericFieldProps = {
   label: string;
@@ -1196,6 +1197,8 @@ export default function InteractiveLeaksSimulator() {
     setHasSimulated(false);
     setExampleLoaded(false);
   }
+
+  if (simple) return <VirtualDeviceWorkspace onAdvanced={() => changeExperience({type:'mode',value:'advanced'})} />;
 
   return (
     <div

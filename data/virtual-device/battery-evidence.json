@@ -1,0 +1,239 @@
+{
+  "version": "battery-system-evidence-1",
+  "records": [
+    {
+      "id": "nc-s24-standby",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 0.08,
+        "max": 0.08
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S24 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "standby"
+      }
+    },
+    {
+      "id": "nc-s24-screen-on-idle",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 0.73,
+        "max": 1.34
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S24 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "screen-on-idle"
+      }
+    },
+    {
+      "id": "nc-s24-load",
+      "revision": 1,
+      "subjectId": "galaxy-s24-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 16.52,
+        "max": 16.58
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S24 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S24-Ultra-review-The-ultimate-smartphone-becomes-an-AI-smartphone.809187.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "load"
+      }
+    },
+    {
+      "id": "nc-s25-standby",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 0.21,
+        "max": 0.21
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S25 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "standby"
+      }
+    },
+    {
+      "id": "nc-s25-screen-on-idle",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 0.55,
+        "max": 0.91
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S25 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "screen-on-idle"
+      }
+    },
+    {
+      "id": "nc-s25-load",
+      "revision": 1,
+      "subjectId": "galaxy-s25-ultra",
+      "key": "battery.averagePower",
+      "unit": "W",
+      "range": {
+        "min": 13.81,
+        "max": 16.69
+      },
+      "status": "measured",
+      "lineage": "evidence",
+      "source": {
+        "title": "Notebookcheck Galaxy S25 Ultra power consumption; meter observation, not target-device battery draw",
+        "url": "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "notebookcheck-power-consumption",
+        "version": "source-table-2026-10-04",
+        "workload": "load"
+      }
+    },
+    {
+      "id": "ifixit-s22-battery.nominalVoltage",
+      "revision": 1,
+      "subjectId": "ifixit-s22-compatible-pack",
+      "key": "battery.nominalVoltage",
+      "unit": "V",
+      "range": {
+        "min": 3.88,
+        "max": 3.88
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "iFixit S22 Ultra compatible AFTERMARKET pack specification; not Samsung OEM evidence",
+        "url": "https://www.ifixit.com/products/samsung-galaxy-s22-ultra-battery",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "aftermarket-pack-specification",
+        "version": "source-2026-10-04",
+        "workload": "rated",
+        "capacityBasis": "pack"
+      }
+    },
+    {
+      "id": "ifixit-s22-battery.energy",
+      "revision": 1,
+      "subjectId": "ifixit-s22-compatible-pack",
+      "key": "battery.energy",
+      "unit": "Wh",
+      "range": {
+        "min": 18.83,
+        "max": 18.83
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "iFixit S22 Ultra compatible AFTERMARKET pack specification; not Samsung OEM evidence",
+        "url": "https://www.ifixit.com/products/samsung-galaxy-s22-ultra-battery",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "aftermarket-pack-specification",
+        "version": "source-2026-10-04",
+        "workload": "rated",
+        "capacityBasis": "pack"
+      }
+    },
+    {
+      "id": "ifixit-s23-battery.nominalVoltage",
+      "revision": 1,
+      "subjectId": "ifixit-s23-compatible-pack",
+      "key": "battery.nominalVoltage",
+      "unit": "V",
+      "range": {
+        "min": 3.88,
+        "max": 3.88
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "iFixit S23 Ultra compatible AFTERMARKET pack specification; not Samsung OEM evidence",
+        "url": "https://www.ifixit.com/products/galaxy-s23-ultra-battery",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "aftermarket-pack-specification",
+        "version": "source-2026-10-04",
+        "workload": "rated",
+        "capacityBasis": "pack"
+      }
+    },
+    {
+      "id": "ifixit-s23-battery.energy",
+      "revision": 1,
+      "subjectId": "ifixit-s23-compatible-pack",
+      "key": "battery.energy",
+      "unit": "Wh",
+      "range": {
+        "min": 18.83,
+        "max": 18.83
+      },
+      "status": "reported",
+      "lineage": "evidence",
+      "source": {
+        "title": "iFixit S23 Ultra compatible AFTERMARKET pack specification; not Samsung OEM evidence",
+        "url": "https://www.ifixit.com/products/galaxy-s23-ultra-battery",
+        "retrievedAt": "2026-10-04T00:00:00Z"
+      },
+      "conditions": {
+        "protocol": "aftermarket-pack-specification",
+        "version": "source-2026-10-04",
+        "workload": "rated",
+        "capacityBasis": "pack"
+      }
+    }
+  ]
+}

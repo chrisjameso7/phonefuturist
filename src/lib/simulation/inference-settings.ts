@@ -54,3 +54,19 @@ export function batteryInferenceSettings():
       : {}),
   };
 }
+/** Explicit opt-in; never enables billing, switches accounts, or falls back to another provider. */
+export function virtualDeviceInferenceSettings(): import('./providers/google-virtual-device-provider').GoogleVirtualSettings | null {
+  const provider = value('VIRTUAL_DEVICE_PROVIDER');
+  const model = value('VIRTUAL_DEVICE_MODEL');
+  if (!model) return null;
+  if (provider === 'gemini') {
+    const apiKey = value('GEMINI_API_KEY');
+    return apiKey ? { provider, apiKey, model } : null;
+  }
+  if (provider === 'gemma') {
+    const accountId = value('CLOUDFLARE_ACCOUNT_ID');
+    const apiToken = value('CLOUDFLARE_AI_API_TOKEN');
+    return accountId && apiToken ? { provider, accountId, apiToken, model } : null;
+  }
+  return null;
+}

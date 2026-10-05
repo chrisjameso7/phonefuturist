@@ -28,6 +28,13 @@ export type VirtualGenerationResult =
   | { status: 'accepted'; model: VirtualDeviceModel; configuration: VirtualDeviceProposalRequest['configuration']; evidence: AssembledVirtualEvidence; validatorVersion: string }
   | { status: 'rejected'; stage: 'configuration' | 'evidence' | 'provider' | 'parse' | 'provenance' | 'engineering'; issues: string[] };
 
+export type AcceptedVirtualDevice = Extract<VirtualGenerationResult, {status:'accepted'}>;
+// A frozen object alone is not evidence of acceptance. No serialized/client object can register here.
+const acceptedModels = new WeakSet<object>();
+export function isAcceptedVirtualDevice(value: unknown): value is AcceptedVirtualDevice {
+  return typeof value === 'object' && value !== null && acceptedModels.has(value);
+}
+
 /** Only this allowlisted derivation is performed here; no endurance mathematics or test execution. */
 function derivePackEnergy(parameters: VirtualParameter[]): VirtualParameter[] {
   const capacities = parameters.filter(p => p.key === 'battery.capacity' && p.status !== 'unknown');
@@ -87,7 +94,11 @@ export function createVirtualDeviceInferenceService(dependencies: {
         } else if (parameter.status !== 'unknown') {
           const assessment = evidence.analogies.find(a => a.parameterId === parameter.id);
           if (parameter.status !== 'predicted' || !assessment || canonical(parameter.conditions) !== canonical(slot.conditions)) issues.push(`Unapproved inference method/conditions: ${parameter.id}`);
-          else if (canonical(parameter.range) !== canonical(assessment.allowedRange)) issues.push(`Prediction must preserve the full policy uncertainty envelope: ${parameter.id}`);
+          else {
+            if (canonical(parameter.range) !== canonical(assessment.allowedRange)) issues.push(`Prediction must preserve the full policy uncertainty envelope: ${parameter.id}`);
+            const transfer = evidence.reviewedPolicies.find(p => p.id === assessment.id)?.transfer;
+            if (transfer?.assumptions.some(a => !parameter.assumptions.includes(a))) issues.push(`Missing required transfer assumptions: ${parameter.id}`);
+          }
         }
       }
       if (issues.length) return rejected('provenance', issues);
@@ -104,7 +115,9 @@ export function createVirtualDeviceInferenceService(dependencies: {
       if (!validation.valid) return rejected('provenance', validation.issues);
       const sanity = validateVirtualEngineering(validation.model);
       if (sanity.length) return rejected('engineering', sanity);
-      return deepFreeze({ status: 'accepted', model: validation.model, configuration, evidence, validatorVersion: validation.validatorVersion });
+      const accepted: AcceptedVirtualDevice = deepFreeze({ status: 'accepted', model: validation.model, configuration, evidence, validatorVersion: validation.validatorVersion });
+      acceptedModels.add(accepted);
+      return accepted;
     },
   };
 }
