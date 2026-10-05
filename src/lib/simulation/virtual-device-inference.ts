@@ -84,7 +84,7 @@ export function createVirtualDeviceInferenceService(dependencies: {
       try { output = await dependencies.provider.propose(deepFreeze({ configuration, evidence })); }
       catch (error) {
         const stage = error instanceof VirtualProviderError && error.code === 'model_json' ? 'parse' : 'provider';
-        logVirtualFailure(stage, error instanceof VirtualProviderError ? error.code : 'provider_transport', error instanceof VirtualProviderError ? error.httpStatus : undefined);
+        logVirtualFailure(stage, error instanceof VirtualProviderError ? error.code : 'provider_transport', error instanceof VirtualProviderError ? error.httpStatus : undefined, error instanceof VirtualProviderError ? error.diagnostic : undefined);
         return { status: 'rejected', stage, issues: ['Model proposal unavailable. No model was accepted.'] };
       }
       const proposal = parseVirtualDeviceProposal(output);

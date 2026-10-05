@@ -1,3 +1,4 @@
+import { readGoogleError } from './google-error-diagnostics';
 import { VirtualProviderError } from '../virtual-diagnostics';
 import { z } from 'zod';
 import { buildVirtualDevicePrompt } from '../virtual-device-prompt';
@@ -25,14 +26,22 @@ export function createGoogleVirtualDeviceProvider(settings: GoogleVirtualSetting
       const headers = new Headers({ 'Content-Type': 'application/json' });
       if (settings.provider === 'gemini') headers.set('x-goog-api-key', settings.apiKey);
       else headers.set('Authorization', `Bearer ${settings.apiToken}`);
-      const response = await fetchImpl(url, {
+      const started=Date.now();
+      const body = JSON.stringify(gemini ? {
+        systemInstruction: { parts: [{ text: prompt.system }] }, contents: [{ role: 'user', parts: [{ text: prompt.user }] }],
+        generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 32768 },
+      } : { messages: [{ role: 'system', content: prompt.system }, { role: 'user', content: prompt.user }], stream: false, max_tokens: 32768 });
+      let response: Response;
+      try { response = await fetchImpl(url, {
         method: 'POST', headers, signal: AbortSignal.timeout(60000),
-        body: JSON.stringify(gemini ? {
-          systemInstruction: { parts: [{ text: prompt.system }] }, contents: [{ role: 'user', parts: [{ text: prompt.user }] }],
-          generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 32768 },
-        } : { messages: [{ role: 'system', content: prompt.system }, { role: 'user', content: prompt.user }], stream: false, max_tokens: 32768 }),
-      });
-      if (!response.ok) throw new VirtualProviderError('provider_http', response.status);
+        body,
+      }); } catch(error) {
+        throw new VirtualProviderError(error instanceof Error && (error.name==='TimeoutError'||error.name==='AbortError') ? 'provider_timeout' : 'provider_transport');
+      }
+      if (!response.ok) {
+        const diagnostic=gemini ? await readGoogleError(response) : {category:'unknown' as const,message:'Upstream error details withheld.'};
+        throw new VirtualProviderError('provider_http', response.status, {...diagnostic,requestBytes:new TextEncoder().encode(body).byteLength,elapsedMs:Date.now()-started});
+      }
       // Bound the response without including provider diagnostics or secrets in errors.
       const reader = response.body?.getReader(); if (!reader) throw new VirtualProviderError('provider_response_format');
       let text = ''; let length = 0; const decoder = new TextDecoder();
