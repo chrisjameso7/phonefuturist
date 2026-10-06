@@ -1181,7 +1181,6 @@ export default function InteractiveLeaksSimulator() {
             </details>}
           </aside>
         </div>
-        </div>
       </section>}
 
       {stage==='compare' && (
