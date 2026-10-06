@@ -385,6 +385,8 @@ export default function InteractiveLeaksSimulator() {
   const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
   const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra — Most likely');
   const [savedNotice, setSavedNotice] = useState('');
+  const [profileName, setProfileName] = useState('My Exynos 2700 profile');
+  const [profileSavedNotice, setProfileSavedNotice] = useState('');
   const [processorProfile, setProcessorProfile] = useState<'expected' | 'efficiency' | 'aggressive' | 'custom'>('expected');
   const [customCpuTarget, setCustomCpuTarget] = useState(50);
   const [customGpuTarget, setCustomGpuTarget] = useState(50);
@@ -607,6 +609,50 @@ export default function InteractiveLeaksSimulator() {
     }));
   }
 
+  async function saveProcessorProfile() {
+    const payload = {
+      name: profileName.trim() || 'Untitled processor profile',
+      componentKey: processorScenario,
+      visibility: 'private',
+      assumptions: {
+        profilePreset: processorProfile,
+        customCpuTarget,
+        customGpuTarget,
+        efficiencyAssumption,
+        cpuLoad,
+        gpuLoad,
+        ambientTemperature,
+      },
+    };
+
+    try {
+      const response = await fetch('/interactive-leaks/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        setProfileSavedNotice('Profile saved to your account');
+        window.setTimeout(() => setProfileSavedNotice(''), 2400);
+        return;
+      }
+    } catch {
+      // Fall through to local storage.
+    }
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('pf-saved-profiles') || '[]');
+      const localPayload = { ...payload, savedAt: new Date().toISOString() };
+      const next = Array.isArray(existing) ? [localPayload, ...existing].slice(0, 30) : [localPayload];
+      localStorage.setItem('pf-saved-profiles', JSON.stringify(next));
+      setProfileSavedNotice('Profile saved on this device');
+      window.setTimeout(() => setProfileSavedNotice(''), 2400);
+    } catch {
+      setProfileSavedNotice('Could not save profile');
+    }
+  }
+
   async function saveSimulation() {
     const state = {
       processorScenario,
@@ -793,6 +839,15 @@ export default function InteractiveLeaksSimulator() {
                 <input type="range" min="0" max="100" step="5" value={customGpuTarget} onChange={(event)=>setCustomGpuTarget(Number(event.currentTarget.value))} />
               </label>
             </div>}
+
+            <div className="il-profile-save">
+              <label>
+                <span>Profile name</span>
+                <input type="text" value={profileName} maxLength={120} onChange={(event)=>setProfileName(event.currentTarget.value)} />
+              </label>
+              <button type="button" className="il-chip" onClick={saveProcessorProfile}>Save profile</button>
+              {profileSavedNotice && <small>{profileSavedNotice}</small>}
+            </div>
 
             <p className="il-config-note">Profiles bundle assumptions for reuse. They do not fabricate benchmark scores. When performance and thermal models are added, these profile values can become model inputs instead of display-only scenario metadata.</p>
           </div>
