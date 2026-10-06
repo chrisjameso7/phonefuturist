@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
       .single();
 
     if (insertError || !forked) return new Response('Could not fork simulation.', { status: 500 });
-    return redirectBack(request, `/interactive-leaks/simulation/${forked.id}`);
+    return redirectBack(request, `/interactive-leaks/simulate?simulation=${forked.id}`);
   }
 
   const { data: source, error } = await locals.supabase
@@ -66,5 +66,5 @@ export const POST: APIRoute = async ({ locals, request }) => {
     .single();
 
   if (insertError || !forked) return new Response('Could not fork profile.', { status: 500 });
-  return redirectBack(request, `/interactive-leaks/profile/${forked.id}`);
+  return redirectBack(request, `/interactive-leaks/simulate?profile=${forked.id}`);
 };
