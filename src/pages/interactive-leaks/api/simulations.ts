@@ -15,8 +15,25 @@ async function readBody(request: Request) {
   return JSON.parse(raw) as Record<string, unknown>;
 }
 
-export const GET: APIRoute = async ({ locals }) => {
+export const GET: APIRoute = async ({ locals, url }) => {
   if (!locals.supabase || !locals.user) return json({ error: 'Sign in to view saved simulations.' }, 401);
+
+  const id = url.searchParams.get('id');
+  if (id) {
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuid.test(id)) return json({ error: 'Invalid simulation ID.' }, 400);
+
+    const { data, error } = await locals.supabase
+      .from('simulations')
+      .select('id,name,device_key,visibility,configuration_source,processor_key,state,result_snapshot,created_at,updated_at')
+      .eq('owner_id', locals.user.id)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) return json({ error: 'Could not load simulation.' }, 500);
+    if (!data) return json({ error: 'Simulation not found.' }, 404);
+    return json({ data });
+  }
 
   const { data, error } = await locals.supabase
     .from('simulations')
@@ -50,6 +67,16 @@ export const POST: APIRoute = async ({ locals, request }) => {
   const resultSnapshot = input.resultSnapshot && typeof input.resultSnapshot === 'object' ? input.resultSnapshot : null;
 
   if (!name || name.length > 120) return json({ error: 'Simulation name must be 1 to 120 characters.' }, 400);
+
+  if (visibility === 'public') {
+    const { data: creator, error: creatorError } = await locals.supabase
+      .from('creator_profiles')
+      .select('user_id')
+      .eq('user_id', locals.user.id)
+      .maybeSingle();
+    if (creatorError) return json({ error: 'Could not verify creator profile.' }, 500);
+    if (!creator) return json({ error: 'Create your public creator profile before publishing.' }, 409);
+  }
 
   const { data, error } = await locals.supabase
     .from('simulations')
