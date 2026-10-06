@@ -376,6 +376,8 @@ export default function InteractiveLeaksSimulator() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const [hasSimulated, setHasSimulated] = useState(false);
+  const [configurationSource, setConfigurationSource] = useState<'likely' | 'worst' | 'custom'>('likely');
+  const [processorScenario, setProcessorScenario] = useState<'exynos2700' | 'snapdragon8eg6'>('exynos2700');
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -541,6 +543,42 @@ export default function InteractiveLeaksSimulator() {
     setHasSimulated(false);
   }
 
+  function applyBatteryScenario(capacityMah: string) {
+    setConfigurationSource('custom');
+    setDirty(true);
+    setForm((current) => ({
+      ...current,
+      batteryCapacityMah: capacityMah,
+      batteryVoltageV: current.batteryVoltageV || '3.85',
+    }));
+  }
+
+  function applyLikelyConfiguration() {
+    setConfigurationSource('likely');
+    setProcessorScenario('exynos2700');
+    setDirty(true);
+    setForm((current) => ({
+      ...current,
+      name: current.name || 'Galaxy S27 Ultra',
+      formFactor: 'phone',
+      batteryCapacityMah: '5700',
+      batteryVoltageV: current.batteryVoltageV || '3.85',
+    }));
+  }
+
+  function applyWorstCaseConfiguration() {
+    setConfigurationSource('worst');
+    setProcessorScenario('snapdragon8eg6');
+    setDirty(true);
+    setForm((current) => ({
+      ...current,
+      name: current.name || 'Galaxy S27 Ultra',
+      formFactor: 'phone',
+      batteryCapacityMah: '5700',
+      batteryVoltageV: current.batteryVoltageV || '3.85',
+    }));
+  }
+
   function clearSimulation() {
     dispatchExperience({type:'reset'});
     setExampleLoaded(false);
@@ -593,6 +631,68 @@ export default function InteractiveLeaksSimulator() {
 
       <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
+      <section className="il-product-config" aria-label="Device configuration">
+        <div className="il-config-main">
+          <div className="il-config-source">
+            <div className="il-config-label">
+              <span>Configuration source</span>
+              <small>Choose a likely rumor set, a conservative case, or tune it yourself.</small>
+            </div>
+            <div className="il-config-source-actions">
+              <button type="button" className={configurationSource==='likely'?'is-active':''} onClick={applyLikelyConfiguration}>Most likely</button>
+              <button type="button" className={configurationSource==='worst'?'is-active':''} onClick={applyWorstCaseConfiguration}>Worst case</button>
+              <button type="button" className={configurationSource==='custom'?'is-active':''} onClick={()=>setConfigurationSource('custom')}>Custom</button>
+            </div>
+          </div>
+
+          <div className="il-rumor-group">
+            <div className="il-rumor-heading">
+              <strong>Processor</strong>
+              <span>Scenario metadata</span>
+            </div>
+            <div className="il-option-grid">
+              <button type="button" className={processorScenario==='exynos2700'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('exynos2700');setConfigurationSource('custom');}}>
+                <span><strong>Exynos 2700</strong><small>68% rumor confidence</small></span>
+                <b>68%</b>
+              </button>
+              <button type="button" className={processorScenario==='snapdragon8eg6'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('snapdragon8eg6');setConfigurationSource('custom');}}>
+                <span><strong>Snapdragon 8 Elite Gen 6</strong><small>40% rumor confidence</small></span>
+                <b>40%</b>
+              </button>
+            </div>
+            <p className="il-config-note">Processor selection is saved with the scenario UI, but benchmark and thermal modeling are not enabled in this beta yet.</p>
+          </div>
+
+          <div className="il-rumor-group">
+            <div className="il-rumor-heading">
+              <strong>Battery</strong>
+              <span>Feeds the deterministic battery model</span>
+            </div>
+            <div className="il-option-grid">
+              <button type="button" className={form.batteryCapacityMah==='5700'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5700')}>
+                <span><strong>5,700 mAh</strong><small>Most likely current assumption</small></span>
+                <b>65%</b>
+              </button>
+              <button type="button" className={form.batteryCapacityMah==='5800'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5800')}>
+                <span><strong>5,800 mAh</strong><small>Higher-capacity scenario</small></span>
+                <b>35%</b>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <aside className="il-live-preview">
+          <div className="il-live-preview-head">
+            <span>Live preview</span>
+            <small>{dirty ? 'Pending rerun' : hasSimulated ? 'Current result' : 'Input preview'}</small>
+          </div>
+          <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
+          <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
+          <div className="il-live-row"><span>Usage</span><strong>{simple ? experience.preset : 'Advanced'}</strong></div>
+          <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
+        </aside>
+      </section>
+
       <div className="il-workspace">
         {/* ---------------- Builder column ---------------- */}
         <section className="il-builder" aria-label="Simulation inputs">
