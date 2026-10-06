@@ -1,7 +1,7 @@
--- Server-only evidence bridge for Interactive Leaks Auto mode.
--- Raw intelligence remains inaccessible to public/authenticated clients.
--- The server endpoint calls this RPC with the Supabase service role, then
--- passes a bounded evidence bundle to the AI inference layer.
+-- Sanitized evidence bridge for Interactive Leaks Auto mode.
+-- Raw intelligence tables remain private. This projection exposes only the
+-- active claim fields and source metadata needed to build a simulation model.
+-- It never exposes private_notes or intelligence audit history.
 
 create or replace function public.simulation_evidence_bundle(p_device_slug text)
 returns jsonb
@@ -64,4 +64,4 @@ revoke all on function public.simulation_evidence_bundle(text)
 from public, anon, authenticated;
 
 grant execute on function public.simulation_evidence_bundle(text)
-to service_role;
+to anon, authenticated;
