@@ -23,8 +23,7 @@ import '../../styles/lab-simulator.css';
       </div>
 
       <div class="il-head-actions">
-        <button class="il-secondary" type="button">Compare</button>
-        <a class="il-primary" href="#interactive-simulator">Run simulation</a>
+        <a class="il-primary" href="#interactive-simulator">Open builder</a>
       </div>
     </section>
 
@@ -33,12 +32,6 @@ import '../../styles/lab-simulator.css';
       <span>Based on publicly reported specifications, estimated specifications, historical device behavior, and PhoneFuturist modeling. Actual performance may differ.</span>
     </div>
 
-    <nav class="il-stage-tabs" aria-label="Simulation stages">
-      <a class="is-active" href="#interactive-simulator">Build</a>
-      <a href="#interactive-simulator">Test</a>
-      <a href="#interactive-simulator">Compare</a>
-      <a href="#interactive-simulator">Results</a>
-    </nav>
 
     <main id="interactive-simulator" class="il-workspace">
       <InteractiveLeaksSimulator client:load />
