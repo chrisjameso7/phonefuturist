@@ -382,6 +382,9 @@ export default function InteractiveLeaksSimulator() {
   const [ambientTemperature, setAmbientTemperature] = useState(22);
   const [cpuLoad, setCpuLoad] = useState(25);
   const [gpuLoad, setGpuLoad] = useState(10);
+  const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
+  const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra — Most likely');
+  const [savedNotice, setSavedNotice] = useState('');
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -583,6 +586,31 @@ export default function InteractiveLeaksSimulator() {
     }));
   }
 
+  function saveSimulationLocally() {
+    const payload = {
+      name: simulationName.trim() || 'Untitled simulation',
+      processorScenario,
+      configurationSource,
+      batteryCapacityMah: form.batteryCapacityMah,
+      experience,
+      efficiencyAssumption,
+      ambientTemperature,
+      cpuLoad,
+      gpuLoad,
+      savedAt: new Date().toISOString(),
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('pf-saved-simulations') || '[]');
+      const next = Array.isArray(existing) ? [payload, ...existing].slice(0, 20) : [payload];
+      localStorage.setItem('pf-saved-simulations', JSON.stringify(next));
+      setSavedNotice('Saved on this device');
+      window.setTimeout(() => setSavedNotice(''), 2200);
+    } catch {
+      setSavedNotice('Could not save locally');
+    }
+  }
+
   function clearSimulation() {
     dispatchExperience({type:'reset'});
     setExampleLoaded(false);
@@ -612,6 +640,19 @@ export default function InteractiveLeaksSimulator() {
 
   return (
     <div className="il-app">
+      <nav className="il-mode-tabs" aria-label="Interactive Leaks modes">
+        {(['build','test','compare','results'] as const).map((item) => (
+          <button
+            type="button"
+            key={item}
+            className={stage===item?'is-active':''}
+            onClick={()=>setStage(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </nav>
+
       <div className="il-toolbar">
         <div>
           <span className="il-status">Instrument · Public Beta</span>
@@ -635,7 +676,8 @@ export default function InteractiveLeaksSimulator() {
 
       <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
-      <section className="il-product-config" aria-label="Device configuration">
+
+      {stage==='build' && <section className="il-product-config" aria-label="Device configuration">
         <div className="il-config-main">
           <div className="il-config-source">
             <div className="il-config-label">
@@ -739,13 +781,46 @@ export default function InteractiveLeaksSimulator() {
             <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
           </aside>
         </div>
-      </section>
+      </section>}
 
-      <div className="il-workspace">
+      {stage==='compare' && (
+        <section className="il-compare-view">
+          <div className="il-compare-head">
+            <div>
+              <span className="eyebrow">Compare scenarios</span>
+              <h2>Exynos 2700 vs Snapdragon 8 Elite Gen 6</h2>
+              <p>Compare the assumptions attached to each scenario without pretending unsupported benchmark differences are known.</p>
+            </div>
+          </div>
+          <div className="il-compare-grid">
+            <article>
+              <span className="il-pill">Scenario A</span>
+              <h3>Exynos 2700</h3>
+              <dl>
+                <div><dt>Rumor confidence</dt><dd>68%</dd></div>
+                <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
+                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Advanced'}</dd></div>
+              </dl>
+            </article>
+            <article>
+              <span className="il-pill">Scenario B</span>
+              <h3>Snapdragon 8 Elite Gen 6</h3>
+              <dl>
+                <div><dt>Rumor confidence</dt><dd>40%</dd></div>
+                <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
+                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Advanced'}</dd></div>
+              </dl>
+            </article>
+          </div>
+          <p className="il-config-note">Compare currently exposes scenario assumptions only. CPU, GPU and thermal deltas remain unresolved until those models are supported.</p>
+        </section>
+      )}
+
+      {(stage==='build' || stage==='test' || stage==='results') && <div className={stage==='results'?'il-workspace il-results-only':'il-workspace'}>
         {/* ---------------- Builder column ---------------- */}
-        <section className="il-builder" aria-label="Simulation inputs">
+        {stage!=='results' && <section className="il-builder" aria-label="Simulation inputs">
           {/* 01 · DEVICE */}
-          <details className="il-engineering-panel">
+          {stage==='build' && <details className="il-engineering-panel">
             <summary>
               <span>
                 <strong>Advanced engineering inputs</strong>
@@ -1115,10 +1190,10 @@ export default function InteractiveLeaksSimulator() {
               + Add camera module
             </button>
             </div>
-          </details>
+          </details>}
 
           {/* 02 · ENVIRONMENT */}
-          <div className="il-section">
+          {stage==='test' && <div className="il-section">
             <SectionHeading
               index="02"
               title="Environment"
@@ -1166,10 +1241,10 @@ export default function InteractiveLeaksSimulator() {
             </div>
             </>}
             {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
-          </div>
+          </div>}
 
           {/* 03 · MODEL */}
-          <div className="il-section il-section-last">
+          {stage==='test' && <div className="il-section il-section-last">
             <SectionHeading
               index="03"
               title="Model"
@@ -1201,9 +1276,18 @@ export default function InteractiveLeaksSimulator() {
                 </span>
               </li>
             </ul>
-          </div>
+          </div>}
 
-          <div className="il-run">
+          {stage==='test' && <div className="il-save-card">
+            <label>
+              <span>Simulation name</span>
+              <input type="text" value={simulationName} onChange={(event)=>setSimulationName(event.currentTarget.value)} maxLength={120} />
+            </label>
+            <button type="button" className="il-chip" onClick={saveSimulationLocally}>Save simulation</button>
+            {savedNotice && <small>{savedNotice}</small>}
+          </div>}
+
+          {stage==='test' && <div className="il-run">
             <button
               type="button"
               className="il-simulate"
@@ -1216,11 +1300,11 @@ export default function InteractiveLeaksSimulator() {
               Device + Environment + Model. Nothing invented between the
               three.
             </p>
-          </div>
-        </section>
+          </div>}
+        </section>}
 
         {/* ---------------- Result column ---------------- */}
-        <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
+        {(stage==='results' || stage==='test') && <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
           <div className="il-results-top">
             <span className="eyebrow">Simulation result</span>
 
@@ -1541,8 +1625,8 @@ export default function InteractiveLeaksSimulator() {
               </div>
             </>
           )}
-        </aside>
-      </div>
+        </aside>}
+      </div>}
 
       {/* Honest scope: what the Beta does not simulate yet */}
       <div className="il-scope">
