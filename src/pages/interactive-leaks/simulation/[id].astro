@@ -13,11 +13,7 @@ let visibleForks = 0;
 if (uuid.test(id)) {
   const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
   if (client) {
-    const { data } = await client
-      .from('simulations')
-      .select('id,owner_id,name,device_key,visibility,configuration_source,processor_key,state,result_snapshot,forked_from,created_at,updated_at')
-      .eq('id', id)
-      .maybeSingle();
+    const { data } = await client.rpc('shared_simulation', { p_id: id });
     simulation = data;
 
     if (simulation) {
