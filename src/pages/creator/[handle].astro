@@ -1,0 +1,90 @@
+---
+import Page from '../../layouts/Page.astro';
+import { serverClient, settings } from '../../lib/supabase';
+import '../../styles/lab-simulator.css';
+
+const handle = (Astro.params.handle ?? '').toLowerCase();
+const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+
+let creator:any=null;
+let simulations:any[]=[];
+let profiles:any[]=[];
+let simulationForks=0;
+let profileForks=0;
+
+if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
+  const {data}=await client.from('creator_profiles').select('user_id,handle,display_name,bio,avatar_url,created_at').eq('handle',handle).maybeSingle();
+  creator=data;
+  if(creator){
+    const [{data:simRows},{data:profileRows}]=await Promise.all([
+      client.from('simulations').select('id,name,device_key,processor_key,configuration_source,updated_at').eq('owner_id',creator.user_id).eq('visibility','public').order('updated_at',{ascending:false}).limit(24),
+      client.from('simulation_profiles').select('id,name,component_key,profile_kind,updated_at').eq('owner_id',creator.user_id).eq('visibility','public').order('updated_at',{ascending:false}).limit(24),
+    ]);
+    simulations=simRows??[];
+    profiles=profileRows??[];
+
+    const simIds=simulations.map(item=>item.id);
+    const profileIds=profiles.map(item=>item.id);
+    if(simIds.length){
+      const {data:forks}=await client.from('simulations').select('forked_from').in('forked_from',simIds);
+      simulationForks=(forks??[]).length;
+    }
+    if(profileIds.length){
+      const {data:forks}=await client.from('simulation_profiles').select('forked_from').in('forked_from',profileIds);
+      profileForks=(forks??[]).length;
+    }
+  }
+}
+---
+
+<Page
+  title={creator ? `${creator.display_name} — PhoneFuturist Creator` : 'Creator not found'}
+  description={creator?.bio || 'Public Interactive Leaks creator profile.'}
+  productMode={true}
+>
+  <main class="il-creator-page">
+    {creator ? (
+      <>
+        <a class="il-back" href="/interactive-leaks/explore">← Explore community</a>
+        <header class="il-creator-hero">
+          <div class="il-creator-avatar">
+            {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
+          </div>
+          <div>
+            <span class="eyebrow">Interactive Leaks creator</span>
+            <h1>{creator.display_name}</h1>
+            <p class="il-creator-handle">@{creator.handle}</p>
+            {creator.bio && <p class="il-creator-bio">{creator.bio}</p>}
+          </div>
+        </header>
+
+        <section class="il-creator-stats">
+          <article><span>Public simulations</span><strong>{simulations.length}</strong></article>
+          <article><span>Public profiles</span><strong>{profiles.length}</strong></article>
+          <article><span>Simulation forks</span><strong>{simulationForks}</strong></article>
+          <article><span>Profile forks</span><strong>{profileForks}</strong></article>
+        </section>
+
+        <section class="il-explore-section">
+          <div class="il-explore-section-head"><div><span class="eyebrow">Published work</span><h2>Simulations</h2></div></div>
+          {simulations.length ? <div class="il-community-list">
+            {simulations.map(item=><a href={`/interactive-leaks/simulation/${item.id}`}><div><strong>{item.name}</strong><span>{item.device_key.replaceAll('-',' ')} · {item.processor_key?.replaceAll('_',' ')||'processor unknown'}</span></div><b>{item.configuration_source}</b></a>)}
+          </div> : <p class="il-library-empty">No public simulations yet.</p>}
+        </section>
+
+        <section class="il-explore-section">
+          <div class="il-explore-section-head"><div><span class="eyebrow">Reusable work</span><h2>Profiles</h2></div></div>
+          {profiles.length ? <div class="il-community-list">
+            {profiles.map(item=><a href={`/interactive-leaks/profile/${item.id}`}><div><strong>{item.name}</strong><span>{item.component_key.replaceAll('_',' ')}</span></div><b>{item.profile_kind}</b></a>)}
+          </div> : <p class="il-library-empty">No public profiles yet.</p>}
+        </section>
+      </>
+    ) : (
+      <section class="il-share-missing">
+        <h1>Creator not found.</h1>
+        <p>This creator profile does not exist or is not available.</p>
+        <a class="il-primary" href="/interactive-leaks/explore">Explore community</a>
+      </section>
+    )}
+  </main>
+</Page>
