@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import '../../styles/lab-simulator.css';
 const user=Astro.locals.user!;
 const access=Astro.locals.access!;
 const staff=access.roles.some(r=>['admin','writer','editor','publisher'].includes(r));
