@@ -401,6 +401,10 @@ export default function InteractiveLeaksSimulator() {
   const [savedProfiles, setSavedProfiles] = useState<any[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [libraryNotice, setLibraryNotice] = useState('');
+  const [autoLoading, setAutoLoading] = useState(false);
+  const [autoPhase, setAutoPhase] = useState(0);
+  const [autoNotice, setAutoNotice] = useState('');
+  const [autoModel, setAutoModel] = useState<any>(null);
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -695,6 +699,14 @@ export default function InteractiveLeaksSimulator() {
   }
 
   useEffect(() => {
+    if (!autoLoading) return;
+    const timer = window.setInterval(() => {
+      setAutoPhase((current) => Math.min(current + 1, 3));
+    }, 950);
+    return () => window.clearInterval(timer);
+  }, [autoLoading]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const simulationId = params.get('simulation');
     const profileId = params.get('profile');
@@ -733,7 +745,60 @@ export default function InteractiveLeaksSimulator() {
     return () => { cancelled = true; };
   }, []);
 
-  async function openLibrary() {
+  async function buildAutoModel(intent: 'balanced' | 'efficiency' | 'performance' = 'balanced') {
+    setAutoLoading(true);
+    setAutoPhase(0);
+    setAutoNotice('');
+    setRun(null);
+    setHasSimulated(false);
+
+    try {
+      const response = await fetch('/interactive-leaks/api/auto-model', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceSlug: 'galaxy-s27-ultra', intent }),
+      });
+      const body = await response.json().catch(() => ({}));
+
+      if (!response.ok || !body?.data) {
+        setAutoNotice(body?.error || 'Could not build the current Auto model.');
+        return;
+      }
+
+      const model = body.data;
+      setAutoModel(model);
+      setConfigurationSource('likely');
+      dispatchExperience({ type: 'mode', value: 'simple' });
+
+      const capacity = model?.battery?.capacityMah?.value;
+      const voltage = model?.battery?.nominalVoltageV?.value;
+      const processorKey = String(model?.processor?.key || '').toLowerCase();
+
+      setForm((current) => ({
+        ...current,
+        name: model?.name || current.name || 'Galaxy S27 Ultra',
+        ...(typeof capacity === 'number' && Number.isFinite(capacity)
+          ? { batteryCapacityMah: String(Math.round(capacity)) }
+          : {}),
+        ...(typeof voltage === 'number' && Number.isFinite(voltage)
+          ? { batteryVoltageV: String(Number(voltage.toFixed(3))) }
+          : {}),
+      }));
+
+      if (processorKey.includes('exynos')) setProcessorScenario('exynos2700');
+      if (processorKey.includes('snapdragon')) setProcessorScenario('snapdragon8eg6');
+
+      setDirty(true);
+      setAutoPhase(3);
+      setAutoNotice(`Model ready from ${body?.meta?.evidenceCount ?? 0} current evidence items.`);
+    } catch {
+      setAutoNotice('Could not build the current Auto model.');
+    } finally {
+      window.setTimeout(() => setAutoLoading(false), 420);
+    }
+  }
+
+    async function openLibrary() {
     setLibraryOpen(true);
     setLibraryLoading(true);
     setLibraryNotice('');
@@ -1003,7 +1068,28 @@ export default function InteractiveLeaksSimulator() {
       </div>
 
       <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Auto':'Manual'}</label>)}</fieldset>
-      <p className="il-input-note">{simple ? 'Auto uses PhoneFuturist evidence where it exists and leaves unsupported values unresolved.' : 'Manual accepts your explicit engineering assumptions. The math engine will not invent missing values.'}</p>
+      <div className="il-auto-bar">
+        <p className="il-input-note">{simple ? 'Auto builds the most likely virtual device from PhoneFuturist evidence, then keeps interactions live locally.' : 'Manual accepts your explicit engineering assumptions. The math engine will not invent missing values.'}</p>
+        {simple && <div className="il-auto-actions">
+          <button type="button" className="il-primary" disabled={autoLoading} onClick={()=>void buildAutoModel('balanced')}>
+            {autoLoading ? 'Building model…' : autoModel ? 'Refresh Auto model' : 'Build Auto model'}
+          </button>
+          <button type="button" className="il-chip" disabled={autoLoading} onClick={()=>void buildAutoModel('efficiency')}>Efficiency</button>
+          <button type="button" className="il-chip" disabled={autoLoading} onClick={()=>void buildAutoModel('performance')}>Performance</button>
+        </div>}
+      </div>
+      {autoNotice && <p className="il-auto-notice">{autoNotice}</p>}
+      {autoLoading && <section className="il-auto-loading" role="status" aria-live="polite">
+        <div className="il-auto-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div className="il-auto-loading-copy">
+          <span className="eyebrow">PHONEFUTURIST AUTO</span>
+          <h2>Building the virtual device.</h2>
+          <p>{['Reading current evidence','Resolving hardware assumptions','Checking model constraints','Preparing live controls'][autoPhase]}</p>
+        </div>
+        <ol className="il-auto-steps">
+          {['Evidence','Hardware model','Constraint check','Live controls'].map((label,index)=><li key={label} className={index<autoPhase?'is-done':index===autoPhase?'is-active':''}><span></span>{label}</li>)}
+        </ol>
+      </section>}
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
 
       {stage==='build' && <section className="il-product-config" aria-label="Device configuration">
