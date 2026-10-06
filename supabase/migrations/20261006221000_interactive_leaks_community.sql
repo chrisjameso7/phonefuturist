@@ -52,7 +52,6 @@ for select
 using (
   visibility = 'public'
   or owner_id = (select auth.uid())
-  or visibility = 'unlisted'
 );
 
 create policy simulation_profiles_insert on public.simulation_profiles
@@ -81,7 +80,6 @@ for select
 using (
   visibility = 'public'
   or owner_id = (select auth.uid())
-  or visibility = 'unlisted'
 );
 
 create policy simulations_insert on public.simulations
@@ -122,3 +120,34 @@ for each row execute function private.touch_simulation_updated_at();
 create trigger touch_simulations_updated_at
 before update on public.simulations
 for each row execute function private.touch_simulation_updated_at();
+
+
+-- Unlisted rows are intentionally excluded from normal table reads so they
+-- cannot be enumerated. These point-lookups make a valid unlisted UUID behave
+-- like possession of the share link while keeping private rows owner-only.
+create function public.shared_simulation(p_id uuid) returns jsonb
+language sql stable security definer set search_path = '' as $$
+  select to_jsonb(s)
+  from public.simulations s
+  where s.id = p_id
+    and (
+      s.visibility in ('public', 'unlisted')
+      or s.owner_id = auth.uid()
+    );
+$$;
+
+create function public.shared_simulation_profile(p_id uuid) returns jsonb
+language sql stable security definer set search_path = '' as $$
+  select to_jsonb(p)
+  from public.simulation_profiles p
+  where p.id = p_id
+    and (
+      p.visibility in ('public', 'unlisted')
+      or p.owner_id = auth.uid()
+    );
+$$;
+
+revoke all on function public.shared_simulation(uuid) from public, anon, authenticated;
+revoke all on function public.shared_simulation_profile(uuid) from public, anon, authenticated;
+grant execute on function public.shared_simulation(uuid) to anon, authenticated;
+grant execute on function public.shared_simulation_profile(uuid) to anon, authenticated;
