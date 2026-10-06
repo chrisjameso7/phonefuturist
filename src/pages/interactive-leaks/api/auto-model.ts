@@ -2,10 +2,13 @@ import type { APIRoute } from 'astro';
 import {
   AUTO_MODEL_JSON_SCHEMA,
   autoModelPrompt,
+  evidenceItemsFromBundle,
   validateAutoModel,
   type AutoModelDraft,
   type AutoModelRequest,
+  type IntelligenceBundle,
 } from '../../../lib/simulation/auto-ai';
+import { simulationServiceClient } from '../../../lib/simulation/service-client';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -16,47 +19,50 @@ const json = (body: unknown, status = 200) =>
 export const POST: APIRoute = async ({ request }) => {
   const apiKey = import.meta.env.GEMINI_API_KEY;
   const model = import.meta.env.GEMINI_AUTO_MODEL || 'gemini-3.8-flash';
+  const service = simulationServiceClient();
 
   if (!apiKey) return json({ error: 'Auto AI is not configured.' }, 503);
+  if (!service) return json({ error: 'Simulation intelligence service is not configured.' }, 503);
 
-  let body: AutoModelRequest;
+  let body: { deviceSlug?: string; intent?: AutoModelRequest['intent'] };
   try {
-    if (Number(request.headers.get('content-length') || 0) > 100_000) {
-      return json({ error: 'Auto evidence payload is too large.' }, 413);
+    if (Number(request.headers.get('content-length') || 0) > 10_000) {
+      return json({ error: 'Auto request is too large.' }, 413);
     }
     body = await request.json();
   } catch {
     return json({ error: 'Invalid JSON.' }, 400);
   }
 
-  if (
-    !body ||
-    typeof body.deviceKey !== 'string' ||
-    typeof body.deviceName !== 'string' ||
-    !Array.isArray(body.evidence) ||
-    body.deviceKey.length > 160 ||
-    body.deviceName.length > 160 ||
-    body.evidence.length > 80
-  ) {
-    return json({ error: 'Invalid Auto model request.' }, 400);
+  const deviceSlug = typeof body?.deviceSlug === 'string' ? body.deviceSlug.trim() : '';
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(deviceSlug) || deviceSlug.length > 180) {
+    return json({ error: 'Invalid device.' }, 400);
   }
 
-  const evidence = body.evidence.filter(item =>
-    item &&
-    typeof item.id === 'string' &&
-    item.id.length <= 120 &&
-    typeof item.claim === 'string' &&
-    item.claim.length <= 2_000 &&
-    ['confirmed','reported','leak','historical','measured','editorial'].includes(item.kind)
-  );
+  const { data: bundleData, error: bundleError } = await service
+    .rpc('simulation_evidence_bundle', { p_device_slug: deviceSlug });
+
+  if (bundleError) return json({ error: 'Could not load simulation evidence.' }, 500);
+  if (!bundleData) return json({ error: 'Device intelligence not found.' }, 404);
+
+  const bundle = bundleData as IntelligenceBundle;
+  const device = bundle.device;
+  const evidence = evidenceItemsFromBundle(bundle);
+
+  if (!device?.slug || !device?.name) {
+    return json({ error: 'Device intelligence is incomplete.' }, 422);
+  }
+  if (!evidence.length) {
+    return json({ error: 'No active evidence is available for Auto mode yet.' }, 422);
+  }
 
   const safeRequest: AutoModelRequest = {
-    deviceKey: body.deviceKey,
-    deviceName: body.deviceName,
+    deviceKey: device.slug,
+    deviceName: [device.brand, device.name].filter(Boolean).join(' '),
     evidence,
     ...(body.intent === 'efficiency' || body.intent === 'performance' || body.intent === 'balanced'
       ? { intent: body.intent }
-      : {}),
+      : { intent: 'balanced' }),
   };
 
   try {
