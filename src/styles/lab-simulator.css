@@ -3865,3 +3865,99 @@
     position: static;
   }
 }
+
+
+.il-soc-lab {
+  overflow: hidden;
+}
+
+.il-soc-lab .il-slider-control + .il-slider-control {
+  margin-top: 12px;
+}
+
+.il-thermal-result {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 92%, var(--ink) 2%);
+}
+
+.il-thermal-result-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.il-thermal-result-head span {
+  font-size: .66rem;
+  font-weight: 760;
+}
+
+.il-thermal-result-head strong {
+  font-size: 1.05rem;
+  letter-spacing: -.02em;
+}
+
+.il-thermal-track {
+  height: 7px;
+  margin: 10px 0 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.il-thermal-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+  transition: width 140ms ease;
+}
+
+.il-thermal-result[data-state="stable"] {
+  color: var(--accent);
+}
+
+.il-thermal-result[data-state="hot"] {
+  color: #b46a13;
+}
+
+.il-thermal-result[data-state="throttling"] {
+  color: #b53535;
+}
+
+.il-thermal-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.il-thermal-metrics div {
+  min-width: 0;
+}
+
+.il-thermal-metrics span,
+.il-thermal-metrics strong {
+  display: block;
+}
+
+.il-thermal-metrics span {
+  margin-bottom: 2px;
+  color: var(--muted);
+  font-size: .57rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.il-thermal-metrics strong {
+  color: var(--ink);
+  font-size: .72rem;
+}
+
+@media (max-width: 560px) {
+  .il-thermal-metrics {
+    grid-template-columns: 1fr;
+  }
+}
