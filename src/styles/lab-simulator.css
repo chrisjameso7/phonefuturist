@@ -3699,3 +3699,169 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Simplified primary simulator surface */
+.il-simulator-bar {
+  margin: 10px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.il-simulator-mode {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(84px, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 4%, var(--surface));
+}
+
+.il-simulator-mode button {
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: .67rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.il-simulator-mode button.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px color-mix(in srgb, #000 9%, transparent);
+}
+
+.il-simulator-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.il-simulator-hint {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: .66rem;
+  line-height: 1.5;
+}
+
+.il-product-config {
+  align-items: start;
+}
+
+.il-rumor-group,
+.il-config-source,
+.il-live-preview-primary {
+  box-shadow: none !important;
+}
+
+.il-config-main {
+  display: grid;
+  gap: 12px;
+}
+
+.il-config-source {
+  padding: 14px;
+}
+
+.il-config-label small {
+  opacity: .78;
+}
+
+.il-rumor-group {
+  padding: 14px;
+}
+
+.il-rumor-heading {
+  margin-bottom: 10px;
+}
+
+.il-rumor-heading > span {
+  display: none;
+}
+
+.il-option {
+  min-height: 58px;
+}
+
+.il-option span small {
+  margin-top: 2px;
+}
+
+.il-option b {
+  font-size: .6rem;
+  font-weight: 700;
+}
+
+.il-battery-tune {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.il-live-preview-primary {
+  position: sticky;
+  top: 76px;
+  padding: 16px;
+}
+
+.il-live-preview-primary .il-live-preview-head {
+  margin-bottom: 8px;
+}
+
+.il-live-preview-primary .il-live-row {
+  min-height: 42px;
+}
+
+.il-live-preview-primary .il-live-row strong {
+  max-width: 58%;
+  text-align: right;
+}
+
+.il-quick-tuning {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.il-quick-tuning summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-size: .66rem;
+  font-weight: 760;
+}
+
+.il-quick-tuning .il-slider-control {
+  margin-top: 12px;
+}
+
+@media (max-width: 760px) {
+  .il-simulator-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .il-simulator-mode,
+  .il-simulator-actions {
+    width: 100%;
+  }
+
+  .il-simulator-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .il-simulator-actions .il-primary {
+    width: 100%;
+  }
+
+  .il-live-preview-primary {
+    position: static;
+  }
+}
