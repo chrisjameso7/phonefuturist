@@ -387,6 +387,10 @@ export default function InteractiveLeaksSimulator() {
   const [savedNotice, setSavedNotice] = useState('');
   const [profileName, setProfileName] = useState('My Exynos 2700 profile');
   const [profileSavedNotice, setProfileSavedNotice] = useState('');
+  const [simulationVisibility, setSimulationVisibility] = useState<'private' | 'unlisted' | 'public'>('private');
+  const [profileVisibility, setProfileVisibility] = useState<'private' | 'unlisted' | 'public'>('private');
+  const [simulationSharePath, setSimulationSharePath] = useState('');
+  const [profileSharePath, setProfileSharePath] = useState('');
   const [processorProfile, setProcessorProfile] = useState<'expected' | 'efficiency' | 'aggressive' | 'custom'>('expected');
   const [customCpuTarget, setCustomCpuTarget] = useState(50);
   const [customGpuTarget, setCustomGpuTarget] = useState(50);
@@ -738,7 +742,7 @@ export default function InteractiveLeaksSimulator() {
     const payload = {
       name: profileName.trim() || 'Untitled processor profile',
       componentKey: processorScenario,
-      visibility: 'private',
+      visibility: profileVisibility,
       assumptions: {
         profilePreset: processorProfile,
         customCpuTarget,
@@ -758,7 +762,10 @@ export default function InteractiveLeaksSimulator() {
       });
 
       if (response.ok) {
-        setProfileSavedNotice('Profile saved to your account');
+        const body = await response.json();
+        const id = body?.data?.id;
+        setProfileSavedNotice(profileVisibility === 'private' ? 'Profile saved to your account' : 'Profile published');
+        setProfileSharePath(id && profileVisibility !== 'private' ? `/interactive-leaks/profile/${id}` : '');
         window.setTimeout(() => setProfileSavedNotice(''), 2400);
         return;
       }
@@ -795,7 +802,7 @@ export default function InteractiveLeaksSimulator() {
       name: simulationName.trim() || 'Untitled simulation',
       processorKey: processorScenario,
       configurationSource,
-      visibility: 'private',
+      visibility: simulationVisibility,
       state,
       resultSnapshot: run ? {
         headline: headlineText(run),
@@ -812,7 +819,10 @@ export default function InteractiveLeaksSimulator() {
       });
 
       if (response.ok) {
-        setSavedNotice('Saved to your account');
+        const body = await response.json();
+        const id = body?.data?.id;
+        setSavedNotice(simulationVisibility === 'private' ? 'Saved to your account' : 'Simulation published');
+        setSimulationSharePath(id && simulationVisibility !== 'private' ? `/interactive-leaks/simulation/${id}` : '');
         window.setTimeout(() => setSavedNotice(''), 2400);
         return;
       }
@@ -1016,9 +1026,18 @@ export default function InteractiveLeaksSimulator() {
                 <span>Profile name</span>
                 <input type="text" value={profileName} maxLength={120} onChange={(event)=>setProfileName(event.currentTarget.value)} />
               </label>
-              <button type="button" className="il-chip" onClick={saveProcessorProfile}>Save profile</button>
+              <label>
+                <span>Visibility</span>
+                <select value={profileVisibility} onChange={(event)=>setProfileVisibility(event.currentTarget.value as 'private'|'unlisted'|'public')}>
+                  <option value="private">Private</option>
+                  <option value="unlisted">Unlisted</option>
+                  <option value="public">Public</option>
+                </select>
+              </label>
+              <button type="button" className="il-chip" onClick={saveProcessorProfile}>{profileVisibility==='private'?'Save profile':'Publish profile'}</button>
               {profileSavedNotice && <small>{profileSavedNotice}</small>}
             </div>
+            {profileSharePath && <p className="il-share-path"><span>Share:</span> <a href={profileSharePath}>{profileSharePath}</a></p>}
 
             <p className="il-config-note">Profiles bundle assumptions for reuse. They do not fabricate benchmark scores. When performance and thermal models are added, these profile values can become model inputs instead of display-only scenario metadata.</p>
           </div>
@@ -1598,8 +1617,17 @@ export default function InteractiveLeaksSimulator() {
               <span>Simulation name</span>
               <input type="text" value={simulationName} onChange={(event)=>setSimulationName(event.currentTarget.value)} maxLength={120} />
             </label>
-            <button type="button" className="il-chip" onClick={saveSimulation}>Save simulation</button>
+            <label>
+              <span>Visibility</span>
+              <select value={simulationVisibility} onChange={(event)=>setSimulationVisibility(event.currentTarget.value as 'private'|'unlisted'|'public')}>
+                <option value="private">Private</option>
+                <option value="unlisted">Unlisted</option>
+                <option value="public">Public</option>
+              </select>
+            </label>
+            <button type="button" className="il-chip" onClick={saveSimulation}>{simulationVisibility==='private'?'Save simulation':'Publish simulation'}</button>
             {savedNotice && <small>{savedNotice}</small>}
+            {simulationSharePath && <p className="il-share-path"><span>Share:</span> <a href={simulationSharePath}>{simulationSharePath}</a></p>}
           </div>}
 
           {stage==='test' && <div className="il-run">
