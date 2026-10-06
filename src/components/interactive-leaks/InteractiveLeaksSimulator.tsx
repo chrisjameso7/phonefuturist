@@ -1067,38 +1067,19 @@ export default function InteractiveLeaksSimulator() {
         ))}
       </nav>
 
-      <div className="il-toolbar">
-        <div>
-          <span className="il-status">Instrument · Public Beta</span>
-
-          <span className="il-engine">
-            Engine v{SIMULATION_ENGINE_VERSION} · Battery model{' '}
-            {BATTERY_EXPERIENCE_VERSION}
-          </span>
+      <div className="il-simulator-bar">
+        <div className="il-simulator-mode" role="group" aria-label="Simulation mode">
+          <button type="button" className={simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'simple'})}>Auto</button>
+          <button type="button" className={!simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Manual</button>
         </div>
-
-        <div className="il-toolbar-actions">
-          <button type="button" className="il-chip" onClick={loadExample}>
-            Load illustrative example
-          </button>
-
-          <button type="button" className="il-chip" onClick={clearSimulation}>
-            Clear
-          </button>
+        <div className="il-simulator-actions">
+          {simple && <button type="button" className="il-primary" disabled={autoLoading} onClick={()=>void buildAutoModel('balanced')}>
+            {autoLoading ? 'Building…' : autoModel ? 'Refresh model' : 'Build model'}
+          </button>}
+          <button type="button" className="il-chip" onClick={clearSimulation}>Reset</button>
         </div>
       </div>
-
-      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Auto':'Manual'}</label>)}</fieldset>
-      <div className="il-auto-bar">
-        <p className="il-input-note">{simple ? 'Auto builds the most likely virtual device from PhoneFuturist evidence, then keeps interactions live locally.' : 'Manual accepts your explicit engineering assumptions. The math engine will not invent missing values.'}</p>
-        {simple && <div className="il-auto-actions">
-          <button type="button" className="il-primary" disabled={autoLoading} onClick={()=>void buildAutoModel('balanced')}>
-            {autoLoading ? 'Building model…' : autoModel ? 'Refresh Auto model' : 'Build Auto model'}
-          </button>
-          <button type="button" className="il-chip" disabled={autoLoading} onClick={()=>void buildAutoModel('efficiency')}>Efficiency</button>
-          <button type="button" className="il-chip" disabled={autoLoading} onClick={()=>void buildAutoModel('performance')}>Performance</button>
-        </div>}
-      </div>
+      <p className="il-simulator-hint">{simple ? 'Auto builds the device from current PhoneFuturist evidence. Change a control and supported results update from that model.' : 'Manual lets you override the device yourself. Advanced inputs stay out of the way until you open them.'}</p>
       {autoNotice && <p className="il-auto-notice">{autoNotice}</p>}
       {autoLoading && <section className="il-auto-loading" role="status" aria-live="polite">
         <div className="il-auto-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -1117,8 +1098,8 @@ export default function InteractiveLeaksSimulator() {
         <div className="il-config-main">
           <div className="il-config-source">
             <div className="il-config-label">
-              <span>Configuration source</span>
-              <small>Choose a likely rumor set, a conservative case, or tune it yourself.</small>
+              <span>Configuration</span>
+              <small>Pick a scenario. That's it.</small>
             </div>
             <div className="il-config-source-actions">
               <button type="button" className={configurationSource==='likely'?'is-active':''} onClick={applyLikelyConfiguration}>Most likely</button>
@@ -1142,54 +1123,6 @@ export default function InteractiveLeaksSimulator() {
                 <b>{processorScenario==='snapdragon8eg6'?'Selected':''}</b>
               </button>
             </div>
-            <p className="il-config-note">Processor selection is saved with the scenario UI, but benchmark and thermal modeling are not enabled in this beta yet.</p>
-          </div>
-
-          <div className="il-rumor-group">
-            <div className="il-rumor-heading">
-              <strong>Processor profile</strong>
-              <span>Reusable assumptions</span>
-            </div>
-            <div className="il-profile-grid">
-              <button type="button" className={processorProfile==='expected'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('expected')}>
-                <strong>PhoneFuturist Expected</strong>
-                <span>Balanced interpretation of current evidence and historical scaling.</span>
-              </button>
-              <button type="button" className={processorProfile==='efficiency'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('efficiency')}>
-                <strong>Efficiency</strong>
-                <span>Assumes lower sustained demand and stronger energy efficiency.</span>
-              </button>
-              <button type="button" className={processorProfile==='aggressive'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('aggressive')}>
-                <strong>Aggressive</strong>
-                <span>Assumes higher sustained performance with a tougher efficiency tradeoff.</span>
-              </button>
-              <button type="button" className={processorProfile==='custom'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('custom')}>
-                <strong>Custom</strong>
-                <span>Set your own scenario targets.</span>
-              </button>
-            </div>
-
-            {processorProfile==='custom' && <p className="il-config-note">CPU and GPU tuning controls are hidden until the performance and thermal model can make them affect real outputs.</p>}
-
-            <div className="il-profile-save">
-              <label>
-                <span>Profile name</span>
-                <input type="text" value={profileName} maxLength={120} onChange={(event)=>setProfileName(event.currentTarget.value)} />
-              </label>
-              <label>
-                <span>Visibility</span>
-                <select value={profileVisibility} onChange={(event)=>setProfileVisibility(event.currentTarget.value as 'private'|'unlisted'|'public')}>
-                  <option value="private">Private</option>
-                  <option value="unlisted">Unlisted</option>
-                  <option value="public">Public</option>
-                </select>
-              </label>
-              <button type="button" className="il-chip" onClick={saveProcessorProfile}>{profileVisibility==='private'?'Save profile':'Publish profile'}</button>
-              {profileSavedNotice && <small>{profileSavedNotice}</small>}
-            </div>
-            {profileSharePath && <p className="il-share-path"><span>Share:</span> <a href={profileSharePath}>{profileSharePath}</a></p>}
-
-            <p className="il-config-note">Profiles bundle assumptions for reuse. They do not fabricate benchmark scores. When performance and thermal models are added, these profile values can become model inputs instead of display-only scenario metadata.</p>
           </div>
 
           <div className="il-rumor-group">
@@ -1218,47 +1151,36 @@ export default function InteractiveLeaksSimulator() {
                 value={Number(form.batteryCapacityMah || 5700)}
                 onChange={(event)=>applyBatteryScenario(event.currentTarget.value)}
               />
-              <small>This slider directly changes the battery input used by the current deterministic battery model.</small>
             </label>
           </div>
         </div>
 
         <div className="il-config-side">
-          <aside className="il-assumptions-panel">
-            <div className="il-live-preview-head">
-              <span>Live physics</span>
-              <small>Exact transformations only</small>
-            </div>
-
-            {!simple && <label className="il-slider-control">
-              <span><strong>Nominal battery voltage</strong><b>{form.batteryVoltageV || '3.85'} V</b></span>
-              <input
-                type="range"
-                min="3.60"
-                max="4.00"
-                step="0.01"
-                value={Number(form.batteryVoltageV || 3.85)}
-                onChange={(event)=>update('batteryVoltageV', event.currentTarget.value)}
-              />
-              <small>User assumption. It immediately changes the exact mAh × V energy calculation.</small>
-            </label>}
-
-            <div className="il-live-row"><span>Rated pack energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Needs nominal voltage'}</strong></div>
-            <p className="il-config-note">CPU load, GPU load, efficiency and temperature sliders are intentionally hidden until each one is connected to a validated performance or thermal model.</p>
-          </aside>
-
-          <aside className="il-live-preview">
+          <aside className="il-live-preview il-live-preview-primary">
             <div className="il-live-preview-head">
               <span>Live preview</span>
-              <small>{dirty ? 'Pending rerun' : hasSimulated ? 'Current result' : 'Input preview'}</small>
+              <small>{autoLoading ? 'Building model' : autoModel ? 'Model ready' : simple ? 'Build model to begin' : 'Manual'}</small>
             </div>
             <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
-            <div className="il-live-row"><span>Profile</span><strong>{processorProfile==='expected'?'PF Expected':processorProfile.charAt(0).toUpperCase()+processorProfile.slice(1)}</strong></div>
             <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
-            <div className="il-live-row"><span>Mode</span><strong>{simple ? 'Auto' : 'Manual'}</strong></div>
-            <div className="il-live-row"><span>Rated energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Unknown'}</strong></div>
-            <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
+            <div className="il-live-row"><span>Pack energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Waiting for model'}</strong></div>
+            <div className="il-live-row"><span>Result</span><strong>{hasSimulated && run ? headlineText(run) : 'Not run yet'}</strong></div>
+            {!simple && <details className="il-quick-tuning">
+              <summary>Manual tuning</summary>
+              <label className="il-slider-control">
+                <span><strong>Battery voltage</strong><b>{form.batteryVoltageV || '3.85'} V</b></span>
+                <input
+                  type="range"
+                  min="3.60"
+                  max="4.00"
+                  step="0.01"
+                  value={Number(form.batteryVoltageV || 3.85)}
+                  onChange={(event)=>update('batteryVoltageV', event.currentTarget.value)}
+                />
+              </label>
+            </details>}
           </aside>
+        </div>
         </div>
       </section>}
 
@@ -1302,8 +1224,8 @@ export default function InteractiveLeaksSimulator() {
           {stage==='build' && <details className="il-engineering-panel">
             <summary>
               <span>
-                <strong>Advanced engineering inputs</strong>
-                <small>Dimensions, display geometry, cell geometry, cameras and internal packaging</small>
+                <strong>Advanced tuning</strong>
+                <small>Optional dimensions, display, battery, camera and packaging controls</small>
               </span>
               <b>Open</b>
             </summary>
