@@ -57,10 +57,20 @@ export function withUserOverride(
   note = 'User override',
 ): VirtualParameter {
   if (!Number.isFinite(value)) throw new Error('Override must be finite.');
+  const overriddenFrom = current
+    ? {
+        ...(current.value !== undefined ? { value: current.value } : {}),
+        ...(current.range !== undefined ? { range: current.range } : {}),
+        provenance: current.provenance,
+        ...(current.confidence !== undefined ? { confidence: current.confidence } : {}),
+        ...(current.sourceId !== undefined ? { sourceId: current.sourceId } : {}),
+      }
+    : undefined;
+
   return {
     value,
     provenance: { kind: 'user', note },
-    ...(current ? { overriddenFrom: { ...current, overriddenFrom: undefined } } : {}),
+    ...(overriddenFrom ? { overriddenFrom } : {}),
   };
 }
 
