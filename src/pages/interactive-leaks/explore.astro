@@ -9,18 +9,19 @@ let simulations: any[] = [];
 let profiles: any[] = [];
 let simulationForks = new Map<string, number>();
 let profileForks = new Map<string, number>();
+let creators = new Map<string, any>();
 
 if (client) {
   const [{ data: simulationRows }, { data: profileRows }] = await Promise.all([
     client
       .from('simulations')
-      .select('id,name,device_key,configuration_source,processor_key,state,result_snapshot,created_at,updated_at')
+      .select('id,owner_id,name,device_key,configuration_source,processor_key,state,result_snapshot,created_at,updated_at')
       .eq('visibility', 'public')
       .order('updated_at', { ascending: false })
       .limit(24),
     client
       .from('simulation_profiles')
-      .select('id,name,component_key,profile_kind,assumptions,created_at,updated_at')
+      .select('id,owner_id,name,component_key,profile_kind,assumptions,created_at,updated_at')
       .eq('visibility', 'public')
       .order('updated_at', { ascending: false })
       .limit(24),
@@ -28,6 +29,15 @@ if (client) {
 
   simulations = simulationRows ?? [];
   profiles = profileRows ?? [];
+
+  const ownerIds = [...new Set([...simulations.map((item) => item.owner_id), ...profiles.map((item) => item.owner_id)].filter(Boolean))];
+  if (ownerIds.length) {
+    const { data: creatorRows } = await client
+      .from('creator_profiles')
+      .select('user_id,handle,display_name,avatar_url')
+      .in('user_id', ownerIds);
+    creators = new Map((creatorRows ?? []).map((creator) => [creator.user_id, creator]));
+  }
 
   const simulationIds = simulations.map((item) => item.id);
   const profileIds = profiles.map((item) => item.id);
@@ -102,6 +112,7 @@ const topProfiles = [...profiles]
               </div>
               <h3>{item.name}</h3>
               <p>{item.device_key.replaceAll('-', ' ')}</p>
+              {creators.get(item.owner_id) && <span class="il-byline">by @{creators.get(item.owner_id).handle}</span>}
               <dl>
                 <div><dt>Processor</dt><dd>{item.processor_key?.replaceAll('_', ' ') || 'Unknown'}</dd></div>
                 <div><dt>Battery</dt><dd>{item.state?.batteryCapacityMah ? `${item.state.batteryCapacityMah} mAh` : 'Unknown'}</dd></div>
@@ -127,7 +138,7 @@ const topProfiles = [...profiles]
             <a href={`/interactive-leaks/simulation/${item.id}`}>
               <div>
                 <strong>{item.name}</strong>
-                <span>{item.device_key.replaceAll('-', ' ')} · {item.processor_key?.replaceAll('_', ' ') || 'processor unknown'}</span>
+                <span>{item.device_key.replaceAll('-', ' ')} · {item.processor_key?.replaceAll('_', ' ') || 'processor unknown'}{creators.get(item.owner_id) ? ` · @${creators.get(item.owner_id).handle}` : ''}</span>
               </div>
               <b>{simulationForks.get(item.id) ?? 0} forks</b>
             </a>
@@ -155,6 +166,7 @@ const topProfiles = [...profiles]
               </div>
               <h3>{item.name}</h3>
               <p>{item.component_key.replaceAll('_', ' ')}</p>
+              {creators.get(item.owner_id) && <span class="il-byline">by @{creators.get(item.owner_id).handle}</span>}
               <dl>
                 <div><dt>Preset</dt><dd>{item.assumptions?.profilePreset || 'Custom'}</dd></div>
                 <div><dt>CPU target</dt><dd>{item.assumptions?.customCpuTarget ?? item.assumptions?.cpuLoad ?? 'Unknown'}%</dd></div>
