@@ -1,129 +1,47 @@
 ---
 import Page from '../../layouts/Page.astro';
-import LabPortal from '../../components/LabPortal.astro';
 import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
 import '../../styles/lab-simulator.css';
 ---
 
 <Page
-  title="Interactive Leaks — Simulation Laboratory"
-  description="Configure a device, define its environment, and examine model-derived device behaviour inside the Interactive Leaks simulation laboratory."
+  title="Galaxy S27 Ultra — Interactive Leaks"
+  description="Build, test, compare and inspect evidence-aware simulations for unreleased devices."
   privatePage={true}
   productMode={true}
 >
-  <LabPortal />
-
-  <div class="lab-product">
-    <header class="lab-product-header">
-      <div class="lab-product-brand">
-        <a
-          class="lab-product-mark"
-          href="/interactive-leaks"
-          aria-label="Back to Interactive Leaks"
-        >
-          <span class="lab-product-mark-pf">PF</span>
-          <span class="lab-product-mark-divider" aria-hidden="true">/</span>
-          <span class="lab-product-mark-lab">LAB</span>
-        </a>
-
-        <div class="lab-product-identity">
-          <span>Interactive Leaks</span>
-          <strong>Simulation Laboratory</strong>
+  <div class="il-product">
+    <section class="il-device-head">
+      <div>
+        <a class="il-back" href="/interactive-leaks">← Back to device</a>
+        <div class="il-title-row">
+          <h1>Galaxy S27 Ultra</h1>
+          <span class="il-pill il-pill-unreleased">Unreleased</span>
+          <span class="il-pill">87% confidence</span>
         </div>
+        <p>Interactive Leak Lab · 46 tracked rumors · expected Feb 2027</p>
       </div>
 
-      <div class="lab-product-meta">
-        <span class="lab-product-beta">
-          <span class="lab-product-live-dot" aria-hidden="true"></span>
-          Public Beta
-        </span>
-
-        <a class="lab-product-exit" href="/interactive-leaks">
-          Exit Lab
-          <span aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </header>
-
-    <section
-      class="lab-product-intro"
-      aria-labelledby="lab-workspace-title"
-    >
-      <div class="lab-product-intro-copy">
-        <p class="lab-product-kicker">
-          Device simulation environment
-        </p>
-
-        <h1 id="lab-workspace-title">
-          Model the device.<br />
-          <span>Interrogate the outcome.</span>
-        </h1>
-
-        <p class="lab-product-description">
-          Build a hypothetical device, define its operating conditions, and
-          inspect what the current PhoneFuturist models can actually support.
-          Unsupported conclusions remain unresolved rather than being invented.
-        </p>
-      </div>
-
-      <div class="lab-product-system">
-        <div class="lab-product-system-head">
-          <span>System</span>
-          <span class="lab-product-system-state">
-            Operational
-          </span>
-        </div>
-
-        <dl>
-          <div>
-            <dt>Workspace</dt>
-            <dd>Interactive Leaks</dd>
-          </div>
-
-          <div>
-            <dt>Engine</dt>
-            <dd>Deterministic</dd>
-          </div>
-
-          <div>
-            <dt>Build</dt>
-            <dd>Public Beta</dd>
-          </div>
-        </dl>
+      <div class="il-head-actions">
+        <button class="il-secondary" type="button">Compare</button>
+        <a class="il-primary" href="#interactive-simulator">Run simulation</a>
       </div>
     </section>
 
-    <div class="lab-product-rule" aria-hidden="true">
-      <span>DEVICE</span>
-      <span>ENVIRONMENT</span>
-      <span>MODEL</span>
-      <span>RESULT</span>
+    <div class="il-disclaimer">
+      <strong>Simulated result</strong>
+      <span>Based on publicly reported specifications, estimated specifications, historical device behavior, and PhoneFuturist modeling. Actual performance may differ.</span>
     </div>
 
-    <main
-      class="lab-product-workspace"
-      aria-label="Interactive Leaks simulator"
-    >
-      <div class="lab-simulator-shell">
-        <InteractiveLeaksSimulator client:load />
-      </div>
+    <nav class="il-stage-tabs" aria-label="Simulation stages">
+      <a class="is-active" href="#interactive-simulator">Build</a>
+      <a href="#interactive-simulator">Test</a>
+      <a href="#interactive-simulator">Compare</a>
+      <a href="#interactive-simulator">Results</a>
+    </nav>
+
+    <main id="interactive-simulator" class="il-workspace">
+      <InteractiveLeaksSimulator client:load />
     </main>
-
-    <footer class="lab-product-footer">
-      <div>
-        <span class="lab-product-footer-mark">
-          PF / LAB
-        </span>
-
-        <p>
-          Interactive Leaks is an experimental PhoneFuturist research product.
-        </p>
-      </div>
-
-      <p>
-        Results are constrained by the model version, supplied assumptions,
-        and available evidence.
-      </p>
-    </footer>
   </div>
 </Page>
