@@ -21,7 +21,7 @@ export const POST: APIRoute = async ({ request }) => {
   const model = import.meta.env.GEMINI_AUTO_MODEL || 'gemini-3.8-flash';
   const service = simulationServiceClient();
 
-  if (!apiKey) return json({ error: 'Auto AI is not configured.' }, 503);
+  if (!apiKey) return json({ error: 'Auto modeling is not configured.' }, 503);
   if (!service) return json({ error: 'Simulation intelligence service is not configured.' }, 503);
 
   let body: { deviceSlug?: string; intent?: AutoModelRequest['intent'] };
@@ -86,7 +86,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     if (!response.ok) {
-      return json({ error: 'Auto AI provider request failed.' }, 502);
+      return json({ error: 'Auto modeling request failed.' }, 502);
     }
 
     const provider = await response.json() as any;
@@ -94,13 +94,13 @@ export const POST: APIRoute = async ({ request }) => {
       ?.map((part: any) => typeof part?.text === 'string' ? part.text : '')
       .join('');
 
-    if (!text) return json({ error: 'Auto AI returned no model.' }, 502);
+    if (!text) return json({ error: 'Auto modeling returned no device model.' }, 502);
 
     let draft: AutoModelDraft;
     try {
       draft = JSON.parse(text);
     } catch {
-      return json({ error: 'Auto AI returned invalid structured output.' }, 502);
+      return json({ error: 'Auto modeling returned an invalid device model.' }, 502);
     }
 
     const virtualDevice = validateAutoModel(safeRequest, draft);
@@ -114,6 +114,6 @@ export const POST: APIRoute = async ({ request }) => {
       },
     });
   } catch {
-    return json({ error: 'Auto AI is temporarily unavailable.' }, 502);
+    return json({ error: 'Auto modeling is temporarily unavailable.' }, 502);
   }
 };
