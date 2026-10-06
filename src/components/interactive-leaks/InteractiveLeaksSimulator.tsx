@@ -872,6 +872,7 @@ export default function InteractiveLeaksSimulator() {
   return (
     <div className="il-app">
       <div className="il-product-actions">
+        <a className="il-chip" href="/interactive-leaks/explore">Explore community</a>
         <button type="button" className="il-chip" onClick={openLibrary}>My simulations & profiles</button>
       </div>
 
