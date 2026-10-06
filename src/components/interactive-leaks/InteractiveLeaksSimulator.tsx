@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react';
+import { useEffect, useState, useReducer } from 'react';
 import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
 import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
 import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
@@ -383,7 +383,7 @@ export default function InteractiveLeaksSimulator() {
   const [cpuLoad, setCpuLoad] = useState(25);
   const [gpuLoad, setGpuLoad] = useState(10);
   const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
-  const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra — Most likely');
+  const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra: Most likely');
   const [savedNotice, setSavedNotice] = useState('');
   const [profileName, setProfileName] = useState('My Exynos 2700 profile');
   const [profileSavedNotice, setProfileSavedNotice] = useState('');
@@ -697,6 +697,45 @@ export default function InteractiveLeaksSimulator() {
     setLibraryOpen(false);
   }
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const simulationId = params.get('simulation');
+    const profileId = params.get('profile');
+    if (!simulationId && !profileId) return;
+
+    let cancelled = false;
+    const restore = async () => {
+      try {
+        if (simulationId) {
+          const response = await fetch(`/interactive-leaks/api/simulations?id=${encodeURIComponent(simulationId)}`);
+          const body = await response.json();
+          if (!cancelled && response.ok && body?.data) {
+            loadSimulationRecord(body.data);
+            setSavedNotice('Fork loaded. Make it yours.');
+          } else if (!cancelled) {
+            setSavedNotice(body?.error || 'Could not load simulation.');
+          }
+        } else if (profileId) {
+          const response = await fetch(`/interactive-leaks/api/profiles?id=${encodeURIComponent(profileId)}`);
+          const body = await response.json();
+          if (!cancelled && response.ok && body?.data) {
+            loadProfileRecord(body.data);
+            setProfileSavedNotice('Forked profile loaded. Tune and save it.');
+          } else if (!cancelled) {
+            setProfileSavedNotice(body?.error || 'Could not load profile.');
+          }
+        }
+      } catch {
+        if (!cancelled) setSavedNotice('Could not load forked work.');
+      } finally {
+        if (!cancelled) window.history.replaceState({}, '', window.location.pathname);
+      }
+    };
+
+    void restore();
+    return () => { cancelled = true; };
+  }, []);
+
   async function openLibrary() {
     setLibraryOpen(true);
     setLibraryLoading(true);
@@ -761,16 +800,21 @@ export default function InteractiveLeaksSimulator() {
         body: JSON.stringify(payload),
       });
 
+      const body = await response.json().catch(() => ({}));
       if (response.ok) {
-        const body = await response.json();
         const id = body?.data?.id;
         setProfileSavedNotice(profileVisibility === 'private' ? 'Profile saved to your account' : 'Profile published');
         setProfileSharePath(id && profileVisibility !== 'private' ? `/interactive-leaks/profile/${id}` : '');
         window.setTimeout(() => setProfileSavedNotice(''), 2400);
         return;
       }
+      if (response.status === 409) {
+        setProfileSharePath('');
+        setProfileSavedNotice(body?.error || 'Create a creator profile before publishing.');
+        return;
+      }
     } catch {
-      // Fall through to local storage.
+      // Fall through to local storage when the account service is unavailable.
     }
 
     try {
@@ -818,12 +862,17 @@ export default function InteractiveLeaksSimulator() {
         body: JSON.stringify(payload),
       });
 
+      const body = await response.json().catch(() => ({}));
       if (response.ok) {
-        const body = await response.json();
         const id = body?.data?.id;
         setSavedNotice(simulationVisibility === 'private' ? 'Saved to your account' : 'Simulation published');
         setSimulationSharePath(id && simulationVisibility !== 'private' ? `/interactive-leaks/simulation/${id}` : '');
         window.setTimeout(() => setSavedNotice(''), 2400);
+        return;
+      }
+      if (response.status === 409) {
+        setSimulationSharePath('');
+        setSavedNotice(body?.error || 'Create a creator profile before publishing.');
         return;
       }
     } catch {
