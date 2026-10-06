@@ -13,7 +13,7 @@ const privateId = '20000000-0000-0000-0000-000000000013';
 beforeAll(async () => {
   await db.exec(`
     create role anon; create role authenticated;
-    create schema auth; grant usage on schema auth to authenticated;
+    create schema auth; grant usage on schema auth to anon, authenticated;
     create table auth.users(id uuid primary key, email_confirmed_at timestamptz, banned_until timestamptz);
     create table auth.sessions(id uuid primary key, user_id uuid references auth.users(id));
     create table auth.mfa_factors(id uuid primary key, user_id uuid references auth.users(id), status text);
