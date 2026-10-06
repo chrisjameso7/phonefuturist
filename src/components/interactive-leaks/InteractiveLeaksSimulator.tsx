@@ -607,31 +607,57 @@ export default function InteractiveLeaksSimulator() {
     }));
   }
 
-  function saveSimulationLocally() {
-    const payload = {
-      name: simulationName.trim() || 'Untitled simulation',
+  async function saveSimulation() {
+    const state = {
       processorScenario,
       processorProfile,
       customCpuTarget,
       customGpuTarget,
-      configurationSource,
       batteryCapacityMah: form.batteryCapacityMah,
       experience,
       efficiencyAssumption,
       ambientTemperature,
       cpuLoad,
       gpuLoad,
-      savedAt: new Date().toISOString(),
+    };
+    const payload = {
+      name: simulationName.trim() || 'Untitled simulation',
+      processorKey: processorScenario,
+      configurationSource,
+      visibility: 'private',
+      state,
+      resultSnapshot: run ? {
+        headline: headlineText(run),
+        engineVersion: SIMULATION_ENGINE_VERSION,
+        batteryModelVersion: BATTERY_EXPERIENCE_VERSION,
+      } : null,
     };
 
     try {
+      const response = await fetch('/interactive-leaks/api/simulations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        setSavedNotice('Saved to your account');
+        window.setTimeout(() => setSavedNotice(''), 2400);
+        return;
+      }
+    } catch {
+      // Fall through to a local save so an interrupted connection does not lose the build.
+    }
+
+    try {
+      const localPayload = { ...payload, savedAt: new Date().toISOString() };
       const existing = JSON.parse(localStorage.getItem('pf-saved-simulations') || '[]');
-      const next = Array.isArray(existing) ? [payload, ...existing].slice(0, 20) : [payload];
+      const next = Array.isArray(existing) ? [localPayload, ...existing].slice(0, 20) : [localPayload];
       localStorage.setItem('pf-saved-simulations', JSON.stringify(next));
       setSavedNotice('Saved on this device');
-      window.setTimeout(() => setSavedNotice(''), 2200);
+      window.setTimeout(() => setSavedNotice(''), 2400);
     } catch {
-      setSavedNotice('Could not save locally');
+      setSavedNotice('Could not save simulation');
     }
   }
 
@@ -1346,7 +1372,7 @@ export default function InteractiveLeaksSimulator() {
               <span>Simulation name</span>
               <input type="text" value={simulationName} onChange={(event)=>setSimulationName(event.currentTarget.value)} maxLength={120} />
             </label>
-            <button type="button" className="il-chip" onClick={saveSimulationLocally}>Save simulation</button>
+            <button type="button" className="il-chip" onClick={saveSimulation}>Save simulation</button>
             {savedNotice && <small>{savedNotice}</small>}
           </div>}
 
