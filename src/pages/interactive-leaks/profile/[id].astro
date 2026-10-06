@@ -1,0 +1,61 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { serverClient, settings } from '../../../lib/supabase';
+
+const id = Astro.params.id ?? '';
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let profile: any = null;
+
+if (uuid.test(id)) {
+  const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+  if (client) {
+    const { data } = await client
+      .from('simulation_profiles')
+      .select('id,name,component_kind,component_key,visibility,profile_kind,assumptions,forked_from,created_at,updated_at')
+      .eq('id', id)
+      .maybeSingle();
+    profile = data;
+  }
+}
+---
+
+<Page
+  title={profile ? `${profile.name} — Interactive Leaks Profile` : 'Profile not available'}
+  description="A shared PhoneFuturist Interactive Leaks component profile."
+  productMode={true}
+>
+  <main class="il-share-page">
+    {profile ? (
+      <>
+        <a class="il-back" href="/interactive-leaks/simulate">← Interactive Leaks</a>
+        <div class="il-share-hero">
+          <div>
+            <span class="il-pill">{profile.profile_kind}</span>
+            <h1>{profile.name}</h1>
+            <p>{profile.component_key.replaceAll('_', ' ')} · {profile.visibility}</p>
+          </div>
+          <form method="post" action="/interactive-leaks/api/fork">
+            <input type="hidden" name="kind" value="profile" />
+            <input type="hidden" name="id" value={profile.id} />
+            <button class="il-primary" type="submit">Fork profile</button>
+          </form>
+        </div>
+
+        <section class="il-share-grid">
+          <article><span>Preset</span><strong>{profile.assumptions?.profilePreset || 'Custom'}</strong></article>
+          <article><span>CPU target</span><strong>{profile.assumptions?.customCpuTarget ?? profile.assumptions?.cpuLoad ?? 'Unknown'}%</strong></article>
+          <article><span>GPU target</span><strong>{profile.assumptions?.customGpuTarget ?? profile.assumptions?.gpuLoad ?? 'Unknown'}%</strong></article>
+          <article><span>Efficiency</span><strong>{profile.assumptions?.efficiencyAssumption ?? 0}%</strong></article>
+        </section>
+
+        <p class="il-share-note">Profiles package assumptions for reuse. They are not measured benchmark records unless explicitly labeled as such by PhoneFuturist.</p>
+      </>
+    ) : (
+      <section class="il-share-missing">
+        <h1>Profile not available.</h1>
+        <p>It may be private, deleted, or the link may be invalid.</p>
+        <a class="il-primary" href="/interactive-leaks/simulate">Open Interactive Leaks</a>
+      </section>
+    )}
+  </main>
+</Page>
