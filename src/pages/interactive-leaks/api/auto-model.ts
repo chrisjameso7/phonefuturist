@@ -17,11 +17,15 @@ const json = (body: unknown, status = 200) =>
   });
 
 export const POST: APIRoute = async ({ request, locals, cookies }) => {
-  const apiKey = import.meta.env.GEMINI_API_KEY;
-  const model = import.meta.env.GEMINI_AUTO_MODEL;
+  const provider = import.meta.env.VIRTUAL_DEVICE_PROVIDER;
+  const model = import.meta.env.VIRTUAL_DEVICE_MODEL;
+  const accountId = import.meta.env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = import.meta.env.CLOUDFLARE_AI_API_TOKEN;
   const service = locals.supabase ?? (settings() ? serverClient(cookies, request) : null);
 
-  if (!apiKey || !model) return json({ error: 'Auto modeling is not configured.' }, 503);
+  if (provider !== 'gemma' || !model || !accountId || !apiToken) {
+    return json({ error: 'Auto modeling is not configured.' }, 503);
+  }
   if (!service) return json({ error: 'Simulation intelligence is not configured.' }, 503);
 
   let body: { deviceSlug?: string; intent?: AutoModelRequest['intent'] };
@@ -67,20 +71,34 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/ai/v1/chat/completions`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
+          'Authorization': `Bearer ${apiToken}`,
         },
+        signal: AbortSignal.timeout(60_000),
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: autoModelPrompt(safeRequest) }] }],
-          generationConfig: {
-            temperature: 0.15,
-            responseMimeType: 'application/json',
-            responseJsonSchema: AUTO_MODEL_JSON_SCHEMA,
+          model,
+          messages: [
+            {
+              role: 'system',
+              content: 'Return only the requested JSON device model. Do not include markdown or prose outside the JSON object.',
+            },
+            { role: 'user', content: autoModelPrompt(safeRequest) },
+          ],
+          stream: false,
+          max_completion_tokens: 6144,
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'phonefuturist_auto_device',
+              strict: false,
+              schema: AUTO_MODEL_JSON_SCHEMA,
+            },
           },
+          chat_template_kwargs: { enable_thinking: false },
         }),
       },
     );
@@ -89,12 +107,13 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
       return json({ error: 'Auto modeling request failed.' }, 502);
     }
 
-    const provider = await response.json() as any;
-    const text = provider?.candidates?.[0]?.content?.parts
-      ?.map((part: any) => typeof part?.text === 'string' ? part.text : '')
-      .join('');
+    const envelope = await response.json() as any;
+    const choice = envelope?.choices?.[0];
+    const text = choice?.finish_reason === 'stop' && typeof choice?.message?.content === 'string'
+      ? choice.message.content
+      : '';
 
-    if (!text) return json({ error: 'Auto modeling returned no device model.' }, 502);
+    if (!text) return json({ error: 'Auto modeling returned no complete device model.' }, 502);
 
     let draft: AutoModelDraft;
     try {
@@ -107,7 +126,7 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
     return json({
       data: virtualDevice,
       meta: {
-        provider: 'gemini',
+        provider: 'phonefuturist-auto',
         model,
         evidenceCount: evidence.length,
         generatedAt: new Date().toISOString(),
