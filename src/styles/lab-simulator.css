@@ -1980,3 +1980,206 @@
     box-shadow: none;
   }
 }
+
+/* =================================================================
+   INTERACTIVE LEAKS PRODUCT UI RESET
+   The simulator is the product. Keep the evidence engine underneath,
+   but present it as a device-specific interactive experience.
+   ================================================================= */
+
+.il-product {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 26px 0 64px;
+  color: var(--ink);
+}
+
+.il-device-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 8px 0 16px;
+}
+
+.il-back {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: .78rem;
+  text-decoration: none;
+}
+
+.il-back:hover { color: var(--accent); }
+
+.il-title-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.il-title-row h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.1vw, 2.55rem);
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-weight: 720;
+}
+
+.il-device-head p {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.il-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--muted);
+  font-size: .63rem;
+  font-weight: 700;
+}
+
+.il-pill-unreleased {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.il-head-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.il-primary,
+.il-secondary {
+  min-height: 38px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 680;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.il-secondary {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.il-primary {
+  color: white;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.il-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 3px 0 20px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, #b78839 25%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, #c7964d 10%, var(--surface));
+  color: color-mix(in srgb, var(--ink) 76%, #7b5a26);
+  font-size: .69rem;
+  line-height: 1.45;
+}
+
+.il-disclaimer strong {
+  flex: 0 0 auto;
+  text-transform: uppercase;
+  letter-spacing: .045em;
+  font-size: .64rem;
+}
+
+.il-stage-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 26px;
+  padding: 4px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 4%, var(--surface));
+}
+
+.il-stage-tabs a {
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: .61rem;
+  font-weight: 760;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.il-stage-tabs a.is-active {
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 1px 3px color-mix(in srgb, #000 10%, transparent);
+}
+
+.il-workspace {
+  min-width: 0;
+}
+
+/* Remove the old giant laboratory framing inside the simulator page. */
+.il-product .lab-product,
+.il-product .lab-product-intro,
+.il-product .lab-product-header,
+.il-product .lab-product-rule,
+.il-product .lab-product-footer {
+  display: none !important;
+}
+
+.il-product .lab-simulator-shell {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .il-product {
+    width: min(100% - 20px, 1180px);
+    padding-top: 16px;
+  }
+
+  .il-device-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .il-head-actions {
+    width: 100%;
+  }
+
+  .il-head-actions > * {
+    flex: 1;
+    text-align: center;
+  }
+
+  .il-disclaimer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .il-stage-tabs a {
+    letter-spacing: .08em;
+    font-size: .56rem;
+  }
+}
