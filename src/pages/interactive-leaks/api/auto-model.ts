@@ -8,7 +8,7 @@ import {
   type AutoModelRequest,
   type IntelligenceBundle,
 } from '../../../lib/simulation/auto-ai';
-import { simulationServiceClient } from '../../../lib/simulation/service-client';
+import { serverClient, settings } from '../../../lib/supabase';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -16,13 +16,13 @@ const json = (body: unknown, status = 200) =>
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals, cookies }) => {
   const apiKey = import.meta.env.GEMINI_API_KEY;
-  const model = import.meta.env.GEMINI_AUTO_MODEL || 'gemini-3.8-flash';
-  const service = simulationServiceClient();
+  const model = import.meta.env.GEMINI_AUTO_MODEL;
+  const service = locals.supabase ?? (settings() ? serverClient(cookies, request) : null);
 
-  if (!apiKey) return json({ error: 'Auto modeling is not configured.' }, 503);
-  if (!service) return json({ error: 'Simulation intelligence service is not configured.' }, 503);
+  if (!apiKey || !model) return json({ error: 'Auto modeling is not configured.' }, 503);
+  if (!service) return json({ error: 'Simulation intelligence is not configured.' }, 503);
 
   let body: { deviceSlug?: string; intent?: AutoModelRequest['intent'] };
   try {
