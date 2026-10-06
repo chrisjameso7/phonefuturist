@@ -1,0 +1,81 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { serverClient, settings } from '../../../lib/supabase';
+
+const id = Astro.params.id ?? '';
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let simulation: any = null;
+
+if (uuid.test(id)) {
+  const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+  if (client) {
+    const { data } = await client
+      .from('simulations')
+      .select('id,name,device_key,visibility,configuration_source,processor_key,state,result_snapshot,forked_from,created_at,updated_at')
+      .eq('id', id)
+      .maybeSingle();
+    simulation = data;
+  }
+}
+---
+
+<Page
+  title={simulation ? `${simulation.name} — Interactive Leaks` : 'Simulation not available'}
+  description="A shared PhoneFuturist Interactive Leaks simulation."
+  productMode={true}
+>
+  <main class="il-share-page">
+    {simulation ? (
+      <>
+        <a class="il-back" href="/interactive-leaks/simulate">← Interactive Leaks</a>
+        <div class="il-share-hero">
+          <div>
+            <span class="il-pill">{simulation.visibility}</span>
+            <h1>{simulation.name}</h1>
+            <p>{simulation.device_key.replaceAll('-', ' ')} · {simulation.configuration_source} configuration</p>
+          </div>
+          <form method="post" action="/interactive-leaks/api/fork">
+            <input type="hidden" name="kind" value="simulation" />
+            <input type="hidden" name="id" value={simulation.id} />
+            <button class="il-primary" type="submit">Fork simulation</button>
+          </form>
+        </div>
+
+        <section class="il-share-grid">
+          <article>
+            <span>Processor</span>
+            <strong>{simulation.processor_key?.replaceAll('_', ' ') || 'Unknown'}</strong>
+          </article>
+          <article>
+            <span>Battery</span>
+            <strong>{simulation.state?.batteryCapacityMah ? `${simulation.state.batteryCapacityMah} mAh` : 'Unknown'}</strong>
+          </article>
+          <article>
+            <span>Profile</span>
+            <strong>{simulation.state?.processorProfile || 'Expected'}</strong>
+          </article>
+          <article>
+            <span>Usage</span>
+            <strong>{simulation.state?.experience?.preset || 'Unknown'}</strong>
+          </article>
+        </section>
+
+        {simulation.result_snapshot?.headline && (
+          <section class="il-shared-result">
+            <span class="eyebrow">Saved result</span>
+            <strong>{simulation.result_snapshot.headline}</strong>
+            <small>Engine {simulation.result_snapshot.engineVersion} · Battery model {simulation.result_snapshot.batteryModelVersion}</small>
+          </section>
+        )}
+
+        <p class="il-share-note">Shared simulations preserve the assumptions used at save time. Re-run the model after forking to evaluate any changes.</p>
+      </>
+    ) : (
+      <section class="il-share-missing">
+        <h1>Simulation not available.</h1>
+        <p>It may be private, deleted, or the link may be invalid.</p>
+        <a class="il-primary" href="/interactive-leaks/simulate">Open Interactive Leaks</a>
+      </section>
+    )}
+  </main>
+</Page>
