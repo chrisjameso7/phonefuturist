@@ -1027,12 +1027,12 @@ export default function InteractiveLeaksSimulator() {
             </div>
             <div className="il-option-grid">
               <button type="button" className={processorScenario==='exynos2700'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('exynos2700');setConfigurationSource('custom');}}>
-                <span><strong>Exynos 2700</strong><small>68% rumor confidence</small></span>
-                <b>68%</b>
+                <span><strong>Exynos 2700</strong><small>Current PhoneFuturist scenario</small></span>
+                <b>{processorScenario==='exynos2700'?'Selected':''}</b>
               </button>
               <button type="button" className={processorScenario==='snapdragon8eg6'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('snapdragon8eg6');setConfigurationSource('custom');}}>
-                <span><strong>Snapdragon 8 Elite Gen 6</strong><small>40% rumor confidence</small></span>
-                <b>40%</b>
+                <span><strong>Snapdragon 8 Elite Gen 6</strong><small>Alternate processor scenario</small></span>
+                <b>{processorScenario==='snapdragon8eg6'?'Selected':''}</b>
               </button>
             </div>
             <p className="il-config-note">Processor selection is saved with the scenario UI, but benchmark and thermal modeling are not enabled in this beta yet.</p>
@@ -1092,17 +1092,17 @@ export default function InteractiveLeaksSimulator() {
             </div>
             <div className="il-option-grid">
               <button type="button" className={form.batteryCapacityMah==='5700'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5700')}>
-                <span><strong>5,700 mAh</strong><small>Most likely current assumption</small></span>
-                <b>65%</b>
+                <span><strong>5,700 mAh</strong><small>Current Auto scenario</small></span>
+                <b>{form.batteryCapacityMah==='5700'?'Selected':''}</b>
               </button>
               <button type="button" className={form.batteryCapacityMah==='5800'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5800')}>
-                <span><strong>5,800 mAh</strong><small>Higher-capacity scenario</small></span>
-                <b>35%</b>
+                <span><strong>5,800 mAh</strong><small>Higher-capacity alternate</small></span>
+                <b>{form.batteryCapacityMah==='5800'?'Selected':''}</b>
               </button>
             </div>
 
             <label className="il-slider-control il-battery-tune">
-              <span><strong>Fine tune capacity</strong><b>{form.batteryCapacityMah || '5700'} mAh</b></span>
+              <span><strong>Fine tune capacity</strong><b>{form.batteryCapacityMah || '5700'} mAh · {simple && configurationSource!=='custom' ? 'AUTO' : 'YOUR OVERRIDE'}</b></span>
               <input
                 type="range"
                 min="5200"
@@ -1169,7 +1169,7 @@ export default function InteractiveLeaksSimulator() {
               <span className="il-pill">Scenario A</span>
               <h3>Exynos 2700</h3>
               <dl>
-                <div><dt>Rumor confidence</dt><dd>68%</dd></div>
+                <div><dt>Evidence status</dt><dd>Scenario only</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
                 <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
@@ -1178,7 +1178,7 @@ export default function InteractiveLeaksSimulator() {
               <span className="il-pill">Scenario B</span>
               <h3>Snapdragon 8 Elite Gen 6</h3>
               <dl>
-                <div><dt>Rumor confidence</dt><dd>40%</dd></div>
+                <div><dt>Evidence status</dt><dd>Scenario only</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
                 <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
