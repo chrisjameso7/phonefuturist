@@ -3,6 +3,7 @@ import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEnd
 import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
 import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
 import {batteryEnergyWh} from '../../lib/simulation/live-kernel';
+import {simulateSocThermals, SOC_THERMAL_MODEL_VERSION} from '../../lib/simulation/modules/soc-thermal';
 import ShareResult from './ShareResult';
 import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
 
@@ -383,6 +384,8 @@ export default function InteractiveLeaksSimulator() {
   const [ambientTemperature, setAmbientTemperature] = useState(22);
   const [cpuLoad, setCpuLoad] = useState(25);
   const [gpuLoad, setGpuLoad] = useState(10);
+  const [socPowerTargetW, setSocPowerTargetW] = useState(8);
+  const [coolingStrength, setCoolingStrength] = useState(50);
   const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
   const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra: Most likely');
   const [savedNotice, setSavedNotice] = useState('');
@@ -664,6 +667,8 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.ambientTemperature === 'number') setAmbientTemperature(state.ambientTemperature);
     if (typeof state.cpuLoad === 'number') setCpuLoad(state.cpuLoad);
     if (typeof state.gpuLoad === 'number') setGpuLoad(state.gpuLoad);
+    if (typeof state.socPowerTargetW === 'number') setSocPowerTargetW(state.socPowerTargetW);
+    if (typeof state.coolingStrength === 'number') setCoolingStrength(state.coolingStrength);
     restoreExperience(state.experience);
     if (typeof record?.name === 'string') setSimulationName(record.name);
     if (record?.visibility === 'private' || record?.visibility === 'unlisted' || record?.visibility === 'public') {
@@ -781,6 +786,9 @@ export default function InteractiveLeaksSimulator() {
       const capacity = model?.battery?.capacityMah?.value;
       const voltage = model?.battery?.nominalVoltageV?.value;
       const processorKey = String(model?.processor?.key || '').toLowerCase();
+      const sustainedPower = model?.processor?.sustainedPowerLimitW?.value;
+      const inferredAmbient = model?.thermals?.ambientTemperatureC?.value;
+      const inferredResistance = model?.thermals?.thermalResistanceCPerW?.value;
 
       setForm((current) => ({
         ...current,
@@ -795,6 +803,16 @@ export default function InteractiveLeaksSimulator() {
 
       if (processorKey.includes('exynos')) setProcessorScenario('exynos2700');
       if (processorKey.includes('snapdragon')) setProcessorScenario('snapdragon8eg6');
+      if (typeof sustainedPower === 'number' && Number.isFinite(sustainedPower)) {
+        setSocPowerTargetW(Math.max(4, Math.min(14, Number(sustainedPower.toFixed(1)))));
+      }
+      if (typeof inferredAmbient === 'number' && Number.isFinite(inferredAmbient)) {
+        setAmbientTemperature(Math.max(10, Math.min(45, Math.round(inferredAmbient))));
+      }
+      if (typeof inferredResistance === 'number' && Number.isFinite(inferredResistance)) {
+        const strength = Math.round(((8 - inferredResistance) / 4.5) * 100);
+        setCoolingStrength(Math.max(0, Math.min(100, strength)));
+      }
 
       setDirty(true);
       setAutoPhase(3);
@@ -911,6 +929,8 @@ export default function InteractiveLeaksSimulator() {
       ambientTemperature,
       cpuLoad,
       gpuLoad,
+      socPowerTargetW,
+      coolingStrength,
     };
     const payload = {
       name: simulationName.trim() || 'Untitled simulation',
@@ -992,6 +1012,27 @@ export default function InteractiveLeaksSimulator() {
     numeric(form.batteryCapacityMah),
     numeric(form.batteryVoltageV),
   );
+  const thermalResistanceCPerW = 8 - (coolingStrength / 100) * 4.5;
+  const socThermal = simulateSocThermals({
+    targetPowerW: socPowerTargetW,
+    ambientTemperatureC: ambientTemperature,
+    thermalResistanceCPerW,
+    thermalMassJPerC: 24,
+    throttleTemperatureC: 82,
+    durationSeconds: 1800,
+    stepSeconds: 1,
+  });
+  const thermalSeverity = !socThermal
+    ? 'unknown'
+    : socThermal.throttleStartSecond !== undefined
+      ? 'throttling'
+      : socThermal.peakTemperatureC >= 75
+        ? 'hot'
+        : 'stable';
+  const thermalBar = socThermal
+    ? Math.max(0, Math.min(100, ((socThermal.peakTemperatureC - ambientTemperature) / (82 - ambientTemperature)) * 100))
+    : 0;
+
   const display = result?.displays.primary;
   const pack = result?.battery;
   const packaging = result?.packaging;
@@ -1122,6 +1163,50 @@ export default function InteractiveLeaksSimulator() {
                 <span><strong>Snapdragon 8 Elite Gen 6</strong><small>Alternate processor scenario</small></span>
                 <b>{processorScenario==='snapdragon8eg6'?'Selected':''}</b>
               </button>
+            </div>
+          </div>
+
+          <div className="il-rumor-group il-soc-lab">
+            <div className="il-rumor-heading">
+              <strong>SoC + thermals</strong>
+              <span>{SOC_THERMAL_MODEL_VERSION}</span>
+            </div>
+
+            <label className="il-slider-control">
+              <span><strong>Power target</strong><b>{socPowerTargetW.toFixed(1)} W</b></span>
+              <input
+                type="range"
+                min="4"
+                max="14"
+                step="0.2"
+                value={socPowerTargetW}
+                onChange={(event)=>{setSocPowerTargetW(Number(event.currentTarget.value));setConfigurationSource('custom');setDirty(true);}}
+              />
+            </label>
+
+            <label className="il-slider-control">
+              <span><strong>Cooling strength</strong><b>{coolingStrength}%</b></span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={coolingStrength}
+                onChange={(event)=>{setCoolingStrength(Number(event.currentTarget.value));setConfigurationSource('custom');setDirty(true);}}
+              />
+            </label>
+
+            <div className="il-thermal-result" data-state={thermalSeverity}>
+              <div className="il-thermal-result-head">
+                <span>{thermalSeverity==='throttling'?'Thermal throttling':thermalSeverity==='hot'?'Running hot':'Thermally stable'}</span>
+                <strong>{socThermal ? `${socThermal.peakTemperatureC.toFixed(1)}°C` : 'Unknown'}</strong>
+              </div>
+              <div className="il-thermal-track" aria-hidden="true"><span style={{width:`${thermalBar}%`}} /></div>
+              <div className="il-thermal-metrics">
+                <div><span>Sustained</span><strong>{socThermal ? `${socThermal.sustainedPerformancePercent.toFixed(1)}%` : 'Unknown'}</strong></div>
+                <div><span>30 min power</span><strong>{socThermal ? `${socThermal.sustainedPowerW.toFixed(1)} W` : 'Unknown'}</strong></div>
+                <div><span>Throttle</span><strong>{socThermal?.throttleStartSecond !== undefined ? `${Math.floor(socThermal.throttleStartSecond/60)}m ${Math.round(socThermal.throttleStartSecond%60)}s` : 'None'}</strong></div>
+              </div>
             </div>
           </div>
 
