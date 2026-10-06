@@ -378,6 +378,10 @@ export default function InteractiveLeaksSimulator() {
   const [hasSimulated, setHasSimulated] = useState(false);
   const [configurationSource, setConfigurationSource] = useState<'likely' | 'worst' | 'custom'>('likely');
   const [processorScenario, setProcessorScenario] = useState<'exynos2700' | 'snapdragon8eg6'>('exynos2700');
+  const [efficiencyAssumption, setEfficiencyAssumption] = useState(0);
+  const [ambientTemperature, setAmbientTemperature] = useState(22);
+  const [cpuLoad, setCpuLoad] = useState(25);
+  const [gpuLoad, setGpuLoad] = useState(10);
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -678,26 +682,78 @@ export default function InteractiveLeaksSimulator() {
                 <b>35%</b>
               </button>
             </div>
+
+            <label className="il-slider-control il-battery-tune">
+              <span><strong>Fine tune capacity</strong><b>{form.batteryCapacityMah || '5700'} mAh</b></span>
+              <input
+                type="range"
+                min="5200"
+                max="6000"
+                step="50"
+                value={Number(form.batteryCapacityMah || 5700)}
+                onChange={(event)=>applyBatteryScenario(event.currentTarget.value)}
+              />
+              <small>This slider directly changes the battery input used by the current deterministic battery model.</small>
+            </label>
           </div>
         </div>
 
-        <aside className="il-live-preview">
-          <div className="il-live-preview-head">
-            <span>Live preview</span>
-            <small>{dirty ? 'Pending rerun' : hasSimulated ? 'Current result' : 'Input preview'}</small>
-          </div>
-          <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
-          <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
-          <div className="il-live-row"><span>Usage</span><strong>{simple ? experience.preset : 'Advanced'}</strong></div>
-          <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
-        </aside>
+        <div className="il-config-side">
+          <aside className="il-assumptions-panel">
+            <div className="il-live-preview-head">
+              <span>Environment assumptions</span>
+              <small>Scenario controls</small>
+            </div>
+
+            <label className="il-slider-control">
+              <span><strong>Efficiency assumption</strong><b>{efficiencyAssumption > 0 ? '+' : ''}{efficiencyAssumption}%</b></span>
+              <input type="range" min="-20" max="20" step="1" value={efficiencyAssumption} onChange={(event)=>setEfficiencyAssumption(Number(event.currentTarget.value))} />
+            </label>
+
+            <label className="il-slider-control">
+              <span><strong>Ambient temperature</strong><b>{ambientTemperature}°C</b></span>
+              <input type="range" min="0" max="45" step="1" value={ambientTemperature} onChange={(event)=>setAmbientTemperature(Number(event.currentTarget.value))} />
+            </label>
+
+            <label className="il-slider-control">
+              <span><strong>CPU load</strong><b>{cpuLoad}%</b></span>
+              <input type="range" min="0" max="100" step="5" value={cpuLoad} onChange={(event)=>setCpuLoad(Number(event.currentTarget.value))} />
+            </label>
+
+            <label className="il-slider-control">
+              <span><strong>GPU load</strong><b>{gpuLoad}%</b></span>
+              <input type="range" min="0" max="100" step="5" value={gpuLoad} onChange={(event)=>setGpuLoad(Number(event.currentTarget.value))} />
+            </label>
+
+            <p className="il-config-note">These environment controls are captured as scenario assumptions. Temperature, CPU load, GPU load and efficiency are not yet applied to benchmark or thermal calculations, so they do not silently alter the current deterministic battery result.</p>
+          </aside>
+
+          <aside className="il-live-preview">
+            <div className="il-live-preview-head">
+              <span>Live preview</span>
+              <small>{dirty ? 'Pending rerun' : hasSimulated ? 'Current result' : 'Input preview'}</small>
+            </div>
+            <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
+            <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
+            <div className="il-live-row"><span>Usage</span><strong>{simple ? experience.preset : 'Advanced'}</strong></div>
+            <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
+          </aside>
+        </div>
       </section>
 
       <div className="il-workspace">
         {/* ---------------- Builder column ---------------- */}
         <section className="il-builder" aria-label="Simulation inputs">
           {/* 01 · DEVICE */}
-          <div className="il-section">
+          <details className="il-engineering-panel">
+            <summary>
+              <span>
+                <strong>Advanced engineering inputs</strong>
+                <small>Dimensions, display geometry, cell geometry, cameras and internal packaging</small>
+              </span>
+              <b>Open</b>
+            </summary>
+            <div className="il-section">
             <SectionHeading
               index="01"
               title="Device"
@@ -1058,7 +1114,8 @@ export default function InteractiveLeaksSimulator() {
             <button type="button" className="il-chip il-add" onClick={addCamera}>
               + Add camera module
             </button>
-          </div>
+            </div>
+          </details>
 
           {/* 02 · ENVIRONMENT */}
           <div className="il-section">
