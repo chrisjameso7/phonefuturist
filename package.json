@@ -14,7 +14,8 @@
     "verify": "npm run check && npm test && npm run check:calibration && npm run build",
     "check:calibration": "node data/calibration/battery/validate.mjs",
     "preview": "astro preview",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "diagnose:virtual-device": "tsx scripts/diagnose-virtual-device.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.3.1",

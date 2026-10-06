@@ -95,7 +95,7 @@ export const virtualDeviceSchema = z.object({
   modelId: id, revision: z.number().int().positive(), parentRevision: z.number().int().positive().nullable(),
   configurationId: id, configurationRevision: z.number().int().positive(), subjectId: id,
   evidenceSnapshotId: id, createdAt: z.iso.datetime(),
-  generation: z.object({ provider: id, model: id, promptVersion: id }).strict(),
+  generation: z.object({ provider: id, model: id, promptVersion: id, fallback: z.object({preferredModel:id,reason:z.literal('transient-provider-capacity')}).strict().optional() }).strict(),
   // Repeated keys permit multiple operating points under distinct test conditions.
   parameters: z.array(virtualParameterSchema).min(1).max(500),
   limitations: z.array(text).max(100),

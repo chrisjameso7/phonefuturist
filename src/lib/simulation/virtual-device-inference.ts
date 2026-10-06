@@ -20,10 +20,17 @@ export interface VirtualDeviceProposalRequest {
   configuration: z.infer<typeof virtualDeviceConfigurationSchema>;
   evidence: AssembledVirtualEvidence;
 }
+export interface VirtualProviderProposal {
+  output: unknown;
+  promptVersion?: string;
+  modelId: string;
+  fallback?: { preferredModel: string; reason: 'transient-provider-capacity' };
+}
 export interface VirtualDeviceProvider {
   providerId: string;
   modelId: string;
   propose(request: VirtualDeviceProposalRequest): Promise<unknown>;
+  proposeWithMetadata?(request: VirtualDeviceProposalRequest): Promise<VirtualProviderProposal>;
 }
 export type VirtualGenerationResult =
   | { status: 'accepted'; model: VirtualDeviceModel; configuration: VirtualDeviceProposalRequest['configuration']; evidence: AssembledVirtualEvidence; validatorVersion: string }
@@ -81,9 +88,18 @@ export function createVirtualDeviceInferenceService(dependencies: {
         evidence = assembleVirtualEvidence(configuration, catalog, dependencies.createId(), dependencies.now());
       } catch { return rejected('evidence', ['Authoritative evidence assembly failed. Review server catalog and clock.']); }
       let output: unknown;
-      try { output = await dependencies.provider.propose(deepFreeze({ configuration, evidence })); }
+      let promptVersion=VIRTUAL_DEVICE_PROMPT_VERSION;
+      let actualModel = dependencies.provider.modelId;
+      let fallback: VirtualProviderProposal['fallback'];
+      try {
+        const request = deepFreeze({ configuration, evidence });
+        if (dependencies.provider.proposeWithMetadata) {
+          const proposal = await dependencies.provider.proposeWithMetadata(request);
+          output = proposal.output; promptVersion=proposal.promptVersion??VIRTUAL_DEVICE_PROMPT_VERSION; actualModel = proposal.modelId; fallback = proposal.fallback;
+        } else output = await dependencies.provider.propose(request);
+      }
       catch (error) {
-        const stage = error instanceof VirtualProviderError && error.code === 'model_json' ? 'parse' : 'provider';
+        const stage = error instanceof VirtualProviderError && (error.code === 'model_json'||error.code === 'model_contract') ? 'parse' : 'provider';
         logVirtualFailure(stage, error instanceof VirtualProviderError ? error.code : 'provider_transport', error instanceof VirtualProviderError ? error.httpStatus : undefined, error instanceof VirtualProviderError ? error.diagnostic : undefined);
         return { status: 'rejected', stage, issues: ['Model proposal unavailable. No model was accepted.'] };
       }
@@ -112,7 +128,7 @@ export function createVirtualDeviceInferenceService(dependencies: {
         revision: parent ? parent.revision + 1 : 1, parentRevision: parent?.revision ?? null,
         configurationId: configuration.id, configurationRevision: configuration.revision, subjectId: configuration.subjectId,
         evidenceSnapshotId: evidence.snapshot.id, createdAt: dependencies.now(),
-        generation: { provider: dependencies.provider.providerId, model: dependencies.provider.modelId, promptVersion: VIRTUAL_DEVICE_PROMPT_VERSION },
+        generation: { provider: dependencies.provider.providerId, model: actualModel, promptVersion, ...(fallback ? { fallback } : {}) },
         parameters: derivePackEnergy(proposal.data.parameters), limitations: [...proposal.data.limitations,
           'AI confidence is not empirical accuracy. User assertions are unverified configuration context, not source evidence. Unknown parameters remain unavailable for virtual tests.'],
       }, { snapshot: evidence.snapshot, analogies: evidence.analogies, configurationId: configuration.id,

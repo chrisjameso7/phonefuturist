@@ -25,7 +25,7 @@ describe('sanitized upstream diagnostics',()=>{
   const warn=vi.spyOn(console,'warn').mockImplementation(()=>{});
   try {
    const configuration=acceptanceConfiguration();configuration.deviceContext={...configuration.deviceContext!,chipset:'Unknown',cooling:'Unknown',software:'Unknown'};
-   const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({error:{code:503,status:'UNAVAILABLE',message:'Model is overloaded private-key'}},{status:503}));
+   const fetcher=vi.fn<typeof fetch>().mockImplementation(async()=>Response.json({error:{code:503,status:'UNAVAILABLE',message:'Model is overloaded private-key'}},{status:503}));
    const provider=createGoogleVirtualDeviceProvider({provider:'gemini',apiKey:'private-key',model:'gemini-3.8-flash'},fetcher);
    expect((await generateVirtualLaunch({configuration,scenario:acceptanceScenario},provider)).status).toBe('unavailable');
    const entry=JSON.parse(String(warn.mock.calls[0][0]));expect(entry).toMatchObject({code:'provider_http',httpStatus:503,upstream:{upstreamStatus:'UNAVAILABLE',category:'capacity'}});expect(entry.upstream.requestBytes).toBeGreaterThan(0);
