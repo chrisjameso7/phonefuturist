@@ -390,6 +390,12 @@ export default function InteractiveLeaksSimulator() {
   const [processorProfile, setProcessorProfile] = useState<'expected' | 'efficiency' | 'aggressive' | 'custom'>('expected');
   const [customCpuTarget, setCustomCpuTarget] = useState(50);
   const [customGpuTarget, setCustomGpuTarget] = useState(50);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryTab, setLibraryTab] = useState<'simulations' | 'profiles'>('simulations');
+  const [savedSimulations, setSavedSimulations] = useState<any[]>([]);
+  const [savedProfiles, setSavedProfiles] = useState<any[]>([]);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryNotice, setLibraryNotice] = useState('');
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -609,6 +615,125 @@ export default function InteractiveLeaksSimulator() {
     }));
   }
 
+  function restoreExperience(saved: any) {
+    if (!saved || typeof saved !== 'object') return;
+    if (saved.mode === 'simple' || saved.mode === 'advanced') dispatchExperience({ type: 'mode', value: saved.mode });
+    if (saved.preset === 'Light' || saved.preset === 'Typical' || saved.preset === 'Heavy' || saved.preset === 'Custom') {
+      dispatchExperience({ type: 'preset', value: saved.preset });
+    }
+    if (saved.custom && typeof saved.custom === 'object') {
+      for (const key of ACTIVE_WORKLOADS) {
+        const value = saved.custom[key];
+        if (typeof value === 'string') dispatchExperience({ type: 'duration', key, value });
+      }
+    }
+    if (typeof saved.useEnteredPower === 'boolean') dispatchExperience({ type: 'power', value: saved.useEnteredPower });
+  }
+
+  function loadSimulationRecord(record: any) {
+    const state = record?.state ?? record;
+    if (!state || typeof state !== 'object') return;
+
+    if (state.processorScenario === 'exynos2700' || state.processorScenario === 'snapdragon8eg6') {
+      setProcessorScenario(state.processorScenario);
+    }
+    if (state.processorProfile === 'expected' || state.processorProfile === 'efficiency' || state.processorProfile === 'aggressive' || state.processorProfile === 'custom') {
+      setProcessorProfile(state.processorProfile);
+    }
+    if (state.configurationSource === 'likely' || state.configurationSource === 'worst' || state.configurationSource === 'custom') {
+      setConfigurationSource(state.configurationSource);
+    } else if (record?.configuration_source === 'likely' || record?.configuration_source === 'worst' || record?.configuration_source === 'custom') {
+      setConfigurationSource(record.configuration_source);
+    }
+    if (typeof state.batteryCapacityMah === 'string') {
+      setForm((current) => ({
+        ...current,
+        name: record?.name || current.name || 'Galaxy S27 Ultra',
+        batteryCapacityMah: state.batteryCapacityMah,
+        batteryVoltageV: current.batteryVoltageV || '3.85',
+      }));
+    }
+    if (typeof state.customCpuTarget === 'number') setCustomCpuTarget(state.customCpuTarget);
+    if (typeof state.customGpuTarget === 'number') setCustomGpuTarget(state.customGpuTarget);
+    if (typeof state.efficiencyAssumption === 'number') setEfficiencyAssumption(state.efficiencyAssumption);
+    if (typeof state.ambientTemperature === 'number') setAmbientTemperature(state.ambientTemperature);
+    if (typeof state.cpuLoad === 'number') setCpuLoad(state.cpuLoad);
+    if (typeof state.gpuLoad === 'number') setGpuLoad(state.gpuLoad);
+    restoreExperience(state.experience);
+    if (typeof record?.name === 'string') setSimulationName(record.name);
+    setRun(null);
+    setHasSimulated(false);
+    setDirty(true);
+    setStage('build');
+    setLibraryOpen(false);
+  }
+
+  function loadProfileRecord(record: any) {
+    const assumptions = record?.assumptions ?? record;
+    if (!assumptions || typeof assumptions !== 'object') return;
+
+    if (record?.component_key === 'exynos2700' || record?.component_key === 'snapdragon8eg6') {
+      setProcessorScenario(record.component_key);
+    } else if (record?.componentKey === 'exynos2700' || record?.componentKey === 'snapdragon8eg6') {
+      setProcessorScenario(record.componentKey);
+    }
+    if (assumptions.profilePreset === 'expected' || assumptions.profilePreset === 'efficiency' || assumptions.profilePreset === 'aggressive' || assumptions.profilePreset === 'custom') {
+      setProcessorProfile(assumptions.profilePreset);
+    }
+    if (typeof assumptions.customCpuTarget === 'number') setCustomCpuTarget(assumptions.customCpuTarget);
+    if (typeof assumptions.customGpuTarget === 'number') setCustomGpuTarget(assumptions.customGpuTarget);
+    if (typeof assumptions.efficiencyAssumption === 'number') setEfficiencyAssumption(assumptions.efficiencyAssumption);
+    if (typeof assumptions.cpuLoad === 'number') setCpuLoad(assumptions.cpuLoad);
+    if (typeof assumptions.gpuLoad === 'number') setGpuLoad(assumptions.gpuLoad);
+    if (typeof assumptions.ambientTemperature === 'number') setAmbientTemperature(assumptions.ambientTemperature);
+    if (typeof record?.name === 'string') setProfileName(record.name);
+    setConfigurationSource('custom');
+    setDirty(true);
+    setStage('build');
+    setLibraryOpen(false);
+  }
+
+  async function openLibrary() {
+    setLibraryOpen(true);
+    setLibraryLoading(true);
+    setLibraryNotice('');
+
+    const readLocal = () => {
+      try {
+        const simulations = JSON.parse(localStorage.getItem('pf-saved-simulations') || '[]');
+        const profiles = JSON.parse(localStorage.getItem('pf-saved-profiles') || '[]');
+        setSavedSimulations(Array.isArray(simulations) ? simulations : []);
+        setSavedProfiles(Array.isArray(profiles) ? profiles : []);
+      } catch {
+        setSavedSimulations([]);
+        setSavedProfiles([]);
+      }
+    };
+
+    try {
+      const [simulationsResponse, profilesResponse] = await Promise.all([
+        fetch('/interactive-leaks/api/simulations'),
+        fetch('/interactive-leaks/api/profiles'),
+      ]);
+
+      if (simulationsResponse.ok && profilesResponse.ok) {
+        const simulationsBody = await simulationsResponse.json();
+        const profilesBody = await profilesResponse.json();
+        setSavedSimulations(Array.isArray(simulationsBody.data) ? simulationsBody.data : []);
+        setSavedProfiles(Array.isArray(profilesBody.data) ? profilesBody.data : []);
+        setLibraryNotice('Account library');
+      } else {
+        readLocal();
+        setLibraryNotice('Showing saves from this device');
+      }
+    } catch {
+      readLocal();
+      setLibraryNotice('Showing saves from this device');
+    } finally {
+      setLibraryLoading(false);
+    }
+  }
+
   async function saveProcessorProfile() {
     const payload = {
       name: profileName.trim() || 'Untitled processor profile',
@@ -736,6 +861,52 @@ export default function InteractiveLeaksSimulator() {
 
   return (
     <div className="il-app">
+      <div className="il-product-actions">
+        <button type="button" className="il-chip" onClick={openLibrary}>My simulations & profiles</button>
+      </div>
+
+      {libraryOpen && <section className="il-library" aria-label="Saved simulations and profiles">
+        <div className="il-library-head">
+          <div>
+            <span className="eyebrow">Your library</span>
+            <h2>Continue where you left off.</h2>
+            {libraryNotice && <p>{libraryNotice}</p>}
+          </div>
+          <button type="button" className="il-chip" onClick={()=>setLibraryOpen(false)}>Close</button>
+        </div>
+
+        <div className="il-library-tabs">
+          <button type="button" className={libraryTab==='simulations'?'is-active':''} onClick={()=>setLibraryTab('simulations')}>Simulations</button>
+          <button type="button" className={libraryTab==='profiles'?'is-active':''} onClick={()=>setLibraryTab('profiles')}>Profiles</button>
+        </div>
+
+        {libraryLoading ? <p className="il-library-empty">Loading your saved work…</p> : libraryTab==='simulations' ? (
+          savedSimulations.length ? <div className="il-library-list">
+            {savedSimulations.map((item, index) => (
+              <article key={item.id ?? item.savedAt ?? index}>
+                <div>
+                  <strong>{item.name || 'Untitled simulation'}</strong>
+                  <span>{item.visibility || 'local'} · {(item.processor_key || item.processorKey || item.state?.processorScenario || 'processor unknown').replaceAll('_', ' ')}</span>
+                </div>
+                <button type="button" className="il-chip" onClick={()=>loadSimulationRecord(item)}>Open</button>
+              </article>
+            ))}
+          </div> : <p className="il-library-empty">No saved simulations yet.</p>
+        ) : (
+          savedProfiles.length ? <div className="il-library-list">
+            {savedProfiles.map((item, index) => (
+              <article key={item.id ?? item.savedAt ?? index}>
+                <div>
+                  <strong>{item.name || 'Untitled profile'}</strong>
+                  <span>{item.profile_kind || 'custom'} · {(item.component_key || item.componentKey || 'processor').replaceAll('_', ' ')}</span>
+                </div>
+                <button type="button" className="il-chip" onClick={()=>loadProfileRecord(item)}>Use profile</button>
+              </article>
+            ))}
+          </div> : <p className="il-library-empty">No saved profiles yet.</p>
+        )}
+      </section>}
+
       <nav className="il-mode-tabs" aria-label="Interactive Leaks modes">
         {(['build','test','compare','results'] as const).map((item) => (
           <button
