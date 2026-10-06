@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { autoModelPrompt, validateAutoModel, type AutoModelRequest } from '../src/lib/simulation/auto-ai';
+import { autoModelPrompt, evidenceItemsFromBundle, validateAutoModel, type AutoModelRequest } from '../src/lib/simulation/auto-ai';
 
 const request: AutoModelRequest = {
   deviceKey: 'future-phone',
@@ -39,6 +39,28 @@ describe('Auto AI model boundary', () => {
     });
     expect(model.display.refreshRateHz).toBeUndefined();
     expect(model.display.brightnessNits?.confidence).toBe(1);
+  });
+
+  it('turns editorial claims into bounded evidence without private fields', () => {
+    const evidence = evidenceItemsFromBundle({
+      device: { slug: 'future-phone', name: 'Future Phone' },
+      claims: [{
+        id: 'claim-1',
+        property_key: 'battery.typical_capacity',
+        value: 5700,
+        unit: 'mAh',
+        provenance: 'reported',
+        confidence: 'high',
+        confidence_reason: 'Two independent reports',
+        sources: [{ id: 'source-1', label: 'Source A', url: 'https://example.com', relationship: 'supports' }],
+      }],
+    });
+    expect(evidence).toEqual([{
+      id: 'claim-1',
+      kind: 'reported',
+      claim: 'battery.typical_capacity = 5700 mAh. Confidence: high. Two independent reports',
+      source: 'Source A — https://example.com',
+    }]);
   });
 
   it('explicitly tells the model not to use memorized target outcomes', () => {
