@@ -1,7 +1,7 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { serverClient, settings } from '../../../lib/supabase';
-import '../../../styles/lab-simulator.css';
+import Page from '../../layouts/Page.astro';
+import { serverClient, settings } from '../../lib/supabase';
+import '../../styles/lab-simulator.css';
 
 const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
 
@@ -36,7 +36,7 @@ if (client) {
       .from('creator_profiles')
       .select('user_id,handle,display_name,avatar_url')
       .in('user_id', ownerIds);
-    creators = new Map((creatorRows ?? []).map((creator) => [creator.user_id, creator]));
+    creators = new Map((creatorRows ?? []).map((creator: any) => [creator.user_id, creator]));
   }
 
   const simulationIds = simulations.map((item) => item.id);
