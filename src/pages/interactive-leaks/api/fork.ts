@@ -20,10 +20,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
 
   if (kind === 'simulation') {
     const { data: source, error } = await locals.supabase
-      .from('simulations')
-      .select('id,name,device_key,configuration_source,processor_key,processor_profile_id,state,result_snapshot')
-      .eq('id', id)
-      .maybeSingle();
+      .rpc('shared_simulation', { p_id: id });
 
     if (error || !source) return new Response('Simulation not available.', { status: 404 });
 
@@ -49,10 +46,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
   }
 
   const { data: source, error } = await locals.supabase
-    .from('simulation_profiles')
-    .select('id,name,component_kind,component_key,assumptions')
-    .eq('id', id)
-    .maybeSingle();
+    .rpc('shared_simulation_profile', { p_id: id });
 
   if (error || !source) return new Response('Profile not available.', { status: 404 });
 
