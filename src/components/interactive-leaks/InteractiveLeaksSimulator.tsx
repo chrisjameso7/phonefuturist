@@ -627,7 +627,7 @@ export default function InteractiveLeaksSimulator() {
     if (saved.preset === 'Light' || saved.preset === 'Typical' || saved.preset === 'Heavy' || saved.preset === 'Custom') {
       dispatchExperience({ type: 'preset', value: saved.preset });
     }
-    if (saved.custom && typeof saved.custom === 'object') {
+    if (saved.preset === 'Custom' && saved.custom && typeof saved.custom === 'object') {
       for (const key of ACTIVE_WORKLOADS) {
         const value = saved.custom[key];
         if (typeof value === 'string') dispatchExperience({ type: 'duration', key, value });
@@ -666,6 +666,10 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.gpuLoad === 'number') setGpuLoad(state.gpuLoad);
     restoreExperience(state.experience);
     if (typeof record?.name === 'string') setSimulationName(record.name);
+    if (record?.visibility === 'private' || record?.visibility === 'unlisted' || record?.visibility === 'public') {
+      setSimulationVisibility(record.visibility);
+    }
+    setSimulationSharePath(record?.id && record?.visibility !== 'private' ? `/interactive-leaks/simulation/${record.id}` : '');
     setRun(null);
     setHasSimulated(false);
     setDirty(true);
@@ -692,6 +696,10 @@ export default function InteractiveLeaksSimulator() {
     if (typeof assumptions.gpuLoad === 'number') setGpuLoad(assumptions.gpuLoad);
     if (typeof assumptions.ambientTemperature === 'number') setAmbientTemperature(assumptions.ambientTemperature);
     if (typeof record?.name === 'string') setProfileName(record.name);
+    if (record?.visibility === 'private' || record?.visibility === 'unlisted' || record?.visibility === 'public') {
+      setProfileVisibility(record.visibility);
+    }
+    setProfileSharePath(record?.id && record?.visibility !== 'private' ? `/interactive-leaks/profile/${record.id}` : '');
     setConfigurationSource('custom');
     setDirty(true);
     setStage('build');
@@ -965,6 +973,19 @@ export default function InteractiveLeaksSimulator() {
     setProfileMode('equal');
     setDirty(false);
     setHasSimulated(false);
+    setConfigurationSource('likely');
+    setProcessorScenario('exynos2700');
+    setProcessorProfile('expected');
+    setSimulationName('Galaxy S27 Ultra: Most likely');
+    setSimulationVisibility('private');
+    setProfileVisibility('private');
+    setSimulationSharePath('');
+    setProfileSharePath('');
+    setSavedNotice('');
+    setProfileSavedNotice('');
+    setAutoModel(null);
+    setAutoNotice('');
+    setAutoPhase(0);
   }
 
   const liveRatedEnergyWh = batteryEnergyWh(
