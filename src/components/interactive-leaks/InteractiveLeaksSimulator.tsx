@@ -2,6 +2,7 @@ import { useEffect, useState, useReducer } from 'react';
 import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
 import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
 import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
+import {batteryEnergyWh} from '../../lib/simulation/live-kernel';
 import ShareResult from './ShareResult';
 import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
 
@@ -589,7 +590,6 @@ export default function InteractiveLeaksSimulator() {
     setForm((current) => ({
       ...current,
       batteryCapacityMah: capacityMah,
-      batteryVoltageV: current.batteryVoltageV || '3.85',
     }));
   }
 
@@ -602,7 +602,6 @@ export default function InteractiveLeaksSimulator() {
       name: current.name || 'Galaxy S27 Ultra',
       formFactor: 'phone',
       batteryCapacityMah: '5700',
-      batteryVoltageV: current.batteryVoltageV || '3.85',
     }));
   }
 
@@ -615,7 +614,6 @@ export default function InteractiveLeaksSimulator() {
       name: current.name || 'Galaxy S27 Ultra',
       formFactor: 'phone',
       batteryCapacityMah: '5700',
-      batteryVoltageV: current.batteryVoltageV || '3.85',
     }));
   }
 
@@ -654,7 +652,6 @@ export default function InteractiveLeaksSimulator() {
         ...current,
         name: record?.name || current.name || 'Galaxy S27 Ultra',
         batteryCapacityMah: state.batteryCapacityMah,
-        batteryVoltageV: current.batteryVoltageV || '3.85',
       }));
     }
     if (typeof state.customCpuTarget === 'number') setCustomCpuTarget(state.customCpuTarget);
@@ -905,6 +902,10 @@ export default function InteractiveLeaksSimulator() {
     setHasSimulated(false);
   }
 
+  const liveRatedEnergyWh = batteryEnergyWh(
+    numeric(form.batteryCapacityMah),
+    numeric(form.batteryVoltageV),
+  );
   const display = result?.displays.primary;
   const pack = result?.battery;
   const packaging = result?.packaging;
@@ -1001,7 +1002,8 @@ export default function InteractiveLeaksSimulator() {
         </div>
       </div>
 
-      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
+      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Auto':'Manual'}</label>)}</fieldset>
+      <p className="il-input-note">{simple ? 'Auto uses PhoneFuturist evidence where it exists and leaves unsupported values unresolved.' : 'Manual accepts your explicit engineering assumptions. The math engine will not invent missing values.'}</p>
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
 
       {stage==='build' && <section className="il-product-config" aria-label="Device configuration">
@@ -1060,16 +1062,7 @@ export default function InteractiveLeaksSimulator() {
               </button>
             </div>
 
-            {processorProfile==='custom' && <div className="il-custom-profile">
-              <label className="il-slider-control">
-                <span><strong>CPU target</strong><b>{customCpuTarget}%</b></span>
-                <input type="range" min="0" max="100" step="5" value={customCpuTarget} onChange={(event)=>setCustomCpuTarget(Number(event.currentTarget.value))} />
-              </label>
-              <label className="il-slider-control">
-                <span><strong>GPU target</strong><b>{customGpuTarget}%</b></span>
-                <input type="range" min="0" max="100" step="5" value={customGpuTarget} onChange={(event)=>setCustomGpuTarget(Number(event.currentTarget.value))} />
-              </label>
-            </div>}
+            {processorProfile==='custom' && <p className="il-config-note">CPU and GPU tuning controls are hidden until the performance and thermal model can make them affect real outputs.</p>}
 
             <div className="il-profile-save">
               <label>
@@ -1126,31 +1119,25 @@ export default function InteractiveLeaksSimulator() {
         <div className="il-config-side">
           <aside className="il-assumptions-panel">
             <div className="il-live-preview-head">
-              <span>Environment assumptions</span>
-              <small>Scenario controls</small>
+              <span>Live physics</span>
+              <small>Exact transformations only</small>
             </div>
 
-            <label className="il-slider-control">
-              <span><strong>Efficiency assumption</strong><b>{efficiencyAssumption > 0 ? '+' : ''}{efficiencyAssumption}%</b></span>
-              <input type="range" min="-20" max="20" step="1" value={efficiencyAssumption} onChange={(event)=>setEfficiencyAssumption(Number(event.currentTarget.value))} />
-            </label>
+            {!simple && <label className="il-slider-control">
+              <span><strong>Nominal battery voltage</strong><b>{form.batteryVoltageV || '3.85'} V</b></span>
+              <input
+                type="range"
+                min="3.60"
+                max="4.00"
+                step="0.01"
+                value={Number(form.batteryVoltageV || 3.85)}
+                onChange={(event)=>update('batteryVoltageV', event.currentTarget.value)}
+              />
+              <small>User assumption. It immediately changes the exact mAh × V energy calculation.</small>
+            </label>}
 
-            <label className="il-slider-control">
-              <span><strong>Ambient temperature</strong><b>{ambientTemperature}°C</b></span>
-              <input type="range" min="0" max="45" step="1" value={ambientTemperature} onChange={(event)=>setAmbientTemperature(Number(event.currentTarget.value))} />
-            </label>
-
-            <label className="il-slider-control">
-              <span><strong>CPU load</strong><b>{cpuLoad}%</b></span>
-              <input type="range" min="0" max="100" step="5" value={cpuLoad} onChange={(event)=>setCpuLoad(Number(event.currentTarget.value))} />
-            </label>
-
-            <label className="il-slider-control">
-              <span><strong>GPU load</strong><b>{gpuLoad}%</b></span>
-              <input type="range" min="0" max="100" step="5" value={gpuLoad} onChange={(event)=>setGpuLoad(Number(event.currentTarget.value))} />
-            </label>
-
-            <p className="il-config-note">These environment controls are captured as scenario assumptions. Temperature, CPU load, GPU load and efficiency are not yet applied to benchmark or thermal calculations, so they do not silently alter the current deterministic battery result.</p>
+            <div className="il-live-row"><span>Rated pack energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Needs nominal voltage'}</strong></div>
+            <p className="il-config-note">CPU load, GPU load, efficiency and temperature sliders are intentionally hidden until each one is connected to a validated performance or thermal model.</p>
           </aside>
 
           <aside className="il-live-preview">
@@ -1161,7 +1148,8 @@ export default function InteractiveLeaksSimulator() {
             <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
             <div className="il-live-row"><span>Profile</span><strong>{processorProfile==='expected'?'PF Expected':processorProfile.charAt(0).toUpperCase()+processorProfile.slice(1)}</strong></div>
             <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
-            <div className="il-live-row"><span>Usage</span><strong>{simple ? experience.preset : 'Advanced'}</strong></div>
+            <div className="il-live-row"><span>Mode</span><strong>{simple ? 'Auto' : 'Manual'}</strong></div>
+            <div className="il-live-row"><span>Rated energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Unknown'}</strong></div>
             <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
           </aside>
         </div>
@@ -1183,7 +1171,7 @@ export default function InteractiveLeaksSimulator() {
               <dl>
                 <div><dt>Rumor confidence</dt><dd>68%</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
-                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Advanced'}</dd></div>
+                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
             </article>
             <article>
@@ -1192,7 +1180,7 @@ export default function InteractiveLeaksSimulator() {
               <dl>
                 <div><dt>Rumor confidence</dt><dd>40%</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
-                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Advanced'}</dd></div>
+                <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
             </article>
           </div>
