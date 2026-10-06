@@ -385,6 +385,9 @@ export default function InteractiveLeaksSimulator() {
   const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
   const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra — Most likely');
   const [savedNotice, setSavedNotice] = useState('');
+  const [processorProfile, setProcessorProfile] = useState<'expected' | 'efficiency' | 'aggressive' | 'custom'>('expected');
+  const [customCpuTarget, setCustomCpuTarget] = useState(50);
+  const [customGpuTarget, setCustomGpuTarget] = useState(50);
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -550,6 +553,24 @@ export default function InteractiveLeaksSimulator() {
     setHasSimulated(false);
   }
 
+  function applyProcessorProfile(profile: 'expected' | 'efficiency' | 'aggressive' | 'custom') {
+    setProcessorProfile(profile);
+    setConfigurationSource('custom');
+    if (profile === 'efficiency') {
+      setCpuLoad(20);
+      setGpuLoad(8);
+      setEfficiencyAssumption(10);
+    } else if (profile === 'aggressive') {
+      setCpuLoad(70);
+      setGpuLoad(55);
+      setEfficiencyAssumption(-6);
+    } else if (profile === 'expected') {
+      setCpuLoad(35);
+      setGpuLoad(20);
+      setEfficiencyAssumption(0);
+    }
+  }
+
   function applyBatteryScenario(capacityMah: string) {
     setConfigurationSource('custom');
     setDirty(true);
@@ -590,6 +611,9 @@ export default function InteractiveLeaksSimulator() {
     const payload = {
       name: simulationName.trim() || 'Untitled simulation',
       processorScenario,
+      processorProfile,
+      customCpuTarget,
+      customGpuTarget,
       configurationSource,
       batteryCapacityMah: form.batteryCapacityMah,
       experience,
@@ -711,6 +735,44 @@ export default function InteractiveLeaksSimulator() {
 
           <div className="il-rumor-group">
             <div className="il-rumor-heading">
+              <strong>Processor profile</strong>
+              <span>Reusable assumptions</span>
+            </div>
+            <div className="il-profile-grid">
+              <button type="button" className={processorProfile==='expected'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('expected')}>
+                <strong>PhoneFuturist Expected</strong>
+                <span>Balanced interpretation of current evidence and historical scaling.</span>
+              </button>
+              <button type="button" className={processorProfile==='efficiency'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('efficiency')}>
+                <strong>Efficiency</strong>
+                <span>Assumes lower sustained demand and stronger energy efficiency.</span>
+              </button>
+              <button type="button" className={processorProfile==='aggressive'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('aggressive')}>
+                <strong>Aggressive</strong>
+                <span>Assumes higher sustained performance with a tougher efficiency tradeoff.</span>
+              </button>
+              <button type="button" className={processorProfile==='custom'?'il-profile-card is-selected':'il-profile-card'} onClick={()=>applyProcessorProfile('custom')}>
+                <strong>Custom</strong>
+                <span>Set your own scenario targets.</span>
+              </button>
+            </div>
+
+            {processorProfile==='custom' && <div className="il-custom-profile">
+              <label className="il-slider-control">
+                <span><strong>CPU target</strong><b>{customCpuTarget}%</b></span>
+                <input type="range" min="0" max="100" step="5" value={customCpuTarget} onChange={(event)=>setCustomCpuTarget(Number(event.currentTarget.value))} />
+              </label>
+              <label className="il-slider-control">
+                <span><strong>GPU target</strong><b>{customGpuTarget}%</b></span>
+                <input type="range" min="0" max="100" step="5" value={customGpuTarget} onChange={(event)=>setCustomGpuTarget(Number(event.currentTarget.value))} />
+              </label>
+            </div>}
+
+            <p className="il-config-note">Profiles bundle assumptions for reuse. They do not fabricate benchmark scores. When performance and thermal models are added, these profile values can become model inputs instead of display-only scenario metadata.</p>
+          </div>
+
+          <div className="il-rumor-group">
+            <div className="il-rumor-heading">
               <strong>Battery</strong>
               <span>Feeds the deterministic battery model</span>
             </div>
@@ -776,6 +838,7 @@ export default function InteractiveLeaksSimulator() {
               <small>{dirty ? 'Pending rerun' : hasSimulated ? 'Current result' : 'Input preview'}</small>
             </div>
             <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
+            <div className="il-live-row"><span>Profile</span><strong>{processorProfile==='expected'?'PF Expected':processorProfile.charAt(0).toUpperCase()+processorProfile.slice(1)}</strong></div>
             <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
             <div className="il-live-row"><span>Usage</span><strong>{simple ? experience.preset : 'Advanced'}</strong></div>
             <div className="il-live-row"><span>Battery result</span><strong>{hasSimulated && run ? headlineText(run) : 'Run simulation'}</strong></div>
