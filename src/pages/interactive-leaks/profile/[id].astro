@@ -1,38 +1,86 @@
 ---
 import Page from '../../../layouts/Page.astro';
 import { serverClient, settings } from '../../../lib/supabase';
+import '../../../styles/lab-simulator.css';
 
 const id = Astro.params.id ?? '';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 let profile: any = null;
+let creator: any = null;
+let parent: any = null;
+let visibleForks = 0;
 
 if (uuid.test(id)) {
   const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
   if (client) {
     const { data } = await client
       .from('simulation_profiles')
-      .select('id,name,component_kind,component_key,visibility,profile_kind,assumptions,forked_from,created_at,updated_at')
+      .select('id,owner_id,name,component_kind,component_key,visibility,profile_kind,assumptions,forked_from,created_at,updated_at')
       .eq('id', id)
       .maybeSingle();
     profile = data;
+
+    if (profile) {
+      const creatorPromise = client
+        .from('creator_profiles')
+        .select('handle,display_name,avatar_url')
+        .eq('user_id', profile.owner_id)
+        .maybeSingle();
+
+      const forksPromise = client
+        .from('simulation_profiles')
+        .select('id')
+        .eq('forked_from', profile.id);
+
+      const parentPromise = profile.forked_from
+        ? client
+            .from('simulation_profiles')
+            .select('id,name,owner_id')
+            .eq('id', profile.forked_from)
+            .maybeSingle()
+        : Promise.resolve({ data: null } as any);
+
+      const [{ data: creatorData }, { data: forkRows }, { data: parentData }] = await Promise.all([
+        creatorPromise,
+        forksPromise,
+        parentPromise,
+      ]);
+
+      creator = creatorData;
+      visibleForks = (forkRows ?? []).length;
+      parent = parentData;
+    }
   }
 }
 ---
 
 <Page
-  title={profile ? `${profile.name} — Interactive Leaks Profile` : 'Profile not available'}
+  title={profile ? `${profile.name} - Interactive Leaks Profile` : 'Profile not available'}
   description="A shared PhoneFuturist Interactive Leaks component profile."
   productMode={true}
 >
   <main class="il-share-page">
     {profile ? (
       <>
-        <a class="il-back" href="/interactive-leaks/simulate">← Interactive Leaks</a>
+        <a class="il-back" href="/interactive-leaks/explore">← Explore community</a>
         <div class="il-share-hero">
           <div>
-            <span class="il-pill">{profile.profile_kind}</span>
+            <div class="il-share-meta">
+              <span class="il-pill">{profile.profile_kind}</span>
+              <span>{visibleForks} visible forks</span>
+            </div>
             <h1>{profile.name}</h1>
             <p>{profile.component_key.replaceAll('_', ' ')} · {profile.visibility}</p>
+            {creator && (
+              <a class="il-creator-line" href={`/creator/${creator.handle}`}>
+                {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
+                <b>{creator.display_name}</b>
+                <small>@{creator.handle}</small>
+              </a>
+            )}
+            {parent && (
+              <p class="il-lineage">Forked from <a href={`/interactive-leaks/profile/${parent.id}`}>{parent.name}</a></p>
+            )}
           </div>
           <form method="post" action="/interactive-leaks/api/fork">
             <input type="hidden" name="kind" value="profile" />
