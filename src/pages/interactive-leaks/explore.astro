@@ -1,0 +1,169 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { serverClient, settings } from '../../../lib/supabase';
+import '../../../styles/lab-simulator.css';
+
+const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+
+let simulations: any[] = [];
+let profiles: any[] = [];
+let simulationForks = new Map<string, number>();
+let profileForks = new Map<string, number>();
+
+if (client) {
+  const [{ data: simulationRows }, { data: profileRows }] = await Promise.all([
+    client
+      .from('simulations')
+      .select('id,name,device_key,configuration_source,processor_key,state,result_snapshot,created_at,updated_at')
+      .eq('visibility', 'public')
+      .order('updated_at', { ascending: false })
+      .limit(24),
+    client
+      .from('simulation_profiles')
+      .select('id,name,component_key,profile_kind,assumptions,created_at,updated_at')
+      .eq('visibility', 'public')
+      .order('updated_at', { ascending: false })
+      .limit(24),
+  ]);
+
+  simulations = simulationRows ?? [];
+  profiles = profileRows ?? [];
+
+  const simulationIds = simulations.map((item) => item.id);
+  const profileIds = profiles.map((item) => item.id);
+
+  if (simulationIds.length) {
+    const { data: forks } = await client
+      .from('simulations')
+      .select('forked_from')
+      .eq('visibility', 'public')
+      .in('forked_from', simulationIds);
+
+    for (const row of forks ?? []) {
+      if (!row.forked_from) continue;
+      simulationForks.set(row.forked_from, (simulationForks.get(row.forked_from) ?? 0) + 1);
+    }
+  }
+
+  if (profileIds.length) {
+    const { data: forks } = await client
+      .from('simulation_profiles')
+      .select('forked_from')
+      .eq('visibility', 'public')
+      .in('forked_from', profileIds);
+
+    for (const row of forks ?? []) {
+      if (!row.forked_from) continue;
+      profileForks.set(row.forked_from, (profileForks.get(row.forked_from) ?? 0) + 1);
+    }
+  }
+}
+
+const topSimulations = [...simulations]
+  .sort((a, b) => (simulationForks.get(b.id) ?? 0) - (simulationForks.get(a.id) ?? 0))
+  .slice(0, 6);
+const topProfiles = [...profiles]
+  .sort((a, b) => (profileForks.get(b.id) ?? 0) - (profileForks.get(a.id) ?? 0))
+  .slice(0, 6);
+---
+
+<Page
+  title="Explore — Interactive Leaks"
+  description="Discover public PhoneFuturist simulations and reusable community profiles."
+  productMode={true}
+>
+  <main class="il-explore">
+    <header class="il-explore-hero">
+      <div>
+        <a class="il-back" href="/interactive-leaks/simulate">← Simulator</a>
+        <span class="eyebrow">Interactive Leaks community</span>
+        <h1>Explore what people think the future looks like.</h1>
+        <p>Public simulations and reusable component profiles, built from explicit assumptions rather than hidden guesses.</p>
+      </div>
+      <a class="il-primary" href="/interactive-leaks/simulate">Build a simulation</a>
+    </header>
+
+    <section class="il-explore-section">
+      <div class="il-explore-section-head">
+        <div>
+          <span class="eyebrow">Most forked</span>
+          <h2>Simulations people are building on.</h2>
+        </div>
+        <small>Ranked by visible public forks</small>
+      </div>
+
+      {topSimulations.length ? (
+        <div class="il-explore-grid">
+          {topSimulations.map((item) => (
+            <a class="il-community-card" href={`/interactive-leaks/simulation/${item.id}`}>
+              <div class="il-community-card-top">
+                <span class="il-pill">{item.configuration_source}</span>
+                <b>{simulationForks.get(item.id) ?? 0} forks</b>
+              </div>
+              <h3>{item.name}</h3>
+              <p>{item.device_key.replaceAll('-', ' ')}</p>
+              <dl>
+                <div><dt>Processor</dt><dd>{item.processor_key?.replaceAll('_', ' ') || 'Unknown'}</dd></div>
+                <div><dt>Battery</dt><dd>{item.state?.batteryCapacityMah ? `${item.state.batteryCapacityMah} mAh` : 'Unknown'}</dd></div>
+                <div><dt>Profile</dt><dd>{item.state?.processorProfile || 'Expected'}</dd></div>
+              </dl>
+            </a>
+          ))}
+        </div>
+      ) : <p class="il-library-empty">No public simulations yet. The first one gets the whole stage.</p>}
+    </section>
+
+    <section class="il-explore-section">
+      <div class="il-explore-section-head">
+        <div>
+          <span class="eyebrow">Latest</span>
+          <h2>Fresh public simulations.</h2>
+        </div>
+      </div>
+
+      {simulations.length ? (
+        <div class="il-community-list">
+          {simulations.slice(0, 10).map((item) => (
+            <a href={`/interactive-leaks/simulation/${item.id}`}>
+              <div>
+                <strong>{item.name}</strong>
+                <span>{item.device_key.replaceAll('-', ' ')} · {item.processor_key?.replaceAll('_', ' ') || 'processor unknown'}</span>
+              </div>
+              <b>{simulationForks.get(item.id) ?? 0} forks</b>
+            </a>
+          ))}
+        </div>
+      ) : <p class="il-library-empty">Nothing published yet.</p>}
+    </section>
+
+    <section class="il-explore-section">
+      <div class="il-explore-section-head">
+        <div>
+          <span class="eyebrow">Reusable profiles</span>
+          <h2>Component assumptions worth stealing.</h2>
+        </div>
+        <small>Public profiles only</small>
+      </div>
+
+      {topProfiles.length ? (
+        <div class="il-explore-grid">
+          {topProfiles.map((item) => (
+            <a class="il-community-card" href={`/interactive-leaks/profile/${item.id}`}>
+              <div class="il-community-card-top">
+                <span class="il-pill">{item.profile_kind}</span>
+                <b>{profileForks.get(item.id) ?? 0} forks</b>
+              </div>
+              <h3>{item.name}</h3>
+              <p>{item.component_key.replaceAll('_', ' ')}</p>
+              <dl>
+                <div><dt>Preset</dt><dd>{item.assumptions?.profilePreset || 'Custom'}</dd></div>
+                <div><dt>CPU target</dt><dd>{item.assumptions?.customCpuTarget ?? item.assumptions?.cpuLoad ?? 'Unknown'}%</dd></div>
+                <div><dt>GPU target</dt><dd>{item.assumptions?.customGpuTarget ?? item.assumptions?.gpuLoad ?? 'Unknown'}%</dd></div>
+              </dl>
+            </a>
+          ))}
+        </div>
+      ) : <p class="il-library-empty">No public profiles yet.</p>}
+    </section>
+  </main>
+</Page>
