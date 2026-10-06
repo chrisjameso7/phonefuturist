@@ -14,6 +14,77 @@ export type AutoModelRequest = {
   intent?: 'balanced' | 'efficiency' | 'performance';
 };
 
+export type IntelligenceBundle = {
+  device?: {
+    id?: string;
+    brand?: string;
+    name?: string;
+    slug?: string;
+    category?: string;
+    lifecycle?: string;
+  };
+  claims?: Array<{
+    id?: string;
+    property_key?: string;
+    value?: unknown;
+    unit?: string | null;
+    provenance?: 'confirmed' | 'reported' | 'estimated';
+    confidence?: 'low' | 'medium' | 'high';
+    confidence_reason?: string;
+    sources?: Array<{
+      id?: string;
+      label?: string;
+      url?: string | null;
+      source_type?: string;
+      relationship?: 'supports' | 'contradicts' | 'context';
+      note?: string;
+    }>;
+  }>;
+};
+
+function compactValue(value: unknown): string {
+  try {
+    const text = typeof value === 'string' ? value : JSON.stringify(value);
+    return (text || '').slice(0, 800);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Convert private editorial intelligence into a small AI-safe evidence list.
+ * Private notes never enter this structure.
+ */
+export function evidenceItemsFromBundle(bundle: IntelligenceBundle): AutoEvidenceItem[] {
+  const claims = Array.isArray(bundle.claims) ? bundle.claims : [];
+  const items: AutoEvidenceItem[] = [];
+
+  for (const claim of claims.slice(0, 80)) {
+    if (!claim?.id || !claim.property_key) continue;
+    const value = compactValue(claim.value);
+    if (!value) continue;
+
+    const source = (claim.sources ?? []).find(item => item.relationship === 'supports') ?? claim.sources?.[0];
+    const kind: AutoEvidenceItem['kind'] =
+      claim.provenance === 'confirmed' ? 'confirmed'
+      : claim.provenance === 'reported' ? 'reported'
+      : 'editorial';
+
+    const confidence = claim.confidence ? ` Confidence: ${claim.confidence}.` : '';
+    const reason = claim.confidence_reason ? ` ${claim.confidence_reason}` : '';
+    const unit = claim.unit ? ` ${claim.unit}` : '';
+
+    items.push({
+      id: claim.id,
+      kind,
+      claim: `${claim.property_key} = ${value}${unit}.${confidence}${reason}`.slice(0, 2_000),
+      ...(source?.label ? { source: source.url ? `${source.label} — ${source.url}` : source.label } : {}),
+    });
+  }
+
+  return items;
+}
+
 type AiRange = {
   min?: number;
   max?: number;
