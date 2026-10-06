@@ -36,10 +36,10 @@ describe('Frozen sharing',()=>{
 });
 
 
-it('renders Simple as default with no engineering power or derating controls',async()=>{
+it('renders Build as default while preserving Simple mode without engineering power controls',async()=>{
  const {createElement}=await import('react');const {renderToStaticMarkup}=await import('react-dom/server');const {default:Simulator}=await import('../src/components/interactive-leaks/InteractiveLeaksSimulator');
  const html=renderToStaticMarkup(createElement(Simulator));
- expect(html).toContain('name="simulation-mode" checked=""');expect(html).toContain('How do you use this phone?');expect(html).toContain('name="usage-profile" checked=""');expect(html).not.toContain('aria-label="Gaming average device power (W)"');expect(html).not.toContain('Full rated pack');
+ expect(html).toContain('name="simulation-mode" checked=""');expect(html).toContain('class="is-active">build</button>');expect(html).toContain('Device configuration');expect(html).toContain('PhoneFuturist Expected');expect(html).not.toContain('aria-label="Gaming average device power (W)"');expect(html).not.toContain('Full rated pack');
 });
 it('wraps a long device name in the PNG and never changes the calculated result',async()=>{
  const a=freezeRun({...sample(),input:{...input,name:'A very long device concept '.repeat(6)}},sample().context);
