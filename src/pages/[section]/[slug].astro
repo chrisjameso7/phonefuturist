@@ -102,3 +102,25 @@ const heroImage = article && !article.withdrawn
   .story-empty{min-height:55vh;display:grid;place-content:center;max-width:720px}
   @media(max-width:700px){.reading-page{padding-top:16px}.story-header{margin-top:20px}.story-header h1{font-size:clamp(2.8rem,15vw,4.8rem)}.story-hero{margin-bottom:36px}.article-body{font-size:1rem;line-height:1.78}.article-image{width:100%;margin:2.2rem 0;transform:none}.story-meta{display:grid}}
 </style>
+
+
+<style>
+@media(max-width:700px){
+  .reading-page{width:100%;padding:12px 0 92px}
+  .story-header{width:auto;margin:0 12px 14px;padding:20px 18px 18px;border:1px solid #202b37;border-radius:26px;background:#0b1118}
+  .story-section{margin-bottom:12px;font-size:.58rem}
+  .story-header h1{font-size:clamp(2.45rem,12vw,3.8rem);line-height:.92;letter-spacing:-.065em}
+  .story-deck{margin:18px 0 14px;font-size:.9rem;line-height:1.55}
+  .story-meta{display:flex;gap:8px 14px;padding-top:13px;font-size:.62rem}
+  .story-hero{width:auto;margin:0 12px 24px}
+  .story-hero img{max-height:none;border-radius:26px}
+  .article-body{width:auto;margin:0 18px;font-size:.98rem;line-height:1.78}
+  .article-body h2{margin:2.8rem 0 1rem;font-size:1.8rem}
+  .article-body h3{margin:2.3rem 0 .9rem;font-size:1.3rem}
+  .article-body blockquote{margin:2.2rem 0;padding-left:18px;font-size:1.15rem}
+  .article-image{width:calc(100% + 12px);margin:2rem -6px;transform:none}
+  .article-image img{border-radius:22px}
+  .story-note,.article-sources{width:auto;margin:28px 12px 0;padding:18px;border:1px solid #202b37;border-radius:22px;background:#0b1118}
+  .story-back{width:auto;margin:28px 18px 0}
+}
+</style>
