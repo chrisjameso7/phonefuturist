@@ -67,7 +67,6 @@ footer .theme-choice { flex-shrink:0; }
 .observatory .hero-caption a:hover { color:#ba9bff; }
 .lab-simulator-shell :is(.il-field,.il-workload) :is(input,select) { border-color:var(--control-border); }
 :root { --control-border:#59728f; }
-:root[data-theme='light'] { --control-border:#748ca5; }
 
 /* ================================================================
    PHONEFUTURIST 2026 BRAND RESET
