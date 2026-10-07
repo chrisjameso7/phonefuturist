@@ -1527,3 +1527,326 @@ footer .brand-lockup .brand-word {
     box-shadow:none!important;
   }
 }
+
+
+/* ================================================================
+   ORIGINAL MOBILE RESTORE V1
+   Restore the original warm observatory mobile composition while
+   keeping the current PhoneFuturist logo and current navigation links.
+   ================================================================ */
+@media(max-width:760px){
+  body:not(.product-mode){
+    padding:10px!important;
+    padding-bottom:10px!important;
+    background:
+      radial-gradient(ellipse at 10% 5%,#a0958580,transparent 45%),
+      radial-gradient(ellipse at 95% 65%,#85807780,transparent 50%),
+      #696562!important;
+  }
+
+  .mobile-appbar,
+  .mobile-tabbar{
+    display:none!important;
+  }
+
+  .site-header{
+    display:flex!important;
+    position:relative!important;
+    top:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0 0 10px!important;
+    padding:14px!important;
+    gap:10px!important;
+    border:1px solid #ffffff30!important;
+    border-radius:24px!important;
+    background:#353535e8!important;
+    box-shadow:0 12px 45px #25211e20!important;
+    backdrop-filter:blur(18px);
+  }
+
+  .site-header .header-brand-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .site-header .brand-lockup{
+    display:flex!important;
+    align-items:center;
+    gap:9px;
+    color:#faf7eb!important;
+  }
+
+  .site-header .brand-mark{
+    width:42px!important;
+    height:21px!important;
+  }
+
+  .site-header .brand-word{
+    font-size:1.18rem!important;
+    font-weight:760!important;
+    letter-spacing:-.055em!important;
+  }
+
+  .desktop-nav,
+  .header-actions{
+    display:none!important;
+  }
+
+  .mobile-nav{
+    display:block!important;
+    width:auto!important;
+    margin-left:auto!important;
+    color:#eeeade!important;
+  }
+
+  .mobile-nav>summary{
+    min-height:38px!important;
+    padding:0 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #ffffff2b!important;
+    border-radius:999px!important;
+    background:#292a28!important;
+    color:#f3efe4!important;
+  }
+
+  .mobile-nav[open]>summary{
+    background:#e4e3cb!important;
+    border-color:#e4e3cb!important;
+    color:#292a26!important;
+  }
+
+  .mobile-menu-panel{
+    top:calc(100% + 8px)!important;
+    left:0!important;
+    right:0!important;
+    width:auto!important;
+    margin:0!important;
+    padding:14px!important;
+    border:1px solid #ffffff29!important;
+    border-radius:20px!important;
+    background:#2d2e2cf8!important;
+    box-shadow:0 25px 65px #24211e66!important;
+  }
+
+  .mobile-menu-primary{
+    display:grid!important;
+    gap:6px!important;
+  }
+
+  .mobile-menu-primary a{
+    min-height:44px!important;
+    padding:0 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    border-radius:12px!important;
+    color:#f0ede4!important;
+    background:transparent!important;
+  }
+
+  .mobile-menu-primary a:hover,
+  .mobile-menu-primary a[aria-current='page']{
+    background:#3a3b37!important;
+  }
+
+  body:not(.product-mode) main,
+  body:not(.product-mode) main.home-page{
+    width:100%!important;
+    max-width:none!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  .observatory{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    padding:5px!important;
+    gap:10px!important;
+    border:1px solid #ffffff35!important;
+    border-radius:27px!important;
+    background:#ffffff0c!important;
+  }
+
+  .observatory .hero{
+    order:0!important;
+    min-height:560px!important;
+    height:auto!important;
+    padding:26px 20px!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    border:1px solid #ffffff60!important;
+    border-radius:22px!important;
+    overflow:hidden!important;
+    background:#444542!important;
+  }
+
+  .observatory .hero-image{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    opacity:.8!important;
+    object-fit:cover!important;
+    object-position:61% center!important;
+    filter:saturate(.35) sepia(.16)!important;
+  }
+
+  .observatory .hero::after{
+    background:
+      linear-gradient(0deg,#272927f5,transparent 75%),
+      linear-gradient(90deg,#313330aa,transparent 90%)!important;
+  }
+
+  .observatory .hero-copy{
+    position:relative!important;
+    z-index:2!important;
+    width:100%!important;
+    max-width:520px!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  .observatory .hero h1{
+    max-width:11ch!important;
+    margin:12px 0 16px!important;
+    font-size:clamp(2.6rem,10vw,4.3rem)!important;
+    line-height:.98!important;
+    font-weight:400!important;
+  }
+
+  .observatory .hero-intro{
+    max-width:100%!important;
+    color:#e1e0d7!important;
+    font-size:.9rem!important;
+    line-height:1.55!important;
+  }
+
+  .observatory .hero-actions{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:wrap!important;
+    gap:10px!important;
+    margin:20px 0 0!important;
+  }
+
+  .observatory .hero .button{
+    border-radius:999px!important;
+  }
+
+  .observatory .hero-caption{
+    display:none!important;
+  }
+
+  .image-disclosure{
+    right:5%!important;
+    bottom:18px!important;
+    font-size:.5rem!important;
+  }
+
+  .observatory-rail{
+    order:1!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+  }
+
+  .observatory-card{
+    min-height:180px!important;
+    padding:20px!important;
+    gap:8px!important;
+    border-radius:20px!important;
+  }
+
+  .observatory-card:first-child{
+    display:none!important;
+  }
+
+  .observatory-card.rail-lab{
+    background:#4b4e44!important;
+  }
+
+  .orbit{
+    display:none!important;
+  }
+
+  .latest-section{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:16px!important;
+    margin-top:12px!important;
+    padding:24px 16px!important;
+    border:1px solid #ffffff25!important;
+    border-radius:24px!important;
+    background:#343532d9!important;
+    color-scheme:dark!important;
+  }
+
+  .latest-section .article-grid,
+  .latest-section .article-grid[data-count='1'],
+  .latest-section .article-grid[data-count='2'],
+  .latest-section .article-grid[data-count='3'],
+  .latest-section .article-grid[data-count='4']{
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+  }
+
+  .latest-section .article-card,
+  .latest-section .article-card.has-card-image{
+    border:1px solid #ffffff25!important;
+    border-radius:14px!important;
+    background:#3a3b38!important;
+  }
+
+  .latest-section .article-card.has-card-image{
+    display:flex!important;
+    flex-direction:column!important;
+  }
+
+  .latest-section .article-card.has-card-image .card-image{
+    width:100%!important;
+    min-height:0!important;
+    aspect-ratio:16/10!important;
+    border:0!important;
+  }
+
+  .latest-section .article-card.has-card-image .card-content{
+    min-height:0!important;
+    padding:1.15rem 1rem!important;
+  }
+
+  .news-rail{
+    grid-template-columns:1fr!important;
+  }
+
+  .about-section{
+    grid-template-columns:1fr!important;
+    gap:1rem!important;
+    padding:36px 16px!important;
+  }
+
+  footer{
+    display:flex!important;
+    margin-top:10px!important;
+    padding:24px 14px!important;
+    flex-wrap:wrap!important;
+  }
+}
+
+@media(max-width:460px){
+  body:not(.product-mode){padding:8px!important}
+  .observatory-rail{grid-template-columns:1fr!important}
+  .observatory .hero{min-height:620px!important}
+  .observatory .hero-actions{flex-direction:column!important;align-items:flex-start!important}
+}
