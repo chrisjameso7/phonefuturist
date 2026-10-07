@@ -640,7 +640,7 @@ export default function InteractiveLeaksSimulator() {
   function restoreExperience(saved: any) {
     if (!saved || typeof saved !== 'object') return;
     if (saved.mode === 'simple' || saved.mode === 'advanced') dispatchExperience({ type: 'mode', value: saved.mode });
-    if (saved.preset === 'Light' || saved.preset === 'Typical' || saved.preset === 'Heavy' || saved.preset === 'Custom') {
+    if (saved.preset === 'Light' || saved.preset === 'Typical' || saved.preset === 'Heavy' || saved.preset === 'Gaming' || saved.preset === 'Camera' || saved.preset === 'Custom') {
       dispatchExperience({ type: 'preset', value: saved.preset });
     }
     if (saved.preset === 'Custom' && saved.custom && typeof saved.custom === 'object') {
@@ -1916,7 +1916,7 @@ export default function InteractiveLeaksSimulator() {
             {simple?<div className="il-simple-usage">
               <h3>How hard do you use your phone?</h3>
               <p>No wattage. No engineering setup. Choose the closest match and we’ll turn the virtual device into a battery-life and performance estimate.</p>
-              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
+              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Gaming','Camera','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
               <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
               {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
               <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
