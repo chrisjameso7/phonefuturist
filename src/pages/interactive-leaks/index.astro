@@ -4,720 +4,127 @@ import '../../styles/lab-simulator.css';
 ---
 
 <Page
-  title="Interactive Leaks"
-  description="Build and test unreleased device concepts with PhoneFuturist's deterministic hardware simulation engine. Public Beta."
+  title="PhoneFuturist Lab"
+  description="Explore living virtual versions of unreleased devices and test how changing hardware assumptions changes the outcome."
 >
-  <div class="lab-page">
-    <!-- ============ HERO ============ -->
-    <section class="lab-hero">
-      <div class="lab-hero-main">
+  <div class="lab-page lab-home">
+    <section class="lab-home-hero">
+      <div class="lab-home-copy">
         <p class="lab-eyebrow">PhoneFuturist Lab · Public Beta</p>
-
-        <h1>
-          Interactive
-          <span>Leaks.</span>
-        </h1>
-
-        <p class="lab-intro">
-          Don't just read the specifications. Test them.
+        <h1>Use the phone<br /><span>before it exists.</span></h1>
+        <p>
+          PhoneFuturist builds a living virtual device from current evidence.
+          Change the hardware, move a control and watch the consequences update live.
         </p>
+        <div class="lab-home-actions">
+          <a class="lab-cta" href="/interactive-leaks/simulate">Open Galaxy S27 Ultra →</a>
+          <a class="lab-ghost" href="#how-it-works">How it works</a>
+        </div>
+      </div>
 
-        <p class="lab-description">
-          Build an unreleased device from reported or estimated
-          specifications, describe how it would actually be used, and see
-          what the numbers imply. Deterministic where it can be. Honest
-          where it can't.
+      <div class="lab-home-visual" aria-hidden="true">
+        <div class="lab-loop">
+          <img src="/assets/phonefuturist-mark.svg" alt="" width="240" height="108" />
+        </div>
+        <div class="lab-readout lab-readout-a"><span>Power</span><strong>8.0 W</strong></div>
+        <div class="lab-readout lab-readout-b"><span>Peak temp</span><strong>72.4°C</strong></div>
+        <div class="lab-readout lab-readout-c"><span>Sustained</span><strong>94.2%</strong></div>
+      </div>
+    </section>
+
+    <section class="lab-demo">
+      <div class="lab-demo-head">
+        <div>
+          <p class="lab-eyebrow">Living model</p>
+          <h2>Touch one thing.<br /><span>Watch everything react.</span></h2>
+        </div>
+        <p>
+          The default device is already built. You only change the assumptions
+          you care about.
         </p>
-
-        <div class="lab-hero-actions">
-          <a class="lab-cta" href="/interactive-leaks/simulate">
-            Open the simulator →
-          </a>
-
-          <a class="lab-ghost" href="#methodology">How it works</a>
-        </div>
-
-        <div class="lab-principles">
-          <span>Evidence in</span>
-          <span>Math applied</span>
-          <span>No invented specifications</span>
-        </div>
       </div>
 
-      <div class="lab-device-wrap" aria-hidden="true">
-        <div class="lab-halo"></div>
-        <div class="lab-orbit lab-orbit-one"></div>
-        <div class="lab-orbit lab-orbit-two"></div>
+      <div class="lab-module-preview">
+        <div class="lab-module-copy">
+          <span>SoC + thermals</span>
+          <h3>Power target</h3>
+          <div class="lab-fake-slider"><i style="width:58%"></i><b style="left:58%"></b></div>
+          <div class="lab-scale"><span>4 W</span><strong>8.0 W</strong><span>14 W</span></div>
 
-        <div class="lab-phone">
-          <div class="lab-screen">
-            <span class="lab-screen-line"></span>
-            <span class="lab-screen-line lab-screen-line-short"></span>
-          </div>
+          <h3>Cooling strength</h3>
+          <div class="lab-fake-slider"><i style="width:72%"></i><b style="left:72%"></b></div>
+          <div class="lab-scale"><span>Low</span><strong>72%</strong><span>High</span></div>
+        </div>
 
-          <div class="lab-camera lab-camera-one"></div>
-          <div class="lab-camera lab-camera-two"></div>
-          <div class="lab-camera lab-camera-three"></div>
-          <div class="lab-flash"></div>
-
-          <div class="lab-mark">
-            <strong>PF</strong>
-            <span>SIM · BETA</span>
-          </div>
+        <div class="lab-module-result">
+          <span class="lab-result-state">Thermally stable</span>
+          <strong class="lab-result-temp">72.4°C</strong>
+          <div class="lab-result-track"><i style="width:74%"></i></div>
+          <dl>
+            <div><dt>Sustained</dt><dd>94.2%</dd></div>
+            <div><dt>30 min power</dt><dd>8.1 W</dd></div>
+            <div><dt>Throttle</dt><dd>None</dd></div>
+          </dl>
         </div>
       </div>
     </section>
 
-    <!-- ============ CAPABILITIES ============ -->
-    <section class="lab-capabilities">
-      <div class="lab-capabilities-heading">
-        <p class="lab-eyebrow">What the Beta does</p>
-        <h2>
-          Three layers.
-          <span>One result.</span>
-        </h2>
+    <section class="lab-how" id="how-it-works">
+      <div class="lab-how-intro">
+        <p class="lab-eyebrow">How it works</p>
+        <h2>A simple surface.<br /><span>Serious machinery underneath.</span></h2>
       </div>
-
-      <div class="lab-cap-grid">
-        <article class="lab-cap">
-          <span class="lab-cap-index">01</span>
-          <h3>Device</h3>
-          <p>
-            The physical envelope. Dimensions, display geometry, battery
-            cells, camera modules — evaluated deterministically, from
-            geometry you supply.
-          </p>
-          <ul>
-            <li>Pack energy &amp; volume</li>
-            <li>Pixel density</li>
-            <li>Screen-to-body ratio</li>
-            <li>Internal volume budget</li>
-          </ul>
-        </article>
-
-        <article class="lab-cap">
-          <span class="lab-cap-index">02</span>
-          <h3>Environment</h3>
-          <p>
-            How the device is used. Assign average power per workload —
-            web, video, gaming — and the engine derives runtime from the
-            mixture, with intervals intact.
-          </p>
-          <ul>
-            <li>Five workloads or a supplied mixed-use power</li>
-            <li>Equal shares or custom percentages</li>
-            <li>Usable-energy derating</li>
-            <li>Worst-case / best-case bounds</li>
-          </ul>
-        </article>
-
-        <article class="lab-cap">
-          <span class="lab-cap-index">03</span>
-          <h3>Model</h3>
-          <p>
-            The versioned engine itself. Every result carries its model
-            versions, its assumptions and its confidence — so the same
-            inputs always produce the same result.
-          </p>
-          <ul>
-            <li>Versioned &amp; reproducible</li>
-            <li>Provenance-aware confidence</li>
-            <li>Explicit assumptions</li>
-            <li>Unresolved, never guessed</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <!-- ============ ENGINE STATUS ============ -->
-    <section class="lab-status">
-      <div class="lab-status-card">
-        <span class="lab-status-dot" aria-hidden="true"></span>
-        <div>
-          <strong>Live during Beta</strong>
-          <p>
-            Deterministic device core · battery runtime model · provenance
-            and confidence reporting
-          </p>
-        </div>
-      </div>
-
-      <div class="lab-status-card lab-status-muted">
-        <span class="lab-status-dot lab-status-dot-muted" aria-hidden="true"></span>
-        <div>
-          <strong>Coming during Beta</strong>
-          <p>
-            Performance, thermal and camera-image simulation are under
-            active development. Inputs accepted; results not claimed.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ ENTRY ============ -->
-    <section class="lab-entry">
-      <div class="lab-entry-card">
-        <div>
-          <p class="lab-eyebrow">The instrument</p>
-          <h2>
-            Configure a device.
-            <span>Run the model.</span>
-          </h2>
-          <p class="lab-entry-copy">
-            The simulation workspace pairs a simple core path — name,
-            envelope, battery, usage power — with the full engineering
-            detail one disclosure away. Results read like an instrument,
-            not a spreadsheet.
-          </p>
-        </div>
-
-        <a class="lab-cta" href="/interactive-leaks/simulate">
-          Start a simulation →
-        </a>
-      </div>
-    </section>
-
-    <!-- ============ METHODOLOGY ============ -->
-    <section class="lab-methodology" id="methodology">
-      <div class="lab-methodology-heading">
-        <p class="lab-eyebrow">Methodology</p>
-        <h2>Calculation, not clairvoyance.</h2>
-      </div>
-
-      <div class="lab-method-grid">
-        <article>
-          <span>01</span>
-          <h3>Known stays known.</h3>
-          <p>
-            Measurements and specifications you provide are preserved as
-            inputs rather than quietly replaced with assumptions.
-          </p>
-        </article>
-
-        <article>
-          <span>02</span>
-          <h3>Unknown stays unknown.</h3>
-          <p>
-            Missing information remains missing when the engine cannot
-            calculate it honestly from the available data.
-          </p>
-        </article>
-
-        <article>
-          <span>03</span>
-          <h3>Math stays reproducible.</h3>
-          <p>
-            Engine and model versions are attached to every result, so the
-            same inputs evaluated against the same model give the same
-            answer.
-          </p>
-        </article>
+      <div class="lab-how-grid">
+        <article><b>01</b><h3>Evidence builds the device.</h3><p>Current reports and historical hardware behavior define the starting model.</p></article>
+        <article><b>02</b><h3>The engine runs locally.</h3><p>Supported controls update deterministic models immediately. No waiting for every slider move.</p></article>
+        <article><b>03</b><h3>Every result stays replayable.</h3><p>Model versions and assumptions travel with the simulation so old runs remain reproducible.</p></article>
       </div>
     </section>
   </div>
 </Page>
 
 <style>
-  /* Landing-specific sections. Shared page/instrument styles come
-     from src/styles/lab-simulator.css. */
-
-  /* ---------------- HERO ---------------- */
-
-  .lab-hero {
-    min-height: 600px;
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-    align-items: center;
-    gap: 64px;
-    padding: 24px 0 80px;
-  }
-
-  .lab-hero h1 {
-    margin: 0;
-    max-width: 700px;
-    color: var(--ink);
-    font-size: clamp(3.6rem, 8vw, 7.6rem);
-    line-height: 0.86;
-    letter-spacing: -0.07em;
-    font-weight: 650;
-  }
-
-  .lab-hero h1 span {
-    display: block;
-    color: var(--muted);
-  }
-
-  .lab-intro {
-    margin: 34px 0 0;
-    color: var(--ink);
-    font-size: clamp(1.15rem, 1.8vw, 1.5rem);
-    line-height: 1.4;
-    letter-spacing: -0.02em;
-  }
-
-  .lab-description {
-    max-width: 580px;
-    margin: 14px 0 0;
-    color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.75;
-  }
-
-  .lab-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 32px;
-  }
-
-  .lab-principles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-top: 28px;
-  }
-
-  .lab-principles span {
-    padding: 9px 13px;
-    border: 1px solid color-mix(in srgb,var(--ink) 15%,transparent);
-    border-radius: 999px;
-    background: color-mix(in srgb,var(--ink) 3%,transparent);
-    color: var(--muted);
-    font-size: 0.74rem;
-  }
-
-  /* ---------------- HERO DEVICE (pure CSS) ---------------- */
-
-  .lab-device-wrap {
-    min-height: 520px;
-    display: grid;
-    place-items: center;
-    position: relative;
-  }
-
-  .lab-halo {
-    position: absolute;
-    width: 460px;
-    height: 460px;
-    border-radius: 50%;
-    background: radial-gradient(circle, color-mix(in srgb,var(--accent) 18%,transparent), transparent 70%);
-    pointer-events: none;
-  }
-
-  .lab-orbit {
-    position: absolute;
-    border: 1px solid color-mix(in srgb,var(--accent) 27%,transparent);
-    border-radius: 50%;
-  }
-
-  .lab-orbit-one {
-    width: 420px;
-    height: 420px;
-  }
-
-  .lab-orbit-two {
-    width: 520px;
-    height: 240px;
-    transform: rotate(-24deg);
-  }
-
-  .lab-phone {
-    width: 220px;
-    height: 436px;
-    position: relative;
-    z-index: 2;
-    border: 1px solid color-mix(in srgb,var(--ink) 18%,transparent);
-    border-radius: 40px;
-    background: linear-gradient(150deg, var(--surface), var(--surface-deep) 62%, var(--surface-deep));
-    box-shadow:
-      0 45px 90px color-mix(in srgb,var(--surface) 45%,transparent),
-      inset 0 1px color-mix(in srgb,var(--ink) 8%,transparent);
-    transform: rotate(7deg);
-  }
-
-  .lab-phone::before {
-    content: "";
-    position: absolute;
-    inset: 9px;
-    border: 1px solid color-mix(in srgb,var(--ink) 5%,transparent);
-    border-radius: 32px;
-  }
-
-  .lab-screen {
-    position: absolute;
-    inset: 12px;
-    border-radius: 30px;
-    background: linear-gradient(165deg, var(--surface-deep), var(--surface-deep) 70%);
-    overflow: hidden;
-  }
-
-  .lab-screen-line {
-    position: absolute;
-    left: 20px;
-    right: 56px;
-    top: 46px;
-    height: 10px;
-    border-radius: 5px;
-    background: color-mix(in srgb,var(--accent) 15%,transparent);
-  }
-
-  .lab-screen-line-short {
-    top: 68px;
-    right: 96px;
-    height: 7px;
-    background: color-mix(in srgb,var(--accent) 10%,transparent);
-  }
-
-  .lab-camera {
-    position: absolute;
-    z-index: 3;
-    width: 52px;
-    height: 52px;
-    border: 7px solid var(--surface);
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, color-mix(in srgb,var(--surface) 20%,transparent) 0 4%, var(--surface-deep) 18%, var(--surface-deep) 57%);
-    box-shadow: 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent), 0 8px 18px #00000040;
-  }
-
-  .lab-camera-one { top: 30px; left: 27px; }
-  .lab-camera-two { top: 30px; left: 96px; }
-  .lab-camera-three { top: 98px; left: 27px; }
-
-  .lab-flash {
-    position: absolute;
-    z-index: 3;
-    top: 114px;
-    left: 116px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .lab-mark {
-    position: absolute;
-    left: 27px;
-    right: 27px;
-    bottom: 28px;
-    z-index: 3;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    color: var(--muted);
-  }
-
-  .lab-mark strong {
-    color: var(--ink);
-    font-size: 1.25rem;
-    letter-spacing: -0.05em;
-  }
-
-  .lab-mark span {
-    font-size: 0.6rem;
-    letter-spacing: 0.16em;
-  }
-
-  /* ---------------- CAPABILITIES ---------------- */
-
-  .lab-capabilities {
-    padding: 88px 0;
-    border-top: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
-  }
-
-  .lab-capabilities-heading h2,
-  .lab-entry-card h2,
-  .lab-methodology h2 {
-    margin: 0;
-    color: var(--ink);
-    font-size: clamp(2rem, 3.8vw, 3.6rem);
-    line-height: 1;
-    letter-spacing: -0.05em;
-    font-weight: 600;
-  }
-
-  .lab-capabilities-heading h2 span,
-  .lab-entry-card h2 span {
-    display: block;
-    color: var(--muted);
-  }
-
-  .lab-cap-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 48px;
-  }
-
-  .lab-cap {
-    display: flex;
-    flex-direction: column;
-    min-height: 320px;
-    padding: 26px;
-    border: 1px solid color-mix(in srgb,var(--ink) 15%,transparent);
-    border-radius: 24px;
-    background: linear-gradient(150deg, var(--surface), var(--surface-deep));
-  }
-
-  .lab-cap-index {
-    color: var(--accent);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-  }
-
-  .lab-cap h3 {
-    margin: 40px 0 10px;
-    color: var(--ink);
-    font-size: 1.55rem;
-    letter-spacing: -0.04em;
-  }
-
-  .lab-cap > p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.65;
-  }
-
-  .lab-cap ul {
-    margin: 18px 0 0;
-    padding: 16px 0 0;
-    border-top: 1px solid color-mix(in srgb,var(--ink) 10%,transparent);
-    list-style: none;
-    display: grid;
-    gap: 7px;
-  }
-
-  .lab-cap li {
-    color: var(--muted);
-    font-size: 0.74rem;
-    letter-spacing: 0.02em;
-  }
-
-  .lab-cap li::before {
-    content: "—";
-    margin-right: 8px;
-    color: var(--muted);
-  }
-
-  /* ---------------- ENGINE STATUS ---------------- */
-
-  .lab-status {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    padding: 0 0 88px;
-  }
-
-  .lab-status-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 22px 24px;
-    border: 1px solid color-mix(in srgb,var(--accent) 25%,transparent);
-    border-radius: 20px;
-    background: var(--surface-raised);
-  }
-
-  .lab-status-muted {
-    background: var(--surface);
-    border-color: color-mix(in srgb,var(--ink) 14%,transparent);
-  }
-
-  .lab-status-card strong {
-    color: var(--ink);
-    font-size: 0.92rem;
-    letter-spacing: -0.01em;
-  }
-
-  .lab-status-card p {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 0.78rem;
-    line-height: 1.55;
-  }
-
-  .lab-status-dot {
-    flex: 0 0 auto;
-    width: 9px;
-    height: 9px;
-    margin-top: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 12px color-mix(in srgb,var(--accent) 50%,transparent);
-  }
-
-  .lab-status-dot-muted {
-    background: var(--surface-raised);
-    box-shadow: none;
-  }
-
-  /* ---------------- ENTRY ---------------- */
-
-  .lab-entry {
-    padding: 0 0 88px;
-  }
-
-  .lab-entry-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 36px;
-    padding: 44px 40px;
-    border: 1px solid color-mix(in srgb,var(--accent) 30%,transparent);
-    border-radius: 28px;
-    background:
-      radial-gradient(circle at 88% 12%, color-mix(in srgb,var(--accent) 17%,transparent), transparent 55%),
-      var(--surface);
-  }
-
-  .lab-entry-copy {
-    max-width: 520px;
-    margin: 18px 0 0;
-    color: var(--muted);
-    font-size: 0.94rem;
-    line-height: 1.7;
-  }
-
-  .lab-entry-card .lab-cta {
-    flex: 0 0 auto;
-  }
-
-  /* ---------------- METHODOLOGY ---------------- */
-
-  .lab-methodology {
-    padding: 88px 0 30px;
-    border-top: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
-  }
-
-  .lab-methodology-heading {
-    max-width: 660px;
-  }
-
-  .lab-method-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1px;
-    margin-top: 50px;
-    background: color-mix(in srgb,var(--ink) 12%,transparent);
-    border: 1px solid color-mix(in srgb,var(--ink) 12%,transparent);
-    border-radius: 24px;
-    overflow: hidden;
-  }
-
-  .lab-method-grid article {
-    min-height: 235px;
-    padding: 26px;
-    background: var(--surface);
-  }
-
-  .lab-method-grid article > span {
-    color: var(--accent);
-    font-size: 0.66rem;
-    letter-spacing: 0.14em;
-  }
-
-  .lab-method-grid h3 {
-    margin: 58px 0 12px;
-    color: var(--ink);
-    font-size: 1.08rem;
-    letter-spacing: -0.025em;
-  }
-
-  .lab-method-grid p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.84rem;
-    line-height: 1.65;
-  }
-
-  /* ---------------- RESPONSIVE ---------------- */
-
-  @media (max-width: 1080px) {
-    .lab-hero {
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 28px;
-    }
-
-    .lab-device-wrap {
-      transform: scale(0.82);
-    }
-
-    .lab-cap-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .lab-cap {
-      min-height: 0;
-    }
-
-    .lab-cap h3 {
-      margin-top: 24px;
-    }
-  }
-
-  @media (max-width: 820px) {
-    .lab-hero {
-      min-height: auto;
-      grid-template-columns: 1fr;
-      padding-bottom: 60px;
-    }
-
-    .lab-device-wrap {
-      min-height: 360px;
-      margin: -20px 0;
-      transform: scale(0.78);
-    }
-
-    .lab-capabilities {
-      padding: 64px 0;
-    }
-
-    .lab-status {
-      grid-template-columns: 1fr;
-      padding-bottom: 64px;
-    }
-
-    .lab-entry {
-      padding-bottom: 64px;
-    }
-
-    .lab-methodology {
-      padding: 64px 0 30px;
-    }
-
-    .lab-method-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .lab-method-grid article {
-      min-height: 0;
-    }
-
-    .lab-method-grid h3 {
-      margin-top: 32px;
-    }
-
-    .lab-entry-card {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 30px 24px;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .lab-hero h1 {
-      font-size: clamp(3.2rem, 17vw, 5.2rem);
-    }
-
-    .lab-hero-actions .lab-cta,
-    .lab-hero-actions .lab-ghost {
-      flex: 1 1 auto;
-      justify-content: center;
-    }
-
-    .lab-principles {
-      gap: 6px;
-    }
-  }
+  .lab-home { max-width: 1420px; margin: 0 auto; }
+  .lab-home-hero { min-height: 650px; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr); gap:70px; align-items:center; padding:58px 0 84px; }
+  .lab-home-copy h1 { margin:8px 0 24px; max-width:760px; font-size:clamp(4rem,8.5vw,8rem); line-height:.88; letter-spacing:-.075em; font-weight:620; }
+  .lab-home-copy h1 span,.lab-demo-head h2 span,.lab-how-intro h2 span { color:#718092; }
+  .lab-home-copy>p:not(.lab-eyebrow) { max-width:650px; color:var(--muted); font-size:1.03rem; line-height:1.75; }
+  .lab-home-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .lab-home-visual { min-height:510px; position:relative; display:grid; place-items:center; border:1px solid #1d2936; border-radius:28px; overflow:hidden; background:radial-gradient(circle at 50% 42%,rgb(22 140 255/.16),transparent 35%),linear-gradient(155deg,#0e1620,#070b11); }
+  .lab-home-visual::after { content:""; position:absolute; inset:0; background-image:linear-gradient(rgb(255 255 255/.025) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255/.025) 1px,transparent 1px); background-size:38px 38px; mask-image:linear-gradient(to bottom,#000,transparent 92%); }
+  .lab-loop { width:300px; height:300px; display:grid; place-items:center; border:1px solid rgb(44 217 255/.18); border-radius:50%; box-shadow:0 0 90px rgb(22 140 255/.08),inset 0 0 70px rgb(22 140 255/.05); z-index:1; }
+  .lab-loop img { width:230px; filter:drop-shadow(0 0 24px rgb(22 140 255/.24)); }
+  .lab-readout { position:absolute; z-index:2; min-width:124px; padding:11px 13px; border:1px solid #273646; border-radius:11px; background:rgb(8 13 20/.88); box-shadow:0 12px 34px rgb(0 0 0/.22); }
+  .lab-readout span { display:block; margin-bottom:2px; color:#718092; font-size:.58rem; text-transform:uppercase; letter-spacing:.1em; }
+  .lab-readout strong { font-size:.88rem; }
+  .lab-readout-a{left:26px;top:68px}.lab-readout-b{right:24px;top:180px}.lab-readout-c{left:46px;bottom:58px}
+  .lab-demo { padding:88px 0; border-top:1px solid #1d2936; }
+  .lab-demo-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,.45fr); gap:50px; align-items:end; margin-bottom:40px; }
+  .lab-demo-head h2,.lab-how-intro h2 { margin:8px 0 0; font-size:clamp(2.6rem,5vw,5.4rem); line-height:.95; letter-spacing:-.06em; font-weight:610; }
+  .lab-demo-head>p { color:var(--muted); line-height:1.7; }
+  .lab-module-preview { display:grid; grid-template-columns:minmax(0,1fr) minmax(340px,.7fr); gap:14px; }
+  .lab-module-copy,.lab-module-result { padding:28px; border:1px solid #1f2b38; border-radius:18px; background:#0c131c; }
+  .lab-module-copy>span,.lab-result-state { color:var(--cyan); font-size:.61rem; font-weight:750; text-transform:uppercase; letter-spacing:.12em; }
+  .lab-module-copy h3 { margin:26px 0 10px; font-size:.84rem; font-weight:650; }
+  .lab-fake-slider { height:8px; position:relative; border-radius:999px; background:#17222e; overflow:visible; }
+  .lab-fake-slider i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#168cff,#2cd9ff); }
+  .lab-fake-slider b { position:absolute; top:50%; width:18px; height:18px; transform:translate(-50%,-50%); border:3px solid #eaf5ff; border-radius:50%; background:#168cff; box-shadow:0 0 18px rgb(22 140 255/.35); }
+  .lab-scale { display:flex; justify-content:space-between; margin-top:9px; color:#657486; font-size:.64rem; }
+  .lab-scale strong { color:#dce8f4; }
+  .lab-module-result { display:flex; flex-direction:column; justify-content:center; background:radial-gradient(circle at 90% 10%,rgb(22 140 255/.1),transparent 42%),#0c131c; }
+  .lab-result-temp { margin:10px 0 20px; font-size:clamp(3rem,6vw,5rem); letter-spacing:-.07em; }
+  .lab-result-track { height:9px; overflow:hidden; border-radius:999px; background:#17222e; }
+  .lab-result-track i { display:block; width:74%; height:100%; background:linear-gradient(90deg,#168cff,#2cd9ff); }
+  .lab-module-result dl { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px 0 0; }
+  .lab-module-result dl div { padding-top:12px; border-top:1px solid #202c39; }
+  .lab-module-result dt { color:#6f7e90; font-size:.59rem; text-transform:uppercase; letter-spacing:.08em; }
+  .lab-module-result dd { margin:3px 0 0; font-size:.83rem; font-weight:650; }
+  .lab-how { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:70px; padding:90px 0 40px; border-top:1px solid #1d2936; }
+  .lab-how-grid { display:grid; gap:0; }
+  .lab-how-grid article { padding:24px 0; border-bottom:1px solid #1d2936; }
+  .lab-how-grid b { color:#168cff; font-size:.64rem; }
+  .lab-how-grid h3 { margin:8px 0 6px; font-size:1.2rem; }
+  .lab-how-grid p { margin:0; color:var(--muted); line-height:1.7; }
+  @media(max-width:900px){.lab-home-hero,.lab-demo-head,.lab-module-preview,.lab-how{grid-template-columns:1fr}.lab-home-visual{min-height:420px}.lab-demo-head{gap:20px}.lab-how{gap:30px}.lab-module-result dl{grid-template-columns:1fr 1fr 1fr}}
+  @media(max-width:620px){.lab-home-hero{padding-top:28px}.lab-home-copy h1{font-size:clamp(3.4rem,17vw,5.2rem)}.lab-home-visual{min-height:340px}.lab-loop{width:220px;height:220px}.lab-loop img{width:170px}.lab-readout{min-width:105px;padding:9px 10px}.lab-readout-a{left:12px;top:30px}.lab-readout-b{right:12px;top:140px}.lab-readout-c{left:22px;bottom:24px}.lab-module-copy,.lab-module-result{padding:20px}.lab-module-result dl{grid-template-columns:1fr}.lab-demo,.lab-how{padding-top:58px}}
 </style>
