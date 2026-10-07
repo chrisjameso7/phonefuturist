@@ -55,11 +55,16 @@ if (uuid.test(id)) {
   description="A shared PhoneFuturist Interactive Leaks simulation."
   productMode={true}
 >
-  <main class="il-share-page">
+  <main class="il-share-page social-share-page">
     {simulation ? (
       <>
         <a class="il-back" href="/interactive-leaks/explore">← Explore community</a>
-        <div class="il-share-hero">
+        <div class="social-post-shell">
+          <div class="social-post-topbar">
+            <span>Simulation</span>
+            <a href="/interactive-leaks/explore">Explore more</a>
+          </div>
+        <div class="il-share-hero social-share-hero">
           <div>
             <div class="il-share-meta">
               <span class="il-pill">{simulation.visibility}</span>
@@ -101,6 +106,7 @@ if (uuid.test(id)) {
         )}
 
         <p class="il-share-note">Shared simulations preserve the assumptions used at save time. Re-run the model after forking to evaluate any changes.</p>
+        </div>
       </>
     ) : (
       <section class="il-share-missing">
@@ -111,3 +117,19 @@ if (uuid.test(id)) {
     )}
   </main>
 </Page>
+
+<style>
+.social-share-page{width:min(100%,860px)!important;margin:0 auto;padding:24px 18px 80px!important}
+.social-post-shell{margin-top:14px;border:1px solid #202c39;border-radius:18px;background:#0b121a;overflow:hidden}
+.social-post-topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #202c39;color:#718092;font-size:.6rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}
+.social-post-topbar a{color:#62cfff;text-decoration:none;font-size:.58rem}
+.social-share-hero{padding:24px!important;border-bottom:1px solid #202c39}
+.social-share-hero h1{font-size:clamp(2.5rem,6vw,5.5rem)!important;letter-spacing:-.065em!important;font-weight:620!important}
+.social-share-page .il-share-grid{margin:0!important;padding:16px 24px!important;grid-template-columns:repeat(4,1fr)!important;border-bottom:1px solid #202c39}
+.social-share-page .il-share-grid article{border:0!important;border-right:1px solid #202c39!important;border-radius:0!important;background:transparent!important}
+.social-share-page .il-share-grid article:last-child{border-right:0!important}
+.social-share-page .il-shared-result{margin:0!important;padding:28px 24px!important;border:0!important;border-bottom:1px solid #202c39!important;border-radius:0!important;background:linear-gradient(90deg,rgb(22 140 255/.07),transparent)!important}
+.social-share-page .il-share-note{margin:0!important;padding:18px 24px!important;color:#718092!important;font-size:.68rem!important}
+.social-share-page .il-creator-line{margin-top:16px!important}
+@media(max-width:650px){.social-share-page .il-share-grid{grid-template-columns:1fr 1fr!important}.social-share-page .il-share-grid article:nth-child(2){border-right:0!important}.social-share-hero{padding:20px!important}}
+</style>
