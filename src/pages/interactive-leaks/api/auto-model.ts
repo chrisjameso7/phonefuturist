@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
   }
   if (!service) return json({ error: 'Simulation intelligence is not configured.' }, 503);
 
-  let body: { deviceSlug?: string; intent?: AutoModelRequest['intent'] };
+  let body: { deviceSlug?: string; deviceName?: string; intent?: AutoModelRequest['intent'] };
   try {
     if (Number(request.headers.get('content-length') || 0) > 10_000) {
       return json({ error: 'Auto request is too large.' }, 413);
@@ -43,26 +43,26 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
     return json({ error: 'Invalid device.' }, 400);
   }
 
+  const requestedName = typeof body?.deviceName === 'string' ? body.deviceName.trim().slice(0, 180) : '';
   const { data: bundleData, error: bundleError } = await service
     .rpc('simulation_evidence_bundle', { p_device_slug: deviceSlug });
 
   if (bundleError) return json({ error: 'Could not load simulation evidence.' }, 500);
-  if (!bundleData) return json({ error: 'Device intelligence not found.' }, 404);
 
-  const bundle = bundleData as IntelligenceBundle;
-  const device = bundle.device;
-  const evidence = evidenceItemsFromBundle(bundle);
+  const bundle = bundleData as IntelligenceBundle | null;
+  const device = bundle?.device;
+  const evidence = bundle ? evidenceItemsFromBundle(bundle) : [];
+  const resolvedName = device?.name
+    ? [device.brand, device.name].filter(Boolean).join(' ')
+    : requestedName;
 
-  if (!device?.slug || !device?.name) {
-    return json({ error: 'Device intelligence is incomplete.' }, 422);
-  }
-  if (!evidence.length) {
-    return json({ error: 'No active evidence is available for Auto mode yet.' }, 422);
+  if (!resolvedName) {
+    return json({ error: 'Device intelligence not found.' }, 404);
   }
 
   const safeRequest: AutoModelRequest = {
-    deviceKey: device.slug,
-    deviceName: [device.brand, device.name].filter(Boolean).join(' '),
+    deviceKey: device?.slug || deviceSlug,
+    deviceName: resolvedName,
     evidence,
     ...(body.intent === 'efficiency' || body.intent === 'performance' || body.intent === 'balanced'
       ? { intent: body.intent }
@@ -129,6 +129,7 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
         provider: 'phonefuturist-auto',
         model,
         evidenceCount: evidence.length,
+        modelState: evidence.length ? 'evidence-backed' : 'concept',
         generatedAt: new Date().toISOString(),
       },
     });
