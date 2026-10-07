@@ -276,22 +276,29 @@ export function autoModelPrompt(request: AutoModelRequest): string {
     .slice(0, 80)
     .map(item => `[${item.id}] ${item.kind}: ${item.claim}${item.source ? ` (source: ${item.source})` : ''}`)
     .join('\n');
+  const hasEvidence = request.evidence.length > 0;
 
-  return `You are the inference layer for PhoneFuturist Interactive Leaks.
+  return `You are the inference layer for PhoneFuturist Lab.
 
 Build a cautious engineering hypothesis for the virtual device named "${request.deviceName}".
 Intent: ${request.intent ?? 'balanced'}.
+Model state: ${hasEvidence ? 'evidence-backed early model' : 'concept model with no active device evidence'}.
 
 Rules:
-1. Use ONLY the evidence below plus general physical/engineering relationships. Do not use memorized final benchmark or battery-test answers for this target device.
-2. Every inferred parameter must cite evidence IDs from the supplied list.
-3. If evidence cannot support a parameter, OMIT it. Never fill a field just because the schema contains it.
+1. Do not use memorized final benchmark or battery-test answers for this target device.
+2. ${hasEvidence
+      ? 'Use ONLY the evidence below plus general physical/engineering relationships. Every inferred parameter should cite relevant supplied evidence IDs.'
+      : 'There is no active device evidence. Use only the device name to identify the broad product class plus general smartphone engineering relationships. Do not treat the name itself as proof of any specific leaked specification.'}
+3. ${hasEvidence
+      ? 'If the evidence cannot reasonably support a parameter, OMIT it.'
+      : 'Build a deliberately broad concept model so the simulator remains usable. Prefer conservative ranges, avoid precise-looking claims, and keep confidence at or below 0.35 for concept-only assumptions.'}
 4. Confidence is epistemic confidence from 0 to 1, not marketing confidence.
 5. Give ranges when uncertainty is meaningful. mostLikely may be included inside the range.
-6. Do not invent benchmark scores. This pass builds device parameters, not final performance results.
-7. Estimate whole-device average power for web browsing, video playback, gaming, camera use and standby only when the supplied evidence plus ordinary engineering relationships support a cautious modeled estimate. These are model outputs, never measurements. Omit any workload you cannot support.
-8. Keep reasoning concise and engineering-focused.
+6. Do not invent benchmark scores. This pass builds device parameters, not final benchmark results.
+7. Estimate whole-device average power for web browsing, video playback, gaming, camera use and standby when a cautious engineering estimate is possible. These are modeled values, never measurements.
+8. For a concept model, prioritize a coherent minimum simulation set: battery capacity and voltage, usable percentage, sustained processor power, thermal resistance and mass, display refresh/brightness/power, and everyday workload power.
+9. Keep reasoning concise and engineering-focused. Clearly mark concept-only reasoning as modeled rather than evidence-derived.
 
 Evidence:
-${evidence || '[none supplied]'}`;
+${evidence || '[no active evidence for this device]'}`;
 }
