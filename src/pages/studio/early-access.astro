@@ -61,7 +61,7 @@ const activeCount = members.filter((member) => member.active).length;
       <nav aria-label="Studio">
         <a href="/studio">Articles</a>
         <a href="/studio/new">New article</a>
-        <a href="/studio/access">Studio access</a>
+        {Astro.locals.access?.can_manage_mfa_exceptions&&<a href="/studio/access">Studio access</a>}
         <a class="is-active" href="/studio/early-access">Lab Early Access</a>
         <a href="/account">Account</a>
       </nav>
