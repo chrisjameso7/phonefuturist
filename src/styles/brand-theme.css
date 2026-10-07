@@ -1284,3 +1284,49 @@ footer .brand-lockup .brand-word {
     line-height:1.18 !important;
   }
 }
+
+
+/* ================================================================
+   MOBILE NAV PILL
+   Floating capsule, not a rounded rectangle.
+   ================================================================ */
+@media (max-width:760px) {
+  body:not(.product-mode) {
+    padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));
+  }
+
+  .mobile-tabbar,
+  .mobile-tabbar[data-compact='true'] {
+    left:50%;
+    right:auto;
+    bottom:calc(10px + env(safe-area-inset-bottom,0px));
+    width:min(360px,calc(100vw - 24px));
+    min-height:56px;
+    padding:4px 8px;
+    border:1px solid rgb(255 255 255 / .10);
+    border-radius:999px;
+    background:rgb(8 12 18 / .94);
+    box-shadow:
+      0 12px 34px rgb(0 0 0 / .34),
+      inset 0 1px rgb(255 255 255 / .045);
+    transform:translateX(-50%);
+    overflow:hidden;
+  }
+
+  .mobile-tabbar > a,
+  .mobile-tabbar[data-compact='true'] > a {
+    min-height:46px;
+    border-radius:999px;
+  }
+
+  .mobile-tabbar > a[aria-current='page'] {
+    background:rgb(255 255 255 / .06);
+  }
+
+  .mobile-lab-orb,
+  .mobile-tabbar[data-compact='true'] .mobile-lab-orb {
+    width:36px;
+    height:28px;
+    border-radius:999px;
+  }
+}
