@@ -565,7 +565,7 @@ export default function InteractiveLeaksSimulator() {
     const resolvedEndurance=simple&&!experience.useEnteredPower?simpleEndurance(experience,workspace.device?.battery?.totalEnergyWh,evidenceDeviceFrom(built)):undefined;
     setRun(freezeRun(workspace,{
       mode:experience.mode,usageProfile:simple?experience.preset:'Advanced',usageVersion:USAGE_VERSION,
-      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — calibrated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
+      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&autoModel&&experience.useEnteredPower?'PhoneFuturist Auto modeled whole-device workload power; estimated, not measured':simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — calibrated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
       usablePercent:simple?'':usablePercent,calibrationVersion:simple&&!experience.useEnteredPower&&evidence?POWER_EVIDENCE_VERSION:'None applied — seed observations are not fitted power coefficients',
     },resolvedEndurance?{endurance:resolvedEndurance,evidence:resolvePowerEvidence(evidenceDeviceFrom(built))}:undefined));
     setHasSimulated(true);
@@ -619,7 +619,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
+      name: current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -631,7 +631,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
+      name: current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -670,7 +670,7 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.batteryCapacityMah === 'string') {
       setForm((current) => ({
         ...current,
-        name: record?.name || current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
+        name: record?.name || current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
         batteryCapacityMah: state.batteryCapacityMah,
       }));
     }
@@ -824,14 +824,15 @@ export default function InteractiveLeaksSimulator() {
     return () => { cancelled = true; };
   }, []);
 
-  async function buildAutoModel(intent: 'balanced' | 'efficiency' | 'performance' = 'balanced') {
-    if (!selectedDevice) {
+  async function buildAutoModel(intent: 'balanced' | 'efficiency' | 'performance' = 'balanced', deviceOverride?: DeviceChoice) {
+    const targetDevice = deviceOverride ?? selectedDevice;
+    if (!targetDevice) {
       setAutoNotice('Pick a device first.');
       return;
     }
 
-    if (selectedDevice.evidence_count < 1) {
-      const label = [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ');
+    if (targetDevice.evidence_count < 1) {
+      const label = [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ');
       setAutoModel({ name: label, processor: { key: 'unknown' } });
       setProcessorScenario('unknown');
       setConfigurationSource('custom');
@@ -854,7 +855,7 @@ export default function InteractiveLeaksSimulator() {
       const response = await fetch('/interactive-leaks/api/auto-model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceSlug: selectedDevice?.slug, intent }),
+        body: JSON.stringify({ deviceSlug: targetDevice.slug, intent }),
       });
       const body = await response.json().catch(() => ({}));
 
@@ -874,10 +875,19 @@ export default function InteractiveLeaksSimulator() {
       const sustainedPower = model?.processor?.sustainedPowerLimitW?.value;
       const inferredAmbient = model?.thermals?.ambientTemperatureC?.value;
       const inferredResistance = model?.thermals?.thermalResistanceCPerW?.value;
+      const usagePower = model?.usagePower ?? {};
+      const modeledPower = {
+        mixed_use: '',
+        web_browsing: typeof usagePower.webBrowsingW?.value === 'number' ? String(Number(usagePower.webBrowsingW.value.toFixed(3))) : '',
+        video_playback: typeof usagePower.videoPlaybackW?.value === 'number' ? String(Number(usagePower.videoPlaybackW.value.toFixed(3))) : '',
+        gaming: typeof usagePower.gamingW?.value === 'number' ? String(Number(usagePower.gamingW.value.toFixed(3))) : '',
+        camera_use: typeof usagePower.cameraUseW?.value === 'number' ? String(Number(usagePower.cameraUseW.value.toFixed(3))) : '',
+        standby: typeof usagePower.standbyW?.value === 'number' ? String(Number(usagePower.standbyW.value.toFixed(3))) : '',
+      };
 
       setForm((current) => ({
         ...current,
-        name: model?.name || current.name || [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' '),
+        name: model?.name || current.name || [targetDevice.brand, targetDevice.name].filter(Boolean).join(' '),
         ...(typeof capacity === 'number' && Number.isFinite(capacity)
           ? { batteryCapacityMah: String(Math.round(capacity)) }
           : {}),
@@ -885,6 +895,13 @@ export default function InteractiveLeaksSimulator() {
           ? { batteryVoltageV: String(Number(voltage.toFixed(3))) }
           : {}),
       }));
+
+      if (Object.values(modeledPower).some((value) => value.trim())) {
+        setWorkloadPower(modeledPower);
+        dispatchExperience({ type: 'power', value: true });
+      } else {
+        dispatchExperience({ type: 'power', value: false });
+      }
 
       if (processorKey) setProcessorScenario(processorKey);
       if (typeof sustainedPower === 'number' && Number.isFinite(sustainedPower)) {
@@ -900,7 +917,8 @@ export default function InteractiveLeaksSimulator() {
 
       setDirty(true);
       setAutoPhase(3);
-      setAutoNotice(`Model ready from ${body?.meta?.evidenceCount ?? 0} current evidence items.`);
+      setAutoNotice(`Model ready from ${body?.meta?.evidenceCount ?? 0} current evidence items. Tell us how you use the phone to see what it means.`);
+      setStage('test');
     } catch {
       setAutoNotice('Could not build the current Auto model.');
     } finally {
@@ -1081,7 +1099,7 @@ export default function InteractiveLeaksSimulator() {
     setConfigurationSource('likely');
     setProcessorScenario('exynos2700');
     setProcessorProfile('expected');
-    setSimulationName(selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') + ': Most likely' : 'Untitled simulation');
+    setSimulationName(selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') + ': Most likely' : 'Untitled simulation');
     setSimulationVisibility('private');
     setProfileVisibility('private');
     setSimulationSharePath('');
@@ -1141,7 +1159,7 @@ export default function InteractiveLeaksSimulator() {
       <section className="il-device-picker">
         <div className="il-device-picker-copy">
           <span className="eyebrow">Virtual device</span>
-          <h2>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'Pick any device.'}</h2>
+          <h2>{selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : 'Pick any device.'}</h2>
           <p>{selectedDevice ? `${selectedDevice.lifecycle} · ${selectedDevice.evidence_count} current evidence items` : 'Search PhoneFuturist intelligence. We do not force you into a preset list.'}</p>
         </div>
         <div className="il-device-picker-control">
@@ -1178,6 +1196,7 @@ export default function InteractiveLeaksSimulator() {
                   setForm((current)=>({...current,name:label}));
                   setSimulationName(label + ': Most likely');
                   window.history.replaceState({},'',window.location.pathname+'?device='+encodeURIComponent(device.slug));
+                  void buildAutoModel('balanced', device);
                 }}
               >
                 <span><strong>{device.brand} {device.name}</strong><small>{device.lifecycle} · {device.evidence_count} evidence items</small></span>
@@ -1256,23 +1275,27 @@ export default function InteractiveLeaksSimulator() {
         )}
       </section>}
 
-      <nav className="il-mode-tabs" aria-label="Interactive Leaks modes">
-        {(['build','test','compare','results'] as const).map((item) => (
+      <nav className="il-mode-tabs" aria-label="PhoneFuturist Lab">
+        {([
+          ['build','Device'],
+          ['test','Usage'],
+          ['compare','Compare'],
+        ] as const).map(([item,label]) => (
           <button
             type="button"
             key={item}
             className={stage===item?'is-active':''}
             onClick={()=>setStage(item)}
           >
-            {item}
+            {label}
           </button>
         ))}
       </nav>
 
       <div className="il-simulator-bar">
         <div className="il-simulator-mode" role="group" aria-label="Simulation mode">
-          <button type="button" className={simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'simple'})}>Auto</button>
-          <button type="button" className={!simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Manual</button>
+          <button type="button" className={simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'simple'})}>Quick Sim</button>
+          <button type="button" className={!simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Advanced</button>
         </div>
         <div className="il-simulator-actions">
           {simple && <button type="button" className="il-primary" disabled={autoLoading || !selectedDevice} onClick={()=>void buildAutoModel('balanced')}>
@@ -1281,7 +1304,7 @@ export default function InteractiveLeaksSimulator() {
           <button type="button" className="il-chip" onClick={clearSimulation}>Reset</button>
         </div>
       </div>
-      <p className="il-simulator-hint">{simple ? 'Auto builds the device from current PhoneFuturist evidence. Change a control and supported results update from that model.' : 'Manual lets you override the device yourself. Advanced inputs stay out of the way until you open them.'}</p>
+      <p className="il-simulator-hint">{simple ? 'Pick a phone. PhoneFuturist builds the likely hardware for you. Tell us how you use it and get the answer.' : 'Advanced exposes the engineering controls for custom assumptions and deeper what-if work.'}</p>
       {autoNotice && <p className="il-auto-notice">{autoNotice}</p>}
       {autoLoading && <section className="il-auto-loading" role="status" aria-live="polite">
         <div className="il-auto-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -1318,7 +1341,7 @@ export default function InteractiveLeaksSimulator() {
             </div>
             <div className="il-resolved-component">
               <span>{autoModel?.processor?.key ? String(autoModel.processor.key).replaceAll('_',' ').replaceAll('-',' ') : 'Build the model to resolve the processor'}</span>
-              <small>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'No device selected'}</small>
+              <small>{selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : 'No device selected'}</small>
             </div>
           </div>
 
@@ -1831,20 +1854,19 @@ export default function InteractiveLeaksSimulator() {
           {stage==='test' && <div className="il-section">
             <SectionHeading
               index="02"
-              title="Environment"
-              hint={simple?'Your daily usage pattern, including idle time.':'How the device is used during the simulated session: per-workload power and pack derating.'}
+              title={simple?'What’s your usage like?':'Usage model'}
+              hint={simple?'Pick the closest everyday pattern. PhoneFuturist handles the power model underneath.':'How the device is used during the simulated session: per-workload power and pack derating.'}
             />
 
             {simple?<div className="il-simple-usage">
-              <h3>How do you use this phone?</h3>
-              <p>Tell us how you typically use your phone. Interactive Leaks combines your usage with the device model to estimate battery life.</p>
+              <h3>How hard do you use your phone?</h3>
+              <p>No wattage. No engineering setup. Choose the closest match and we’ll turn the virtual device into a battery-life and performance estimate.</p>
               <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
               <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
               {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
               <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
-              <label className="il-power-choice"><input type="checkbox" checked={experience.useEnteredPower} onChange={event=>changeExperience({type:'power',value:event.currentTarget.checked})}/>Use power values I entered in Advanced (unverified)</label>
-              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set and is reported as calibrated — never as a measurement of your device.</p>
-              {evidence?<><details className="il-advanced"><summary>View assumptions</summary>
+              <p className="il-help">{autoModel && experience.useEnteredPower ? 'PhoneFuturist Auto has modeled whole-device power for this virtual device. These are estimates, not measurements.' : 'You never need to know wattage. PhoneFuturist resolves what it can from the device model and reference data.'}</p>
+              {evidence?<><details className="il-advanced"><summary>How this estimate is built</summary>
                 <p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p>
                 <p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p>
                 <h3>Evidence per workload</h3>
@@ -1879,7 +1901,7 @@ export default function InteractiveLeaksSimulator() {
           </div>}
 
           {/* 03 · MODEL */}
-          {stage==='test' && <div className="il-section il-section-last">
+          {stage==='test' && !simple && <div className="il-section il-section-last">
             <SectionHeading
               index="03"
               title="Model"
@@ -1913,7 +1935,7 @@ export default function InteractiveLeaksSimulator() {
             </ul>
           </div>}
 
-          {stage==='test' && <div className="il-save-card">
+          {stage==='test' && !simple && <div className="il-save-card">
             <label>
               <span>Simulation name</span>
               <input type="text" value={simulationName} onChange={(event)=>setSimulationName(event.currentTarget.value)} maxLength={120} />
@@ -1937,12 +1959,11 @@ export default function InteractiveLeaksSimulator() {
               className="il-simulate"
               onClick={simulate}
             >
-              Run simulation →
+              {simple ? 'See my result →' : 'Run simulation →'}
             </button>
             {hasSimulated&&<a className="il-chip" href="#simulation-results">View results ↓</a>}
             <p>
-              Device + Environment + Model. Nothing invented between the
-              three.
+              {simple ? 'Your device model + your usage. Technical assumptions stay underneath.' : 'Device + usage + model. Advanced inputs remain explicit.'}
             </p>
           </div>}
         </section>}
@@ -1965,9 +1986,7 @@ export default function InteractiveLeaksSimulator() {
               <h2>Nothing simulated yet.</h2>
 
               <p>
-                Configure a device, add environment power if you have it, then
-                run the model. Load the example to see a complete
-                configuration.
+                {simple ? 'Pick a device, choose how you use it, then see the simulated result.' : 'Configure the device and usage model, then run the simulation.'}
               </p>
             </div>
           ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p>{simple?<p>If the evidence itself is missing, Advanced mode lets you supply your own measured whole-device power instead.</p>:null}</div> : (
@@ -1989,7 +2008,7 @@ export default function InteractiveLeaksSimulator() {
 
                   {battery?.result.status === 'resolved' ? (
                     <>
-                      <p className={`il-runtime-value${run?.context.mode==='simple'?' il-runtime-unknown':''}`}>
+                      <p className={`il-runtime-value${run?.context.mode==='simple' && !experience.useEnteredPower?' il-runtime-unknown':''}`}>
                         {run ? headlineText(run) : hoursLabel(estimate?.runtimeHours)}
                       </p>
 
