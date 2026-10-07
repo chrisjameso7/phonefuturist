@@ -25,7 +25,6 @@ const initial=displayName.slice(0,1).toUpperCase();
 
       <nav aria-label="Account">
         <a class="is-active" href="/account">Overview</a>
-        <a href="/interactive-leaks/explore">Community</a>
         <a href="/articles">Newsroom</a>
         {staff&&<a href="/studio">Studio</a>}
         <a href="/account/security">Security</a>
@@ -41,7 +40,7 @@ const initial=displayName.slice(0,1).toUpperCase();
       <header class="account-feed-head">
         <p class="eyebrow">Your PhoneFuturist</p>
         <h2>Overview</h2>
-        <p>One identity across the newsroom, Lab and community.</p>
+        <p>One identity across the newsroom and publishing tools.</p>
       </header>
 
       <section class="account-status-grid">
@@ -59,15 +58,6 @@ const initial=displayName.slice(0,1).toUpperCase();
         </article>
       </section>
 
-      <section class="account-feature-card">
-        <div>
-          <p class="eyebrow">PhoneFuturist Lab</p>
-          <h2>Your simulations live here.</h2>
-          <p>Explore public builds, fork ideas and keep working on your own virtual devices.</p>
-        </div>
-        <a class="button" href="/interactive-leaks/explore">Explore community →</a>
-      </section>
-
       <section class="account-creator-panel">
         <div class="account-section-head">
           <div>
@@ -76,7 +66,7 @@ const initial=displayName.slice(0,1).toUpperCase();
           </div>
           {creatorProfile&&<a href={`/creator/${creatorProfile.handle}`}>View profile ↗</a>}
         </div>
-        <p class="muted">This is how your public simulations and reusable profiles are attributed.</p>
+        <p class="muted">This is how your public PhoneFuturist identity is presented.</p>
         <form class="account-creator-form" action="/account/api/creator-profile" method="post">
           <div class="account-form-grid">
             <label><span>Display name</span><input name="display_name" maxlength="60" required value={creatorProfile?.display_name??''} placeholder="Your public name" /></label>
