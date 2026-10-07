@@ -1511,3 +1511,19 @@ footer .brand-lockup .brand-word {
     padding:0!important;
   }
 }
+
+
+/* MOBILE SINGLE APP CANVAS */
+@media(max-width:760px){
+  body:not(.product-mode),
+  .mobile-appbar,
+  .mobile-appbar[data-compact='true']{
+    background:#05080d!important;
+  }
+
+  .mobile-appbar,
+  .mobile-appbar[data-compact='true']{
+    border-bottom:0!important;
+    box-shadow:none!important;
+  }
+}
