@@ -417,6 +417,7 @@ export default function InteractiveLeaksSimulator() {
   const [autoPhase, setAutoPhase] = useState(0);
   const [autoNotice, setAutoNotice] = useState('');
   const [autoModel, setAutoModel] = useState<any>(null);
+  const [autoRunUsage, setAutoRunUsage] = useState(false);
   const [deviceQuery, setDeviceQuery] = useState('');
   const [deviceResults, setDeviceResults] = useState<DeviceChoice[]>([]);
   const [deviceSearchLoading, setDeviceSearchLoading] = useState(false);
@@ -439,6 +440,10 @@ export default function InteractiveLeaksSimulator() {
   /* Simple Mode grades on evidence quality; Advanced keeps the battery model's own grading. */
   const evidenceConfidence=run?.endurance&&run.evidence?simpleEvidenceConfidence(run.evidence,run.endurance).level:undefined;
   function changeExperience(action:Parameters<typeof experienceReducer>[1]){dispatchExperience(action);setDirty(true);}
+  function chooseUsagePreset(preset:UsagePreset){
+    changeExperience({type:'preset',value:preset});
+    if(simple && autoModel && preset!=='Custom') setAutoRunUsage(true);
+  }
   const simulationInput=run?.input;
   const result=run?.device;
   const battery=run?.battery;
@@ -570,7 +575,14 @@ export default function InteractiveLeaksSimulator() {
     },resolvedEndurance?{endurance:resolvedEndurance,evidence:resolvePowerEvidence(evidenceDeviceFrom(built))}:undefined));
     setHasSimulated(true);
     setDirty(false);
+    if(simple) setStage('results');
   }
+
+  useEffect(()=>{
+    if(!autoRunUsage || !simple || !autoModel || stage!=='test') return;
+    setAutoRunUsage(false);
+    simulate();
+  },[autoRunUsage,experience.preset,autoModel,stage,simple]);
 
   function loadExample() {
     dispatchExperience({type:'mode',value:'advanced'});
@@ -1339,7 +1351,7 @@ export default function InteractiveLeaksSimulator() {
           <button
             type="button"
             key={item}
-            className={stage===item?'is-active':''}
+            className={stage===item || (stage==='results' && item==='test')?'is-active':''}
             onClick={()=>setStage(item)}
           >
             {label}
@@ -1916,7 +1928,7 @@ export default function InteractiveLeaksSimulator() {
             {simple?<div className="il-simple-usage">
               <h3>How hard do you use your phone?</h3>
               <p>No wattage. No engineering setup. Choose the closest match and we’ll turn the virtual device into a battery-life and performance estimate.</p>
-              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Gaming','Camera','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
+              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Gaming','Camera','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>chooseUsagePreset(preset)}/>{preset}</label>)}</fieldset>
               <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
               {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
               <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
