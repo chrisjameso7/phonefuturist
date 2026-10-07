@@ -136,3 +136,317 @@ footer .theme-choice { flex-shrink:0; }
     background:Canvas; color:CanvasText;
   }
 }
+
+
+/* ================================================================
+   PHONEFUTURIST 2026 BRAND RESET
+   Metallic graphite + electric blue. Editorial first, luminous in Lab.
+   ================================================================ */
+
+:root {
+  --paper: #06090e;
+  --surface-deep: #0a0f16;
+  --surface: #0f1620;
+  --surface-raised: #151f2c;
+  --ink: #f5f8fc;
+  --muted: #8d9aaa;
+  --line: #24303d;
+  --accent: #168cff;
+  --cyan: #2cd9ff;
+  --violet: #6d79ff;
+  --on-accent: #ffffff;
+  --error: #ff7c88;
+  --pf-silver: #dbe5ef;
+  --pf-blue: #168cff;
+  --pf-cyan: #2cd9ff;
+  --pf-glow: 0 0 34px rgb(22 140 255 / .18);
+  --glass-fallback: #0c121a;
+  --glass-base: rgb(9 14 21 / .82);
+  --glass-menu: rgb(9 14 21 / .96);
+  --glass-border: rgb(195 217 235 / .14);
+  --glass-border-bright: rgb(44 217 255 / .24);
+  --glass-text: #f5f8fc;
+  --glass-muted: #a7b3c1;
+  --glass-rail: rgb(255 255 255 / .025);
+  --glass-lens-active: rgb(22 140 255 / .12);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(1200px 520px at 78% -120px, rgb(22 140 255 / .11), transparent 58%),
+    radial-gradient(800px 420px at 15% 0%, rgb(44 217 255 / .045), transparent 60%),
+    var(--paper);
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0;
+}
+
+.brand-lockup .brand-mark {
+  width: 42px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgb(22 140 255 / .2));
+}
+
+.brand-lockup .brand-word {
+  color: var(--ink);
+  font-size: .96rem;
+  font-weight: 760;
+  letter-spacing: -.035em;
+}
+
+.site-header {
+  min-height: 64px;
+  width: min(96%, 1500px);
+  padding: 8px 14px;
+  border-radius: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.site-header::before {
+  border-radius: 16px;
+  border-color: rgb(206 226 242 / .1);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / .035), transparent),
+    rgb(8 12 18 / .82);
+  box-shadow:
+    0 16px 44px rgb(0 0 0 / .24),
+    inset 0 1px rgb(255 255 255 / .045);
+}
+
+.site-header::after {
+  display: none;
+}
+
+.site-header .desktop-nav {
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  gap: 2px;
+}
+
+.site-header .desktop-nav a {
+  min-height: 38px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: .72rem;
+  color: #aab5c1;
+}
+
+.site-header .desktop-nav a:hover {
+  color: #f5f8fc;
+  background: rgb(255 255 255 / .035);
+}
+
+.site-header :is(.desktop-nav,.mobile-menu-primary) a[aria-current="page"] {
+  color: #f7fbff;
+  border-color: rgb(22 140 255 / .2);
+  background: linear-gradient(180deg, rgb(22 140 255 / .14), rgb(22 140 255 / .06));
+  box-shadow: inset 0 -1px rgb(44 217 255 / .26);
+}
+
+.site-header .header-actions :is(.button,.mobile-account-primary) {
+  border-color: #168cff;
+  background: #168cff;
+  color: #fff;
+  box-shadow: 0 8px 24px rgb(22 140 255 / .18);
+}
+
+.site-header .header-actions :is(.sign-in,.secondary,.mobile-account-secondary) {
+  border-color: #263344;
+  background: #0d141d;
+  color: #dce5ee;
+}
+
+main:not(.product-main) {
+  width: min(100%, 1520px);
+}
+
+.eyebrow {
+  color: var(--pf-cyan);
+  font-size: .61rem;
+  letter-spacing: .17em;
+}
+
+button,
+.button,
+.lab-cta {
+  background: var(--pf-blue);
+  border-color: var(--pf-blue);
+  color: #fff;
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+button:hover,
+.button:hover,
+.lab-cta:hover {
+  background: #2497ff;
+  color: #fff;
+  filter: none;
+}
+
+.panel,
+.article-card,
+.rail-panel,
+.auth-card {
+  border-color: #202c39;
+  background: #0d141d;
+}
+
+/* Editorial surfaces stay quiet. */
+.latest-section {
+  color-scheme: dark;
+  --ink: #f5f8fc;
+  --muted: #8d9aaa;
+  --line: #202c39;
+  --surface: #0d141d;
+  --accent: #2cd9ff;
+  background: transparent;
+  color: var(--ink);
+  border-radius: 0;
+  padding-top: 64px;
+  padding-bottom: 72px;
+}
+
+.latest-section .section-heading {
+  border-bottom: 1px solid #1d2834;
+  padding-bottom: 18px;
+}
+
+.latest-section .section-heading h2 {
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  font-weight: 640;
+}
+
+.article-grid {
+  gap: 14px;
+}
+
+.article-card {
+  min-height: 340px;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.article-card::before {
+  display: none;
+}
+
+.article-card .card-image {
+  display: block;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-bottom: 1px solid #202c39;
+}
+
+.article-card .card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s ease;
+}
+
+.article-card:hover .card-image img {
+  transform: scale(1.02);
+}
+
+.article-card .card-content {
+  padding: 18px;
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+}
+
+.article-card h3 {
+  font-size: 1.15rem;
+  letter-spacing: -.025em;
+}
+
+.article-card p,
+.card-meta {
+  color: #8d9aaa;
+}
+
+.lead-card {
+  background:
+    linear-gradient(145deg, rgb(22 140 255 / .08), transparent 45%),
+    #0d141d;
+}
+
+/* Lab is the luminous product expression. */
+.lab-page,
+.il-product {
+  --accent: #168cff;
+  --cyan: #2cd9ff;
+}
+
+.lab-page {
+  background:
+    radial-gradient(900px 480px at 72% 2%, rgb(22 140 255 / .12), transparent 60%),
+    transparent;
+}
+
+.lab-cta,
+.il-primary {
+  box-shadow: 0 10px 30px rgb(22 140 255 / .16);
+}
+
+/* Studio is restrained and newsroom-like. */
+.studio-workspace {
+  color: var(--ink);
+}
+
+.studio-workspace :is(input,textarea,select) {
+  background: #0a1017;
+  border-color: #24303d;
+}
+
+.rich-editor,
+.studio-block {
+  background: #0c131c;
+  border-color: #202c39;
+}
+
+.rich-editor-toolbar {
+  background: #0a1017;
+  border-color: #202c39;
+}
+
+/* Footer */
+footer {
+  border-color: #1d2834;
+}
+
+footer .brand-lockup .brand-word {
+  font-size: .88rem;
+}
+
+@media (max-width: 1279px) {
+  .site-header {
+    width: min(96%, 760px);
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: var(--paper);
+  }
+
+  .brand-lockup .brand-mark {
+    width: 38px;
+  }
+
+  .latest-section {
+    padding-top: 42px;
+  }
+}
