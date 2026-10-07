@@ -423,3 +423,58 @@ function articleImage(article: any) {
     .pf-story-byline{display:none}
   }
 </style>
+
+
+<style>
+/* MOBILE SINGLE CANVAS FIX
+   One continuous app background. No page-inside-page shell. */
+@media(max-width:560px){
+  html,
+  body,
+  body:not(.product-mode),
+  body:not(.product-mode) main.home-page,
+  .home-page,
+  .pf-network,
+  .pf-feed{
+    background:#05080d!important;
+  }
+
+  .pf-network{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0 0 88px!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+
+  .pf-feed{
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  .pf-mobile-topics{
+    margin:0!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  .pf-feature{
+    border:0!important;
+    box-shadow:none!important;
+  }
+
+  .pf-feed-label,
+  .pf-story-feed{
+    background:transparent!important;
+    border:0!important;
+  }
+}
+</style>
