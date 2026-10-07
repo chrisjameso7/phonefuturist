@@ -56,11 +56,43 @@ function articleImage(article: any) {
         <a href="/interactive-leaks">Lab</a>
       </nav>
 
+
+      <nav class="pf-mobile-topics" aria-label="Quick topics">
+        <a class="is-active" href="/">
+          <span class="pf-topic-circle pf-topic-add">+</span>
+          <small>Your feed</small>
+        </a>
+        <a href="/articles?section=news">
+          <span class="pf-topic-circle pf-topic-news">N</span>
+          <small>News</small>
+        </a>
+        <a href="/articles?section=leaks">
+          <span class="pf-topic-circle pf-topic-leaks">L</span>
+          <small>Leaks</small>
+        </a>
+        <a href="/interactive-leaks">
+          <span class="pf-topic-circle pf-topic-phone">P</span>
+          <small>Phones</small>
+        </a>
+        <a href="/interactive-leaks/explore">
+          <span class="pf-topic-circle pf-topic-lab"><img src="/assets/phonefuturist-mark.svg" alt="" /></span>
+          <small>Lab</small>
+        </a>
+        <a href="/account">
+          <span class="pf-topic-circle pf-topic-creators">C</span>
+          <small>Creators</small>
+        </a>
+      </nav>
+
       <section class="pf-feature">
         <img src="/assets/device-concept.png" alt="" width="1672" height="941" fetchpriority="high" />
         <div class="pf-feature-scrim"></div>
+        <div class="pf-feature-topline">
+          <span>★ Featured</span>
+          <small>PhoneFuturist Lab</small>
+        </div>
         <div class="pf-feature-copy">
-          <span>Featured</span>
+          <span>Phones</span>
           <h2>The future of mobile shouldn't just be read.</h2>
           <p>Follow the reporting, then test what the hardware could actually mean in PhoneFuturist Lab.</p>
           <div>
@@ -81,6 +113,7 @@ function articleImage(article: any) {
             const image = articleImage(article);
             return <article class="pf-story">
               <div class="pf-story-main">
+                <div class="pf-story-social"><span>PhoneFuturist</span><b>•••</b></div>
                 <div class="pf-story-meta">
                   <span>{article.section}</span>
                   <time datetime={article.published_at}>
@@ -222,5 +255,171 @@ function articleImage(article: any) {
     .pf-story h2{font-size:1rem}
     .pf-story p{display:none}
     .pf-story-image{align-self:start;border-radius:9px}
+  }
+</style>
+
+<style>
+  .pf-mobile-topics{display:none}
+  .pf-feature-topline{display:none}
+
+  @media(max-width:560px){
+    .pf-feed-head{display:none!important}
+    .pf-feed-tabs{display:none!important}
+
+    .pf-mobile-topics{
+      display:flex;
+      gap:14px;
+      padding:16px 14px 14px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      border-bottom:0;
+    }
+    .pf-mobile-topics::-webkit-scrollbar{display:none}
+    .pf-mobile-topics a{
+      flex:0 0 auto;
+      width:58px;
+      display:grid;
+      justify-items:center;
+      gap:7px;
+      color:#cbd5df;
+      text-decoration:none;
+      font-size:.61rem;
+    }
+    .pf-topic-circle{
+      width:54px;
+      height:54px;
+      display:grid;
+      place-items:center;
+      border:2px solid #2b3948;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 20%,rgb(44 217 255/.16),transparent 42%),
+        #111821;
+      color:#fff;
+      font-size:.9rem;
+      font-weight:780;
+      box-shadow:inset 0 0 0 2px #080d13;
+    }
+    .pf-mobile-topics .is-active .pf-topic-circle,
+    .pf-mobile-topics a:hover .pf-topic-circle{border-color:#28c8ff}
+    .pf-topic-add{font-size:1.5rem;font-weight:380}
+    .pf-topic-news{background:linear-gradient(145deg,#193651,#0d151e)}
+    .pf-topic-leaks{background:linear-gradient(145deg,#2d224c,#0e1118)}
+    .pf-topic-phone{background:linear-gradient(145deg,#193144,#111820)}
+    .pf-topic-creators{background:linear-gradient(145deg,#3a2531,#111820)}
+    .pf-topic-lab img{width:34px;height:18px;object-fit:contain}
+
+    .pf-feature{
+      min-height:450px!important;
+      margin:2px 12px 14px!important;
+      border:1px solid #243140!important;
+      border-radius:26px!important;
+      box-shadow:0 18px 44px rgb(0 0 0/.22);
+    }
+    .pf-feature-scrim{
+      background:
+        linear-gradient(0deg,rgb(4 9 14/.94) 0%,rgb(4 9 14/.58) 48%,rgb(4 9 14/.16) 72%),
+        linear-gradient(90deg,rgb(4 9 14/.34),transparent 70%)!important;
+    }
+    .pf-feature-topline{
+      position:absolute;
+      z-index:2;
+      top:16px;
+      left:16px;
+      right:16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .pf-feature-topline span{
+      padding:7px 11px;
+      border:1px solid rgb(44 217 255/.38);
+      border-radius:999px;
+      background:rgb(8 19 29/.72);
+      color:#8cecff;
+      font-size:.56rem;
+      font-weight:780;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      backdrop-filter:blur(12px);
+    }
+    .pf-feature-topline small{color:#c2ccd6;font-size:.58rem}
+    .pf-feature-copy{
+      position:absolute!important;
+      inset:auto 0 0!important;
+      max-width:none!important;
+      padding:28px 20px 22px!important;
+    }
+    .pf-feature-copy>span{font-size:.62rem}
+    .pf-feature-copy h2{
+      max-width:340px;
+      margin:8px 0 10px;
+      font-size:2.18rem!important;
+      line-height:.96!important;
+      letter-spacing:-.055em;
+    }
+    .pf-feature-copy p{
+      max-width:320px;
+      margin:0;
+      font-size:.78rem!important;
+      color:#b7c2ce;
+    }
+    .pf-feature-copy>div{margin-top:18px!important}
+    .pf-feature-copy .button{
+      padding:11px 17px;
+      border-radius:999px;
+      box-shadow:0 0 0 1px rgb(255 255 255/.05),0 8px 24px rgb(22 140 255/.18);
+    }
+
+    .pf-feed-label{
+      margin:0 12px;
+      padding:15px 4px 9px!important;
+      border-top:0!important;
+    }
+    .pf-feed-label span{font-size:.78rem}
+    .pf-feed-label small{font-size:.58rem}
+
+    .pf-story-feed{
+      gap:10px;
+      padding:0 12px 10px;
+    }
+    .pf-story{
+      position:relative;
+      grid-template-columns:112px minmax(0,1fr)!important;
+      gap:14px!important;
+      padding:12px!important;
+      border:1px solid #202b37!important;
+      border-radius:22px!important;
+      background:#0b1118!important;
+      overflow:hidden;
+    }
+    .pf-story-main{grid-column:2}
+    .pf-story-image{
+      grid-column:1;
+      grid-row:1;
+      width:112px;
+      aspect-ratio:1/1!important;
+      border:0!important;
+      border-radius:16px!important;
+      align-self:stretch!important;
+    }
+    .pf-story-social{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:5px;
+      color:#758497;
+      font-size:.54rem;
+    }
+    .pf-story-social b{letter-spacing:.12em}
+    .pf-story-meta{gap:7px;font-size:.51rem}
+    .pf-story h2{
+      margin:6px 0 5px!important;
+      font-size:.96rem!important;
+      line-height:1.13!important;
+    }
+    .pf-story p{display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.65rem;line-height:1.42}
+    .pf-story-byline{display:none}
   }
 </style>
