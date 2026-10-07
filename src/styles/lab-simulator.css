@@ -4164,3 +4164,32 @@
     text-align: left;
   }
 }
+
+
+.il-device-use-anyway {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 8px;
+  padding: 9px 11px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 34%, var(--lab-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  color: var(--ink);
+  box-shadow: none;
+  font: inherit;
+  font-size: .68rem;
+  text-align: left;
+}
+
+.il-device-use-anyway:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.il-module-note {
+  display: block;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: .6rem;
+  line-height: 1.5;
+}
