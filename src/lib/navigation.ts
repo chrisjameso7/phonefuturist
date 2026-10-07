@@ -5,6 +5,7 @@ export function activeNavigation(url: URL): string | undefined {
  if(path==='/')return 'home';
  if(path==='/interactive-leaks'||path.startsWith('/interactive-leaks/'))return 'lab';
  if(path==='/studio'||path.startsWith('/studio/'))return 'studio';
+ if(path==='/articles' && !url.searchParams.get('section')) return 'newsroom';
  const section=path==='/articles'?url.searchParams.get('section'):path.split('/')[1];
  return ['news','reports','leaks','analysis'].includes(section??'')?section!:undefined;
 }
