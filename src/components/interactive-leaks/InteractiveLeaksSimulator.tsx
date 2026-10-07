@@ -261,6 +261,146 @@ function cameraInput(
   };
 }
 
+type DeterministicResult = ReturnType<typeof simulateDevice>;
+
+function DeterministicShareCard({
+  input,
+  result,
+}: {
+  input: SimulationInput;
+  result: DeterministicResult;
+}) {
+  const [shareMessage, setShareMessage] = useState('');
+  const display = result.displays.primary;
+  const battery = result.battery;
+  const packaging = result.packaging;
+  const deviceName = input.name || 'Untitled concept';
+
+  async function downloadCard() {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Image export is unavailable in this browser.');
+
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 34px Arial';
+      ctx.fillText('PhoneFuturist', 72, 88);
+
+      ctx.fillStyle = '#8e9399';
+      ctx.font = '700 20px Arial';
+      ctx.fillText('INTERACTIVE LEAKS · SIMULATION RESULT', 72, 132);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = deviceName.length > 38 ? '700 48px Arial' : '700 62px Arial';
+      const words = deviceName.split(/\s+/);
+      let line = '';
+      let y = 242;
+      for (const word of words) {
+        const next = line ? line + ' ' + word : word;
+        if (ctx.measureText(next).width > 900 && line) {
+          ctx.fillText(line, 72, y);
+          y += 72;
+          line = word;
+        } else line = next;
+      }
+      ctx.fillText(line, 72, y);
+      y += 118;
+
+      const metrics = [
+        ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
+        ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
+        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
+        ['ENERGY', battery?.totalEnergyWh !== undefined ? battery.totalEnergyWh.toFixed(2) + ' Wh' : 'Unknown'],
+        ['SCREEN / BODY', display?.screenToBodyRatio !== undefined ? display.screenToBodyRatio.toFixed(1) + '%' : 'Unknown'],
+        ['PACKAGING', packaging?.fitsAvailableVolume === undefined ? 'Unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'],
+      ];
+
+      for (let i = 0; i < metrics.length; i++) {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const x = 72 + col * 468;
+        const boxY = y + row * 178;
+        ctx.fillStyle = '#0d0f12';
+        ctx.fillRect(x, boxY, 430, 148);
+        ctx.fillStyle = '#8e9399';
+        ctx.font = '700 18px Arial';
+        ctx.fillText(metrics[i][0], x + 24, boxY + 34);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = metrics[i][1].length > 24 ? '700 28px Arial' : '700 36px Arial';
+        ctx.fillText(metrics[i][1], x + 24, boxY + 88);
+      }
+
+      ctx.fillStyle = '#8e9399';
+      ctx.font = '400 20px Arial';
+      ctx.fillText('Calculated from supplied specifications. Unknown inputs remain unknown.', 72, 1185);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 22px Arial';
+      ctx.fillText('Engine v' + SIMULATION_ENGINE_VERSION + ' · phonefuturist', 72, 1240);
+
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('PNG could not be generated.')), 'image/png'),
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'phonefuturist-' + deviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) + '-simulation.png';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      setShareMessage('Share card downloaded.');
+    } catch (error) {
+      setShareMessage(error instanceof Error ? error.message : 'Could not generate the share card.');
+    }
+  }
+
+  async function shareSummary() {
+    const text = [
+      deviceName,
+      battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
+      display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
+      packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded',
+      'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
+    ].filter(Boolean).join(' · ');
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: deviceName + ' · Interactive Leaks', text });
+        setShareMessage('Shared.');
+      } else {
+        await navigator.clipboard.writeText(text);
+        setShareMessage('Result summary copied.');
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return;
+      setShareMessage('Sharing is unavailable. Download the card instead.');
+    }
+  }
+
+  return (
+    <section className="il-share-card" aria-label="Share simulation result">
+      <div className="il-share-card-brand">
+        <span>PhoneFuturist</span>
+        <small>Interactive Leaks</small>
+      </div>
+      <strong>{deviceName}</strong>
+      <div className="il-share-card-metrics">
+        <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
+        <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
+        <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
+      </div>
+      <div className="il-share-card-actions">
+        <button type="button" onClick={downloadCard}>Download share card</button>
+        <button type="button" onClick={shareSummary}>Share result</button>
+      </div>
+      {shareMessage && <small role="status">{shareMessage}</small>}
+    </section>
+  );
+}
+
 export default function InteractiveLeaksSimulator() {
   const [form, setForm] =
     useState<FormState>(initialForm);
@@ -1332,6 +1472,10 @@ export default function InteractiveLeaksSimulator() {
                       : 'Known component volume exceeds the calculated internal volume available in this device envelope.'}
                   </p>
                 </div>
+              )}
+
+              {simulationInput && (
+                <DeterministicShareCard input={simulationInput} result={result} />
               )}
 
               {result.warnings.length > 0 && (
