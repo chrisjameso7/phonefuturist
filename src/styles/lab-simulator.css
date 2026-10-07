@@ -4539,3 +4539,15 @@
     padding: 13px;
   }
 }
+
+
+/* Quick Sim should read as one answer card, not duplicate the engineering result view. */
+.lab-simulator-shell .il-results-quick > :not(.il-quick-result) {
+  display: none !important;
+}
+
+.lab-simulator-shell .il-results-quick {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
