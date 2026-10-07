@@ -2031,7 +2031,7 @@ export default function InteractiveLeaksSimulator() {
         </section>}
 
         {/* ---------------- Result column ---------------- */}
-        {(stage==='results' || stage==='test') && <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
+        {(stage==='results' || stage==='test') && <aside id="simulation-results" className={`il-results${simple ? ' il-results-quick' : ''}`} aria-live="polite" aria-label="Simulation results">
           <div className="il-results-top">
             <span className="eyebrow">Simulation result</span>
 
