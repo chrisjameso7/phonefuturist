@@ -1168,3 +1168,91 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 .interactive-community-link{margin:18px 0 0}
 .interactive-community-link a{color:var(--accent);text-decoration:none;font-size:.8rem;font-weight:700}
 </style>
+
+<style is:global>
+.interactive-simulator-shell .il-share-card{
+  margin:18px 0 0;
+  padding:16px;
+  border:1px solid #24272c;
+  border-radius:18px;
+  background:#050505;
+  box-shadow:0 18px 48px rgb(0 0 0/.28);
+}
+.interactive-simulator-shell .il-share-card-brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  padding-bottom:11px;
+  border-bottom:1px solid #1d1f22;
+}
+.interactive-simulator-shell .il-share-card-brand span{
+  color:#fff;
+  font-size:.75rem;
+  font-weight:760;
+}
+.interactive-simulator-shell .il-share-card-brand small{
+  color:#8d9299;
+  font-size:.55rem;
+  font-weight:700;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.interactive-simulator-shell .il-share-card>strong{
+  display:block;
+  color:#fff;
+  font-size:1.15rem;
+  letter-spacing:-.035em;
+}
+.interactive-simulator-shell .il-share-card-metrics{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+.interactive-simulator-shell .il-share-card-metrics span{
+  padding:7px 9px;
+  border:1px solid #202327;
+  border-radius:999px;
+  background:#0c0d0f;
+  color:#d7dadd;
+  font-size:.61rem;
+}
+.interactive-simulator-shell .il-share-card-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+.interactive-simulator-shell .il-share-card-actions button{
+  min-height:40px;
+  border:1px solid #2a2d31;
+  border-radius:999px;
+  background:#111214;
+  color:#fff;
+  font:inherit;
+  font-size:.66rem;
+  font-weight:720;
+  cursor:pointer;
+}
+.interactive-simulator-shell .il-share-card-actions button:first-child{
+  background:#f4f4f5;
+  color:#090a0b;
+  border-color:#f4f4f5;
+}
+.interactive-simulator-shell .il-share-card>small{
+  display:block;
+  margin-top:9px;
+  color:#8e9399;
+  font-size:.58rem;
+}
+@media(max-width:620px){
+  .interactive-simulator-shell .il-share-card{
+    border-radius:16px;
+  }
+  .interactive-simulator-shell .il-share-card-actions{
+    grid-template-columns:1fr;
+  }
+}
+</style>
