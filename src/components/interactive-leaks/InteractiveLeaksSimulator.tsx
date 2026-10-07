@@ -388,7 +388,7 @@ export default function InteractiveLeaksSimulator() {
 
   const [hasSimulated, setHasSimulated] = useState(false);
   const [configurationSource, setConfigurationSource] = useState<'likely' | 'worst' | 'custom'>('likely');
-  const [processorScenario, setProcessorScenario] = useState<'exynos2700' | 'snapdragon8eg6'>('exynos2700');
+  const [processorScenario, setProcessorScenario] = useState('unknown');
   const [efficiencyAssumption, setEfficiencyAssumption] = useState(0);
   const [ambientTemperature, setAmbientTemperature] = useState(22);
   const [cpuLoad, setCpuLoad] = useState(25);
@@ -398,7 +398,7 @@ export default function InteractiveLeaksSimulator() {
   const [stage, setStage] = useState<'build' | 'test' | 'compare' | 'results'>('build');
   const [simulationName, setSimulationName] = useState('Galaxy S27 Ultra: Most likely');
   const [savedNotice, setSavedNotice] = useState('');
-  const [profileName, setProfileName] = useState('My Exynos 2700 profile');
+  const [profileName, setProfileName] = useState('My processor profile');
   const [profileSavedNotice, setProfileSavedNotice] = useState('');
   const [simulationVisibility, setSimulationVisibility] = useState<'private' | 'unlisted' | 'public'>('private');
   const [profileVisibility, setProfileVisibility] = useState<'private' | 'unlisted' | 'public'>('private');
@@ -615,7 +615,7 @@ export default function InteractiveLeaksSimulator() {
 
   function applyLikelyConfiguration() {
     setConfigurationSource('likely');
-    setProcessorScenario('exynos2700');
+    setProcessorScenario('unknown');
     setDirty(true);
     setForm((current) => ({
       ...current,
@@ -656,7 +656,7 @@ export default function InteractiveLeaksSimulator() {
     const state = record?.state ?? record;
     if (!state || typeof state !== 'object') return;
 
-    if (state.processorScenario === 'exynos2700' || state.processorScenario === 'snapdragon8eg6') {
+    if (typeof state.processorScenario === 'string' && state.processorScenario.trim()) {
       setProcessorScenario(state.processorScenario);
     }
     if (state.processorProfile === 'expected' || state.processorProfile === 'efficiency' || state.processorProfile === 'aggressive' || state.processorProfile === 'custom') {
@@ -699,9 +699,9 @@ export default function InteractiveLeaksSimulator() {
     const assumptions = record?.assumptions ?? record;
     if (!assumptions || typeof assumptions !== 'object') return;
 
-    if (record?.component_key === 'exynos2700' || record?.component_key === 'snapdragon8eg6') {
+    if (typeof record?.component_key === 'string' && record.component_key.trim()) {
       setProcessorScenario(record.component_key);
-    } else if (record?.componentKey === 'exynos2700' || record?.componentKey === 'snapdragon8eg6') {
+    } else if (typeof record?.componentKey === 'string' && record.componentKey.trim()) {
       setProcessorScenario(record.componentKey);
     }
     if (assumptions.profilePreset === 'expected' || assumptions.profilePreset === 'efficiency' || assumptions.profilePreset === 'aggressive' || assumptions.profilePreset === 'custom') {
@@ -829,6 +829,21 @@ export default function InteractiveLeaksSimulator() {
       setAutoNotice('Pick a device first.');
       return;
     }
+
+    if (selectedDevice.evidence_count < 1) {
+      const label = [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ');
+      setAutoModel({ name: label, processor: { key: 'unknown' } });
+      setProcessorScenario('unknown');
+      setConfigurationSource('custom');
+      dispatchExperience({ type: 'mode', value: 'simple' });
+      setForm((current) => ({ ...current, name: label }));
+      setRun(null);
+      setHasSimulated(false);
+      setDirty(true);
+      setAutoNotice('Starter model ready. Intelligence-backed assumptions are not attached yet, so tune the device manually.');
+      return;
+    }
+
     setAutoLoading(true);
     setAutoPhase(0);
     setAutoNotice('');
@@ -871,8 +886,7 @@ export default function InteractiveLeaksSimulator() {
           : {}),
       }));
 
-      if (processorKey.includes('exynos')) setProcessorScenario('exynos2700');
-      if (processorKey.includes('snapdragon')) setProcessorScenario('snapdragon8eg6');
+      if (processorKey) setProcessorScenario(processorKey);
       if (typeof sustainedPower === 'number' && Number.isFinite(sustainedPower)) {
         setSocPowerTargetW(Math.max(4, Math.min(14, Number(sustainedPower.toFixed(1)))));
       }
@@ -1166,7 +1180,27 @@ export default function InteractiveLeaksSimulator() {
               </button>
             ))}
           </div>}
-          {!deviceSearchLoading && deviceQuery.trim().length > 1 && !selectedDevice && deviceResults.length===0 && <small className="il-device-empty">No matching modeled device yet.</small>}
+          {!deviceSearchLoading && deviceQuery.trim().length > 1 && !selectedDevice && <>
+            {deviceResults.length===0 && <small className="il-device-empty">No intelligence-backed match yet.</small>}
+            <button
+              type="button"
+              className="il-device-use-anyway"
+              onClick={()=>{
+                const label=deviceQuery.trim().slice(0,180);
+                const slug=label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,180) || 'custom-device';
+                const device:DeviceChoice={slug,brand:'',name:label,category:'smartphone',lifecycle:'provisional',evidence_count:0};
+                setSelectedDevice(device);
+                setDeviceResults([]);
+                setForm((current)=>({...current,name:label}));
+                setSimulationName(label + ': Custom model');
+                setAutoModel(null);
+                setAutoNotice('Device selected. Start with a blank model now; intelligence can be attached later.');
+                window.history.replaceState({},'',window.location.pathname+'?device='+encodeURIComponent(slug));
+              }}
+            >
+              Use “{deviceQuery.trim()}” as a new device
+            </button>
+          </>}
         </div>
       </section>
 
@@ -1363,7 +1397,7 @@ export default function InteractiveLeaksSimulator() {
               <span>Live preview</span>
               <small>{autoLoading ? 'Building model' : autoModel ? 'Model ready' : simple ? 'Build model to begin' : 'Manual'}</small>
             </div>
-            <div className="il-live-row"><span>Processor</span><strong>{processorScenario==='exynos2700'?'Exynos 2700':'Snapdragon 8 Elite Gen 6'}</strong></div>
+            <div className="il-live-row"><span>Processor</span><strong>{processorScenario && processorScenario!=='unknown' ? processorScenario.replaceAll('_',' ').replaceAll('-',' ') : 'Unknown'}</strong></div>
             <div className="il-live-row"><span>Battery</span><strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong></div>
             <div className="il-live-row"><span>Pack energy</span><strong>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Waiting for model'}</strong></div>
             <div className="il-live-row"><span>Result</span><strong>{hasSimulated && run ? headlineText(run) : 'Not run yet'}</strong></div>
@@ -1390,31 +1424,31 @@ export default function InteractiveLeaksSimulator() {
           <div className="il-compare-head">
             <div>
               <span className="eyebrow">Compare scenarios</span>
-              <h2>Exynos 2700 vs Snapdragon 8 Elite Gen 6</h2>
-              <p>Compare the assumptions attached to each scenario without pretending unsupported benchmark differences are known.</p>
+              <h2>Compare model branches</h2>
+              <p>Keep comparisons tied to the selected device. Unsupported deltas stay unresolved instead of being invented.</p>
             </div>
           </div>
           <div className="il-compare-grid">
             <article>
               <span className="il-pill">Scenario A</span>
-              <h3>Exynos 2700</h3>
+              <h3>Current model</h3>
               <dl>
-                <div><dt>Evidence status</dt><dd>Scenario only</dd></div>
+                <div><dt>Processor</dt><dd>{processorScenario && processorScenario!=='unknown' ? processorScenario.replaceAll('_',' ').replaceAll('-',' ') : 'Unknown'}</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
                 <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
             </article>
             <article>
               <span className="il-pill">Scenario B</span>
-              <h3>Snapdragon 8 Elite Gen 6</h3>
+              <h3>Custom branch</h3>
               <dl>
-                <div><dt>Evidence status</dt><dd>Scenario only</dd></div>
+                <div><dt>Processor</dt><dd>{processorScenario && processorScenario!=='unknown' ? processorScenario.replaceAll('_',' ').replaceAll('-',' ') : 'Unknown'}</dd></div>
                 <div><dt>Battery</dt><dd>{form.batteryCapacityMah || 'Unknown'} mAh</dd></div>
                 <div><dt>Usage</dt><dd>{simple ? experience.preset : 'Manual'}</dd></div>
               </dl>
             </article>
           </div>
-          <p className="il-config-note">Compare currently exposes scenario assumptions only. CPU, GPU and thermal deltas remain unresolved until those models are supported.</p>
+          <p className="il-config-note">Branch comparison is functional scaffolding for now. The intelligence phase will add evidence-backed alternate worlds without changing this workflow.</p>
         </section>
       )}
 
