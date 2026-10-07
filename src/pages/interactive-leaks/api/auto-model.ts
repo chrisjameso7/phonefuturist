@@ -3,6 +3,7 @@ import { env } from 'cloudflare:workers';
 import {
   AUTO_MODEL_JSON_SCHEMA,
   autoModelPrompt,
+  completeConceptModel,
   evidenceItemsFromBundle,
   validateAutoModel,
   type AutoModelDraft,
@@ -129,7 +130,8 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
       return json({ error: 'Auto modeling returned an invalid device model.' }, 502);
     }
 
-    const virtualDevice = validateAutoModel(safeRequest, draft);
+    const validatedDevice = validateAutoModel(safeRequest, draft);
+    const virtualDevice = evidence.length ? validatedDevice : completeConceptModel(validatedDevice);
     return json({
       data: virtualDevice,
       meta: {
