@@ -196,16 +196,12 @@ const active = activeNavigation(Astro.url);
                 Home
               </a>
 
-              {
-                links.map(([name, key]) => (
-                  <a
-                    href={key === 'newsroom' ? '/articles' : '/articles?section=' + key}
-                    aria-current={active === key ? 'page' : undefined}
-                  >
-                    {name}
-                  </a>
-                ))
-              }
+              <a
+                href="/articles"
+                aria-current={['newsroom','news','leaks','analysis'].includes(active) ? 'page' : undefined}
+              >
+                Newsroom
+              </a>
 
               <a
                 href="/interactive-leaks"
