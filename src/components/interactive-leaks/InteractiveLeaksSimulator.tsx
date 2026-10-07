@@ -619,7 +619,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
+      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -631,7 +631,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
+      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -670,7 +670,7 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.batteryCapacityMah === 'string') {
       setForm((current) => ({
         ...current,
-        name: record?.name || current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
+        name: record?.name || current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
         batteryCapacityMah: state.batteryCapacityMah,
       }));
     }
@@ -1236,8 +1236,8 @@ export default function InteractiveLeaksSimulator() {
           <button type="button" className={!simple?'is-active':''} onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Manual</button>
         </div>
         <div className="il-simulator-actions">
-          {simple && <button type="button" className="il-primary" disabled={autoLoading} onClick={()=>void buildAutoModel('balanced')}>
-            {autoLoading ? 'Building…' : autoModel ? 'Refresh model' : 'Build model'}
+          {simple && <button type="button" className="il-primary" disabled={autoLoading || !selectedDevice} onClick={()=>void buildAutoModel('balanced')}>
+            {autoLoading ? 'Building…' : autoModel ? 'Refresh model' : selectedDevice ? 'Build model' : 'Pick device first'}
           </button>}
           <button type="button" className="il-chip" onClick={clearSimulation}>Reset</button>
         </div>
@@ -1261,30 +1261,25 @@ export default function InteractiveLeaksSimulator() {
         <div className="il-config-main">
           <div className="il-config-source">
             <div className="il-config-label">
-              <span>Configuration</span>
-              <small>Pick a scenario. That's it.</small>
+              <span>Model</span>
+              <small>{autoModel ? 'Built from current evidence. Tune anything below.' : selectedDevice ? 'Build the current virtual device, then start changing it.' : 'Pick a device above first.'}</small>
             </div>
             <div className="il-config-source-actions">
-              <button type="button" className={configurationSource==='likely'?'is-active':''} onClick={applyLikelyConfiguration}>Most likely</button>
-              <button type="button" className={configurationSource==='worst'?'is-active':''} onClick={applyWorstCaseConfiguration}>Worst case</button>
-              <button type="button" className={configurationSource==='custom'?'is-active':''} onClick={()=>setConfigurationSource('custom')}>Custom</button>
+              <button type="button" className={configurationSource==='likely'?'is-active':''} disabled={!selectedDevice || autoLoading} onClick={()=>void buildAutoModel('balanced')}>Most likely</button>
+              <button type="button" disabled={!selectedDevice || autoLoading} onClick={()=>void buildAutoModel('efficiency')}>Efficiency</button>
+              <button type="button" disabled={!selectedDevice || autoLoading} onClick={()=>void buildAutoModel('performance')}>Performance</button>
+              <button type="button" className={configurationSource==='custom'?'is-active':''} disabled={!selectedDevice} onClick={()=>setConfigurationSource('custom')}>Custom</button>
             </div>
           </div>
 
           <div className="il-rumor-group">
             <div className="il-rumor-heading">
               <strong>Processor</strong>
-              <span>Scenario metadata</span>
+              <span>{autoModel ? 'Resolved from the selected device model' : 'Waiting for model'}</span>
             </div>
-            <div className="il-option-grid">
-              <button type="button" className={processorScenario==='exynos2700'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('exynos2700');setConfigurationSource('custom');}}>
-                <span><strong>Exynos 2700</strong><small>Current PhoneFuturist scenario</small></span>
-                <b>{processorScenario==='exynos2700'?'Selected':''}</b>
-              </button>
-              <button type="button" className={processorScenario==='snapdragon8eg6'?'il-option is-selected':'il-option'} onClick={()=>{setProcessorScenario('snapdragon8eg6');setConfigurationSource('custom');}}>
-                <span><strong>Snapdragon 8 Elite Gen 6</strong><small>Alternate processor scenario</small></span>
-                <b>{processorScenario==='snapdragon8eg6'?'Selected':''}</b>
-              </button>
+            <div className="il-resolved-component">
+              <span>{autoModel?.processor?.key ? String(autoModel.processor.key).replaceAll('_',' ').replaceAll('-',' ') : 'Build the model to resolve the processor'}</span>
+              <small>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'No device selected'}</small>
             </div>
           </div>
 
