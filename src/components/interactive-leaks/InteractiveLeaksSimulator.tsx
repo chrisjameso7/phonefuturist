@@ -1101,15 +1101,17 @@ export default function InteractiveLeaksSimulator() {
   const batterySliderMin = Math.max(1000, Math.floor((batteryCapacityForSlider - 2000) / 100) * 100);
   const batterySliderMax = Math.min(12000, Math.ceil((batteryCapacityForSlider + 2000) / 100) * 100);
   const thermalResistanceCPerW = 8 - (coolingStrength / 100) * 4.5;
-  const socThermal = simulateSocThermals({
-    targetPowerW: socPowerTargetW,
-    ambientTemperatureC: ambientTemperature,
-    thermalResistanceCPerW,
-    thermalMassJPerC: 24,
-    throttleTemperatureC: 82,
-    durationSeconds: 1800,
-    stepSeconds: 1,
-  });
+  const socThermal = selectedDevice && autoModel
+    ? simulateSocThermals({
+        targetPowerW: socPowerTargetW,
+        ambientTemperatureC: ambientTemperature,
+        thermalResistanceCPerW,
+        thermalMassJPerC: 24,
+        throttleTemperatureC: 82,
+        durationSeconds: 1800,
+        stepSeconds: 1,
+      })
+    : undefined;
   const thermalSeverity = !socThermal
     ? 'unknown'
     : socThermal.throttleStartSecond !== undefined
@@ -1330,6 +1332,7 @@ export default function InteractiveLeaksSimulator() {
               <span><strong>Power target</strong><b>{socPowerTargetW.toFixed(1)} W</b></span>
               <input
                 type="range"
+                disabled={!selectedDevice || !autoModel}
                 min="4"
                 max="14"
                 step="0.2"
@@ -1342,6 +1345,7 @@ export default function InteractiveLeaksSimulator() {
               <span><strong>Cooling strength</strong><b>{coolingStrength}%</b></span>
               <input
                 type="range"
+                disabled={!selectedDevice || !autoModel}
                 min="0"
                 max="100"
                 step="1"
@@ -1374,6 +1378,7 @@ export default function InteractiveLeaksSimulator() {
               <span><strong>Capacity</strong><b>{form.batteryCapacityMah ? form.batteryCapacityMah + ' mAh' : 'Not set'} · {simple && configurationSource!=='custom' ? 'MODEL' : 'YOUR OVERRIDE'}</b></span>
               <input
                 type="range"
+                disabled={!selectedDevice || !autoModel}
                 min={batterySliderMin}
                 max={batterySliderMax}
                 step="50"
@@ -1381,7 +1386,7 @@ export default function InteractiveLeaksSimulator() {
                 onChange={(event)=>applyBatteryScenario(event.currentTarget.value)}
               />
             </label>
-            <small className="il-module-note">The range follows the selected device instead of assuming one flagship battery size.</small>
+            <small className="il-module-note">{selectedDevice && autoModel ? 'The range follows the selected device model instead of assuming one flagship battery size.' : 'Pick a device and build its model before tuning hardware.'}</small>
           </div>
         </div>
 
