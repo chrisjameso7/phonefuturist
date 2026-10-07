@@ -62,11 +62,13 @@ export const POST: APIRoute = async ({ locals, request }) => {
     input.configurationSource === 'likely' || input.configurationSource === 'worst' || input.configurationSource === 'custom'
       ? input.configurationSource
       : 'custom';
+  const deviceKey = typeof input.deviceKey === 'string' ? input.deviceKey.trim().slice(0, 180) : '';
   const processorKey = typeof input.processorKey === 'string' ? input.processorKey.slice(0, 120) : null;
   const state = input.state && typeof input.state === 'object' ? input.state : {};
   const resultSnapshot = input.resultSnapshot && typeof input.resultSnapshot === 'object' ? input.resultSnapshot : null;
 
   if (!name || name.length > 120) return json({ error: 'Simulation name must be 1 to 120 characters.' }, 400);
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(deviceKey)) return json({ error: 'Pick a valid device before saving.' }, 400);
 
   if (visibility === 'public') {
     const { data: creator, error: creatorError } = await locals.supabase
@@ -83,7 +85,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
     .insert({
       owner_id: locals.user.id,
       name,
-      device_key: 'galaxy-s27-ultra',
+      device_key: deviceKey,
       visibility,
       configuration_source: configurationSource,
       processor_key: processorKey,
