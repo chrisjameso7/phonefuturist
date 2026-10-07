@@ -119,16 +119,7 @@ const active = activeNavigation(Astro.url);
                         </a>
                       ))
                     }
-
-                    <a
-                      href="/interactive-leaks"
-                      aria-current={active === 'lab' ? 'page' : undefined}
-                    >
-                      <span>The Lab</span>
-                      <span aria-hidden="true">↗</span>
-                    </a>
-
-                    {
+{
                       showStudio && (
                         <a
                           href="/studio"
@@ -201,15 +192,7 @@ const active = activeNavigation(Astro.url);
               >
                 Newsroom
               </a>
-
-              <a
-                href="/interactive-leaks"
-                aria-current={active === 'lab' ? 'page' : undefined}
-              >
-                The Lab
-              </a>
-
-              {
+{
                 showStudio && (
                   <a
                     href="/studio"
@@ -264,13 +247,7 @@ const active = activeNavigation(Astro.url);
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
-          <a class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
-            <span class="mobile-lab-orb" aria-hidden="true">
-              <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
-            </span>
-            <span>Lab</span>
-          </a>
-          {showStudio && (
+{showStudio && (
             <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v12H4zM8 4v5M16 4v5M8 13h8M8 16h5"/></svg>
               <span>Studio</span>
