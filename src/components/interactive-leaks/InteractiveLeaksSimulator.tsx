@@ -619,7 +619,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
+      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -631,7 +631,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
+      name: current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -670,7 +670,7 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.batteryCapacityMah === 'string') {
       setForm((current) => ({
         ...current,
-        name: record?.name || current.name || (selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : ''),
+        name: record?.name || current.name || (selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : ''),
         batteryCapacityMah: state.batteryCapacityMah,
       }));
     }
@@ -1099,7 +1099,7 @@ export default function InteractiveLeaksSimulator() {
     setConfigurationSource('likely');
     setProcessorScenario('exynos2700');
     setProcessorProfile('expected');
-    setSimulationName(selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') + ': Most likely' : 'Untitled simulation');
+    setSimulationName(selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') + ': Most likely' : 'Untitled simulation');
     setSimulationVisibility('private');
     setProfileVisibility('private');
     setSimulationSharePath('');
@@ -1159,7 +1159,7 @@ export default function InteractiveLeaksSimulator() {
       <section className="il-device-picker">
         <div className="il-device-picker-copy">
           <span className="eyebrow">Virtual device</span>
-          <h2>{selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : 'Pick any device.'}</h2>
+          <h2>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'Pick any device.'}</h2>
           <p>{selectedDevice ? `${selectedDevice.lifecycle} · ${selectedDevice.evidence_count} current evidence items` : 'Search PhoneFuturist intelligence. We do not force you into a preset list.'}</p>
         </div>
         <div className="il-device-picker-control">
@@ -1341,7 +1341,7 @@ export default function InteractiveLeaksSimulator() {
             </div>
             <div className="il-resolved-component">
               <span>{autoModel?.processor?.key ? String(autoModel.processor.key).replaceAll('_',' ').replaceAll('-',' ') : 'Build the model to resolve the processor'}</span>
-              <small>{selectedDevice ? [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ') : 'No device selected'}</small>
+              <small>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'No device selected'}</small>
             </div>
           </div>
 
