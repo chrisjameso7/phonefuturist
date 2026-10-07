@@ -5,36 +5,57 @@ import '../../styles/lab-simulator.css';
 ---
 
 <Page
-  title="Galaxy S27 Ultra — Interactive Leaks"
-  description="Build, test, compare and inspect evidence-aware simulations for unreleased devices."
+  title="Galaxy S27 Ultra · PhoneFuturist Lab"
+  description="Explore a living virtual Galaxy S27 Ultra and test how changing hardware assumptions changes the outcome."
   privatePage={true}
   productMode={true}
 >
   <div class="il-product">
+    <header class="il-product-nav">
+      <a class="il-product-brand" href="/">
+        <img src="/assets/phonefuturist-mark.svg" alt="" width="52" height="24" />
+        <span>PhoneFuturist</span>
+      </a>
+      <nav aria-label="Lab navigation">
+        <a href="/interactive-leaks">Lab</a>
+        <a href="/interactive-leaks/explore">Explore</a>
+      </nav>
+      <a class="il-product-account" href="/account">Account</a>
+    </header>
+
     <section class="il-device-head">
       <div>
-        <a class="il-back" href="/interactive-leaks">← Back to device</a>
+        <a class="il-back" href="/interactive-leaks">← PhoneFuturist Lab</a>
         <div class="il-title-row">
           <h1>Galaxy S27 Ultra</h1>
-          <span class="il-pill il-pill-unreleased">Unreleased</span>
-          <span class="il-pill">87% confidence</span>
+          <span class="il-pill il-pill-unreleased">Virtual device</span>
         </div>
-        <p>Interactive Leak Lab · 46 tracked rumors · expected Feb 2027</p>
+        <p>Living model built from current PhoneFuturist evidence and versioned simulation modules.</p>
       </div>
 
       <div class="il-head-actions">
-        <a class="il-primary" href="#interactive-simulator">Open builder</a>
+        <a class="il-primary" href="#interactive-simulator">Start exploring</a>
       </div>
     </section>
 
     <div class="il-disclaimer">
-      <strong>Simulated result</strong>
-      <span>Based on publicly reported specifications, estimated specifications, historical device behavior, and PhoneFuturist modeling. Actual performance may differ.</span>
+      <strong>Modeled result</strong>
+      <span>This is a virtual device, not a claim about final retail hardware. Change an assumption and supported results update from the same model.</span>
     </div>
-
 
     <main id="interactive-simulator" class="il-workspace">
       <InteractiveLeaksSimulator client:load />
     </main>
   </div>
 </Page>
+
+<style>
+  .il-product-nav{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:58px;margin-bottom:18px;padding:8px 4px;border-bottom:1px solid color-mix(in srgb,var(--ink) 9%,transparent)}
+  .il-product-brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none;font-size:.8rem;font-weight:760}
+  .il-product-brand img{width:38px;height:22px}
+  .il-product-nav nav{display:flex;gap:4px}
+  .il-product-nav nav a,.il-product-account{padding:8px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.68rem}
+  .il-product-nav nav a:first-child{color:var(--ink);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .il-product-nav a:hover{color:var(--ink)}
+  @media(max-width:620px){.il-product-nav nav{display:none}.il-device-head{padding-top:10px}}
+</style>
