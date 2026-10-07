@@ -13,7 +13,7 @@ describe('shared navigation route state',()=>{
   ['/studio/articles/example','studio'],
   ['/studio/','studio'],
   ['/account',undefined],
-  ['/articles',undefined],
+  ['/articles','newsroom'],
   ['/articles?section=unknown',undefined],
   ['/interactive-leaks-other',undefined],
   ['/studio-access',undefined],
