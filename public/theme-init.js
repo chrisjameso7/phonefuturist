@@ -1,10 +1,10 @@
 /* Resolve appearance before paint while keeping preference and rendered theme separate. */
-/** @typedef {'light' | 'dark' | 'amoled'} ResolvedTheme */
+/** @typedef {'light' | 'dark'} ResolvedTheme */
 /** @typedef {ResolvedTheme | 'system'} ThemePreference */
 (() => {
   const storageKey = 'phonefuturist-theme';
   const systemQuery = matchMedia('(prefers-color-scheme: dark)');
-  const validPreferences = new Set(['system', 'light', 'dark', 'amoled']);
+  const validPreferences = new Set(['system', 'light', 'dark']);
 
   /** @type {ThemePreference} */
   let preference = 'system';
