@@ -1163,3 +1163,124 @@ footer .brand-lockup .brand-word {
     padding-inline: 14px !important;
   }
 }
+
+
+/* ================================================================
+   MOBILE APP SHELL V4
+   Flat social-feed composition. Remove floating chrome and card-within-card feel.
+   ================================================================ */
+@media (max-width:760px) {
+  :root { --mobile-appbar-height:44px; --mobile-tabbar-height:58px; }
+
+  body:not(.product-mode) {
+    padding-top:calc(var(--mobile-appbar-height) + env(safe-area-inset-top,0px));
+    padding-bottom:calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom,0px));
+    background:#06090e;
+  }
+
+  .mobile-appbar,
+  .mobile-appbar[data-compact='true'] {
+    min-height:calc(var(--mobile-appbar-height) + env(safe-area-inset-top,0px));
+    padding:calc(4px + env(safe-area-inset-top,0px)) 16px 4px;
+    justify-content:center;
+    border-bottom:1px solid #141b24;
+    background:rgb(6 9 14 / .96);
+    box-shadow:none;
+  }
+
+  .mobile-app-brand,
+  .mobile-appbar[data-compact='true'] .mobile-app-brand { margin:0 auto; }
+
+  .mobile-app-brand img,
+  .mobile-appbar[data-compact='true'] .mobile-app-brand img {
+    width:34px;
+    height:18px;
+  }
+
+  .mobile-app-context { display:none !important; }
+
+  .mobile-tabbar,
+  .mobile-tabbar[data-compact='true'] {
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    min-height:calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom,0px));
+    padding:4px 10px calc(4px + env(safe-area-inset-bottom,0px));
+    border:0;
+    border-top:1px solid #171e27;
+    border-radius:0;
+    background:rgb(6 9 14 / .97);
+    box-shadow:none;
+    transform:none;
+    -webkit-backdrop-filter:blur(18px);
+    backdrop-filter:blur(18px);
+  }
+
+  .mobile-tabbar > a,
+  .mobile-tabbar[data-compact='true'] > a {
+    min-height:48px;
+    border-radius:10px;
+    background:transparent;
+  }
+
+  .mobile-tabbar > a[aria-current='page'] { background:transparent; }
+
+  .mobile-tabbar > a[aria-current='page'] > svg {
+    transform:none;
+    stroke-width:2.15;
+  }
+
+  .mobile-lab-orb,
+  .mobile-tabbar[data-compact='true'] .mobile-lab-orb {
+    width:34px;
+    height:26px;
+    border-radius:8px;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+
+  body:not(.product-mode) main,
+  body:not(.product-mode) main.home-page {
+    width:100%;
+    padding:0 !important;
+  }
+
+  .article-grid,
+  .article-grid[data-count='1'],
+  .article-grid[data-count='2'],
+  .article-grid[data-count='3'],
+  .article-grid[data-count='4'] { gap:0 !important; }
+
+  .article-card,
+  .article-card.has-card-image,
+  .article-grid[data-count='1'] .article-card,
+  .article-grid[data-count='1'] .article-card.has-card-image {
+    border:0 !important;
+    border-bottom:1px solid #18212b !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    min-height:0 !important;
+  }
+
+  .article-card.has-card-image,
+  .article-grid[data-count='1'] .article-card.has-card-image {
+    grid-template-columns:112px minmax(0,1fr) !important;
+  }
+
+  .article-card.has-card-image .card-content,
+  .article-grid[data-count='1'] .article-card.has-card-image .card-content {
+    min-height:112px !important;
+    padding:14px 16px !important;
+  }
+
+  .article-card.has-card-image .card-image {
+    min-height:112px !important;
+    border-right:0 !important;
+  }
+
+  .article-card h3 {
+    font-size:1rem !important;
+    line-height:1.18 !important;
+  }
+}
