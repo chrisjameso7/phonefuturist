@@ -1311,15 +1311,15 @@ export default function InteractiveLeaksSimulator() {
         <div className="il-auto-loading-copy">
           <span className="eyebrow">PHONEFUTURIST AUTO</span>
           <h2>Building the virtual device.</h2>
-          <p>{['Reading current evidence','Resolving hardware assumptions','Checking model constraints','Preparing live controls'][autoPhase]}</p>
+          <p>{['Reading current evidence','Resolving hardware assumptions','Checking model constraints','Preparing your result'][autoPhase]}</p>
         </div>
         <ol className="il-auto-steps">
-          {['Evidence','Hardware model','Constraint check','Live controls'].map((label,index)=><li key={label} className={index<autoPhase?'is-done':index===autoPhase?'is-active':''}><span></span>{label}</li>)}
+          {['Evidence','Hardware model','Constraint check','Ready'].map((label,index)=><li key={label} className={index<autoPhase?'is-done':index===autoPhase?'is-active':''}><span></span>{label}</li>)}
         </ol>
       </section>}
       {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
 
-      {stage==='build' && <section className="il-product-config" aria-label="Device configuration">
+      {stage==='build' && !simple && <section className="il-product-config" aria-label="Device configuration">
         <div className="il-config-main">
           <div className="il-config-source">
             <div className="il-config-label">
@@ -1478,7 +1478,7 @@ export default function InteractiveLeaksSimulator() {
         {/* ---------------- Builder column ---------------- */}
         {stage!=='results' && <section className="il-builder" aria-label="Simulation inputs">
           {/* 01 · DEVICE */}
-          {stage==='build' && <details className="il-engineering-panel">
+          {stage==='build' && !simple && <details className="il-engineering-panel">
             <summary>
               <span>
                 <strong>Advanced tuning</strong>
