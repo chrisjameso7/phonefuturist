@@ -217,3 +217,35 @@ const creatorsList=[...creators.values()].slice(0,6);
 .explore-empty{padding:28px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-empty h2{margin:0 0 6px;font-size:1.4rem}.explore-empty p,.explore-empty-inline{color:#718092;font-size:.7rem}
 @media(max-width:1120px){.explore-network{grid-template-columns:170px minmax(0,1fr)}.explore-right{display:none}}@media(max-width:800px){.explore-network{display:block;padding-inline:0}.explore-left{display:none}.explore-feed{border-inline:0}.explore-card-grid{grid-template-columns:1fr}.explore-profile-grid{grid-template-columns:1fr 1fr}.explore-head{padding-inline:18px}}@media(max-width:540px){.explore-profile-grid{grid-template-columns:1fr}.explore-head h1{font-size:3.4rem}.explore-section{padding-inline:12px}}
 </style>
+
+
+<style>
+@media(max-width:800px){
+  .explore-network{width:100%;padding:8px 0 92px}
+  .explore-feed{border:0}
+  .explore-head{padding:18px 18px 14px}
+  .explore-head h1{font-size:2.8rem;line-height:.94}
+  .explore-head p:not(.eyebrow){max-width:320px;font-size:.75rem;line-height:1.45}
+  .explore-head>a{padding:8px 12px;border:1px solid #20303e;border-radius:999px;background:#0b1118}
+  .explore-tabs{padding:0 12px 12px;border:0;gap:7px}
+  .explore-tabs a{min-height:38px;display:inline-flex;align-items:center;padding:0 13px;border:1px solid #202b37;border-radius:999px;background:#0b1118}
+  .explore-tabs a.is-active{background:rgb(22 140 255/.12);border-color:rgb(44 217 255/.24);box-shadow:none}
+  .explore-section{padding:12px}
+  .explore-section+.explore-section{border-top:0;margin-top:6px}
+  .explore-section-head{padding:0 5px 10px}
+  .explore-card-grid{grid-template-columns:1fr;gap:10px}
+  .explore-card{border-radius:22px}
+  .explore-card-main{padding:15px}
+  .explore-rank{border-radius:14px}
+  .explore-creator-line{padding:11px 15px}
+  .explore-stream{gap:10px}
+  .explore-post{padding:14px;border:1px solid #202b37;border-radius:22px;background:#0b1118}
+  .explore-post:hover{background:#0b1118}
+  .explore-profile-grid{grid-template-columns:1fr 1fr;gap:9px}
+  .explore-profile-card{border-radius:20px}
+}
+@media(max-width:540px){
+  .explore-profile-grid{grid-template-columns:1fr}
+  .explore-head h1{font-size:2.8rem}
+}
+</style>
