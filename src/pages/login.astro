@@ -2,6 +2,7 @@
 import Page from '../layouts/Page.astro';
 import PasswordField from '../components/PasswordField';
 const failed = Astro.url.searchParams.has('error');
+const next = Astro.url.searchParams.get('next') ?? '';
 ---
 <Page title="Sign in" privatePage>
   <section class="auth-network-shell">
@@ -22,6 +23,7 @@ const failed = Astro.url.searchParams.has('error');
       </div>
       {failed && <p class="notice error" role="alert">Sign-in could not be completed. Check your details or try again.</p>}
       <form class="stack" action="/auth/login" method="post">
+        {next && <input type="hidden" name="next" value={next} />}
         <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"/></label>
         <PasswordField client:load/>
         <button>Sign in</button>
