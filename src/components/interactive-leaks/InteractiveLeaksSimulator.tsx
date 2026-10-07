@@ -2114,9 +2114,16 @@ export default function InteractiveLeaksSimulator() {
 
               {simple && run && (
                 <section className="il-quick-result" aria-label="Quick simulation summary">
+                  <div className="il-quick-result-brand">
+                    <div className="il-quick-result-lockup">
+                      <img src="/assets/phonefuturist-mark.svg" alt="" width="40" height="20" />
+                      <span>PhoneFuturist</span>
+                    </div>
+                    <span>Quick Sim</span>
+                  </div>
                   <div className="il-quick-result-head">
                     <div>
-                      <span className="eyebrow">Quick Sim result</span>
+                      <span className="eyebrow">Simulation result</span>
                       <h3>{simulationInput?.name || selectedDevice?.name || 'Virtual device'}</h3>
                     </div>
                     <span className="il-pill">{experience.preset} use</span>
