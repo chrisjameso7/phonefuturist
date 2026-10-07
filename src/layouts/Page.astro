@@ -75,7 +75,7 @@ const active = activeNavigation(Astro.url);
             <span class="mobile-app-context">
               {active === 'home'
                 ? 'Home'
-                : ['newsroom','news','leaks','analysis'].includes(active)
+                : ['newsroom','news','leaks','analysis'].includes(active ?? '')
                   ? 'Newsroom'
                   : active === 'lab'
                     ? 'Lab'
@@ -204,7 +204,7 @@ const active = activeNavigation(Astro.url);
 
               <a
                 href="/articles"
-                aria-current={['newsroom','news','leaks','analysis'].includes(active) ? 'page' : undefined}
+                aria-current={['newsroom','news','leaks','analysis'].includes(active ?? '') ? 'page' : undefined}
               >
                 Newsroom
               </a>
@@ -267,7 +267,7 @@ const active = activeNavigation(Astro.url);
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-4v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
             <span>Home</span>
           </a>
-          <a href="/articles" aria-current={['newsroom','news','leaks','analysis'].includes(active) ? 'page' : undefined}>
+          <a href="/articles" aria-current={['newsroom','news','leaks','analysis'].includes(active ?? '') ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
