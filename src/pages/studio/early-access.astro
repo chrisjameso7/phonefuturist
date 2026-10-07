@@ -1,0 +1,150 @@
+---
+import Page from '../../layouts/Page.astro';
+import { boundedForm } from '../../lib/security';
+import { studioError } from '../../lib/editorial';
+
+const isAdmin = Astro.locals.access?.roles.includes('admin');
+if (!isAdmin) return new Response('Admin access required.', { status: 403 });
+
+let message = '';
+
+if (Astro.request.method === 'POST') {
+  let form: URLSearchParams;
+  try {
+    form = await boundedForm(Astro.request);
+  } catch {
+    return new Response('Invalid early access request.', { status: 400 });
+  }
+
+  const email = String(form.get('email') ?? '');
+  const revoke = form.get('action') === 'revoke';
+  const { error } = await Astro.locals.supabase!.rpc('lab_early_access_manage', {
+    p_email: email,
+    p_revoke: revoke,
+  });
+
+  if (error) {
+    const parsed = studioError(error);
+    message = parsed.message;
+    Astro.response.status = parsed.status;
+  } else {
+    return Astro.redirect('/studio/early-access?updated=1', 303);
+  }
+}
+
+const { data, error } = await Astro.locals.supabase!.rpc('lab_early_access_manage');
+if (error) {
+  Astro.response.status = 503;
+  message = 'Early Access management could not load. Please retry.';
+}
+
+type Member = {
+  email: string;
+  active: boolean;
+  has_account: boolean;
+  added_at: string;
+  updated_at: string;
+};
+
+const members = (data?.members ?? []) as Member[];
+const activeCount = members.filter((member) => member.active).length;
+---
+
+<Page title="Lab Early Access" privatePage>
+  <div class="studio-shell">
+    <aside class="studio-nav">
+      <a class="studio-brand" href="/">
+        <img src="/assets/phonefuturist-mark.svg" alt="" width="54" height="24" />
+        <span>Studio</span>
+      </a>
+
+      <nav aria-label="Studio">
+        <a href="/studio">Articles</a>
+        <a href="/studio/new">New article</a>
+        <a href="/studio/access">Studio access</a>
+        <a class="is-active" href="/studio/early-access">Lab Early Access</a>
+        <a href="/account">Account</a>
+      </nav>
+
+      <p class="studio-nav-note">PhoneFuturist admin tools</p>
+    </aside>
+
+    <section class="studio-workspace">
+      <div class="studio-top">
+        <div>
+          <p class="eyebrow">PhoneFuturist Lab</p>
+          <h1>Early Access</h1>
+          <p class="studio-help">Add an email before or after the person creates an account. Admins always retain access.</p>
+        </div>
+        <span class="early-count">{activeCount} active</span>
+      </div>
+
+      {message && <p role="alert" class="studio-message">{message}</p>}
+      {Astro.url.searchParams.has('updated') && <p role="status" class="studio-message">Early Access updated.</p>}
+
+      <form method="post" class="early-access-form">
+        <label>
+          <span>Email address</span>
+          <input name="email" type="email" required maxlength="254" autocomplete="off" placeholder="person@example.com" />
+        </label>
+        <button name="action" value="grant">Add to Early Access</button>
+      </form>
+
+      <div class="studio-filterbar">
+        <span>Allowed emails</span>
+        <span>{members.length} total</span>
+      </div>
+
+      {members.length ? (
+        <div class="early-access-list">
+          {members.map((member) => (
+            <article class:list={['early-access-row', { 'is-revoked': !member.active }]}>
+              <div>
+                <strong>{member.email}</strong>
+                <small>
+                  {member.active ? 'Active' : 'Revoked'} · {member.has_account ? 'Account created' : 'No account yet'}
+                </small>
+              </div>
+              <div class="early-access-actions">
+                <time datetime={member.updated_at}>
+                  {new Date(member.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                </time>
+                <form method="post">
+                  <input type="hidden" name="email" value={member.email} />
+                  {member.active ? (
+                    <button class="secondary" name="action" value="revoke">Remove</button>
+                  ) : (
+                    <button class="secondary" name="action" value="grant">Restore</button>
+                  )}
+                </form>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <section class="studio-empty-state">
+          <p class="eyebrow">Early Access</p>
+          <h2>No invites yet.</h2>
+          <p>Add the first email above. They can create their account later with the same address.</p>
+        </section>
+      )}
+    </section>
+  </div>
+</Page>
+
+<style>
+  .early-count{padding:7px 10px;border:1px solid #273646;border-radius:999px;color:#70c7ff;font-size:.65rem}
+  .early-access-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;margin:18px 0 24px;padding:18px;border:1px solid #202c39;border-radius:14px;background:#0b121a}
+  .early-access-form label span{display:block;margin-bottom:6px;color:#9ba9b8;font-size:.68rem}
+  .early-access-form input{width:100%;min-height:46px;background:#080d13;border-color:#293746}
+  .early-access-form button{min-height:46px}
+  .early-access-list{display:grid}
+  .early-access-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 2px;border-top:1px solid #1d2834}
+  .early-access-row.is-revoked{opacity:.58}
+  .early-access-row strong{display:block;font-size:.78rem}
+  .early-access-row small{display:block;margin-top:3px;color:#718092;font-size:.61rem}
+  .early-access-actions{display:flex;align-items:center;gap:10px}
+  .early-access-actions time{color:#657486;font-size:.59rem}
+  .early-access-actions form{margin:0}
+  @media(max-width:700px){.early-access-form{grid-template-columns:1fr}.early-access-row{align-items:flex-start;flex-direction:column}.early-access-actions{width:100%;justify-content:space-between}}
+</style>
