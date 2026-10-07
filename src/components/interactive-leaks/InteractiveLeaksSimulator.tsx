@@ -2057,6 +2057,48 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               )}
 
+              {simple && run && (
+                <section className="il-quick-result" aria-label="Quick simulation summary">
+                  <div className="il-quick-result-head">
+                    <div>
+                      <span className="eyebrow">Quick Sim</span>
+                      <h3>What this phone would feel like.</h3>
+                    </div>
+                    <span className="il-pill">{experience.preset} use</span>
+                  </div>
+                  <div className="il-quick-result-grid">
+                    <article>
+                      <span>Battery life</span>
+                      <strong>{battery?.result.status === 'resolved' ? headlineText(run) : 'Still resolving'}</strong>
+                    </article>
+                    <article>
+                      <span>Thermals</span>
+                      <strong>{socThermal ? `${socThermal.peakTemperatureC.toFixed(1)}°C peak` : 'Unknown'}</strong>
+                      <small>{socThermal ? `${socThermal.sustainedPerformancePercent.toFixed(0)}% sustained` : 'Needs thermal model'}</small>
+                    </article>
+                    <article>
+                      <span>Processor</span>
+                      <strong>{processorScenario && processorScenario!=='unknown' ? processorScenario.replaceAll('_',' ').replaceAll('-',' ') : 'Unknown'}</strong>
+                    </article>
+                    <article>
+                      <span>Battery pack</span>
+                      <strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong>
+                      <small>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Energy unresolved'}</small>
+                    </article>
+                    <article>
+                      <span>Display</span>
+                      <strong>{typeof autoModel?.display?.refreshRateHz?.value === 'number' ? `${Math.round(autoModel.display.refreshRateHz.value)} Hz` : 'Unknown'}</strong>
+                      <small>{typeof autoModel?.display?.brightnessNits?.value === 'number' ? `${Math.round(autoModel.display.brightnessNits.value)} nits modeled` : 'Brightness unresolved'}</small>
+                    </article>
+                    <article>
+                      <span>Confidence</span>
+                      <strong>{autoModel ? 'Modeled' : 'Unresolved'}</strong>
+                      <small>Estimated, not measured on this device</small>
+                    </article>
+                  </div>
+                </section>
+              )}
+
               <details className="il-evidence"><summary>Supporting device and engineering metrics</summary>
               {/* Device-layer deterministic metrics */}
               <div className="il-result-group">
@@ -2291,14 +2333,10 @@ export default function InteractiveLeaksSimulator() {
         </aside>}
       </div>}
 
-      {/* Honest scope: what the Beta does not simulate yet */}
       <div className="il-scope">
-        <strong>Public Beta scope</strong>
-
+        <strong>Early Access</strong>
         <p>
-          The deterministic device core and the battery runtime model are
-          available. This beta does not simulate benchmark scores, thermal
-          behavior or image quality. Camera results describe geometry only.
+          Quick Sim turns the current virtual-device model into everyday answers. Results are modeled estimates, not measurements from unreleased hardware. Advanced controls will expose deeper what-if testing as the Lab expands.
         </p>
       </div>
     </div>
