@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import {
   AUTO_MODEL_JSON_SCHEMA,
   autoModelPrompt,
@@ -17,13 +18,19 @@ const json = (body: unknown, status = 200) =>
   });
 
 export const POST: APIRoute = async ({ request, locals, cookies }) => {
-  const provider = import.meta.env.VIRTUAL_DEVICE_PROVIDER;
-  const model = import.meta.env.VIRTUAL_DEVICE_MODEL;
-  const accountId = import.meta.env.CLOUDFLARE_ACCOUNT_ID;
-  const apiToken = import.meta.env.CLOUDFLARE_AI_API_TOKEN;
+  const runtimeEnv = env as Record<string, unknown>;
+  const provider = runtimeEnv.VIRTUAL_DEVICE_PROVIDER;
+  const model = runtimeEnv.VIRTUAL_DEVICE_MODEL;
+  const accountId = runtimeEnv.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = runtimeEnv.CLOUDFLARE_AI_API_TOKEN;
   const service = locals.supabase ?? (settings() ? serverClient(cookies, request) : null);
 
-  if (provider !== 'gemma' || !model || !accountId || !apiToken) {
+  if (
+    provider !== 'gemma'
+    || typeof model !== 'string' || !model
+    || typeof accountId !== 'string' || !accountId
+    || typeof apiToken !== 'string' || !apiToken
+  ) {
     return json({ error: 'Auto modeling is not configured.' }, 503);
   }
   if (!service) return json({ error: 'Simulation intelligence is not configured.' }, 503);
