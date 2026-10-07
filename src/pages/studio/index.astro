@@ -8,4 +8,61 @@ const items=(data??[]) as StudioItem[];
 const canWrite=Astro.locals.access!.roles.some(r=>['admin','writer','editor','publisher'].includes(r));
 if(error){Astro.response.status=503;console.error('studio_list_failed',{code:error.code});}
 ---
-<Page title="Studio" privatePage><div class="studio-workspace"><div class="studio-top"><div><p class="eyebrow">PhoneFuturist Studio</p><h1>The newsroom</h1></div>{canWrite&&<a class="button" href="/studio/new">Write an article</a>}</div><p>Draft, source, review and publish. Publish your own work directly or request an optional editorial review.</p>{error?<p role="alert">We could not load the newsroom. Reload this page to try again. Your saved drafts are unchanged.</p>:items.length===0?<section class="panel"><h2>No articles here yet.</h2><p>Start a draft with your original reporting. Nothing is published automatically.</p></section>:<ul class="studio-list">{items.map(item=><li><div><a href={'/studio/articles/'+item.id}>{item.title}</a><small>{item.section} · revision {item.current_revision} · {item.state.replaceAll('_',' ')}</small></div><span>{item.withdrawn?'Withdrawn':item.public_revision?'Has published revision':'Private'}</span></li>)}</ul>}<nav aria-label="Article pages">{offset>0&&<a href={'/studio?offset='+Math.max(0,offset-30)}>Previous</a>}{items.length===30&&<a href={'/studio?offset='+(offset+30)}>Next</a>}</nav>{Astro.locals.access?.can_manage_mfa_exceptions&&<p><a class="button secondary" href="/studio/access">Manage Studio access →</a></p>}<p><a href="/account">Account and MFA settings</a></p></div></Page>
+<Page title="Studio" privatePage>
+  <div class="studio-shell">
+    <aside class="studio-nav">
+      <a class="studio-brand" href="/">
+        <img src="/assets/phonefuturist-mark.svg" alt="" width="54" height="24" />
+        <span>Studio</span>
+      </a>
+
+      <nav aria-label="Studio">
+        <a class="is-active" href="/studio">Articles</a>
+        {canWrite&&<a href="/studio/new">New article</a>}
+        {Astro.locals.access?.can_manage_mfa_exceptions&&<a href="/studio/access">Access</a>}
+        <a href="/account">Account</a>
+      </nav>
+
+      <p class="studio-nav-note">PhoneFuturist newsroom tools</p>
+    </aside>
+
+    <section class="studio-workspace">
+      <div class="studio-top">
+        <div>
+          <p class="eyebrow">PhoneFuturist Studio</p>
+          <h1>Articles</h1>
+          <p class="studio-help">Write, manage and publish from one focused newsroom workspace.</p>
+        </div>
+        {canWrite&&<a class="button" href="/studio/new">+ New article</a>}
+      </div>
+
+      <div class="studio-filterbar">
+        <span>All articles</span>
+        <span>{items.length} on this page</span>
+      </div>
+
+      {error
+        ? <p class="studio-message" role="alert">We could not load the newsroom. Reload this page to try again. Your saved drafts are unchanged.</p>
+        : items.length===0
+          ? <section class="studio-empty-state"><p class="eyebrow">Newsroom</p><h2>No articles yet.</h2><p>Start with original reporting. Nothing is published automatically.</p>{canWrite&&<a class="button" href="/studio/new">Write the first article</a>}</section>
+          : <div class="studio-article-table">
+              {items.map(item=><a class="studio-article-row" href={'/studio/articles/'+item.id}>
+                <div>
+                  <strong>{item.title}</strong>
+                  <small>{item.section} · revision {item.current_revision}</small>
+                </div>
+                <div class="studio-row-meta">
+                  <span>{item.state.replaceAll('_',' ')}</span>
+                  <b>{item.withdrawn?'Withdrawn':item.public_revision?'Published':'Private'}</b>
+                </div>
+              </a>)}
+            </div>
+      }
+
+      <nav class="studio-pagination" aria-label="Article pages">
+        {offset>0&&<a href={'/studio?offset='+Math.max(0,offset-30)}>← Previous</a>}
+        {items.length===30&&<a href={'/studio?offset='+(offset+30)}>Next →</a>}
+      </nav>
+    </section>
+  </div>
+</Page>
