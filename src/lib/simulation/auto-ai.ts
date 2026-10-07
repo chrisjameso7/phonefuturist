@@ -95,10 +95,20 @@ type AiRange = {
 };
 
 export type AutoModelDraft = {
+  dimensions?: {
+    widthMm?: AiRange;
+    heightMm?: AiRange;
+    thicknessMm?: AiRange;
+    weightG?: AiRange;
+  };
   battery?: {
     capacityMah?: AiRange;
     nominalVoltageV?: AiRange;
     usablePercent?: AiRange;
+    widthMm?: AiRange;
+    heightMm?: AiRange;
+    thicknessMm?: AiRange;
+    weightG?: AiRange;
   };
   processor?: {
     key?: string;
@@ -113,9 +123,36 @@ export type AutoModelDraft = {
     skinTemperatureLimitC?: AiRange;
   };
   display?: {
+    diagonalInches?: AiRange;
+    resolutionWidthPx?: AiRange;
+    resolutionHeightPx?: AiRange;
+    aspectWidth?: AiRange;
+    aspectHeight?: AiRange;
+    bezelTopMm?: AiRange;
+    bezelRightMm?: AiRange;
+    bezelBottomMm?: AiRange;
+    bezelLeftMm?: AiRange;
     refreshRateHz?: AiRange;
     brightnessNits?: AiRange;
     averagePowerW?: AiRange;
+  };
+  cameras?: Array<{
+    type?: 'wide' | 'ultrawide' | 'telephoto' | 'periscope' | 'front' | 'other';
+    sensorFormatDenominator?: AiRange;
+    resolutionMp?: AiRange;
+    equivalentFocalLengthMm?: AiRange;
+    physicalFocalLengthMm?: AiRange;
+    apertureFNumber?: AiRange;
+    moduleWidthMm?: AiRange;
+    moduleHeightMm?: AiRange;
+    moduleDepthMm?: AiRange;
+  }>;
+  packaging?: {
+    reservedVolumePercent?: AiRange;
+    thermalMm3?: AiRange;
+    boardMm3?: AiRange;
+    speakersMm3?: AiRange;
+    otherMm3?: AiRange;
   };
   usagePower?: {
     webBrowsingW?: AiRange;
@@ -175,10 +212,20 @@ export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDra
     key: request.deviceKey,
     name: request.deviceName,
     mode: 'auto',
+    dimensions: {
+      widthMm: parameter(draft.dimensions?.widthMm, { min: 40, max: 120 }),
+      heightMm: parameter(draft.dimensions?.heightMm, { min: 80, max: 220 }),
+      thicknessMm: parameter(draft.dimensions?.thicknessMm, { min: 3, max: 30 }),
+      weightG: parameter(draft.dimensions?.weightG, { min: 50, max: 700 }),
+    },
     battery: {
       capacityMah: parameter(draft.battery?.capacityMah, { min: 100, max: 20_000 }),
       nominalVoltageV: parameter(draft.battery?.nominalVoltageV, { min: 2.5, max: 5.5 }),
       usablePercent: parameter(draft.battery?.usablePercent, { min: 50, max: 100 }),
+      widthMm: parameter(draft.battery?.widthMm, { min: 10, max: 120 }),
+      heightMm: parameter(draft.battery?.heightMm, { min: 10, max: 180 }),
+      thicknessMm: parameter(draft.battery?.thicknessMm, { min: 1, max: 20 }),
+      weightG: parameter(draft.battery?.weightG, { min: 5, max: 250 }),
     },
     processor: {
       key: typeof draft.processor?.key === 'string' ? draft.processor.key.slice(0, 120) : undefined,
@@ -193,9 +240,64 @@ export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDra
       skinTemperatureLimitC: parameter(draft.thermals?.skinTemperatureLimitC, { min: 25, max: 65 }),
     },
     display: {
+      diagonalInches: parameter(draft.display?.diagonalInches, { min: 2, max: 20 }),
+      resolutionWidthPx: parameter(draft.display?.resolutionWidthPx, { min: 100, max: 10000 }),
+      resolutionHeightPx: parameter(draft.display?.resolutionHeightPx, { min: 100, max: 15000 }),
+      aspectWidth: parameter(draft.display?.aspectWidth, { min: 1, max: 100 }),
+      aspectHeight: parameter(draft.display?.aspectHeight, { min: 1, max: 100 }),
+      bezelTopMm: parameter(draft.display?.bezelTopMm, { min: 0, max: 30 }),
+      bezelRightMm: parameter(draft.display?.bezelRightMm, { min: 0, max: 30 }),
+      bezelBottomMm: parameter(draft.display?.bezelBottomMm, { min: 0, max: 30 }),
+      bezelLeftMm: parameter(draft.display?.bezelLeftMm, { min: 0, max: 30 }),
       refreshRateHz: parameter(draft.display?.refreshRateHz, { min: 1, max: 500 }),
       brightnessNits: parameter(draft.display?.brightnessNits, { min: 1, max: 10_000 }),
       averagePowerW: parameter(draft.display?.averagePowerW, { min: 0.01, max: 20 }),
+    },
+    cameras: (draft.cameras ?? []).slice(0, 8).map(camera => ({
+      ...(camera.type ? { type: camera.type } : {}),
+      sensorFormatDenominator: parameter(camera.sensorFormatDenominator, { min: 1, max: 20 }),
+      resolutionMp: parameter(camera.resolutionMp, { min: 0.1, max: 500 }),
+      equivalentFocalLengthMm: parameter(camera.equivalentFocalLengthMm, { min: 5, max: 1000 }),
+      physicalFocalLengthMm: parameter(camera.physicalFocalLengthMm, { min: 0.5, max: 100 }),
+      apertureFNumber: parameter(camera.apertureFNumber, { min: 0.5, max: 20 }),
+      moduleWidthMm: parameter(camera.moduleWidthMm, { min: 1, max: 80 }),
+      moduleHeightMm: parameter(camera.moduleHeightMm, { min: 1, max: 80 }),
+      moduleDepthMm: parameter(camera.moduleDepthMm, { min: 1, max: 40 }),
+    })),
+    packaging: {
+      reservedVolumePercent: parameter(draft.packaging?.reservedVolumePercent, { min: 0, max: 95 }),
+      thermalMm3: parameter(draft.packaging?.thermalMm3, { min: 0, max: 200000 }),
+      boardMm3: parameter(draft.packaging?.boardMm3, { min: 0, max: 200000 }),
+      speakersMm3: parameter(draft.packaging?.speakersMm3, { min: 0, max: 100000 }),
+      otherMm3: parameter(draft.packaging?.otherMm3, { min: 0, max: 500000 }),
+    },
+    cameras: {
+      type: 'array',
+      maxItems: 8,
+      items: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', enum: ['wide','ultrawide','telephoto','periscope','front','other'] },
+          sensorFormatDenominator: { $ref: '#/$defs/range' },
+          resolutionMp: { $ref: '#/$defs/range' },
+          equivalentFocalLengthMm: { $ref: '#/$defs/range' },
+          physicalFocalLengthMm: { $ref: '#/$defs/range' },
+          apertureFNumber: { $ref: '#/$defs/range' },
+          moduleWidthMm: { $ref: '#/$defs/range' },
+          moduleHeightMm: { $ref: '#/$defs/range' },
+          moduleDepthMm: { $ref: '#/$defs/range' },
+        },
+      },
+    },
+    packaging: {
+      type: 'object',
+      properties: {
+        reservedVolumePercent: { $ref: '#/$defs/range' },
+        thermalMm3: { $ref: '#/$defs/range' },
+        boardMm3: { $ref: '#/$defs/range' },
+        speakersMm3: { $ref: '#/$defs/range' },
+        otherMm3: { $ref: '#/$defs/range' },
+      },
     },
     usagePower: {
       webBrowsingW: parameter(draft.usagePower?.webBrowsingW, { min: 0.05, max: 15 }),
@@ -210,12 +312,25 @@ export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDra
 export const AUTO_MODEL_JSON_SCHEMA = {
   type: 'object',
   properties: {
+    dimensions: {
+      type: 'object',
+      properties: {
+        widthMm: { $ref: '#/$defs/range' },
+        heightMm: { $ref: '#/$defs/range' },
+        thicknessMm: { $ref: '#/$defs/range' },
+        weightG: { $ref: '#/$defs/range' },
+      },
+    },
     battery: {
       type: 'object',
       properties: {
         capacityMah: { $ref: '#/$defs/range' },
         nominalVoltageV: { $ref: '#/$defs/range' },
         usablePercent: { $ref: '#/$defs/range' },
+        widthMm: { $ref: '#/$defs/range' },
+        heightMm: { $ref: '#/$defs/range' },
+        thicknessMm: { $ref: '#/$defs/range' },
+        weightG: { $ref: '#/$defs/range' },
       },
     },
     processor: {
@@ -239,6 +354,15 @@ export const AUTO_MODEL_JSON_SCHEMA = {
     display: {
       type: 'object',
       properties: {
+        diagonalInches: { $ref: '#/$defs/range' },
+        resolutionWidthPx: { $ref: '#/$defs/range' },
+        resolutionHeightPx: { $ref: '#/$defs/range' },
+        aspectWidth: { $ref: '#/$defs/range' },
+        aspectHeight: { $ref: '#/$defs/range' },
+        bezelTopMm: { $ref: '#/$defs/range' },
+        bezelRightMm: { $ref: '#/$defs/range' },
+        bezelBottomMm: { $ref: '#/$defs/range' },
+        bezelLeftMm: { $ref: '#/$defs/range' },
         refreshRateHz: { $ref: '#/$defs/range' },
         brightnessNits: { $ref: '#/$defs/range' },
         averagePowerW: { $ref: '#/$defs/range' },
@@ -296,8 +420,9 @@ Rules:
 5. Give ranges when uncertainty is meaningful. mostLikely may be included inside the range.
 6. Do not invent benchmark scores. This pass builds device parameters, not final benchmark results.
 7. Estimate whole-device average power for web browsing, video playback, gaming, camera use and standby when a cautious engineering estimate is possible. These are modeled values, never measurements.
-8. For a concept model, prioritize a coherent minimum simulation set: battery capacity and voltage, usable percentage, sustained processor power, thermal resistance and mass, display refresh/brightness/power, and everyday workload power.
-9. Keep reasoning concise and engineering-focused. Clearly mark concept-only reasoning as modeled rather than evidence-derived.
+8. Build the whole virtual phone from the supplied leak evidence, not only battery life. Resolve dimensions, weight, display geometry and resolution, battery, processor, cameras, packaging/thermal hardware and workload power whenever the evidence supports them.
+9. Use inference only to connect supported leaked facts into engineering parameters. Never replace missing leaks with a generic flagship template.
+10. Keep reasoning concise and engineering-focused. Clearly mark concept-only reasoning as modeled rather than evidence-derived.
 
 Evidence:
 ${evidence || '[no active evidence for this device]'}`;
