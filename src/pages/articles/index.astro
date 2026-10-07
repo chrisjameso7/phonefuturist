@@ -45,5 +45,14 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
   .newsroom-empty h2{margin:0 0 8px;font-size:2rem}
   .newsroom-empty p{margin:0;color:var(--muted)}
   .newsroom-pagination{display:flex;justify-content:space-between;padding-top:30px;font-size:.72rem}
-  @media(max-width:650px){.newsroom-index{padding-top:10px}.newsroom-head{padding-top:34px}.newsroom-head h1{font-size:clamp(3.4rem,18vw,5.8rem)}}
+  @media(max-width:650px){
+    .newsroom-index{width:100%;padding:0 0 64px}
+    .newsroom-head{padding:24px 16px 16px}
+    .newsroom-head h1{margin:6px 0 8px;font-size:2.45rem;line-height:.98;letter-spacing:-.055em}
+    .newsroom-head>p:not(.eyebrow){font-size:.82rem;line-height:1.45}
+    .newsroom-tabs{margin:0;padding:0 8px 9px;border:0;border-bottom:1px solid #18212b;border-radius:0;background:transparent;gap:1px}
+    .newsroom-tabs a{padding:8px 10px}
+    .newsroom-pagination{padding:20px 16px 0}
+    .newsroom-empty{margin:0 16px;border-radius:12px}
+  }
 </style>
