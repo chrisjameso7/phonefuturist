@@ -271,34 +271,6 @@ export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDra
       speakersMm3: parameter(draft.packaging?.speakersMm3, { min: 0, max: 100000 }),
       otherMm3: parameter(draft.packaging?.otherMm3, { min: 0, max: 500000 }),
     },
-    cameras: {
-      type: 'array',
-      maxItems: 8,
-      items: {
-        type: 'object',
-        properties: {
-          type: { type: 'string', enum: ['wide','ultrawide','telephoto','periscope','front','other'] },
-          sensorFormatDenominator: { $ref: '#/$defs/range' },
-          resolutionMp: { $ref: '#/$defs/range' },
-          equivalentFocalLengthMm: { $ref: '#/$defs/range' },
-          physicalFocalLengthMm: { $ref: '#/$defs/range' },
-          apertureFNumber: { $ref: '#/$defs/range' },
-          moduleWidthMm: { $ref: '#/$defs/range' },
-          moduleHeightMm: { $ref: '#/$defs/range' },
-          moduleDepthMm: { $ref: '#/$defs/range' },
-        },
-      },
-    },
-    packaging: {
-      type: 'object',
-      properties: {
-        reservedVolumePercent: { $ref: '#/$defs/range' },
-        thermalMm3: { $ref: '#/$defs/range' },
-        boardMm3: { $ref: '#/$defs/range' },
-        speakersMm3: { $ref: '#/$defs/range' },
-        otherMm3: { $ref: '#/$defs/range' },
-      },
-    },
     usagePower: {
       webBrowsingW: parameter(draft.usagePower?.webBrowsingW, { min: 0.05, max: 15 }),
       videoPlaybackW: parameter(draft.usagePower?.videoPlaybackW, { min: 0.05, max: 15 }),
@@ -366,6 +338,34 @@ export const AUTO_MODEL_JSON_SCHEMA = {
         refreshRateHz: { $ref: '#/$defs/range' },
         brightnessNits: { $ref: '#/$defs/range' },
         averagePowerW: { $ref: '#/$defs/range' },
+      },
+    },
+    cameras: {
+      type: 'array',
+      maxItems: 8,
+      items: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', enum: ['wide','ultrawide','telephoto','periscope','front','other'] },
+          sensorFormatDenominator: { $ref: '#/$defs/range' },
+          resolutionMp: { $ref: '#/$defs/range' },
+          equivalentFocalLengthMm: { $ref: '#/$defs/range' },
+          physicalFocalLengthMm: { $ref: '#/$defs/range' },
+          apertureFNumber: { $ref: '#/$defs/range' },
+          moduleWidthMm: { $ref: '#/$defs/range' },
+          moduleHeightMm: { $ref: '#/$defs/range' },
+          moduleDepthMm: { $ref: '#/$defs/range' },
+        },
+      },
+    },
+    packaging: {
+      type: 'object',
+      properties: {
+        reservedVolumePercent: { $ref: '#/$defs/range' },
+        thermalMm3: { $ref: '#/$defs/range' },
+        boardMm3: { $ref: '#/$defs/range' },
+        speakersMm3: { $ref: '#/$defs/range' },
+        otherMm3: { $ref: '#/$defs/range' },
       },
     },
     usagePower: {
