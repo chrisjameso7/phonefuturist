@@ -44,7 +44,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
           if (path.startsWith('/studio') && (!staff || !access.verified)) response = new Response('You do not have verified newsroom access.', { status: 403 });
           else if (path !== '/account/security' && needsMfa && access.aal !== 'aal2') response = context.redirect('/account/security', 303);
           else if (earlyAccessPage) {
-            const { data: earlyAccess, error: earlyAccessError } = await client.rpc('lab_early_access_status');
+            const { data: earlyAccess, error: earlyAccessError } = await context.locals.supabase!.rpc('lab_early_access_status');
             if (earlyAccessError || !earlyAccess) response = new Response('Lab Early Access could not be verified. Please try again later.', { status: 503 });
             else if (!earlyAccess.allowed) response = new Response('PhoneFuturist Lab is currently in Early Access. This account has not been invited yet.', { status: 403 });
             else response = await next();
