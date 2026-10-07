@@ -5,7 +5,8 @@ import { validOrigin } from './lib/security';
 export const onRequest = defineMiddleware(async (context, next) => {
   const path = context.url.pathname;
   const protectedPage = path === '/account' || path.startsWith('/account/') || path === '/studio' || path.startsWith('/studio/');
-  const authPage = protectedPage || ['/login', '/join', '/forgot-password'].includes(path) || path.startsWith('/auth/');
+  const earlyAccessPage = path === '/interactive-leaks/simulate' || path.startsWith('/interactive-leaks/api/');
+  const authPage = protectedPage || earlyAccessPage || ['/login', '/join', '/forgot-password'].includes(path) || path.startsWith('/auth/');
   context.locals.supabase = null; context.locals.user = null; context.locals.access = null;
   let response: Response;
   const config = settings();
@@ -28,9 +29,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
         if (!identityError) context.locals.access = access;
       }
     }
-    if (protectedPage) {
-      if (!context.locals.user) response = context.redirect('/login', 303);
-      else {
+    if (protectedPage || earlyAccessPage) {
+      if (!context.locals.user) {
+        const nextPath = path + context.url.search;
+        response = context.redirect('/login?next=' + encodeURIComponent(nextPath), 303);
+      } else {
         const access = context.locals.access;
         if (identityError || !access) response = new Response('Account access could not be verified. Please try again later.', { status: 503 });
         else if (!access.active) response = new Response('This account is restricted. Contact the site administrator.', { status: 403 });
@@ -40,7 +43,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
           const needsMfa = access.mfa_required;
           if (path.startsWith('/studio') && (!staff || !access.verified)) response = new Response('You do not have verified newsroom access.', { status: 403 });
           else if (path !== '/account/security' && needsMfa && access.aal !== 'aal2') response = context.redirect('/account/security', 303);
-          else response = await next();
+          else if (earlyAccessPage) {
+            const { data: earlyAccess, error: earlyAccessError } = await client.rpc('lab_early_access_status');
+            if (earlyAccessError || !earlyAccess) response = new Response('Lab Early Access could not be verified. Please try again later.', { status: 503 });
+            else if (!earlyAccess.allowed) response = new Response('PhoneFuturist Lab is currently in Early Access. This account has not been invited yet.', { status: 403 });
+            else response = await next();
+          } else response = await next();
         }
       }
     } else if (context.locals.user && ['/login','/join'].includes(path)) response = context.redirect('/account',303);
