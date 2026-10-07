@@ -843,20 +843,6 @@ export default function InteractiveLeaksSimulator() {
       return;
     }
 
-    if (targetDevice.evidence_count < 1) {
-      const label = [targetDevice.brand, targetDevice.name].filter(Boolean).join(' ');
-      setAutoModel({ name: label, processor: { key: 'unknown' } });
-      setProcessorScenario('unknown');
-      setConfigurationSource('custom');
-      dispatchExperience({ type: 'mode', value: 'simple' });
-      setForm((current) => ({ ...current, name: label }));
-      setRun(null);
-      setHasSimulated(false);
-      setDirty(true);
-      setAutoNotice('Starter model ready. Intelligence-backed assumptions are not attached yet, so tune the device manually.');
-      return;
-    }
-
     setAutoLoading(true);
     setAutoPhase(0);
     setAutoNotice('');
@@ -867,7 +853,11 @@ export default function InteractiveLeaksSimulator() {
       const response = await fetch('/interactive-leaks/api/auto-model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceSlug: targetDevice.slug, intent }),
+        body: JSON.stringify({
+          deviceSlug: targetDevice.slug,
+          deviceName: [targetDevice.brand, targetDevice.name].filter(Boolean).join(' '),
+          intent,
+        }),
       });
       const body = await response.json().catch(() => ({}));
 
@@ -929,7 +919,11 @@ export default function InteractiveLeaksSimulator() {
 
       setDirty(true);
       setAutoPhase(3);
-      setAutoNotice(`Model ready from ${body?.meta?.evidenceCount ?? 0} current evidence items. Tell us how you use the phone to see what it means.`);
+      setAutoNotice(
+        body?.meta?.modelState === 'concept'
+          ? 'Concept model ready. No active evidence is attached yet, so assumptions are broad and confidence is intentionally low.'
+          : `Model ready from ${body?.meta?.evidenceCount ?? 0} current evidence items. Tell us how you use the phone to see what it means.`,
+      );
       setStage('test');
     } catch {
       setAutoNotice('Could not build the current Auto model.');
@@ -1285,8 +1279,9 @@ export default function InteractiveLeaksSimulator() {
                 setForm((current)=>({...current,name:label}));
                 setSimulationName(label + ': Custom model');
                 setAutoModel(null);
-                setAutoNotice('Device selected. Start with a blank model now; intelligence can be attached later.');
+                setAutoNotice('');
                 window.history.replaceState({},'',window.location.pathname+'?device='+encodeURIComponent(slug));
+                void buildAutoModel('balanced', device);
               }}
             >
               Use “{deviceQuery.trim()}” as a new device
