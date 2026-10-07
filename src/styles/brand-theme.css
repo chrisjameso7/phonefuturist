@@ -86,58 +86,6 @@ footer .theme-choice { flex-shrink:0; }
 :root[data-theme='light'] { --control-border:#748ca5; }
 @media (prefers-color-scheme:light) { :root:not([data-theme]) { --control-border:#748ca5; } }
 
-/* AMOLED is explicit-only: System continues resolving to light or dark. */
-:root[data-theme='amoled'] {
-  color-scheme: dark;
-  --paper:#000000; --surface-deep:#000000; --surface:#080b10;
-  --surface-raised:#12171e; --ink:#edf6ff; --muted:#aebfce;
-  --line:#303e4d; --control-border:#63788e;
-  --accent:#67deed; --violet:#ba9bff; --on-accent:#05202b;
-  --glass-base:rgb(7 12 18 / .7);
-  --glass-base-strong:rgb(9 15 22 / .88);
-  --glass-graphite:rgb(7 12 18 / .8);
-  --glass-fallback:#0b1119;
-  --glass-menu:rgb(8 13 20 / .94);
-  --glass-rail:rgb(0 3 7 / .32);
-  --glass-border:rgb(174 226 246 / .23);
-  --glass-border-bright:rgb(196 236 250 / .34);
-  --glass-highlight:rgb(221 248 255 / .16);
-  --glass-lens:rgb(139 223 242 / .09);
-  --glass-lens-active:rgb(160 225 240 / .14);
-}
-/* Remove ambient page washes, retain localized optical interaction surfaces. */
-:root[data-theme='amoled'] body { background:#000000; }
-:root[data-theme='amoled'] .site-header[data-optics='refractive']::before {
-  background:linear-gradient(to bottom,rgb(12 19 27 / .8),rgb(3 6 10 / .9));
-}
-:root[data-theme='amoled'] .site-header .theme-choice select {
-  background:var(--glass-fallback); border-color:var(--control-border);
-}
-:root[data-theme='amoled'] :is(.observatory .hero,.observatory .hero-copy) { background-color:#000000; }
-:root[data-theme='amoled'] .observatory .hero::after {
-  background:linear-gradient(90deg,rgb(0 0 0 / .94),rgb(0 0 0 / .2) 75%),linear-gradient(0deg,rgb(0 0 0 / .82),transparent 65%);
-}
-:root[data-theme='amoled'] :is(.lab-page,.lab-product,.latest-section,.home-lab) { background:var(--paper); }
-:root[data-theme='amoled'] :is(.panel,.article-card,.auth-card,.rail-panel) {
-  background:var(--surface); border-color:var(--line);
-}
-:root[data-theme='amoled'] :is(pre,code) { color:var(--ink); background-color:var(--surface-raised); }
-@media (prefers-reduced-transparency:reduce) {
-  :root[data-theme='amoled'] .site-header[data-optics]::before,
-  :root[data-theme='amoled'] .site-header .mobile-menu-panel {
-    background:var(--glass-fallback); -webkit-backdrop-filter:none; backdrop-filter:none;
-  }
-}
-@media (forced-colors:active) {
-  :root[data-theme='amoled'] body,
-  :root[data-theme='amoled'] :is(.lab-page,.lab-product,.latest-section,.home-lab,.panel,.article-card,.auth-card,.rail-panel,pre,code),
-  :root[data-theme='amoled'] .site-header[data-optics]::before,
-  :root[data-theme='amoled'] .site-header .theme-choice select {
-    background:Canvas; color:CanvasText;
-  }
-}
-
-
 /* ================================================================
    PHONEFUTURIST 2026 BRAND RESET
    Metallic graphite + electric blue. Editorial first, luminous in Lab.
