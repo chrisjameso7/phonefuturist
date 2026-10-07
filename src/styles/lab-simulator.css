@@ -4471,3 +4471,71 @@
     background: #050505;
   }
 }
+
+
+/* ================================================================
+   QUICK SIM USAGE CHOICES
+   One tap should feel like choosing a test, not filling a form.
+   ================================================================ */
+.lab-simulator-shell .il-simple-usage .il-mode {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.lab-simulator-shell .il-simple-usage .il-mode legend {
+  width: 100%;
+  margin-bottom: 7px;
+  padding: 0;
+}
+
+.lab-simulator-shell .il-simple-usage .il-mode label {
+  min-height: 72px;
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--lab-border);
+  border-radius: 14px;
+  background: #0c0f13;
+  color: #d7dbe0;
+  font-size: .82rem;
+  font-weight: 680;
+  letter-spacing: -.02em;
+}
+
+.lab-simulator-shell .il-simple-usage .il-mode label:hover {
+  border-color: #343941;
+  background: #101419;
+}
+
+.lab-simulator-shell .il-simple-usage .il-mode label:has(:checked) {
+  border-color: #f1f3f5;
+  background: #f3f4f6;
+  color: #090a0b;
+  box-shadow: none;
+}
+
+.lab-simulator-shell .il-simple-usage .il-mode input {
+  position: absolute;
+  width: 1px;
+  min-height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width:620px) {
+  .lab-simulator-shell .il-simple-usage .il-mode {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .lab-simulator-shell .il-simple-usage .il-mode label {
+    min-height: 68px;
+    padding: 13px;
+  }
+}
