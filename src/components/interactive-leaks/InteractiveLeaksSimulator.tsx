@@ -1154,6 +1154,61 @@ export default function InteractiveLeaksSimulator() {
     ? battery.result.estimate
     : undefined;
 
+  const runtimeMinHours = estimate?.runtimeHours?.min ?? estimate?.runtimeHours?.max;
+  const runtimeMaxHours = estimate?.runtimeHours?.max ?? estimate?.runtimeHours?.min;
+  const modeledUsablePercent =
+    typeof autoModel?.battery?.usablePercent?.value === 'number'
+      ? autoModel.battery.usablePercent.value
+      : 100;
+  const quickUsableEnergyWh =
+    liveRatedEnergyWh !== undefined
+      ? liveRatedEnergyWh * modeledUsablePercent / 100
+      : undefined;
+  const quickGamingPowerW =
+    typeof autoModel?.usagePower?.gamingW?.value === 'number'
+      ? autoModel.usagePower.gamingW.value
+      : undefined;
+  const quickVideoPowerW =
+    typeof autoModel?.usagePower?.videoPlaybackW?.value === 'number'
+      ? autoModel.usagePower.videoPlaybackW.value
+      : undefined;
+  const quickGamingHours =
+    quickUsableEnergyWh !== undefined && quickGamingPowerW
+      ? quickUsableEnergyWh / quickGamingPowerW
+      : undefined;
+  const quickVideoHours =
+    quickUsableEnergyWh !== undefined && quickVideoPowerW
+      ? quickUsableEnergyWh / quickVideoPowerW
+      : undefined;
+  const fullDayVerdict =
+    runtimeMinHours !== undefined && runtimeMinHours >= 24
+      ? 'Yes, with margin'
+      : runtimeMaxHours !== undefined && runtimeMaxHours >= 24
+        ? 'Borderline'
+        : runtimeMaxHours !== undefined
+          ? 'Probably not'
+          : 'Still resolving';
+  const autoConfidenceValues = [
+    autoModel?.battery?.capacityMah?.confidence,
+    autoModel?.processor?.sustainedPowerLimitW?.confidence,
+    autoModel?.thermals?.thermalResistanceCPerW?.confidence,
+    autoModel?.display?.refreshRateHz?.confidence,
+    autoModel?.usagePower?.gamingW?.confidence,
+    autoModel?.usagePower?.videoPlaybackW?.confidence,
+  ].filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+  const autoConfidence =
+    autoConfidenceValues.length
+      ? autoConfidenceValues.reduce((sum, value) => sum + value, 0) / autoConfidenceValues.length
+      : undefined;
+  const autoConfidenceLabel =
+    autoConfidence === undefined
+      ? 'Early model'
+      : autoConfidence >= .78
+        ? 'High'
+        : autoConfidence >= .55
+          ? 'Moderate'
+          : 'Early model';
+
   return (
     <div className="il-app">
       <section className="il-device-picker">
@@ -2061,39 +2116,58 @@ export default function InteractiveLeaksSimulator() {
                 <section className="il-quick-result" aria-label="Quick simulation summary">
                   <div className="il-quick-result-head">
                     <div>
-                      <span className="eyebrow">Quick Sim</span>
-                      <h3>What this phone would feel like.</h3>
+                      <span className="eyebrow">Quick Sim result</span>
+                      <h3>{simulationInput?.name || selectedDevice?.name || 'Virtual device'}</h3>
                     </div>
                     <span className="il-pill">{experience.preset} use</span>
                   </div>
+
+                  <div className="il-quick-result-hero">
+                    <span>Estimated battery life</span>
+                    <strong>{battery?.result.status === 'resolved' ? headlineText(run) : 'Still resolving'}</strong>
+                    <small>Modeled for your {experience.preset.toLowerCase()} usage pattern, not measured on unreleased hardware.</small>
+                  </div>
+
+                  <div className="il-quick-confidence">
+                    <div>
+                      <span>Model confidence</span>
+                      <strong>{autoConfidenceLabel}</strong>
+                    </div>
+                    <div className="il-quick-confidence-track" aria-hidden="true">
+                      <span style={{width:`${Math.round((autoConfidence ?? .32) * 100)}%`}} />
+                    </div>
+                  </div>
+
                   <div className="il-quick-result-grid">
                     <article>
-                      <span>Battery life</span>
-                      <strong>{battery?.result.status === 'resolved' ? headlineText(run) : 'Still resolving'}</strong>
+                      <span>Full day?</span>
+                      <strong>{fullDayVerdict}</strong>
+                      <small>{runtimeMinHours !== undefined && runtimeMaxHours !== undefined ? `${runtimeMinHours.toFixed(1)}–${runtimeMaxHours.toFixed(1)} h modeled range` : 'Daily runtime unresolved'}</small>
+                    </article>
+                    <article>
+                      <span>Gaming</span>
+                      <strong>{quickGamingHours !== undefined ? `~${quickGamingHours.toFixed(1)} h` : 'Unknown'}</strong>
+                      <small>{quickGamingPowerW !== undefined ? `${quickGamingPowerW.toFixed(2)} W modeled draw` : 'Needs gaming power model'}</small>
+                    </article>
+                    <article>
+                      <span>Video</span>
+                      <strong>{quickVideoHours !== undefined ? `~${quickVideoHours.toFixed(1)} h` : 'Unknown'}</strong>
+                      <small>{quickVideoPowerW !== undefined ? `${quickVideoPowerW.toFixed(2)} W modeled draw` : 'Needs video power model'}</small>
                     </article>
                     <article>
                       <span>Thermals</span>
-                      <strong>{socThermal ? `${socThermal.peakTemperatureC.toFixed(1)}°C peak` : 'Unknown'}</strong>
-                      <small>{socThermal ? `${socThermal.sustainedPerformancePercent.toFixed(0)}% sustained` : 'Needs thermal model'}</small>
+                      <strong>{socThermal ? (thermalSeverity==='throttling'?'Throttles':thermalSeverity==='hot'?'Runs hot':'Stable') : 'Unknown'}</strong>
+                      <small>{socThermal ? `${socThermal.peakTemperatureC.toFixed(1)}°C peak · ${socThermal.sustainedPerformancePercent.toFixed(0)}% sustained` : 'Needs thermal model'}</small>
                     </article>
                     <article>
                       <span>Processor</span>
                       <strong>{processorScenario && processorScenario!=='unknown' ? processorScenario.replaceAll('_',' ').replaceAll('-',' ') : 'Unknown'}</strong>
-                    </article>
-                    <article>
-                      <span>Battery pack</span>
-                      <strong>{form.batteryCapacityMah ? `${form.batteryCapacityMah} mAh` : 'Unknown'}</strong>
-                      <small>{liveRatedEnergyWh !== undefined ? `${liveRatedEnergyWh.toFixed(2)} Wh` : 'Energy unresolved'}</small>
+                      <small>{socThermal ? `${socThermal.sustainedPowerW.toFixed(1)} W sustained` : 'Power unresolved'}</small>
                     </article>
                     <article>
                       <span>Display</span>
                       <strong>{typeof autoModel?.display?.refreshRateHz?.value === 'number' ? `${Math.round(autoModel.display.refreshRateHz.value)} Hz` : 'Unknown'}</strong>
                       <small>{typeof autoModel?.display?.brightnessNits?.value === 'number' ? `${Math.round(autoModel.display.brightnessNits.value)} nits modeled` : 'Brightness unresolved'}</small>
-                    </article>
-                    <article>
-                      <span>Confidence</span>
-                      <strong>{autoModel ? 'Modeled' : 'Unresolved'}</strong>
-                      <small>Estimated, not measured on this device</small>
                     </article>
                   </div>
                 </section>
