@@ -170,50 +170,6 @@ function parameter(
  * The AI is never trusted directly. Invalid, impossible, or missing values
  * remain unresolved rather than being silently repaired.
  */
-function conceptParameter(value: number, min: number, max: number, note: string): VirtualParameter {
-  return {
-    value,
-    range: { min, max },
-    provenance: { kind: 'modeled', note },
-    confidence: 0.22,
-  };
-}
-
-export function completeConceptModel(model: VirtualDevice): VirtualDevice {
-  const note = 'Generic smartphone engineering prior used only because no active device evidence is attached.';
-  return {
-    ...model,
-    battery: {
-      capacityMah: model.battery.capacityMah ?? conceptParameter(5000, 4300, 6000, note),
-      nominalVoltageV: model.battery.nominalVoltageV ?? conceptParameter(3.85, 3.75, 3.95, note),
-      usablePercent: model.battery.usablePercent ?? conceptParameter(92, 88, 96, note),
-    },
-    processor: {
-      ...model.processor,
-      key: model.processor.key || 'Generic mobile SoC',
-      sustainedPowerLimitW: model.processor.sustainedPowerLimitW ?? conceptParameter(4.5, 3.5, 6.0, note),
-    },
-    thermals: {
-      ambientTemperatureC: model.thermals.ambientTemperatureC ?? conceptParameter(22, 18, 30, note),
-      thermalResistanceCPerW: model.thermals.thermalResistanceCPerW ?? conceptParameter(3.2, 2.4, 4.5, note),
-      thermalMassJPerC: model.thermals.thermalMassJPerC ?? conceptParameter(28, 20, 40, note),
-      skinTemperatureLimitC: model.thermals.skinTemperatureLimitC ?? conceptParameter(44, 42, 46, note),
-    },
-    display: {
-      refreshRateHz: model.display.refreshRateHz ?? conceptParameter(120, 60, 144, note),
-      brightnessNits: model.display.brightnessNits ?? conceptParameter(1000, 600, 1600, note),
-      averagePowerW: model.display.averagePowerW ?? conceptParameter(1.3, 0.9, 2.0, note),
-    },
-    usagePower: {
-      webBrowsingW: model.usagePower?.webBrowsingW ?? conceptParameter(1.7, 1.2, 2.4, note),
-      videoPlaybackW: model.usagePower?.videoPlaybackW ?? conceptParameter(1.35, 0.9, 1.9, note),
-      gamingW: model.usagePower?.gamingW ?? conceptParameter(4.8, 3.5, 6.5, note),
-      cameraUseW: model.usagePower?.cameraUseW ?? conceptParameter(3.6, 2.6, 5.0, note),
-      standbyW: model.usagePower?.standbyW ?? conceptParameter(0.12, 0.07, 0.22, note),
-    },
-  };
-}
-
 export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDraft): VirtualDevice {
   return {
     key: request.deviceKey,
