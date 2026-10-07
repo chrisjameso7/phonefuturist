@@ -67,6 +67,24 @@ const active = activeNavigation(Astro.url);
         <>
           <div class="header-scroll-sentinel" aria-hidden="true"></div>
 
+          <div class="mobile-appbar" aria-label="PhoneFuturist mobile header">
+            <a class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
+              <img src="/assets/phonefuturist-mark.svg" alt="" width="46" height="22" />
+              <span>PhoneFuturist</span>
+            </a>
+            <span class="mobile-app-context">
+              {active === 'home'
+                ? 'Home'
+                : ['newsroom','news','leaks','analysis'].includes(active)
+                  ? 'Newsroom'
+                  : active === 'lab'
+                    ? 'Lab'
+                    : active === 'studio'
+                      ? 'Studio'
+                      : 'Account'}
+            </span>
+          </div>
+
           <header class="site-header">
             <div class="header-brand-row">
               <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
@@ -251,6 +269,37 @@ const active = activeNavigation(Astro.url);
             </div>
           </header>
         </>
+      )
+    }
+
+    {
+      !productMode && (
+        <nav class="mobile-tabbar" aria-label="Mobile app navigation">
+          <a href="/" aria-current={active === 'home' ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-4v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
+            <span>Home</span>
+          </a>
+          <a href="/articles" aria-current={['newsroom','news','leaks','analysis'].includes(active) ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
+            <span>Newsroom</span>
+          </a>
+          <a class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
+            <span class="mobile-lab-orb" aria-hidden="true">
+              <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
+            </span>
+            <span>Lab</span>
+          </a>
+          {showStudio && (
+            <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v12H4zM8 4v5M16 4v5M8 13h8M8 16h5"/></svg>
+              <span>Studio</span>
+            </a>
+          )}
+          <a href={signedIn ? '/account' : '/login'} aria-current={active === 'account' ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></svg>
+            <span>{signedIn ? 'Account' : 'Sign in'}</span>
+          </a>
+        </nav>
       )
     }
 
