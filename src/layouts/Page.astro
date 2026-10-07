@@ -70,19 +70,12 @@ const active = activeNavigation(Astro.url);
           <div class="mobile-appbar" aria-label="PhoneFuturist mobile header">
             <a class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
               <img src="/assets/phonefuturist-mark.svg" alt="" width="46" height="22" />
-              <span>PhoneFuturist</span>
+              <span>Phone<span>Futurist</span></span>
             </a>
-            <span class="mobile-app-context">
-              {active === 'home'
-                ? 'Home'
-                : ['newsroom','news','leaks','analysis'].includes(active ?? '')
-                  ? 'Newsroom'
-                  : active === 'lab'
-                    ? 'Lab'
-                    : active === 'studio'
-                      ? 'Studio'
-                      : 'Account'}
-            </span>
+            <a class="mobile-app-action" href={signedIn ? '/account' : '/login'} aria-label={signedIn ? 'Open account' : 'Sign in'}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+              <span aria-hidden="true"></span>
+            </a>
           </div>
 
           <header class="site-header">
