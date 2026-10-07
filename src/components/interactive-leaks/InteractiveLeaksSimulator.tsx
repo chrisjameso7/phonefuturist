@@ -1097,6 +1097,9 @@ export default function InteractiveLeaksSimulator() {
     numeric(form.batteryCapacityMah),
     numeric(form.batteryVoltageV),
   );
+  const batteryCapacityForSlider = numeric(form.batteryCapacityMah) ?? 5000;
+  const batterySliderMin = Math.max(1000, Math.floor((batteryCapacityForSlider - 2000) / 100) * 100);
+  const batterySliderMax = Math.min(12000, Math.ceil((batteryCapacityForSlider + 2000) / 100) * 100);
   const thermalResistanceCPerW = 8 - (coolingStrength / 100) * 4.5;
   const socThermal = simulateSocThermals({
     targetPowerW: socPowerTargetW,
@@ -1366,28 +1369,19 @@ export default function InteractiveLeaksSimulator() {
               <strong>Battery</strong>
               <span>Feeds the deterministic battery model</span>
             </div>
-            <div className="il-option-grid">
-              <button type="button" className={form.batteryCapacityMah==='5700'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5700')}>
-                <span><strong>5,700 mAh</strong><small>Current Auto scenario</small></span>
-                <b>{form.batteryCapacityMah==='5700'?'Selected':''}</b>
-              </button>
-              <button type="button" className={form.batteryCapacityMah==='5800'?'il-option is-selected':'il-option'} onClick={()=>applyBatteryScenario('5800')}>
-                <span><strong>5,800 mAh</strong><small>Higher-capacity alternate</small></span>
-                <b>{form.batteryCapacityMah==='5800'?'Selected':''}</b>
-              </button>
-            </div>
 
             <label className="il-slider-control il-battery-tune">
-              <span><strong>Fine tune capacity</strong><b>{form.batteryCapacityMah || '5700'} mAh · {simple && configurationSource!=='custom' ? 'AUTO' : 'YOUR OVERRIDE'}</b></span>
+              <span><strong>Capacity</strong><b>{form.batteryCapacityMah ? form.batteryCapacityMah + ' mAh' : 'Not set'} · {simple && configurationSource!=='custom' ? 'MODEL' : 'YOUR OVERRIDE'}</b></span>
               <input
                 type="range"
-                min="5200"
-                max="6000"
+                min={batterySliderMin}
+                max={batterySliderMax}
                 step="50"
-                value={Number(form.batteryCapacityMah || 5700)}
+                value={batteryCapacityForSlider}
                 onChange={(event)=>applyBatteryScenario(event.currentTarget.value)}
               />
             </label>
+            <small className="il-module-note">The range follows the selected device instead of assuming one flagship battery size.</small>
           </div>
         </div>
 
