@@ -6,6 +6,32 @@ export function compactNavigationState(top:number,bottom:number,previous:boolean
 
 /** Progressive enhancement: native details navigation works without JavaScript. */
 export function enhanceNavigation() {
+  const appbar=document.querySelector<HTMLElement>('.mobile-appbar');
+  const tabbar=document.querySelector<HTMLElement>('.mobile-tabbar');
+  let lastY=window.scrollY;
+  let ticking=false;
+
+  const syncMobileChrome=()=>{
+    const y=window.scrollY;
+    const compact=y>52;
+    const direction=y>lastY?'down':'up';
+    appbar?.setAttribute('data-compact',String(compact));
+    appbar?.setAttribute('data-direction',direction);
+    tabbar?.setAttribute('data-compact',String(compact));
+    tabbar?.setAttribute('data-direction',direction);
+    lastY=y;
+    ticking=false;
+  };
+
+  const onScroll=()=>{
+    if(ticking)return;
+    ticking=true;
+    requestAnimationFrame(syncMobileChrome);
+  };
+
+  syncMobileChrome();
+  window.addEventListener('scroll',onScroll,{passive:true});
+
   const header=document.querySelector<HTMLElement>('.site-header');
   const sentinel=document.querySelector<HTMLElement>('.header-scroll-sentinel');
   const menu=header?.querySelector<HTMLDetailsElement>('.mobile-nav');
