@@ -117,6 +117,13 @@ export type AutoModelDraft = {
     brightnessNits?: AiRange;
     averagePowerW?: AiRange;
   };
+  usagePower?: {
+    webBrowsingW?: AiRange;
+    videoPlaybackW?: AiRange;
+    gamingW?: AiRange;
+    cameraUseW?: AiRange;
+    standbyW?: AiRange;
+  };
   notes?: string[];
 };
 
@@ -190,6 +197,13 @@ export function validateAutoModel(request: AutoModelRequest, draft: AutoModelDra
       brightnessNits: parameter(draft.display?.brightnessNits, { min: 1, max: 10_000 }),
       averagePowerW: parameter(draft.display?.averagePowerW, { min: 0.01, max: 20 }),
     },
+    usagePower: {
+      webBrowsingW: parameter(draft.usagePower?.webBrowsingW, { min: 0.05, max: 15 }),
+      videoPlaybackW: parameter(draft.usagePower?.videoPlaybackW, { min: 0.05, max: 15 }),
+      gamingW: parameter(draft.usagePower?.gamingW, { min: 0.1, max: 30 }),
+      cameraUseW: parameter(draft.usagePower?.cameraUseW, { min: 0.1, max: 25 }),
+      standbyW: parameter(draft.usagePower?.standbyW, { min: 0.005, max: 5 }),
+    },
   };
 }
 
@@ -230,6 +244,16 @@ export const AUTO_MODEL_JSON_SCHEMA = {
         averagePowerW: { $ref: '#/$defs/range' },
       },
     },
+    usagePower: {
+      type: 'object',
+      properties: {
+        webBrowsingW: { $ref: '#/$defs/range' },
+        videoPlaybackW: { $ref: '#/$defs/range' },
+        gamingW: { $ref: '#/$defs/range' },
+        cameraUseW: { $ref: '#/$defs/range' },
+        standbyW: { $ref: '#/$defs/range' },
+      },
+    },
     notes: { type: 'array', maxItems: 12, items: { type: 'string' } },
   },
   $defs: {
@@ -265,7 +289,8 @@ Rules:
 4. Confidence is epistemic confidence from 0 to 1, not marketing confidence.
 5. Give ranges when uncertainty is meaningful. mostLikely may be included inside the range.
 6. Do not invent benchmark scores. This pass builds device parameters, not final performance results.
-7. Keep reasoning concise and engineering-focused.
+7. Estimate whole-device average power for web browsing, video playback, gaming, camera use and standby only when the supplied evidence plus ordinary engineering relationships support a cautious modeled estimate. These are model outputs, never measurements. Omit any workload you cannot support.
+8. Keep reasoning concise and engineering-focused.
 
 Evidence:
 ${evidence || '[none supplied]'}`;
