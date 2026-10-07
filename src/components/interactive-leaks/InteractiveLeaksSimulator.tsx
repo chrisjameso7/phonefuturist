@@ -38,6 +38,15 @@ type NumericFieldProps = {
   onChange: (value: string) => void;
 };
 
+type DeviceChoice = {
+  slug: string;
+  brand: string;
+  name: string;
+  category: string;
+  lifecycle: string;
+  evidence_count: number;
+};
+
 type CameraDraft = {
   id: number;
   type: CameraModuleType;
@@ -408,6 +417,10 @@ export default function InteractiveLeaksSimulator() {
   const [autoPhase, setAutoPhase] = useState(0);
   const [autoNotice, setAutoNotice] = useState('');
   const [autoModel, setAutoModel] = useState<any>(null);
+  const [deviceQuery, setDeviceQuery] = useState('');
+  const [deviceResults, setDeviceResults] = useState<DeviceChoice[]>([]);
+  const [deviceSearchLoading, setDeviceSearchLoading] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState<DeviceChoice | null>(null);
 
   const [run, setRun] = useState<AlphaRun|null>(null);
   const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
@@ -606,7 +619,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || 'Galaxy S27 Ultra',
+      name: current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -618,7 +631,7 @@ export default function InteractiveLeaksSimulator() {
     setDirty(true);
     setForm((current) => ({
       ...current,
-      name: current.name || 'Galaxy S27 Ultra',
+      name: current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
       formFactor: 'phone',
       batteryCapacityMah: '5700',
     }));
@@ -657,7 +670,7 @@ export default function InteractiveLeaksSimulator() {
     if (typeof state.batteryCapacityMah === 'string') {
       setForm((current) => ({
         ...current,
-        name: record?.name || current.name || 'Galaxy S27 Ultra',
+        name: record?.name || current.name || selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : '',
         batteryCapacityMah: state.batteryCapacityMah,
       }));
     }
@@ -712,6 +725,59 @@ export default function InteractiveLeaksSimulator() {
   }
 
   useEffect(() => {
+    const query = deviceQuery.trim();
+    if (!query || selectedDevice?.brand + ' ' + selectedDevice?.name === query) {
+      setDeviceResults([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      setDeviceSearchLoading(true);
+      try {
+        const response = await fetch('/interactive-leaks/api/devices?q=' + encodeURIComponent(query));
+        const body = await response.json().catch(() => ({}));
+        if (!cancelled) setDeviceResults(response.ok && Array.isArray(body?.data) ? body.data : []);
+      } catch {
+        if (!cancelled) setDeviceResults([]);
+      } finally {
+        if (!cancelled) setDeviceSearchLoading(false);
+      }
+    }, 220);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [deviceQuery, selectedDevice]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const deviceSlug = params.get('device');
+    if (!deviceSlug) return;
+
+    let cancelled = false;
+    const restorePickedDevice = async () => {
+      try {
+        const response = await fetch('/interactive-leaks/api/devices?q=' + encodeURIComponent(deviceSlug));
+        const body = await response.json().catch(() => ({}));
+        const exact = Array.isArray(body?.data) ? body.data.find((item: DeviceChoice) => item.slug === deviceSlug) : null;
+        if (!cancelled && exact) {
+          setSelectedDevice(exact);
+          setDeviceQuery([exact.brand, exact.name].filter(Boolean).join(' '));
+          setForm((current) => ({ ...current, name: [exact.brand, exact.name].filter(Boolean).join(' ') }));
+          setSimulationName([exact.brand, exact.name].filter(Boolean).join(' ') + ': Most likely');
+        }
+      } catch {
+        // Leave the picker empty if a deep link cannot resolve.
+      }
+    };
+
+    void restorePickedDevice();
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
     if (!autoLoading) return;
     const timer = window.setInterval(() => {
       setAutoPhase((current) => Math.min(current + 1, 3));
@@ -759,6 +825,10 @@ export default function InteractiveLeaksSimulator() {
   }, []);
 
   async function buildAutoModel(intent: 'balanced' | 'efficiency' | 'performance' = 'balanced') {
+    if (!selectedDevice) {
+      setAutoNotice('Pick a device first.');
+      return;
+    }
     setAutoLoading(true);
     setAutoPhase(0);
     setAutoNotice('');
@@ -769,7 +839,7 @@ export default function InteractiveLeaksSimulator() {
       const response = await fetch('/interactive-leaks/api/auto-model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deviceSlug: 'galaxy-s27-ultra', intent }),
+        body: JSON.stringify({ deviceSlug: selectedDevice?.slug, intent }),
       });
       const body = await response.json().catch(() => ({}));
 
@@ -792,7 +862,7 @@ export default function InteractiveLeaksSimulator() {
 
       setForm((current) => ({
         ...current,
-        name: model?.name || current.name || 'Galaxy S27 Ultra',
+        name: model?.name || current.name || [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' '),
         ...(typeof capacity === 'number' && Number.isFinite(capacity)
           ? { batteryCapacityMah: String(Math.round(capacity)) }
           : {}),
@@ -934,6 +1004,7 @@ export default function InteractiveLeaksSimulator() {
     };
     const payload = {
       name: simulationName.trim() || 'Untitled simulation',
+      deviceKey: selectedDevice?.slug,
       processorKey: processorScenario,
       configurationSource,
       visibility: simulationVisibility,
@@ -996,7 +1067,7 @@ export default function InteractiveLeaksSimulator() {
     setConfigurationSource('likely');
     setProcessorScenario('exynos2700');
     setProcessorProfile('expected');
-    setSimulationName('Galaxy S27 Ultra: Most likely');
+    setSimulationName(selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') + ': Most likely' : 'Untitled simulation');
     setSimulationVisibility('private');
     setProfileVisibility('private');
     setSimulationSharePath('');
@@ -1048,6 +1119,57 @@ export default function InteractiveLeaksSimulator() {
 
   return (
     <div className="il-app">
+      <section className="il-device-picker">
+        <div className="il-device-picker-copy">
+          <span className="eyebrow">Virtual device</span>
+          <h2>{selectedDevice ? [selectedDevice.brand, selectedDevice.name].filter(Boolean).join(' ') : 'Pick any device.'}</h2>
+          <p>{selectedDevice ? `${selectedDevice.lifecycle} · ${selectedDevice.evidence_count} current evidence items` : 'Search PhoneFuturist intelligence. We do not force you into a preset list.'}</p>
+        </div>
+        <div className="il-device-picker-control">
+          <label htmlFor="il-device-search">Device</label>
+          <div className="il-device-search-wrap">
+            <input
+              id="il-device-search"
+              type="search"
+              autoComplete="off"
+              value={deviceQuery}
+              placeholder="Search brand or model…"
+              onChange={(event)=>{
+                setDeviceQuery(event.currentTarget.value);
+                setSelectedDevice(null);
+                setAutoModel(null);
+                setAutoNotice('');
+              }}
+            />
+            {deviceSearchLoading && <span className="il-device-search-state">Searching…</span>}
+          </div>
+          {deviceResults.length > 0 && <div className="il-device-results" role="listbox" aria-label="Matching devices">
+            {deviceResults.map((device)=>(
+              <button
+                type="button"
+                key={device.slug}
+                role="option"
+                onClick={()=>{
+                  const label=[device.brand,device.name].filter(Boolean).join(' ');
+                  setSelectedDevice(device);
+                  setDeviceQuery(label);
+                  setDeviceResults([]);
+                  setAutoModel(null);
+                  setAutoNotice('');
+                  setForm((current)=>({...current,name:label}));
+                  setSimulationName(label + ': Most likely');
+                  window.history.replaceState({},'',window.location.pathname+'?device='+encodeURIComponent(device.slug));
+                }}
+              >
+                <span><strong>{device.brand} {device.name}</strong><small>{device.lifecycle} · {device.evidence_count} evidence items</small></span>
+                <b>Pick</b>
+              </button>
+            ))}
+          </div>}
+          {!deviceSearchLoading && deviceQuery.trim().length > 1 && !selectedDevice && deviceResults.length===0 && <small className="il-device-empty">No matching modeled device yet.</small>}
+        </div>
+      </section>
+
       <div className="il-product-actions">
         <a className="il-chip" href="/interactive-leaks/explore">Explore community</a>
         <button type="button" className="il-chip" onClick={openLibrary}>My simulations & profiles</button>
