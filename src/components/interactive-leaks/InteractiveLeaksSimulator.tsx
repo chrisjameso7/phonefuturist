@@ -887,16 +887,57 @@ export default function InteractiveLeaksSimulator() {
         standby: typeof usagePower.standbyW?.value === 'number' ? String(Number(usagePower.standbyW.value.toFixed(3))) : '',
       };
 
+      const modelValue = (parameter:any, digits=2) =>
+        typeof parameter?.value === 'number' && Number.isFinite(parameter.value)
+          ? String(Number(parameter.value.toFixed(digits)))
+          : undefined;
       setForm((current) => ({
         ...current,
         name: model?.name || current.name || [targetDevice.brand, targetDevice.name].filter(Boolean).join(' '),
+        ...(modelValue(model?.dimensions?.widthMm) ? { widthMm: modelValue(model.dimensions.widthMm)! } : {}),
+        ...(modelValue(model?.dimensions?.heightMm) ? { heightMm: modelValue(model.dimensions.heightMm)! } : {}),
+        ...(modelValue(model?.dimensions?.thicknessMm) ? { thicknessMm: modelValue(model.dimensions.thicknessMm)! } : {}),
+        ...(modelValue(model?.dimensions?.weightG,1) ? { weightG: modelValue(model.dimensions.weightG,1)! } : {}),
+        ...(modelValue(model?.display?.diagonalInches) ? { diagonalInches: modelValue(model.display.diagonalInches)! } : {}),
+        ...(modelValue(model?.display?.resolutionWidthPx,0) ? { resolutionWidthPx: modelValue(model.display.resolutionWidthPx,0)! } : {}),
+        ...(modelValue(model?.display?.resolutionHeightPx,0) ? { resolutionHeightPx: modelValue(model.display.resolutionHeightPx,0)! } : {}),
+        ...(modelValue(model?.display?.aspectWidth) ? { aspectWidth: modelValue(model.display.aspectWidth)! } : {}),
+        ...(modelValue(model?.display?.aspectHeight) ? { aspectHeight: modelValue(model.display.aspectHeight)! } : {}),
+        ...(modelValue(model?.display?.bezelTopMm) ? { bezelTopMm: modelValue(model.display.bezelTopMm)! } : {}),
+        ...(modelValue(model?.display?.bezelRightMm) ? { bezelRightMm: modelValue(model.display.bezelRightMm)! } : {}),
+        ...(modelValue(model?.display?.bezelBottomMm) ? { bezelBottomMm: modelValue(model.display.bezelBottomMm)! } : {}),
+        ...(modelValue(model?.display?.bezelLeftMm) ? { bezelLeftMm: modelValue(model.display.bezelLeftMm)! } : {}),
         ...(typeof capacity === 'number' && Number.isFinite(capacity)
           ? { batteryCapacityMah: String(Math.round(capacity)) }
           : {}),
         ...(typeof voltage === 'number' && Number.isFinite(voltage)
           ? { batteryVoltageV: String(Number(voltage.toFixed(3))) }
           : {}),
+        ...(modelValue(model?.battery?.widthMm) ? { batteryWidthMm: modelValue(model.battery.widthMm)! } : {}),
+        ...(modelValue(model?.battery?.heightMm) ? { batteryHeightMm: modelValue(model.battery.heightMm)! } : {}),
+        ...(modelValue(model?.battery?.thicknessMm) ? { batteryThicknessMm: modelValue(model.battery.thicknessMm)! } : {}),
+        ...(modelValue(model?.battery?.weightG,1) ? { batteryWeightG: modelValue(model.battery.weightG,1)! } : {}),
+        ...(modelValue(model?.packaging?.reservedVolumePercent,1) ? { reservedVolumePercent: modelValue(model.packaging.reservedVolumePercent,1)! } : {}),
+        ...(modelValue(model?.packaging?.thermalMm3,0) ? { thermalMm3: modelValue(model.packaging.thermalMm3,0)! } : {}),
+        ...(modelValue(model?.packaging?.boardMm3,0) ? { boardMm3: modelValue(model.packaging.boardMm3,0)! } : {}),
+        ...(modelValue(model?.packaging?.speakersMm3,0) ? { speakersMm3: modelValue(model.packaging.speakersMm3,0)! } : {}),
+        ...(modelValue(model?.packaging?.otherMm3,0) ? { otherMm3: modelValue(model.packaging.otherMm3,0)! } : {}),
       }));
+
+      if (Array.isArray(model?.cameras)) {
+        setCameras(model.cameras.map((camera:any,index:number)=>({
+          id:index+1,
+          type:camera?.type || 'other',
+          sensorFormatDenominator:modelValue(camera?.sensorFormatDenominator) || '',
+          resolutionMp:modelValue(camera?.resolutionMp,1) || '',
+          equivalentFocalLengthMm:modelValue(camera?.equivalentFocalLengthMm,1) || '',
+          physicalFocalLengthMm:modelValue(camera?.physicalFocalLengthMm,2) || '',
+          apertureFNumber:modelValue(camera?.apertureFNumber,2) || '',
+          moduleWidthMm:modelValue(camera?.moduleWidthMm,2) || '',
+          moduleHeightMm:modelValue(camera?.moduleHeightMm,2) || '',
+          moduleDepthMm:modelValue(camera?.moduleDepthMm,2) || '',
+        })));
+      }
 
       if (Object.values(modeledPower).some((value) => value.trim())) {
         setWorkloadPower(modeledPower);
