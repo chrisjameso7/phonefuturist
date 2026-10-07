@@ -23,8 +23,8 @@ const {
 } = Astro.props;
 
 const links = [
+  ['Newsroom', 'newsroom'],
   ['News', 'news'],
-  ['Reports', 'reports'],
   ['Leaks', 'leaks'],
   ['Analysis', 'analysis'],
 ];
@@ -100,7 +100,7 @@ const active = activeNavigation(Astro.url);
                     {
                       links.map(([name, key]) => (
                         <a
-                          href={'/articles?section=' + key}
+                          href={key === 'newsroom' ? '/articles' : '/articles?section=' + key}
                           aria-current={active === key ? 'page' : undefined}
                         >
                           <span>{name}</span>
@@ -200,7 +200,7 @@ const active = activeNavigation(Astro.url);
               {
                 links.map(([name, key]) => (
                   <a
-                    href={'/articles?section=' + key}
+                    href={key === 'newsroom' ? '/articles' : '/articles?section=' + key}
                     aria-current={active === key ? 'page' : undefined}
                   >
                     {name}
