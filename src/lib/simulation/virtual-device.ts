@@ -15,6 +15,17 @@ export interface VirtualBattery {
   capacityMah?: VirtualParameter;
   nominalVoltageV?: VirtualParameter;
   usablePercent?: VirtualParameter;
+  widthMm?: VirtualParameter;
+  heightMm?: VirtualParameter;
+  thicknessMm?: VirtualParameter;
+  weightG?: VirtualParameter;
+}
+
+export interface VirtualDimensions {
+  widthMm?: VirtualParameter;
+  heightMm?: VirtualParameter;
+  thicknessMm?: VirtualParameter;
+  weightG?: VirtualParameter;
 }
 
 export interface VirtualProcessor {
@@ -32,9 +43,38 @@ export interface VirtualThermals {
 }
 
 export interface VirtualDisplay {
+  diagonalInches?: VirtualParameter;
+  resolutionWidthPx?: VirtualParameter;
+  resolutionHeightPx?: VirtualParameter;
+  aspectWidth?: VirtualParameter;
+  aspectHeight?: VirtualParameter;
+  bezelTopMm?: VirtualParameter;
+  bezelRightMm?: VirtualParameter;
+  bezelBottomMm?: VirtualParameter;
+  bezelLeftMm?: VirtualParameter;
   refreshRateHz?: VirtualParameter;
   brightnessNits?: VirtualParameter;
   averagePowerW?: VirtualParameter;
+}
+
+export interface VirtualCamera {
+  type?: 'wide' | 'ultrawide' | 'telephoto' | 'periscope' | 'front' | 'other';
+  sensorFormatDenominator?: VirtualParameter;
+  resolutionMp?: VirtualParameter;
+  equivalentFocalLengthMm?: VirtualParameter;
+  physicalFocalLengthMm?: VirtualParameter;
+  apertureFNumber?: VirtualParameter;
+  moduleWidthMm?: VirtualParameter;
+  moduleHeightMm?: VirtualParameter;
+  moduleDepthMm?: VirtualParameter;
+}
+
+export interface VirtualPackaging {
+  reservedVolumePercent?: VirtualParameter;
+  thermalMm3?: VirtualParameter;
+  boardMm3?: VirtualParameter;
+  speakersMm3?: VirtualParameter;
+  otherMm3?: VirtualParameter;
 }
 
 export interface VirtualUsagePower {
@@ -49,10 +89,13 @@ export interface VirtualDevice {
   key: string;
   name: string;
   mode: SimulationControlMode;
+  dimensions?: VirtualDimensions;
   battery: VirtualBattery;
   processor: VirtualProcessor;
   thermals: VirtualThermals;
   display: VirtualDisplay;
+  cameras?: VirtualCamera[];
+  packaging?: VirtualPackaging;
   usagePower?: VirtualUsagePower;
 }
 
