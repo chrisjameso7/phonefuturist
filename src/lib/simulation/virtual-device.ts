@@ -37,6 +37,14 @@ export interface VirtualDisplay {
   averagePowerW?: VirtualParameter;
 }
 
+export interface VirtualUsagePower {
+  webBrowsingW?: VirtualParameter;
+  videoPlaybackW?: VirtualParameter;
+  gamingW?: VirtualParameter;
+  cameraUseW?: VirtualParameter;
+  standbyW?: VirtualParameter;
+}
+
 export interface VirtualDevice {
   key: string;
   name: string;
@@ -45,6 +53,7 @@ export interface VirtualDevice {
   processor: VirtualProcessor;
   thermals: VirtualThermals;
   display: VirtualDisplay;
+  usagePower?: VirtualUsagePower;
 }
 
 /**
