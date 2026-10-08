@@ -3,6 +3,7 @@ import { buildLegacyWorkloadCorpus } from './legacy-workload-corpus';
 import { buildBrandExpansionCorpus } from './brand-expansion-corpus';
 import { buildCurrentGenerationCorpus } from './current-generation-corpus';
 import { mergeDeviceCorpora } from './corpus-merge';
+import { buildChargingModeCorpus } from './charging-mode-corpus';
 
 export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.1.0';
 
@@ -16,6 +17,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildLegacyWorkloadCorpus(),
       buildBrandExpansionCorpus(),
       buildCurrentGenerationCorpus(),
+      buildChargingModeCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
