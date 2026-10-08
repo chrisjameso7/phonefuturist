@@ -222,6 +222,27 @@ function format(
   });
 }
 
+function formatDurationMinutes(
+  minutes: number | undefined,
+): string {
+  if (minutes === undefined || !Number.isFinite(minutes)) {
+    return 'Unknown';
+  }
+
+  const rounded = Math.max(0, Math.round(minutes));
+
+  if (rounded < 120) {
+    return `${rounded} min`;
+  }
+
+  const hours = Math.floor(rounded / 60);
+  const remainingMinutes = rounded % 60;
+
+  return remainingMinutes > 0
+    ? `${hours} h ${remainingMinutes} min`
+    : `${hours} h`;
+}
+
 function NumericField({
   label,
   value,
@@ -1613,26 +1634,29 @@ export default function InteractiveLeaksSimulator() {
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.minDaysPerCharge * 24,
+                            batteryExperience.mixedUse.minDaysPerCharge *
+                              batteryExperience.mixedUse.activeHoursPerDay,
                             1,
                           )}
                           –
                           {format(
-                            batteryExperience.mixedUse.maxDaysPerCharge * 24,
+                            batteryExperience.mixedUse.maxDaysPerCharge *
+                              batteryExperience.mixedUse.activeHoursPerDay,
                             1,
                           )} h
                         </strong>
-                        <span>Active-use equivalent hours</span>
+                        <span>Total active-use hours per charge</span>
                       </div>
 
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.expectedDaysPerCharge * 24,
+                            batteryExperience.mixedUse.expectedDaysPerCharge *
+                              batteryExperience.mixedUse.activeHoursPerDay,
                             1,
                           )} h
                         </strong>
-                        <span>Expected active-use hours</span>
+                        <span>Expected total active-use hours</span>
                       </div>
 
                       <div>
@@ -1691,7 +1715,7 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
+                  Wired charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
 
                 {chargingResult?.status === 'resolved' &&
@@ -1712,36 +1736,27 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {chargingResult.estimate.timeTo50Minutes
-                            ? `${format(
-                                chargingResult.estimate.timeTo50Minutes.expected / 60,
-                                2,
-                              )} h`
-                            : 'Unknown'}
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo50Minutes?.expected,
+                          )}
                         </strong>
                         <span>0–50%</span>
                       </div>
 
                       <div>
                         <strong>
-                          {chargingResult.estimate.timeTo80Minutes
-                            ? `${format(
-                                chargingResult.estimate.timeTo80Minutes.expected / 60,
-                                2,
-                              )} h`
-                            : 'Unknown'}
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo80Minutes?.expected,
+                          )}
                         </strong>
                         <span>0–80%</span>
                       </div>
 
                       <div>
                         <strong>
-                          {chargingResult.estimate.timeTo100Minutes
-                            ? `${format(
-                                chargingResult.estimate.timeTo100Minutes.expected / 60,
-                                2,
-                              )} h`
-                            : 'Unknown'}
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo100Minutes?.expected,
+                          )}
                         </strong>
                         <span>0–100%</span>
                       </div>
@@ -1813,10 +1828,9 @@ export default function InteractiveLeaksSimulator() {
                         <strong>
                           {wirelessChargingResult.expectedFullChargeMinutes !==
                           undefined
-                            ? `${format(
-                                wirelessChargingResult.expectedFullChargeMinutes / 60,
-                                2,
-                              )} h`
+                            ? formatDurationMinutes(
+                                wirelessChargingResult.expectedFullChargeMinutes,
+                              )
                             : 'Unknown'}
                         </strong>
                         <span>Expected 0–100%</span>
