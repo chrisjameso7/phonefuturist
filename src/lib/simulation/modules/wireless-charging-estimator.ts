@@ -162,6 +162,76 @@ export function estimateWirelessChargingFromCorpus(
     };
   }
 
+  const exactMatches = references.filter((reference) => {
+    const device = corpus.devices.find(
+      (candidate) =>
+        candidate.variant.id === reference.deviceVariantId,
+    );
+    const capacity = device ? capacityOf(device) : undefined;
+    const sameManufacturer =
+      !query.manufacturer ||
+      normalize(device?.variant.identity.manufacturer) ===
+        normalize(query.manufacturer);
+    const sameCapacity =
+      capacity !== undefined &&
+      Math.abs(capacity - query.batteryMah) <= 1;
+    const sameWatts =
+      reference.testChargerWatts !== undefined &&
+      Math.abs(
+        reference.testChargerWatts -
+          query.wirelessChargingWatts,
+      ) <= 0.1;
+    const sameStandard =
+      !query.chargingStandard ||
+      (
+        reference.chargingStandard !== undefined &&
+        (
+          reference.chargingStandard
+            .toLowerCase()
+            .includes(query.chargingStandard.toLowerCase()) ||
+          query.chargingStandard
+            .toLowerCase()
+            .includes(reference.chargingStandard.toLowerCase())
+        )
+      );
+
+    return (
+      sameManufacturer &&
+      sameCapacity &&
+      sameWatts &&
+      sameStandard
+    );
+  });
+
+  if (exactMatches.length) {
+    const values = exactMatches.map(
+      (reference) => reference.value,
+    );
+    const expected =
+      values.reduce((sum, value) => sum + value, 0) /
+      values.length;
+
+    return {
+      version: WIRELESS_CHARGING_ESTIMATOR_VERSION,
+      status: 'resolved',
+      confidence: 1,
+      confidenceGrade: 'high',
+      expectedFullChargeMinutes: expected,
+      minFullChargeMinutes: Math.min(...values),
+      maxFullChargeMinutes: Math.max(...values),
+      referenceCount: exactMatches.length,
+      neighborIds: [
+        ...new Set(
+          exactMatches.map(
+            (reference) => reference.deviceVariantId,
+          ),
+        ),
+      ],
+      note:
+        'Exact measured wireless charging evidence matched the target device capacity, charger power and charging standard, so nearby-device averaging was not used.',
+    };
+  }
+
   const weighted = references.map((reference) => ({
     ...reference,
     weight: Math.max(reference.score, 0.05) ** 2,
