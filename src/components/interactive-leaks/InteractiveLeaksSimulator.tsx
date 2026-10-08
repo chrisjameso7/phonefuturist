@@ -1770,6 +1770,22 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
+                          {chargingResult.estimate.evidenceMode ===
+                          'comparable-only'
+                            ? 'Comparable'
+                            : chargingResult.estimate.evidenceMode ===
+                                'interpolated'
+                              ? 'Interpolated'
+                              : chargingResult.estimate.evidenceMode ===
+                                  'extrapolated'
+                                ? 'Extrapolated'
+                                : 'Measured'}
+                        </strong>
+                        <span>Evidence mode</span>
+                      </div>
+
+                      <div>
+                        <strong>
                           {chargingResult.estimate.normalized
                             ?.expectedMinutesPer1000Mah !== undefined
                             ? `${format(
