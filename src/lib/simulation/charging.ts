@@ -159,6 +159,8 @@ const BRAND_FAMILIES: Record<string, string> = {
   nothing: 'nothing',
   cmf: 'nothing',
   sony: 'sony',
+  tecno: 'transsion',
+  infinix: 'transsion',
 };
 
 function inferBrand(name: string | undefined): string | undefined {
