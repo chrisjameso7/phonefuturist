@@ -28,6 +28,8 @@ export interface ChargingPowerResponse {
   elasticity?: number;
   confidence?: number;
   evidence?: ChargingPowerResponseEvidence[];
+  targetPosition?: 'interpolation' | 'near-extrapolation' | 'far-extrapolation';
+  evidenceRangeWatts?: { min: number; max: number };
   note?: string;
 }
 
@@ -185,6 +187,18 @@ export function resolveChargingPowerResponse(
     weight: evidenceWeight(item, query),
   }));
 
+  const evidenceMinWatts = Math.min(...evidence.map((item) => item.lowWatts));
+  const evidenceMaxWatts = Math.max(...evidence.map((item) => item.highWatts));
+
+  const targetPosition: ChargingPowerResponse['targetPosition'] =
+    query.targetWatts >= evidenceMinWatts &&
+    query.targetWatts <= evidenceMaxWatts
+      ? 'interpolation'
+      : query.targetWatts >= evidenceMinWatts * 0.75 &&
+          query.targetWatts <= evidenceMaxWatts * 1.25
+        ? 'near-extrapolation'
+        : 'far-extrapolation';
+
   const totalWeight = weighted.reduce((sum, row) => sum + row.weight, 0);
   const elasticity =
     weighted.reduce(
@@ -193,24 +207,42 @@ export function resolveChargingPowerResponse(
     ) / totalWeight;
 
   const strongMatches = weighted.filter((row) => row.weight >= 5).length;
-  const confidence = Math.min(
+  const baseConfidence = Math.min(
     1,
     0.35 +
       Math.min(evidence.length, 6) * 0.07 +
       Math.min(strongMatches, 3) * 0.08,
   );
 
+  const positionPenalty =
+    targetPosition === 'interpolation'
+      ? 1
+      : targetPosition === 'near-extrapolation'
+        ? 0.75
+        : 0.4;
+
+  const confidence = baseConfidence * positionPenalty;
+
   return {
     version: CHARGING_POWER_RESPONSE_VERSION,
     status: 'resolved',
     elasticity,
     confidence,
+    targetPosition,
+    evidenceRangeWatts: {
+      min: evidenceMinWatts,
+      max: evidenceMaxWatts,
+    },
     evidence: weighted
       .sort((a, b) => b.weight - a.weight)
       .slice(0, 6)
       .map((row) => row.item),
     note:
-      'Elasticity is learned from same-device charging tests at different charger powers. It captures observed diminishing returns and is not a universal watts-to-time formula.',
+      targetPosition === 'interpolation'
+        ? 'Elasticity is learned from same-device charging tests at different charger powers. The target wattage sits inside the observed evidence range.'
+        : targetPosition === 'near-extrapolation'
+          ? 'Elasticity is learned from same-device charging tests, but the target wattage sits slightly outside the observed range. Confidence is reduced.'
+          : 'The target wattage sits well outside the observed evidence range. The learned elasticity is retained only as a low-confidence extrapolation aid.',
   };
 }
 
