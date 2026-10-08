@@ -882,6 +882,36 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     line-height: 1.3;
   }
 
+  .interactive-simulator-shell .il-battery-workloads {
+    margin-top: 10px;
+    display: grid;
+    gap: 7px;
+  }
+
+  .interactive-simulator-shell .il-battery-workloads > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .interactive-simulator-shell .il-battery-workloads strong {
+    color: var(--ink);
+    font-size: 0.69rem;
+    font-weight: 650;
+    text-transform: capitalize;
+  }
+
+  .interactive-simulator-shell .il-battery-workloads span {
+    color: var(--muted);
+    font-size: 0.64rem;
+    text-align: right;
+  }
+
   .interactive-simulator-shell .il-volume-number {
     margin-bottom: 10px;
     padding: 14px;
