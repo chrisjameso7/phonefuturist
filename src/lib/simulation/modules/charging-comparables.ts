@@ -32,6 +32,7 @@ export interface ChargingComparableEvidence {
   timeTo50Minutes?: number;
   timeTo80Minutes?: number;
   advertisedWiredWatts?: number;
+  batteryMah?: number;
 }
 
 export interface ChargingComparableResult {
@@ -193,6 +194,14 @@ export function selectChargingComparables(
         ? {
             advertisedWiredWatts:
               device.charging.advertisedWiredWatts,
+          }
+        : {}),
+      ...((device.variant.battery?.capacityMah ??
+        device.variant.battery?.typicalCapacityMah) !== undefined
+        ? {
+            batteryMah:
+              device.variant.battery?.capacityMah ??
+              device.variant.battery?.typicalCapacityMah,
           }
         : {}),
     }];
