@@ -25,6 +25,11 @@ import {
   simulateChargingFromLiveCorpus,
 } from '../../lib/simulation/live-charging';
 
+import {
+  LIVE_WIRELESS_CHARGING_VERSION,
+  simulateWirelessChargingFromLiveCorpus,
+} from '../../lib/simulation/live-wireless-charging';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -74,6 +79,10 @@ type FormState = {
   gamingHours: string;
   cameraHours: string;
   wiredChargeW: string;
+  wirelessChargeW: string;
+  batteryChemistry: string;
+  cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell';
+  chargingStandard: string;
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -113,6 +122,10 @@ const initialForm: FormState = {
   gamingHours: '',
   cameraHours: '',
   wiredChargeW: '',
+  wirelessChargeW: '',
+  batteryChemistry: '',
+  cellArchitecture: 'unknown',
+  chargingStandard: '',
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -152,6 +165,10 @@ const flagshipExample: FormState = {
   gamingHours: '1',
   cameraHours: '0',
   wiredChargeW: '60',
+  wirelessChargeW: '25',
+  batteryChemistry: 'silicon-carbon',
+  cellArchitecture: 'single-cell',
+  chargingStandard: 'USB PD/PPS',
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
@@ -655,6 +672,31 @@ export default function InteractiveLeaksSimulator() {
             simulationInput.displays.primary.diagonalInches,
           thicknessMm: simulationInput.dimensions?.thicknessMm,
           weightG: simulationInput.dimensions?.weightG,
+          batteryChemistry:
+            form.batteryChemistry.trim() || undefined,
+          cellArchitecture:
+            form.cellArchitecture === 'unknown'
+              ? undefined
+              : form.cellArchitecture,
+          chargingStandard:
+            form.chargingStandard.trim() || undefined,
+        })
+      : undefined;
+
+  const wirelessChargingWatts = numeric(
+    form.wirelessChargeW,
+  );
+
+  const wirelessChargingResult =
+    simulationInput &&
+    result &&
+    chargingCapacityMah !== undefined &&
+    wirelessChargingWatts !== undefined
+      ? simulateWirelessChargingFromLiveCorpus({
+          batteryMah: chargingCapacityMah,
+          wirelessChargingWatts,
+          batteryChemistry:
+            form.batteryChemistry.trim() || undefined,
         })
       : undefined;
 
@@ -1076,12 +1118,77 @@ export default function InteractiveLeaksSimulator() {
                   update('wiredChargeW', value)
                 }
               />
+
+              <NumericField
+                label="Wireless charging"
+                suffix="W"
+                value={form.wirelessChargeW}
+                placeholder="25"
+                onChange={(value) =>
+                  update('wirelessChargeW', value)
+                }
+              />
+
+              <label className="il-field">
+                <span>Battery chemistry</span>
+                <input
+                  type="text"
+                  value={form.batteryChemistry}
+                  placeholder="silicon-carbon"
+                  onChange={(event) =>
+                    update(
+                      'batteryChemistry',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
+
+              <label className="il-field">
+                <span>Cell architecture</span>
+                <select
+                  value={form.cellArchitecture}
+                  onChange={(event) =>
+                    update(
+                      'cellArchitecture',
+                      event.currentTarget.value as
+                        | 'unknown'
+                        | 'single-cell'
+                        | 'dual-cell',
+                    )
+                  }
+                >
+                  <option value="unknown">Unknown</option>
+                  <option value="single-cell">
+                    Single cell
+                  </option>
+                  <option value="dual-cell">
+                    Dual cell
+                  </option>
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Charging standard</span>
+                <input
+                  type="text"
+                  value={form.chargingStandard}
+                  placeholder="USB PD/PPS"
+                  onChange={(event) =>
+                    update(
+                      'chargingStandard',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
             </div>
 
             <p className="il-help">
-              Enter the phone&apos;s supported wired charging wattage.
-              v0.6.0 compares it with 40 released phones and preserves
-              their measured taper instead of treating peak wattage as constant.
+              Charging is capacity-aware and uses measured released-phone
+              curves. Wired and wireless evidence stay separate, while battery
+              chemistry, cell architecture and charging standard refine
+              comparable-device selection when known.
             </p>
           </div>
 
@@ -1698,6 +1805,58 @@ export default function InteractiveLeaksSimulator() {
                   <div className="il-empty">
                     {chargingResult?.unresolvedReason ??
                       'Add battery capacity and wired charging wattage to estimate charging.'}
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Wireless charging · {LIVE_WIRELESS_CHARGING_VERSION}
+                </span>
+
+                {wirelessChargingResult?.status === 'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {wirelessChargingResult.expectedFullChargeMinutes !==
+                          undefined
+                            ? `${format(
+                                wirelessChargingResult.expectedFullChargeMinutes,
+                                0,
+                              )} min`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Expected 0–100%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {wirelessChargingResult.confidenceGrade ??
+                            'Unknown'}
+                        </strong>
+                        <span>Evidence confidence</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {wirelessChargingResult.referenceCount ??
+                            'Unknown'}
+                        </strong>
+                        <span>Measured references</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      {wirelessChargingResult.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    {wirelessChargingWatts === undefined
+                      ? 'Add wireless charging wattage to estimate wireless charging.'
+                      : wirelessChargingResult?.unresolvedReason ??
+                        'No measured wireless charging evidence is available for a reliable estimate yet.'}
                   </div>
                 )}
               </div>
