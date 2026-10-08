@@ -14,6 +14,17 @@ export interface SimulationSnapshot {
   corpusVersion?: string;
   input: SimulationInput;
   result: SimulationResult;
+  deviceContext?: {
+    manufacturer?: string;
+    region?: string;
+    batteryChemistry?: string;
+    cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+    charging?: {
+      wiredWatts?: number;
+      wirelessWatts?: number;
+      chargingStandard?: string;
+    };
+  };
   tags?: string[];
   parentSnapshotId?: string;
 }
