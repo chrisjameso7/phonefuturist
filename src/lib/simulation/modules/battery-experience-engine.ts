@@ -128,8 +128,8 @@ export function simulateBatteryExperience(
     charging = estimateChargingFromCorpus(corpus, {
       batteryMah: capacity,
       batteryChemistry: input.batteryChemistry,
-      wiredWatts: input.wiredWatts,
-      wirelessWatts: input.wirelessWatts,
+      wiredChargingWatts: input.wiredWatts,
+      wirelessChargingWatts: input.wirelessWatts,
       manufacturer: input.manufacturer,
       socVendor: input.socVendor,
       region: input.region,
