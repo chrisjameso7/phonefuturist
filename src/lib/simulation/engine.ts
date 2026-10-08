@@ -9,7 +9,7 @@ import { calculateCamera } from './modules/camera';
 import { calculateDisplay } from './modules/display';
 import { calculatePackaging } from './modules/packaging';
 
-export const SIMULATION_ENGINE_VERSION = '0.5.1';
+export const SIMULATION_ENGINE_VERSION = '0.6.0';
 
 /**
  * Runs a deterministic PhoneFuturist device simulation.
