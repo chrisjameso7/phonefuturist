@@ -6,6 +6,11 @@ export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.1.0';
 
 export type RuntimeWorkload = 'web_browsing' | 'video_playback' | 'gaming';
 
+export interface RuntimeProtocolSelector {
+  protocol?: string;
+  protocolVersion?: string;
+}
+
 export interface CorpusRuntimeBand {
   version: string;
   status: 'resolved' | 'unresolved';
@@ -18,6 +23,9 @@ export interface CorpusRuntimeBand {
     referenceCount: number;
     confidence: number;
     neighborIds: string[];
+    protocol?: string;
+    protocolVersion?: string;
+    sourceIds: string[];
     note: string;
   };
 }
@@ -44,6 +52,7 @@ export function resolveCorpusRuntimeBand(
   corpus: DeviceCorpus,
   input: SimulationInput,
   workload: RuntimeWorkload,
+  protocolSelector: RuntimeProtocolSelector = {},
 ): CorpusRuntimeBand {
   const capacityMah = inputCapacityMah(input);
 
@@ -64,7 +73,7 @@ export function resolveCorpusRuntimeBand(
     limit: 20,
   });
 
-  const values = comparables.flatMap((match) => {
+  const rawValues = comparables.flatMap((match) => {
     const measurements = corpus.measurements.filter(
       (measurement) =>
         measurement.deviceVariantId === match.device.variant.id &&
@@ -80,13 +89,62 @@ export function resolveCorpusRuntimeBand(
 
     if (!refCapacity || !measurements.length) return [];
 
-    return measurements.map((measurement) => ({
-      value: refCapacity / measurement.value,
-      weight: Math.max(match.score, 0.05) ** 2,
-      deviceVariantId: match.device.variant.id,
-      score: match.score,
-    }));
+    return measurements.flatMap((measurement) => {
+      const source = corpus.sources.find(
+        (candidate) => candidate.id === measurement.sourceId,
+      );
+
+      if (protocolSelector.protocol) {
+        if (!source || source.protocol !== protocolSelector.protocol) {
+          return [];
+        }
+      }
+
+      if (protocolSelector.protocolVersion) {
+        if (
+          !source ||
+          source.protocolVersion !== protocolSelector.protocolVersion
+        ) {
+          return [];
+        }
+      }
+
+      const protocolKey = source?.protocol
+        ? [
+            source.protocol,
+            source.protocolVersion ?? 'unversioned',
+          ].join('|')
+        : `source:${measurement.sourceId}`;
+
+      return [{
+        value: refCapacity / measurement.value,
+        weight: Math.max(match.score, 0.05) ** 2,
+        deviceVariantId: match.device.variant.id,
+        score: match.score,
+        sourceId: measurement.sourceId,
+        protocol: source?.protocol,
+        protocolVersion: source?.protocolVersion,
+        protocolKey,
+      }];
+    });
   });
+
+  const grouped = new Map<string, typeof rawValues>();
+
+  for (const value of rawValues) {
+    const group = grouped.get(value.protocolKey) ?? [];
+    group.push(value);
+    grouped.set(value.protocolKey, group);
+  }
+
+  const rankedGroups = [...grouped.values()].sort((a, b) => {
+    const weightA = a.reduce((sum, row) => sum + row.weight, 0);
+    const weightB = b.reduce((sum, row) => sum + row.weight, 0);
+    if (weightB !== weightA) return weightB - weightA;
+    return b.length - a.length;
+  });
+
+  const values = rankedGroups[0] ?? [];
 
   if (!values.length) {
     return {
@@ -115,8 +173,11 @@ export function resolveCorpusRuntimeBand(
       referenceCount: values.length,
       confidence: Math.min(1, Math.max(0, confidence)),
       neighborIds: [...new Set(values.map((item) => item.deviceVariantId))],
+      protocol: values[0]?.protocol,
+      protocolVersion: values[0]?.protocolVersion,
+      sourceIds: [...new Set(values.map((item) => item.sourceId))],
       note:
-        'Runtime drain is capacity-normalized from comparable released devices. Comparable selection is variant-aware; protocol mixing remains disallowed and should be separated further as protocol metadata coverage improves.',
+        'Runtime drain is capacity-normalized from comparable released devices. Only one protocol group is used per estimate; incompatible test protocols are never averaged together.',
     },
   };
 }
