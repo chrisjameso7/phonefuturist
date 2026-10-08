@@ -2544,7 +2544,7 @@ export default function InteractiveLeaksSimulator() {
                         </span>
 
                         <div className="il-metrics">
-                          {cameraExperiences[index].outcomes
+                          {cameraExperiences[index]?.outcomes
                             .filter(
                               (outcome) =>
                                 outcome.status === 'resolved' &&
