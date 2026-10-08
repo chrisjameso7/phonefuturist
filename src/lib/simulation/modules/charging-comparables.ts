@@ -8,6 +8,7 @@ export interface ChargingComparableQuery {
   batteryChemistry?: string;
   wiredChargingWatts: number;
   wirelessChargingWatts?: number;
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
   manufacturer?: string;
   socVendor?: string;
   region?: string;
@@ -77,6 +78,7 @@ export function selectChargingComparables(
     batteryChemistry: query.batteryChemistry,
     wiredChargingWatts: query.wiredChargingWatts,
     wirelessChargingWatts: query.wirelessChargingWatts,
+    cellArchitecture: query.cellArchitecture,
     manufacturer: query.manufacturer,
     socVendor: query.socVendor,
     region: query.region,
