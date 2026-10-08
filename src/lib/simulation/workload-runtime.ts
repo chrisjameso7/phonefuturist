@@ -1,5 +1,4 @@
 import runtimeJson from '../../../data/calibration/battery/workload-runtimes.json';
-
 import type { SimulationInput } from './types';
 
 export const WORKLOAD_RUNTIME_VERSION = '0.5.1';
@@ -21,18 +20,16 @@ interface RuntimeMeasurement {
   model: string;
   release_date: string;
   capacity_mah: number;
-
-  device_id: string;
   workload: SupportedActiveWorkload;
   runtime_seconds: number;
   source_display_value: string;
   source_url: string;
 }
 
-export interface WorkloadPowerBand {
+export interface WorkloadDrainBand {
   workload: SupportedActiveWorkload;
-  minW: number;
-  maxW: number;
+  minMahPerHour: number;
+  maxMahPerHour: number;
   referenceCount: number;
   basis: 'matched-reference' | 'reference-population';
   reference?: {
@@ -40,7 +37,7 @@ export interface WorkloadPowerBand {
     manufacturer: string;
     model: string;
     runtimeHours: number;
-    powerW: number;
+    drainMahPerHour: number;
   };
 }
 
@@ -49,7 +46,7 @@ export interface ActiveUseRuntimeResult {
   status: 'resolved' | 'unresolved';
   unresolved?: {
     code:
-      | 'MISSING_ENERGY'
+      | 'MISSING_CAPACITY'
       | 'NO_ACTIVE_HOURS'
       | 'INVALID_HOURS'
       | 'CAMERA_UNCALIBRATED'
@@ -59,14 +56,14 @@ export interface ActiveUseRuntimeResult {
   };
   estimate?: {
     activeHoursPerDay: number;
-    averagePowerW: { min: number; max: number };
+    averageDrainMahPerHour: { min: number; max: number };
     runtimeHours: { min: number; max: number };
     equivalentDaysPerCharge: { min: number; max: number };
     workloads: Array<{
       workload: SupportedActiveWorkload;
       hoursPerDay: number;
       share: number;
-      powerW: { min: number; max: number };
+      drainMahPerHour: { min: number; max: number };
     }>;
     note: string;
   };
@@ -78,37 +75,39 @@ function positive(value: unknown): value is number {
 
 function inputCapacityMah(input: SimulationInput): number | undefined {
   const cells = input.battery?.cells ?? [];
-  if (
-    !cells.length ||
-    !cells.every((cell) => positive(cell.capacityMah))
-  ) return undefined;
-
-  return cells.reduce(
-    (sum, cell) => sum + cell.capacityMah!,
-    0,
-  );
+  if (!cells.length || !cells.every((cell) => positive(cell.capacityMah))) {
+    return undefined;
+  }
+  return cells.reduce((sum, cell) => sum + cell.capacityMah!, 0);
 }
 
-export const WORKLOAD_POWER_REFERENCES = measurements.flatMap((measurement) => {
+const measurements = (
+  runtimeJson as unknown as { measurements: RuntimeMeasurement[] }
+).measurements;
+
+export const WORKLOAD_DRAIN_REFERENCES = measurements.flatMap((measurement) => {
   if (
     !positive(measurement.runtime_seconds) ||
     !positive(measurement.capacity_mah)
   ) return [];
 
   const runtimeHours = measurement.runtime_seconds / 3600;
-  const drainMahPerHour = measurement.capacity_mah / runtimeHours;
-
   return [{
     workload: measurement.workload,
     deviceId: measurement.device_id,
     manufacturer: measurement.manufacturer,
     model: measurement.model,
+    releaseDate: measurement.release_date,
     capacityMah: measurement.capacity_mah,
     runtimeHours,
-    drainMahPerHour,
+    drainMahPerHour: measurement.capacity_mah / runtimeHours,
     sourceUrl: measurement.source_url,
   }];
 });
+
+// Compatibility export retained for existing callers/tests while v0.5.1
+// transitions from watt-based naming to capacity-normalized drain.
+export const WORKLOAD_POWER_REFERENCES = WORKLOAD_DRAIN_REFERENCES;
 
 function matchReference(
   input: SimulationInput,
@@ -118,39 +117,38 @@ function matchReference(
   const name = input.name?.trim().toLowerCase();
   if (!capacityMah || !name) return undefined;
 
-  const ENERGY_TOLERANCE = 0.16;
+  const CAPACITY_TOLERANCE = 0.16;
 
-  return WORKLOAD_POWER_REFERENCES.find((reference) => {
+  return WORKLOAD_DRAIN_REFERENCES.find((reference) => {
     if (reference.workload !== workload) return false;
     const fullName =
       `${reference.manufacturer} ${reference.model}`.toLowerCase();
     const sameName =
       name === reference.model.toLowerCase() ||
       name === fullName;
-    const closeEnergy =
-      Math.abs(reference.capacityMah - capacityMah) / reference.capacityMah <=
-      ENERGY_TOLERANCE;
-    return sameName && closeEnergy;
+    const closeCapacity =
+      Math.abs(reference.capacityMah - capacityMah) /
+        reference.capacityMah <=
+      CAPACITY_TOLERANCE;
+    return sameName && closeCapacity;
   });
 }
 
-export function resolveWorkloadPowerBand(
+export function resolveWorkloadDrainBand(
   input: SimulationInput,
   workload: SupportedActiveWorkload,
-): WorkloadPowerBand | undefined {
-  const refs = WORKLOAD_POWER_REFERENCES.filter(
+): WorkloadDrainBand | undefined {
+  const refs = WORKLOAD_DRAIN_REFERENCES.filter(
     (reference) => reference.workload === workload,
   );
-
   if (!refs.length) return undefined;
 
   const matched = matchReference(input, workload);
-
   if (matched) {
     return {
       workload,
-      minW: matched.drainMahPerHour,
-      maxW: matched.drainMahPerHour,
+      minMahPerHour: matched.drainMahPerHour,
+      maxMahPerHour: matched.drainMahPerHour,
       referenceCount: 1,
       basis: 'matched-reference',
       reference: {
@@ -158,19 +156,48 @@ export function resolveWorkloadPowerBand(
         manufacturer: matched.manufacturer,
         model: matched.model,
         runtimeHours: matched.runtimeHours,
-        powerW: matched.drainMahPerHour,
+        drainMahPerHour: matched.drainMahPerHour,
       },
     };
   }
 
-  const power = refs.map((reference) => reference.drainMahPerHour).sort((a, b) => a - b);
+  const drain = refs
+    .map((reference) => reference.drainMahPerHour)
+    .sort((a, b) => a - b);
 
   return {
     workload,
-    minW: power[0],
-    maxW: power[power.length - 1],
+    minMahPerHour: drain[0],
+    maxMahPerHour: drain[drain.length - 1],
     referenceCount: refs.length,
     basis: 'reference-population',
+  };
+}
+
+// Compatibility alias for the earlier v0.5.1 integration.
+export function resolveWorkloadPowerBand(
+  input: SimulationInput,
+  workload: SupportedActiveWorkload,
+) {
+  const band = resolveWorkloadDrainBand(input, workload);
+  if (!band) return undefined;
+  return {
+    workload: band.workload,
+    minW: band.minMahPerHour,
+    maxW: band.maxMahPerHour,
+    referenceCount: band.referenceCount,
+    basis: band.basis,
+    ...(band.reference
+      ? {
+          reference: {
+            deviceId: band.reference.deviceId,
+            manufacturer: band.reference.manufacturer,
+            model: band.reference.model,
+            runtimeHours: band.reference.runtimeHours,
+            powerW: band.reference.drainMahPerHour,
+          },
+        }
+      : {}),
   };
 }
 
@@ -185,7 +212,7 @@ export function simulateActiveUseRuntime(
       version: WORKLOAD_RUNTIME_VERSION,
       status: 'unresolved',
       unresolved: {
-        code: 'MISSING_ENERGY',
+        code: 'MISSING_CAPACITY',
         message:
           'Battery capacity is required to calculate active-use runtime.',
         missing: ['battery.capacityMah'],
@@ -267,10 +294,11 @@ export function simulateActiveUseRuntime(
     };
   }
 
-  const resolved = supported.map(([workload, hours]) => {
-    const band = resolveWorkloadPowerBand(input, workload);
-    return { workload, hours, band };
-  });
+  const resolved = supported.map(([workload, hours]) => ({
+    workload,
+    hours,
+    band: resolveWorkloadDrainBand(input, workload),
+  }));
 
   const missing = resolved
     .filter((entry) => !entry.band)
@@ -289,28 +317,28 @@ export function simulateActiveUseRuntime(
     };
   }
 
-  let minPower = 0;
-  let maxPower = 0;
+  let minDrain = 0;
+  let maxDrain = 0;
 
   const workloads = resolved.map(({ workload, hours, band }) => {
     const share = hours / activeHoursPerDay;
-    minPower += band!.minW * share;
-    maxPower += band!.maxW * share;
+    minDrain += band!.minMahPerHour * share;
+    maxDrain += band!.maxMahPerHour * share;
 
     return {
       workload,
       hoursPerDay: hours,
       share,
-      powerW: {
-        min: band!.minW,
-        max: band!.maxW,
+      drainMahPerHour: {
+        min: band!.minMahPerHour,
+        max: band!.maxMahPerHour,
       },
     };
   });
 
   const runtimeHours = {
-    min: capacityMah / maxPower,
-    max: capacityMah / minPower,
+    min: capacityMah / maxDrain,
+    max: capacityMah / minDrain,
   };
 
   return {
@@ -318,7 +346,7 @@ export function simulateActiveUseRuntime(
     status: 'resolved',
     estimate: {
       activeHoursPerDay,
-      averagePowerW: { min: minPower, max: maxPower },
+      averageDrainMahPerHour: { min: minDrain, max: maxDrain },
       runtimeHours,
       equivalentDaysPerCharge: {
         min: runtimeHours.min / activeHoursPerDay,
@@ -326,7 +354,7 @@ export function simulateActiveUseRuntime(
       },
       workloads,
       note:
-        'Active-use equivalent only. Idle/standby drain is not included, so this is not a full 24-hour real-world battery-life prediction.',
+        'Active-use equivalent only. The model is capacity-normalized against 20 recent released phones under one lab protocol. Idle and standby drain are not included, so this is not a full 24-hour real-world battery-life prediction.',
     },
   };
 }
