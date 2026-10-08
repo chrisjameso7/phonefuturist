@@ -5,8 +5,10 @@ export const CHARGING_BACKTEST_VERSION = 'charging-backtest-0.1.0';
 
 export interface ChargingBacktestRow {
   deviceVariantId: string;
+  manufacturer?: string;
   sourceId: string;
   testChargerWatts: number;
+  wattageBand: '<=45W' | '46-80W' | '81-120W' | '>120W';
   chargingStandard?: string;
   actualFullChargeMinutes: number;
   predictedFullChargeMinutes: number;
@@ -14,13 +16,65 @@ export interface ChargingBacktestRow {
   absolutePercentageError: number;
 }
 
+export interface ChargingBacktestAggregate {
+  key: string;
+  count: number;
+  maeMinutes: number;
+  mapePercent: number;
+}
+
 export interface ChargingBacktestSummary {
   version: string;
   evaluatedModes: number;
   skippedModes: number;
+  coveragePercent: number;
   maeMinutes?: number;
   mapePercent?: number;
+  byManufacturer: ChargingBacktestAggregate[];
+  byChargingStandard: ChargingBacktestAggregate[];
+  byWattageBand: ChargingBacktestAggregate[];
+  worstMisses: ChargingBacktestRow[];
   rows: ChargingBacktestRow[];
+}
+
+function wattageBand(
+  watts: number,
+): ChargingBacktestRow['wattageBand'] {
+  if (watts <= 45) return '<=45W';
+  if (watts <= 80) return '46-80W';
+  if (watts <= 120) return '81-120W';
+  return '>120W';
+}
+
+function aggregate(
+  rows: ChargingBacktestRow[],
+  keyOf: (row: ChargingBacktestRow) => string,
+): ChargingBacktestAggregate[] {
+  const groups = new Map<string, ChargingBacktestRow[]>();
+
+  for (const row of rows) {
+    const key = keyOf(row);
+    const current = groups.get(key) ?? [];
+    current.push(row);
+    groups.set(key, current);
+  }
+
+  return [...groups.entries()]
+    .map(([key, group]) => ({
+      key,
+      count: group.length,
+      maeMinutes:
+        group.reduce(
+          (sum, row) => sum + row.absoluteErrorMinutes,
+          0,
+        ) / group.length,
+      mapePercent:
+        group.reduce(
+          (sum, row) => sum + row.absolutePercentageError,
+          0,
+        ) / group.length,
+    }))
+    .sort((a, b) => b.mapePercent - a.mapePercent);
 }
 
 function fullChargeMetric(metric: string) {
@@ -121,8 +175,10 @@ export function backtestChargingCorpus(
 
     rows.push({
       deviceVariantId: heldOut.deviceVariantId,
+      manufacturer: device?.variant.identity.manufacturer,
       sourceId: heldOut.sourceId,
       testChargerWatts: heldOut.testChargerWatts,
+      wattageBand: wattageBand(heldOut.testChargerWatts),
       chargingStandard: heldOut.chargingStandard,
       actualFullChargeMinutes: heldOut.value,
       predictedFullChargeMinutes: predicted,
@@ -150,12 +206,35 @@ export function backtestChargingCorpus(
         ) / rows.length
       : undefined;
 
+  const totalModes = candidates.length;
+
   return {
     version: CHARGING_BACKTEST_VERSION,
     evaluatedModes: rows.length,
     skippedModes,
+    coveragePercent:
+      totalModes > 0 ? (rows.length / totalModes) * 100 : 0,
     maeMinutes,
     mapePercent,
+    byManufacturer: aggregate(
+      rows,
+      (row) => row.manufacturer ?? 'unknown',
+    ),
+    byChargingStandard: aggregate(
+      rows,
+      (row) => row.chargingStandard ?? 'unknown',
+    ),
+    byWattageBand: aggregate(
+      rows,
+      (row) => row.wattageBand,
+    ),
+    worstMisses: [...rows]
+      .sort(
+        (a, b) =>
+          b.absolutePercentageError -
+          a.absolutePercentageError,
+      )
+      .slice(0, 5),
     rows,
   };
 }
