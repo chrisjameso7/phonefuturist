@@ -213,7 +213,7 @@ describe('camera simulation module', () => {
     expect(calculation.warnings).toContainEqual({
       code: 'INVALID_APERTURE_INPUT',
       message:
-        'Physical focal length and aperture f-number must be positive finite values.',
+        'Aperture f-number must be a positive finite value.',
     });
 
     expect(calculation.warnings).toContainEqual({
