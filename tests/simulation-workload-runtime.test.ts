@@ -24,7 +24,7 @@ const concept: SimulationInput = {
 describe('v0.5.1 active workload runtime', () => {
   it('ships calibrated web, video and gaming references', () => {
     expect(WORKLOAD_RUNTIME_VERSION).toBe('0.5.1');
-    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'web_browsing')).toHaveLength(20);
+    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'web_browsing')).toHaveLength(135);
     expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'video_playback')).toHaveLength(20);
     expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'gaming')).toHaveLength(20);
   });
@@ -55,7 +55,7 @@ describe('v0.5.1 active workload runtime', () => {
   it('uses the reference-population power band for an unreleased concept', () => {
     const gaming = resolveWorkloadPowerBand(concept, 'gaming');
     expect(gaming?.basis).toBe('reference-population');
-    expect(gaming?.referenceCount).toBe(20);
+    expect(gaming?.referenceCount).toBe(135);
     expect(gaming!.maxW).toBeGreaterThanOrEqual(gaming!.minW);
 
     const result = simulateActiveUseRuntime(concept, {
