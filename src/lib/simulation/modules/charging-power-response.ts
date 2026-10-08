@@ -218,7 +218,14 @@ export function collectEarlyChargePowerResponseEvidence(
 }
 
 function evidenceWeight(
-  item: ChargingPowerResponseEvidence,
+  item: Pick<
+    ChargingPowerResponseEvidence,
+    | 'manufacturer'
+    | 'batteryChemistry'
+    | 'cellArchitecture'
+    | 'lowWatts'
+    | 'highWatts'
+  >,
   query: ChargingPowerResponseQuery,
 ) {
   let weight = 1;
@@ -287,10 +294,7 @@ export function resolveChargingPowerResponse(
 
   const earlyWeighted = earlyEvidence.map((item) => ({
     item,
-    weight: evidenceWeight(
-      item as ChargingPowerResponseEvidence,
-      query,
-    ),
+    weight: evidenceWeight(item, query),
   }));
 
   const evidenceMinWatts = Math.min(...evidence.map((item) => item.lowWatts));
