@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "dataset": "phonefuturist_interactive_leaks_charging",
   "model_version": "0.6.0",
   "cohort_window": "2025-01-01 through 2026-10-08",
@@ -29,12 +29,12 @@
     {
       "id": "xiaomi_redmi_note_14_pro_5g",
       "manufacturer": "Xiaomi",
-      "model": "Redmi Note 14 Pro+ 5G",
+      "model": "Redmi Note 14 Pro 5G",
       "release_date": "Jan 16, 2025",
       "battery_capacity_mah": 5110,
-      "wired_charger_w": 120,
-      "full_charge_minutes": 25,
-      "charge_30m_percent": null,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 57,
+      "charge_30m_percent": 63,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -473,7 +473,18 @@
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": []
+      "secondary_sources": [
+        {
+          "provider": "PhoneArena",
+          "url": "https://www.phonearena.com/news/Phones-fast-charging-speeds-comparison_id125026",
+          "kind": "independent_lab"
+        },
+        {
+          "provider": "Tom's Guide",
+          "url": "https://www.tomsguide.com/phones/i-put-iphone-17-pro-max-vs-samsung-galaxy-s26-ultra-through-a-7-round-face-off-heres-which-is-best-for-you",
+          "kind": "independent_lab"
+        }
+      ]
     },
     {
       "id": "motorola_edge_60_pro",
@@ -638,12 +649,12 @@
     {
       "id": "xiaomi_redmi_note_15_pro_5g",
       "manufacturer": "Xiaomi",
-      "model": "Redmi Note 15 Pro+ 5G",
-      "release_date": "Dec 25, 2025",
-      "battery_capacity_mah": 6500,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 56,
-      "charge_30m_percent": 70,
+      "model": "Redmi Note 15 Pro 5G",
+      "release_date": "Jan 06, 2026",
+      "battery_capacity_mah": 6580,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 81,
+      "charge_30m_percent": 43,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -724,22 +735,6 @@
       "wired_charger_w": 80,
       "full_charge_minutes": 57,
       "charge_30m_percent": 70,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_redmi_note_14_pro_5g",
-      "manufacturer": "Xiaomi",
-      "model": "Redmi Note 14 Pro 5G",
-      "release_date": "Jan 16, 2025",
-      "battery_capacity_mah": 5110,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 57,
-      "charge_30m_percent": 63,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -878,12 +873,12 @@
     {
       "id": "samsung_galaxy_s26",
       "manufacturer": "Samsung",
-      "model": "Galaxy S26+",
+      "model": "Galaxy S26",
       "release_date": "Mar 11, 2026",
-      "battery_capacity_mah": 4900,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 63,
-      "charge_30m_percent": 67,
+      "battery_capacity_mah": 4300,
+      "wired_charger_w": 25,
+      "full_charge_minutes": 76,
+      "charge_30m_percent": 59,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -1049,7 +1044,18 @@
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": []
+      "secondary_sources": [
+        {
+          "provider": "PhoneArena",
+          "url": "https://www.phonearena.com/news/I-tested-how-fast-the-iPhone-18-Pro-Max-really-charges_id183232",
+          "kind": "independent_lab"
+        },
+        {
+          "provider": "Tom's Guide",
+          "url": "https://www.tomsguide.com/phones/iphones/i-tested-the-iphone-18-pro-max-vs-iphone-16-pro-max-side-by-side-should-you-upgrade",
+          "kind": "independent_review"
+        }
+      ]
     },
     {
       "id": "nubia_z80_ultra",
@@ -1081,7 +1087,13 @@
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": []
+      "secondary_sources": [
+        {
+          "provider": "PhoneArena",
+          "url": "https://www.phonearena.com/news/I-tested-how-fast-the-iPhone-18-Pro-Max-really-charges_id183232",
+          "kind": "independent_lab"
+        }
+      ]
     },
     {
       "id": "xiaomi_redmi_note_15_5g",
@@ -1257,12 +1269,12 @@
     {
       "id": "samsung_galaxy_s25",
       "manufacturer": "Samsung",
-      "model": "Galaxy S25+",
+      "model": "Galaxy S25",
       "release_date": "Feb 07, 2025",
-      "battery_capacity_mah": 4900,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 71,
-      "charge_30m_percent": 58,
+      "battery_capacity_mah": 4000,
+      "wired_charger_w": 25,
+      "full_charge_minutes": 82,
+      "charge_30m_percent": 54,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -1351,22 +1363,6 @@
       "secondary_sources": []
     },
     {
-      "id": "samsung_galaxy_s26",
-      "manufacturer": "Samsung",
-      "model": "Galaxy S26",
-      "release_date": "Mar 11, 2026",
-      "battery_capacity_mah": 4300,
-      "wired_charger_w": 25,
-      "full_charge_minutes": 76,
-      "charge_30m_percent": 59,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
       "id": "apple_iphone_17_pro_max",
       "manufacturer": "Apple",
       "model": "iPhone 17 Pro Max",
@@ -1439,7 +1435,18 @@
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": []
+      "secondary_sources": [
+        {
+          "provider": "GSMArena",
+          "url": "https://www.gsmarena.com/google_pixel_10_pro_xl-review-2876p3.php",
+          "kind": "independent_lab"
+        },
+        {
+          "provider": "Tom's Guide",
+          "url": "https://www.tomsguide.com/phones/google-pixel-phones/google-pixel-10-pro-xl-review",
+          "kind": "independent_lab"
+        }
+      ]
     },
     {
       "id": "xiaomi_redmi_note_15",
@@ -1506,22 +1513,6 @@
       "secondary_sources": []
     },
     {
-      "id": "xiaomi_redmi_note_15_pro_5g",
-      "manufacturer": "Xiaomi",
-      "model": "Redmi Note 15 Pro 5G",
-      "release_date": "Jan 06, 2026",
-      "battery_capacity_mah": 6580,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 81,
-      "charge_30m_percent": 43,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
       "id": "samsung_galaxy_z_flip_8",
       "manufacturer": "Samsung",
       "model": "Galaxy Z Flip 8",
@@ -1546,22 +1537,6 @@
       "wired_charger_w": 80,
       "full_charge_minutes": 81,
       "charge_30m_percent": 46,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "samsung_galaxy_s25",
-      "manufacturer": "Samsung",
-      "model": "Galaxy S25",
-      "release_date": "Feb 07, 2025",
-      "battery_capacity_mah": 4000,
-      "wired_charger_w": 25,
-      "full_charge_minutes": 82,
-      "charge_30m_percent": 54,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -1968,6 +1943,73 @@
         "kind": "independent_lab"
       },
       "secondary_sources": []
+    },
+    {
+      "id": "motorola_moto_g_stylus_2025",
+      "manufacturer": "Motorola",
+      "model": "Moto G Stylus 5G (2025)",
+      "release_date": "2025-04-17",
+      "battery_capacity_mah": 5000,
+      "wired_charger_w": 68,
+      "full_charge_minutes": 40,
+      "charge_30m_percent": 90,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "motorola_moto_g_stylus_2026",
+      "manufacturer": "Motorola",
+      "model": "Moto G Stylus 5G (2026)",
+      "release_date": "2026-04-16",
+      "battery_capacity_mah": 5200,
+      "wired_charger_w": 68,
+      "full_charge_minutes": 46,
+      "charge_30m_percent": 80,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "xiaomi_redmi_note_15_pro_plus_5g",
+      "manufacturer": "Xiaomi",
+      "model": "Redmi Note 15 Pro+ 5G",
+      "release_date": "2025-12-25",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 100,
+      "full_charge_minutes": 56,
+      "charge_30m_percent": 70,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "samsung_galaxy_s26_plus",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26+",
+      "release_date": "2026-03-11",
+      "battery_capacity_mah": 4900,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 63,
+      "charge_30m_percent": 67,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
     }
+  ],
+  "notes": [
+    "Charging database contains 119 recent released phones; incomplete lab rows remain stored but are excluded from active curve fitting."
   ]
 }
