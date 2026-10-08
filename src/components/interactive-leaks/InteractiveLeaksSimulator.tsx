@@ -2215,6 +2215,76 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
+                    {thermalResult.points &&
+                    thermalResult.points.length > 1 ? (
+                      <div className="il-thermal-timeline">
+                        <div className="il-result-label">
+                          Thermal timeline
+                        </div>
+
+                        <div className="il-thermal-table">
+                          {thermalResult.points
+                            .filter(
+                              (_, index, points) =>
+                                index === 0 ||
+                                index === points.length - 1 ||
+                                index %
+                                  Math.max(
+                                    1,
+                                    Math.floor(points.length / 6),
+                                  ) ===
+                                  0,
+                            )
+                            .map((point) => (
+                              <div
+                                className="il-thermal-row"
+                                key={point.second}
+                              >
+                                <strong>
+                                  {formatDurationMinutes(
+                                    point.second / 60,
+                                  )}
+                                </strong>
+                                <span>
+                                  {format(
+                                    point.temperatureC,
+                                    1,
+                                  )} °C
+                                </span>
+                                <span>
+                                  {format(
+                                    point.performancePercent,
+                                    0,
+                                  )}% perf
+                                </span>
+                                <span>
+                                  {format(
+                                    point.powerW,
+                                    2,
+                                  )} W
+                                </span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {thermalResult.warnings?.length ? (
+                      <div className="il-warnings">
+                        {thermalResult.warnings.map(
+                          (warning) => (
+                            <div
+                              className="il-warning"
+                              key={warning.code}
+                            >
+                              <strong>{warning.code}</strong>
+                              <p>{warning.message}</p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : null}
+
                     <p className="il-help">
                       {thermalResult.note}
                     </p>
