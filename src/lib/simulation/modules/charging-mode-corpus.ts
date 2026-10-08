@@ -1,4 +1,4 @@
-import cohortJson from '../../../data/calibration/charging-mode-cohort-2026-10-08-0.1.json';
+import cohortJson from '../../../../data/calibration/charging-mode-cohort-2026-10-08-0.1.json';
 import type {
   CorpusMeasurement,
   CorpusSource,
