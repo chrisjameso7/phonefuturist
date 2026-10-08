@@ -3,6 +3,10 @@ import {
   selectChargingComparables,
   type ChargingComparableQuery,
 } from './charging-comparables';
+import {
+  chargingTimePowerScale,
+  resolveChargingPowerResponse,
+} from './charging-power-response';
 
 export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.1.0';
 
@@ -71,44 +75,90 @@ export function estimateChargingFromCorpus(
     };
   }
 
+  const powerResponse = resolveChargingPowerResponse(corpus, {
+    manufacturer: query.manufacturer,
+    batteryChemistry: query.batteryChemistry,
+    cellArchitecture: query.cellArchitecture,
+    targetWatts: query.wiredChargingWatts,
+  });
+
   const weights = comparable.references.map((reference) => {
     const capacityScale =
       reference.batteryMah !== undefined && reference.batteryMah > 0
         ? query.batteryMah / reference.batteryMah
         : 1;
 
+    const referenceWatts =
+      reference.testChargerWatts ??
+      reference.advertisedWiredWatts;
+
+    const powerScale = chargingTimePowerScale(
+      referenceWatts,
+      query.wiredChargingWatts,
+      powerResponse.elasticity,
+    );
+
     return {
       reference,
       weight: Math.max(reference.score, 0.05) ** 2,
       capacityScale,
+      powerScale,
     };
   });
 
-  const fullValues = weights.flatMap(({ reference, weight, capacityScale }) =>
-    reference.fullChargeMinutes !== undefined
-      ? [{ value: reference.fullChargeMinutes * capacityScale, weight }]
-      : [],
+  const fullValues = weights.flatMap(
+    ({ reference, weight, capacityScale, powerScale }) =>
+      reference.fullChargeMinutes !== undefined
+        ? [{
+            value:
+              reference.fullChargeMinutes *
+              capacityScale *
+              powerScale,
+            weight,
+          }]
+        : [],
   );
 
-  const p30Values = weights.flatMap(({ reference, weight, capacityScale }) =>
-    reference.thirtyMinutePercent !== undefined
-      ? [{
-          value: clamp(reference.thirtyMinutePercent / capacityScale, 0, 100),
-          weight,
-        }]
-      : [],
+  const p30Values = weights.flatMap(
+    ({ reference, weight, capacityScale, powerScale }) =>
+      reference.thirtyMinutePercent !== undefined
+        ? [{
+            value: clamp(
+              reference.thirtyMinutePercent /
+                capacityScale /
+                Math.max(powerScale, 0.25),
+              0,
+              100,
+            ),
+            weight,
+          }]
+        : [],
   );
 
-  const t50Values = weights.flatMap(({ reference, weight, capacityScale }) =>
-    reference.timeTo50Minutes !== undefined
-      ? [{ value: reference.timeTo50Minutes * capacityScale, weight }]
-      : [],
+  const t50Values = weights.flatMap(
+    ({ reference, weight, capacityScale, powerScale }) =>
+      reference.timeTo50Minutes !== undefined
+        ? [{
+            value:
+              reference.timeTo50Minutes *
+              capacityScale *
+              powerScale,
+            weight,
+          }]
+        : [],
   );
 
-  const t80Values = weights.flatMap(({ reference, weight, capacityScale }) =>
-    reference.timeTo80Minutes !== undefined
-      ? [{ value: reference.timeTo80Minutes * capacityScale, weight }]
-      : [],
+  const t80Values = weights.flatMap(
+    ({ reference, weight, capacityScale, powerScale }) =>
+      reference.timeTo80Minutes !== undefined
+        ? [{
+            value:
+              reference.timeTo80Minutes *
+              capacityScale *
+              powerScale,
+            weight,
+          }]
+        : [],
   );
 
   let expectedFull: number | undefined;
@@ -141,7 +191,9 @@ export function estimateChargingFromCorpus(
     confidence: clamp(confidence, 0, 1),
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     note:
-      'Estimate is weighted toward the closest released-device charging references. Measured milestone times are normalized for battery-capacity differences before aggregation, so equal advertised wattage does not imply equal charge time. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.',
+      powerResponse.status === 'resolved'
+        ? 'Estimate is weighted toward the closest released-device charging references. Milestones are normalized for battery capacity and adjusted using charging-power elasticity learned from same-device multi-watt tests. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.'
+        : 'Estimate is weighted toward the closest released-device charging references and normalized for battery capacity. No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.',
   };
 
   if (p30Values.length && expectedP30 !== undefined) {
