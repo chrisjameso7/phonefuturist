@@ -14,6 +14,7 @@ export interface BatteryExperienceInput {
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
   wiredWatts?: number;
   wirelessWatts?: number;
+  chargingStandard?: string;
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -139,6 +140,7 @@ export function simulateBatteryExperience(
       weightG: input.simulation.dimensions?.weightG,
       coolingClass: input.coolingClass,
       cellArchitecture: input.cellArchitecture,
+      chargingStandard: input.chargingStandard,
     });
 
     if (charging.status === 'unresolved') {
