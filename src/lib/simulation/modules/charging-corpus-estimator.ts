@@ -23,6 +23,12 @@ export interface ChargingCurveEstimate {
     timeTo80Minutes?: { min: number; expected: number; max: number };
     timeTo100Minutes?: { min: number; expected: number; max: number };
     neighborIds: string[];
+    powerResponse?: {
+      applied: boolean;
+      elasticity?: number;
+      confidence?: number;
+      evidenceCount: number;
+    };
     note: string;
   };
 }
@@ -190,6 +196,12 @@ export function estimateChargingFromCorpus(
     referenceCount: comparable.references.length,
     confidence: clamp(confidence, 0, 1),
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
+    powerResponse: {
+      applied: powerResponse.status === 'resolved',
+      elasticity: powerResponse.elasticity,
+      confidence: powerResponse.confidence,
+      evidenceCount: powerResponse.evidence?.length ?? 0,
+    },
     note:
       powerResponse.status === 'resolved'
         ? 'Estimate is weighted toward the closest released-device charging references. Milestones are normalized for battery capacity and adjusted using charging-power elasticity learned from same-device multi-watt tests. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.'
