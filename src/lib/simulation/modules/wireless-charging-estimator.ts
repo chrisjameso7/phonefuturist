@@ -8,6 +8,7 @@ export interface WirelessChargingQuery {
   wirelessChargingWatts: number;
   manufacturer?: string;
   batteryChemistry?: string;
+  chargingStandard?: string;
 }
 
 export interface WirelessChargingEstimate {
@@ -86,8 +87,12 @@ export function estimateWirelessChargingFromCorpus(
     score += capacityScore * 4;
     weight += 4;
 
+    const measuredModeWatts =
+      measurements[0]?.testChargerWatts ??
+      advertisedWirelessWatts;
+
     const powerScore = closeness(
-      advertisedWirelessWatts,
+      measuredModeWatts,
       query.wirelessChargingWatts,
       0.7,
     );
@@ -103,6 +108,24 @@ export function estimateWirelessChargingFromCorpus(
       weight += 1.5;
     } else if (query.manufacturer) {
       weight += 1.5;
+    }
+
+    if (query.chargingStandard) {
+      const standardMatches = measurements.some(
+        (measurement) =>
+          measurement.chargingStandard &&
+          (
+            measurement.chargingStandard
+              .toLowerCase()
+              .includes(query.chargingStandard!.toLowerCase()) ||
+            query.chargingStandard!
+              .toLowerCase()
+              .includes(measurement.chargingStandard.toLowerCase())
+          ),
+      );
+
+      score += (standardMatches ? 1 : 0) * 2;
+      weight += 2;
     }
 
     if (
@@ -123,6 +146,10 @@ export function estimateWirelessChargingFromCorpus(
       deviceVariantId: device.variant.id,
       value: measurement.value * capacityScale,
       score: similarity,
+      testChargerWatts:
+        measurement.testChargerWatts ??
+        advertisedWirelessWatts,
+      chargingStandard: measurement.chargingStandard,
     }));
   });
 
