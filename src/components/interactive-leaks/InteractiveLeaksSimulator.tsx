@@ -16,11 +16,6 @@ import type {
 } from '../../lib/simulation/modules/camera';
 
 import {
-  simulateActiveUseRuntime,
-  WORKLOAD_RUNTIME_VERSION,
-} from '../../lib/simulation/workload-runtime';
-
-import {
   LIVE_BATTERY_EXPERIENCE_VERSION,
   simulateLiveBatteryExperience,
 } from '../../lib/simulation/live-battery-experience';
@@ -645,16 +640,6 @@ export default function InteractiveLeaksSimulator() {
   const battery = result?.battery;
   const packaging = result?.packaging;
 
-  const activeUseResult =
-    simulationInput && result
-      ? simulateActiveUseRuntime(simulationInput, {
-          web_browsing: numeric(form.webHours) ?? 0,
-          video_playback: numeric(form.videoHours) ?? 0,
-          gaming: numeric(form.gamingHours) ?? 0,
-          camera_use: numeric(form.cameraHours) ?? 0,
-        })
-      : undefined;
-
   const chargingWatts = numeric(form.wiredChargeW);
   const wirelessChargingWatts = numeric(form.wirelessChargeW);
 
@@ -674,6 +659,11 @@ export default function InteractiveLeaksSimulator() {
             form.chargingStandard.trim() || undefined,
           wirelessChargingStandard:
             form.wirelessChargingStandard.trim() || undefined,
+          dailyUseHours: {
+            web_browsing: numeric(form.webHours) ?? 0,
+            video_playback: numeric(form.videoHours) ?? 0,
+            gaming: numeric(form.gamingHours) ?? 0,
+          },
         })
       : undefined;
 
@@ -1614,39 +1604,21 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Battery life · v{WORKLOAD_RUNTIME_VERSION}
+                  Battery life · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
 
-                {activeUseResult?.status === 'resolved' &&
-                activeUseResult.estimate ? (
+                {batteryExperience?.mixedUse ? (
                   <>
                     <div className="il-metrics">
                       <div>
                         <strong>
                           {format(
-                            activeUseResult.estimate.runtimeHours.min,
+                            batteryExperience.mixedUse.minDaysPerCharge,
                             1,
                           )}
                           –
                           {format(
-                            activeUseResult.estimate.runtimeHours.max,
-                            1,
-                          )}
-                        </strong>
-                        <span>Continuous active-use hours</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            activeUseResult.estimate
-                              .equivalentDaysPerCharge.min,
-                            1,
-                          )}
-                          –
-                          {format(
-                            activeUseResult.estimate
-                              .equivalentDaysPerCharge.max,
+                            batteryExperience.mixedUse.maxDaysPerCharge,
                             1,
                           )}
                         </strong>
@@ -1656,25 +1628,47 @@ export default function InteractiveLeaksSimulator() {
                       <div>
                         <strong>
                           {format(
-                            activeUseResult.estimate.activeHoursPerDay,
+                            batteryExperience.mixedUse.expectedDaysPerCharge,
+                            1,
+                          )}
+                        </strong>
+                        <span>Expected active-use days</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.mixedUse.activeHoursPerDay,
                             1,
                           )}
                         </strong>
                         <span>Entered active h/day</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.mixedUse.expectedDrainMahPerDay,
+                            0,
+                          )}
+                        </strong>
+                        <span>Expected active drain mAh/day</span>
+                      </div>
                     </div>
 
                     <div className="il-battery-workloads">
-                      {activeUseResult.estimate.workloads.map(
+                      {batteryExperience.mixedUse.workloads.map(
                         (workload) => (
                           <div key={workload.workload}>
                             <strong>
-                              {workload.workload
-                                .replaceAll('_', ' ')}
+                              {workload.workload.replaceAll('_', ' ')}
                             </strong>
                             <span>
                               {format(workload.hoursPerDay, 1)} h/day ·{' '}
-                              {format(workload.share * 100, 0)}%
+                              {format(
+                                workload.expectedDrainMahPerHour,
+                                0,
+                              )} mAh/h
                             </span>
                           </div>
                         ),
@@ -1682,13 +1676,15 @@ export default function InteractiveLeaksSimulator() {
                     </div>
 
                     <p className="il-help">
-                      {activeUseResult.estimate.note}
+                      Runtime uses protocol-isolated released-device evidence.
+                      Camera-use runtime remains excluded until isolated camera
+                      battery measurements are available.
                     </p>
                   </>
                 ) : (
                   <div className="il-empty">
-                    {activeUseResult?.unresolved?.message ??
-                      'Add battery capacity, nominal voltage and daily active-use hours to calculate battery life.'}
+                    Add battery capacity and daily web, video or gaming use to
+                    calculate corpus-calibrated battery life.
                   </div>
                 )}
               </div>
