@@ -4877,3 +4877,14 @@
   font-size: .62rem;
   color: #838d9a;
 }
+
+
+/* Camera sensitivity */
+
+.il-camera-sensitivity {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
