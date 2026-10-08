@@ -6,22 +6,49 @@
     {
       "id": "gsmarena",
       "name": "GSMArena",
-      "protocol": "Active Use battery tests with separate web, video and gaming runtimes"
+      "protocol": "Active Use battery tests with separate web, video and gaming runtimes",
+      "urls": [
+        "https://www.gsmarena.com/apple_iphone_17_pro_max-review-2884p3.php",
+        "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+        "https://www.gsmarena.com/xiaomi_15_ultra-review-2802p3.php",
+        "https://www.gsmarena.com/vivo_x200_pro-review-2759p3.php",
+        "https://www.gsmarena.com/oppo_find_x8_pro-review-2766p3.php"
+      ]
     },
     {
       "id": "notebookcheck",
       "name": "Notebookcheck",
-      "protocol": "Wi-Fi browsing/video/load tests, generally display-normalized around 150 cd/m² for practical battery tests"
+      "protocol": "Wi-Fi browsing/video/load tests, generally display-normalized around 150 cd/m² for practical battery tests",
+      "urls": [
+        "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "https://www.notebookcheck.net/Google-Pixel-10-Pro-XL-Smartphone-Review-Gorgeous-flagship-that-offers-a-great-Android-experience-with-one-Achilles-heel.1100253.0.html",
+        "https://www.notebookcheck.net/OnePlus-13-Smartphone-Review-Let-the-battery-revolution-begin.932327.0.html",
+        "https://www.notebookcheck.net/Xiaomi-15-Ultra-review-Leica-powered-powerhouse.975197.0.html",
+        "https://www.notebookcheck.net/The-best-photo-smartphone-of-2024-comes-with-Android-Vivo-X200-Pro-review.935687.0.html",
+        "https://www.notebookcheck.net/Oppo-Find-X8-Pro-smartphone-review-Attack-on-the-iPhone-with-innovative-battery-technology.924091.0.html"
+      ]
     },
     {
       "id": "tomsguide",
       "name": "Tom's Guide",
-      "protocol": "Web surfing battery test, generally 150 nits; some older OnePlus 13 result used an earlier test version"
+      "protocol": "Web surfing battery test, generally 150 nits; some older OnePlus 13 result used an earlier test version",
+      "urls": [
+        "https://www.tomsguide.com/phones/iphones/iphone-17-battery-life-results-are-in-how-do-the-new-iphones-compare-to-other-flagships",
+        "https://www.tomsguide.com/phones/samsung-phones/samsung-galaxy-s25-ultra-battery-life-tested-theres-good-news-and-bad-news",
+        "https://www.tomsguide.com/phones/android-phones/oppo-find-x8-pro-review-the-phone-apple-and-samsung-should-fear",
+        "https://www.tomsguide.com/phones/android-phones/xiaomi-15-ultra-review-an-excellent-phone-you-probably-cant-buy"
+      ]
     },
     {
       "id": "phonearena",
       "name": "PhoneArena",
-      "protocol": "Separate browsing, video streaming and 3D gaming lab tests"
+      "protocol": "Separate browsing, video streaming and 3D gaming lab tests",
+      "urls": [
+        "https://www.phonearena.com/howdowerate/battery",
+        "https://www.phonearena.com/reviews/iphone-17-pro-max-review_id7690",
+        "https://www.phonearena.com/reviews/iphone-17-pro-max-vs-oneplus-13_id7267",
+        "https://www.phonearena.com/reviews/xiaomi-15-ultra-review_id6980"
+      ]
     }
   ],
   "cohort": [
@@ -174,7 +201,8 @@
         "browsingHours": 16.65,
         "videoHours": 10.183,
         "gamingHours": 13.483,
-        "variantNote": "PhoneArena entry reports 6000 mAh; do not combine with 5410 mAh global-unit results without variant control."
+        "variantNote": "PhoneArena review prose identifies the global phone as 5410 mAh, while its battery-test widget reports 6000 mAh. Treat capacity as source-conflicted until the tested unit is resolved; do not use this row for residual fitting.",
+        "excludeFromResidualFit": true
       }
     },
     {
@@ -231,5 +259,12 @@
     "Pixel 10 Pro XL repeatedly shows weak heavy/gaming endurance relative to capacity in GSMArena and PhoneArena, so one global software multiplier would be misleading.",
     "OnePlus 13 benefits materially from 6000 mAh capacity, but its gaming efficiency is less impressive than its web/video endurance.",
     "Xiaomi 15 Ultra, vivo X200 Pro and Oppo Find X8 Pro show that large Si/C batteries alone do not explain ranking; workload behaviour differs substantially."
+  ],
+  "dataQualityRules": [
+    "Never average runtimes across different test protocols.",
+    "Key every measurement by device model, region/variant, software build when known, test source and protocol version.",
+    "Do not infer a software coefficient directly from capacity-normalized runtime.",
+    "Exclude measurements with unresolved battery-capacity or regional-variant conflicts from coefficient fitting.",
+    "Prefer within-source, same-protocol, same-era comparisons before cross-source synthesis."
   ]
 }
