@@ -1,0 +1,239 @@
+{
+  "version": "charging-mode-cohort-2026-10-08-0.1.0",
+  "cutoff": "2026-10-08",
+  "sources": [
+    {
+      "id": "gsmarena-oneplus15-charging",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/oneplus_15-review-2898p3.php",
+      "protocol": "GSMArena wired charging test",
+      "protocolVersion": "2025"
+    },
+    {
+      "id": "gsmarena-findx9pro-charging",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/oppo_find_x9_pro-review-2894p3.php",
+      "protocol": "GSMArena wired charging test",
+      "protocolVersion": "2025"
+    },
+    {
+      "id": "gsmarena-magic8pro-charging",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/honor_magic8_pro-review-2909p3.php",
+      "protocol": "GSMArena wired charging test",
+      "protocolVersion": "2025"
+    },
+    {
+      "id": "oneplus15-us-official",
+      "publisher": "OnePlus",
+      "url": "https://www.oneplus.com/us/15/specs",
+      "protocol": "official specifications"
+    },
+    {
+      "id": "oneplus15-global-official",
+      "publisher": "OnePlus",
+      "url": "https://www.oneplus.com/global/15/specs",
+      "protocol": "official specifications"
+    }
+  ],
+  "devices": [
+    {
+      "id": "oneplus-15-international-7300",
+      "manufacturer": "OnePlus",
+      "model": "15",
+      "region": "International",
+      "batteryMah": 7300,
+      "batteryChemistry": "silicon-carbon",
+      "cellArchitecture": "dual-cell",
+      "advertisedWiredWatts": 120,
+      "advertisedWirelessWatts": 50,
+      "sourceIds": [
+        "oneplus15-global-official",
+        "gsmarena-oneplus15-charging"
+      ]
+    },
+    {
+      "id": "oneplus-15-na-7300",
+      "manufacturer": "OnePlus",
+      "model": "15",
+      "region": "United States/Canada",
+      "batteryMah": 7300,
+      "batteryChemistry": "silicon-carbon",
+      "cellArchitecture": "dual-cell",
+      "advertisedWiredWatts": 80,
+      "advertisedWirelessWatts": 50,
+      "sourceIds": [
+        "oneplus15-us-official"
+      ]
+    },
+    {
+      "id": "oppo-find-x9-pro-global-7500",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "region": "Global",
+      "batteryMah": 7500,
+      "advertisedWiredWatts": 80,
+      "advertisedWirelessWatts": 50,
+      "sourceIds": [
+        "gsmarena-findx9pro-charging"
+      ]
+    },
+    {
+      "id": "honor-magic8-pro-eu-6270",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "region": "Europe",
+      "batteryMah": 6270,
+      "batteryChemistry": "silicon-carbon",
+      "advertisedWiredWatts": 100,
+      "sourceIds": [
+        "gsmarena-magic8pro-charging"
+      ]
+    }
+  ],
+  "measurements": [
+    {
+      "id": "oneplus15-int-supervooc-p30",
+      "deviceVariantId": "oneplus-15-international-7300",
+      "metric": "charge30mPercent",
+      "value": 44,
+      "unit": "percent",
+      "sourceId": "gsmarena-oneplus15-charging",
+      "testChargerWatts": 120,
+      "chargingStandard": "SuperVOOC",
+      "measuredPeakWatts": 77
+    },
+    {
+      "id": "oneplus15-int-supervooc-full",
+      "deviceVariantId": "oneplus-15-international-7300",
+      "metric": "wiredFullChargeMinutes",
+      "value": 41,
+      "unit": "minutes",
+      "sourceId": "gsmarena-oneplus15-charging",
+      "testChargerWatts": 120,
+      "chargingStandard": "SuperVOOC",
+      "measuredPeakWatts": 77
+    },
+    {
+      "id": "oneplus15-int-pd-full",
+      "deviceVariantId": "oneplus-15-international-7300",
+      "metric": "wiredFullChargeMinutes",
+      "value": 50,
+      "unit": "minutes",
+      "sourceId": "gsmarena-oneplus15-charging",
+      "testChargerWatts": 55,
+      "chargingStandard": "USB PD/PPS",
+      "measuredPeakWatts": 40
+    },
+    {
+      "id": "findx9pro-supervooc-p30",
+      "deviceVariantId": "oppo-find-x9-pro-global-7500",
+      "metric": "charge30mPercent",
+      "value": 54,
+      "unit": "percent",
+      "sourceId": "gsmarena-findx9pro-charging",
+      "testChargerWatts": 80,
+      "chargingStandard": "SuperVOOC",
+      "measuredPeakWatts": 67
+    },
+    {
+      "id": "findx9pro-supervooc-full",
+      "deviceVariantId": "oppo-find-x9-pro-global-7500",
+      "metric": "wiredFullChargeMinutes",
+      "value": 67,
+      "unit": "minutes",
+      "sourceId": "gsmarena-findx9pro-charging",
+      "testChargerWatts": 80,
+      "chargingStandard": "SuperVOOC",
+      "measuredPeakWatts": 67
+    },
+    {
+      "id": "findx9pro-pd-p30",
+      "deviceVariantId": "oppo-find-x9-pro-global-7500",
+      "metric": "charge30mPercent",
+      "value": 53,
+      "unit": "percent",
+      "sourceId": "gsmarena-findx9pro-charging",
+      "testChargerWatts": 55,
+      "chargingStandard": "USB PD",
+      "measuredPeakWatts": 43
+    },
+    {
+      "id": "findx9pro-pd-full",
+      "deviceVariantId": "oppo-find-x9-pro-global-7500",
+      "metric": "wiredFullChargeMinutes",
+      "value": 80,
+      "unit": "minutes",
+      "sourceId": "gsmarena-findx9pro-charging",
+      "testChargerWatts": 55,
+      "chargingStandard": "USB PD",
+      "measuredPeakWatts": 43
+    },
+    {
+      "id": "magic8pro-eu-honor100-p30",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "charge30mPercent",
+      "value": 81,
+      "unit": "percent",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 100,
+      "chargingStandard": "Honor SuperCharge",
+      "measuredPeakWatts": 73
+    },
+    {
+      "id": "magic8pro-eu-honor100-full",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "wiredFullChargeMinutes",
+      "value": 40,
+      "unit": "minutes",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 100,
+      "chargingStandard": "Honor SuperCharge",
+      "measuredPeakWatts": 73
+    },
+    {
+      "id": "magic8pro-eu-pd100-p30",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "charge30mPercent",
+      "value": 79,
+      "unit": "percent",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 100,
+      "chargingStandard": "USB PD/PPS",
+      "measuredPeakWatts": 70
+    },
+    {
+      "id": "magic8pro-eu-pd100-full",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "wiredFullChargeMinutes",
+      "value": 42,
+      "unit": "minutes",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 100,
+      "chargingStandard": "USB PD/PPS",
+      "measuredPeakWatts": 70
+    },
+    {
+      "id": "magic8pro-eu-67w-p30",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "charge30mPercent",
+      "value": 76,
+      "unit": "percent",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 67,
+      "chargingStandard": "compatible adapter",
+      "measuredPeakWatts": 50
+    },
+    {
+      "id": "magic8pro-eu-67w-full",
+      "deviceVariantId": "honor-magic8-pro-eu-6270",
+      "metric": "wiredFullChargeMinutes",
+      "value": 46,
+      "unit": "minutes",
+      "sourceId": "gsmarena-magic8pro-charging",
+      "testChargerWatts": 67,
+      "chargingStandard": "compatible adapter",
+      "measuredPeakWatts": 50
+    }
+  ]
+}
