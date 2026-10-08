@@ -121,26 +121,50 @@ export function selectChargingComparables(
 
   const references = candidates.flatMap((candidate) => {
     const device = candidate.device;
-    const fullChargeMinutes = latestMetric(corpus, device.variant.id, [
-      'wiredFullChargeMinutes',
-      'fullChargeMinutes',
-      'timeTo100Minutes',
-    ]);
-    const thirtyMinutePercent = latestMetric(corpus, device.variant.id, [
-      'wiredThirtyMinutePercent',
-      'charge30mPercent',
-      'thirtyMinutePercent',
-    ]);
-    const timeTo50Minutes = latestMetric(corpus, device.variant.id, [
-      'wiredTimeTo50Minutes',
-      'timeTo50Minutes',
-      'charge50Minutes',
-    ]);
-    const timeTo80Minutes = latestMetric(corpus, device.variant.id, [
-      'wiredTimeTo80Minutes',
-      'timeTo80Minutes',
-      'charge80Minutes',
-    ]);
+    const fullChargeMinutes = latestMetric(
+      corpus,
+      device.variant.id,
+      [
+        'wiredFullChargeMinutes',
+        'fullChargeMinutes',
+        'timeTo100Minutes',
+      ],
+      query.protocol,
+      query.protocolVersion,
+    );
+    const thirtyMinutePercent = latestMetric(
+      corpus,
+      device.variant.id,
+      [
+        'wiredThirtyMinutePercent',
+        'charge30mPercent',
+        'thirtyMinutePercent',
+      ],
+      query.protocol,
+      query.protocolVersion,
+    );
+    const timeTo50Minutes = latestMetric(
+      corpus,
+      device.variant.id,
+      [
+        'wiredTimeTo50Minutes',
+        'timeTo50Minutes',
+        'charge50Minutes',
+      ],
+      query.protocol,
+      query.protocolVersion,
+    );
+    const timeTo80Minutes = latestMetric(
+      corpus,
+      device.variant.id,
+      [
+        'wiredTimeTo80Minutes',
+        'timeTo80Minutes',
+        'charge80Minutes',
+      ],
+      query.protocol,
+      query.protocolVersion,
+    );
 
     if (
       fullChargeMinutes === undefined &&
