@@ -25,6 +25,11 @@ import {
   simulateLiveThermalExperience,
 } from '../../lib/simulation/live-thermal-experience';
 
+import {
+  LIVE_CAMERA_EXPERIENCE_VERSION,
+  simulateLiveCameraExperience,
+} from '../../lib/simulation/live-camera-experience';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -818,6 +823,15 @@ export default function InteractiveLeaksSimulator() {
           volume !== undefined,
       )
       .reduce((total, volume) => total + volume, 0);
+
+  const cameraExperiences =
+    simulationInput && result
+      ? cameras.map((camera) =>
+          simulateLiveCameraExperience(
+            cameraInput(camera),
+          ),
+        )
+      : [];
 
   return (
     <div className="il-app">
@@ -2331,6 +2345,20 @@ export default function InteractiveLeaksSimulator() {
                                     2,
                                   )} W sustained
                                 </span>
+                                <span>
+                                  Δ temp {scenario.deltaPeakTemperatureC >= 0 ? '+' : ''}
+                                  {format(
+                                    scenario.deltaPeakTemperatureC,
+                                    1,
+                                  )} °C
+                                </span>
+                                <span>
+                                  Δ perf {scenario.deltaSustainedPerformancePercent >= 0 ? '+' : ''}
+                                  {format(
+                                    scenario.deltaSustainedPerformancePercent,
+                                    1,
+                                  )}%
+                                </span>
                                 <small>
                                   {scenario.throttleStartSecond !== undefined
                                     ? `Throttle ${formatDurationSeconds(
@@ -2381,7 +2409,7 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Camera system
+                  Camera system · {LIVE_CAMERA_EXPERIENCE_VERSION}
                 </span>
 
                 <div className="il-metrics">
@@ -2506,6 +2534,51 @@ export default function InteractiveLeaksSimulator() {
                         <span>Diffraction / pixel pitch ratio</span>
                       </div>
                     </div>
+
+                    {cameraExperiences[index]?.outcomes.some(
+                      (outcome) => outcome.status === 'resolved',
+                    ) ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Observed comparable outcomes
+                        </span>
+
+                        <div className="il-metrics">
+                          {cameraExperiences[index].outcomes
+                            .filter(
+                              (outcome) =>
+                                outcome.status === 'resolved' &&
+                                outcome.value !== undefined,
+                            )
+                            .map((outcome) => (
+                              <div key={outcome.domain}>
+                                <strong>
+                                  {format(outcome.value, 2)}
+                                  {outcome.unit ? ` ${outcome.unit}` : ''}
+                                </strong>
+                                <span>
+                                  {outcome.domain
+                                    .replaceAll('_', ' ')}
+                                </span>
+                                <small>
+                                  {outcome.referenceCount} refs ·{' '}
+                                  {outcome.confidence !== undefined
+                                    ? `${format(
+                                        outcome.confidence * 100,
+                                        0,
+                                      )}% confidence`
+                                    : 'confidence unrated'}
+                                </small>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="il-help">
+                        No matching measured camera outcome evidence is available
+                        for this optical configuration yet.
+                      </p>
+                    )}
 
                     <p className="il-help">
                       Light-capture values are geometric comparison proxies
