@@ -109,6 +109,91 @@ function capMilestoneAtThirtyMinutes(
   normalizeTimeBand(band);
 }
 
+
+function sameChargingStandard(
+  actual: string | undefined,
+  requested: string | undefined,
+) {
+  if (!requested) return true;
+  if (!actual) return false;
+
+  const a = actual.toLowerCase();
+  const b = requested.toLowerCase();
+
+  return a.includes(b) || b.includes(a);
+}
+
+function exactMeasuredChargingMatch(
+  corpus: DeviceCorpus,
+  query: ChargingComparableQuery,
+) {
+  if (!query.deviceVariantId) return undefined;
+
+  const measurements = corpus.measurements.filter(
+    (measurement) =>
+      measurement.deviceVariantId === query.deviceVariantId &&
+      measurement.workload === 'charging' &&
+      measurement.testChargerWatts !== undefined &&
+      Math.abs(
+        measurement.testChargerWatts -
+          query.wiredChargingWatts,
+      ) <= 0.1 &&
+      sameChargingStandard(
+        measurement.chargingStandard,
+        query.chargingStandard,
+      ),
+  );
+
+  if (!measurements.length) return undefined;
+
+  const metric = (names: string[]) => {
+    const set = new Set(names.map((name) => name.toLowerCase()));
+    return measurements.find((measurement) =>
+      set.has(measurement.metric.toLowerCase()),
+    )?.value;
+  };
+
+  const fullChargeMinutes = metric([
+    'wiredFullChargeMinutes',
+    'fullChargeMinutes',
+    'timeTo100Minutes',
+  ]);
+  const thirtyMinutePercent = metric([
+    'wiredThirtyMinutePercent',
+    'charge30mPercent',
+    'thirtyMinutePercent',
+  ]);
+  const timeTo50Minutes = metric([
+    'wiredTimeTo50Minutes',
+    'timeTo50Minutes',
+    'charge50Minutes',
+  ]);
+  const timeTo80Minutes = metric([
+    'wiredTimeTo80Minutes',
+    'timeTo80Minutes',
+    'charge80Minutes',
+  ]);
+
+  if (
+    fullChargeMinutes === undefined &&
+    thirtyMinutePercent === undefined &&
+    timeTo50Minutes === undefined &&
+    timeTo80Minutes === undefined
+  ) {
+    return undefined;
+  }
+
+  return {
+    fullChargeMinutes,
+    thirtyMinutePercent,
+    timeTo50Minutes,
+    timeTo80Minutes,
+    measurementIds: measurements.map(
+      (measurement) => measurement.id,
+    ),
+  };
+}
+
 function reconcileChargingMilestones(
   estimate: NonNullable<ChargingCurveEstimate['estimate']>,
 ) {
@@ -153,6 +238,122 @@ export function estimateChargingFromCorpus(
   corpus: DeviceCorpus,
   query: ChargingComparableQuery,
 ): ChargingCurveEstimate {
+  const exact = exactMeasuredChargingMatch(corpus, query);
+
+  if (exact) {
+    const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
+      basis: 'weighted-comparable-corpus',
+      referenceCount: exact.measurementIds.length,
+      confidence: 1,
+      confidenceGrade: 'high',
+      evidenceMode: 'measured-match',
+      neighborIds: [query.deviceVariantId!],
+      powerResponse: {
+        applied: false,
+        evidenceCount: 0,
+        earlyEvidenceCount: 0,
+      },
+      thermalContext: {
+        status: 'unresolved',
+        confidenceMultiplier: 1,
+        matchedMeasurementIds: [],
+        note:
+          'Exact measured charger-mode evidence was used. Thermal context was not inferred from neighboring devices.',
+      },
+      note:
+        'Exact measured wired charging evidence matched the selected device variant, charger power and charging standard. Comparable-device averaging and wattage extrapolation were not used.',
+    };
+
+    if (exact.thirtyMinutePercent !== undefined) {
+      estimate.charge30mPercent = {
+        min: exact.thirtyMinutePercent,
+        expected: exact.thirtyMinutePercent,
+        max: exact.thirtyMinutePercent,
+      };
+    }
+
+    if (exact.fullChargeMinutes !== undefined) {
+      estimate.timeTo100Minutes = {
+        min: exact.fullChargeMinutes,
+        expected: exact.fullChargeMinutes,
+        max: exact.fullChargeMinutes,
+      };
+    }
+
+    if (exact.timeTo50Minutes !== undefined) {
+      estimate.timeTo50Minutes = {
+        min: exact.timeTo50Minutes,
+        expected: exact.timeTo50Minutes,
+        max: exact.timeTo50Minutes,
+      };
+    } else if (
+      exact.fullChargeMinutes !== undefined &&
+      exact.thirtyMinutePercent !== undefined
+    ) {
+      const value = curveTime(
+        50,
+        exact.thirtyMinutePercent,
+        exact.fullChargeMinutes,
+      );
+      estimate.timeTo50Minutes = {
+        min: value,
+        expected: value,
+        max: value,
+      };
+    }
+
+    if (exact.timeTo80Minutes !== undefined) {
+      estimate.timeTo80Minutes = {
+        min: exact.timeTo80Minutes,
+        expected: exact.timeTo80Minutes,
+        max: exact.timeTo80Minutes,
+      };
+    } else if (
+      exact.fullChargeMinutes !== undefined &&
+      exact.thirtyMinutePercent !== undefined
+    ) {
+      const value = curveTime(
+        80,
+        exact.thirtyMinutePercent,
+        exact.fullChargeMinutes,
+      );
+      estimate.timeTo80Minutes = {
+        min: value,
+        expected: value,
+        max: value,
+      };
+    }
+
+    reconcileChargingMilestones(estimate);
+
+    if (estimate.timeTo100Minutes?.expected) {
+      const fullMinutes = estimate.timeTo100Minutes.expected;
+      estimate.normalized = {
+        expectedFullChargeMahPerMinute:
+          query.batteryMah / fullMinutes,
+        expectedMinutesPer1000Mah:
+          fullMinutes / (query.batteryMah / 1000),
+        effectiveFullChargeCPerHour:
+          60 / fullMinutes,
+      };
+    }
+
+    if (estimate.charge30mPercent?.expected !== undefined) {
+      estimate.normalized = {
+        ...(estimate.normalized ?? {}),
+        expectedMahAddedIn30Minutes:
+          query.batteryMah *
+          (estimate.charge30mPercent.expected / 100),
+      };
+    }
+
+    return {
+      version: CHARGING_CORPUS_ESTIMATOR_VERSION,
+      status: 'resolved',
+      estimate,
+    };
+  }
+
   const comparable = selectChargingComparables(corpus, query);
 
   if (comparable.status !== 'resolved' || !comparable.references.length) {
