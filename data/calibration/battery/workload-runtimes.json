@@ -864,14 +864,14 @@
     },
     {
       "id": "zte_redmagic_11_pro",
-      "manufacturer": "ZTE nubia",
+      "manufacturer": "nubia",
       "model": "RedMagic 11 Pro",
       "capacity_mah": 7500,
       "release_date": "2025-11-17"
     },
     {
       "id": "oppo_find_x9_ultra",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Ultra",
       "capacity_mah": 7050,
       "release_date": "2026-05-02"
@@ -5416,7 +5416,7 @@
     },
     {
       "device_id": "oppo_find_x9_pro",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Pro",
       "release_date": "2025-10-22",
       "capacity_mah": 7500,
@@ -5427,7 +5427,7 @@
     },
     {
       "device_id": "oppo_find_x9_pro",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Pro",
       "release_date": "2025-10-22",
       "capacity_mah": 7500,
@@ -5438,7 +5438,7 @@
     },
     {
       "device_id": "oppo_find_x9_pro",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Pro",
       "release_date": "2025-10-22",
       "capacity_mah": 7500,
@@ -5614,7 +5614,7 @@
     },
     {
       "device_id": "zte_redmagic_11_pro",
-      "manufacturer": "ZTE nubia",
+      "manufacturer": "nubia",
       "model": "RedMagic 11 Pro",
       "release_date": "2025-11-17",
       "capacity_mah": 7500,
@@ -5625,7 +5625,7 @@
     },
     {
       "device_id": "zte_redmagic_11_pro",
-      "manufacturer": "ZTE nubia",
+      "manufacturer": "nubia",
       "model": "RedMagic 11 Pro",
       "release_date": "2025-11-17",
       "capacity_mah": 7500,
@@ -5636,7 +5636,7 @@
     },
     {
       "device_id": "zte_redmagic_11_pro",
-      "manufacturer": "ZTE nubia",
+      "manufacturer": "nubia",
       "model": "RedMagic 11 Pro",
       "release_date": "2025-11-17",
       "capacity_mah": 7500,
@@ -5647,7 +5647,7 @@
     },
     {
       "device_id": "oppo_find_x9_ultra",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Ultra",
       "release_date": "2026-05-02",
       "capacity_mah": 7050,
@@ -5658,7 +5658,7 @@
     },
     {
       "device_id": "oppo_find_x9_ultra",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Ultra",
       "release_date": "2026-05-02",
       "capacity_mah": 7050,
@@ -5669,7 +5669,7 @@
     },
     {
       "device_id": "oppo_find_x9_ultra",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Find X9 Ultra",
       "release_date": "2026-05-02",
       "capacity_mah": 7050,
