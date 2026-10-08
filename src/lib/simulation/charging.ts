@@ -105,9 +105,15 @@ function curveTime(
   );
 }
 
+type ActiveChargingReference = ChargingReference & {
+  wired_charger_w: number;
+  full_charge_minutes: number;
+  charge_30m_percent: number;
+};
+
 function predictionFromReference(
   inputCapacityMah: number,
-  reference: ChargingReference,
+  reference: ActiveChargingReference,
 ) {
   const earlyMahPerMinute =
     (reference.battery_capacity_mah *
@@ -186,7 +192,7 @@ function brandFamily(manufacturer: string): string | undefined {
 function scoreReference(
   capacityMah: number,
   wiredChargerW: number,
-  reference: ChargingReference,
+  reference: ActiveChargingReference,
   inferredBrand?: string,
 ): number {
   const capacityDistance = Math.abs(
