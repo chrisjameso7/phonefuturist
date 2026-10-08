@@ -1,0 +1,83 @@
+{
+  "schema_version": "0.1.0",
+  "dataset": "phonefuturist_interactive_leaks_active_workload_runtime",
+  "model_version": "0.5.1",
+  "protocol": {
+    "id": "gsmarena_battery_life_test_v2",
+    "provider": "GSMArena",
+    "methodology_url": "https://www.gsmarena.com/how_we_test_gsmarena_battery_life_test_v2-news-60429.php",
+    "notes": [
+      "Battery Life Test 2.0 measures continuous active-use runtime for web browsing, video streaming and gaming.",
+      "Web browsing uses modern pages with scrolling and touch input; video streams from YouTube; gaming loops a 3D game with above-average GPU load.",
+      "These runtimes are comparative lab observations, not universal real-world battery-life guarantees."
+    ]
+  },
+  "measurements": [
+    {
+      "device_id": "samsung_galaxy_s24_ultra",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "web_browsing",
+      "runtime_seconds": 40080,
+      "source_display_value": "11h 08min"
+    },
+    {
+      "device_id": "samsung_galaxy_s24_ultra",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "video_playback",
+      "runtime_seconds": 60480,
+      "source_display_value": "16h 48min"
+    },
+    {
+      "device_id": "samsung_galaxy_s24_ultra",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "gaming",
+      "runtime_seconds": 32760,
+      "source_display_value": "9h 06min"
+    },
+    {
+      "device_id": "apple_iphone_16_pro_max",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "web_browsing",
+      "runtime_seconds": 59460,
+      "source_display_value": "16h 31min"
+    },
+    {
+      "device_id": "apple_iphone_16_pro_max",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "video_playback",
+      "runtime_seconds": 81240,
+      "source_display_value": "22h 34min"
+    },
+    {
+      "device_id": "apple_iphone_16_pro_max",
+      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "workload": "gaming",
+      "runtime_seconds": 36240,
+      "source_display_value": "10h 04min"
+    },
+    {
+      "device_id": "oneplus_13",
+      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "workload": "web_browsing",
+      "runtime_seconds": 53220,
+      "source_display_value": "14h 47min"
+    },
+    {
+      "device_id": "oneplus_13",
+      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "workload": "video_playback",
+      "runtime_seconds": 84300,
+      "source_display_value": "23h 25min"
+    },
+    {
+      "device_id": "oneplus_13",
+      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "workload": "gaming",
+      "runtime_seconds": 28080,
+      "source_display_value": "7h 48min"
+    }
+  ],
+  "unsupported_workloads": {
+    "camera_use": "No isolated, protocol-compatible camera runtime observation is present in the calibration dataset. Positive camera-use hours remain unresolved."
+  }
+}
