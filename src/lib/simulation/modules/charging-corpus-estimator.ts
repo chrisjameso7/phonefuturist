@@ -71,32 +71,43 @@ export function estimateChargingFromCorpus(
     };
   }
 
-  const weights = comparable.references.map((reference) => ({
-    reference,
-    weight: Math.max(reference.score, 0.05) ** 2,
-  }));
+  const weights = comparable.references.map((reference) => {
+    const capacityScale =
+      reference.batteryMah !== undefined && reference.batteryMah > 0
+        ? query.batteryMah / reference.batteryMah
+        : 1;
 
-  const fullValues = weights.flatMap(({ reference, weight }) =>
+    return {
+      reference,
+      weight: Math.max(reference.score, 0.05) ** 2,
+      capacityScale,
+    };
+  });
+
+  const fullValues = weights.flatMap(({ reference, weight, capacityScale }) =>
     reference.fullChargeMinutes !== undefined
-      ? [{ value: reference.fullChargeMinutes, weight }]
+      ? [{ value: reference.fullChargeMinutes * capacityScale, weight }]
       : [],
   );
 
-  const p30Values = weights.flatMap(({ reference, weight }) =>
+  const p30Values = weights.flatMap(({ reference, weight, capacityScale }) =>
     reference.thirtyMinutePercent !== undefined
-      ? [{ value: reference.thirtyMinutePercent, weight }]
+      ? [{
+          value: clamp(reference.thirtyMinutePercent / capacityScale, 0, 100),
+          weight,
+        }]
       : [],
   );
 
-  const t50Values = weights.flatMap(({ reference, weight }) =>
+  const t50Values = weights.flatMap(({ reference, weight, capacityScale }) =>
     reference.timeTo50Minutes !== undefined
-      ? [{ value: reference.timeTo50Minutes, weight }]
+      ? [{ value: reference.timeTo50Minutes * capacityScale, weight }]
       : [],
   );
 
-  const t80Values = weights.flatMap(({ reference, weight }) =>
+  const t80Values = weights.flatMap(({ reference, weight, capacityScale }) =>
     reference.timeTo80Minutes !== undefined
-      ? [{ value: reference.timeTo80Minutes, weight }]
+      ? [{ value: reference.timeTo80Minutes * capacityScale, weight }]
       : [],
   );
 
@@ -130,7 +141,7 @@ export function estimateChargingFromCorpus(
     confidence: clamp(confidence, 0, 1),
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     note:
-      'Estimate is weighted toward the closest released-device charging references. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.',
+      'Estimate is weighted toward the closest released-device charging references. Measured milestone times are normalized for battery-capacity differences before aggregation, so equal advertised wattage does not imply equal charge time. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.',
   };
 
   if (p30Values.length && expectedP30 !== undefined) {
