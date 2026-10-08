@@ -12,6 +12,7 @@ export interface ComparableDeviceQuery {
   refreshRateHz?: number;
   wiredChargingWatts?: number;
   wirelessChargingWatts?: number;
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
   thicknessMm?: number;
   weightG?: number;
   bodyVolumeMm3?: number;
@@ -162,6 +163,13 @@ export function findComparableDevices(
       weighted += s * 0.75;
       weightTotal += 0.75;
       if (s > 0.75) reasons.push('similar wireless charging class');
+    }
+
+    if (query.cellArchitecture && device.charging?.cellArchitecture) {
+      const same = device.charging.cellArchitecture === query.cellArchitecture;
+      weighted += (same ? 1 : 0) * 2.25;
+      weightTotal += 2.25;
+      if (same) reasons.push('same charging cell architecture');
     }
 
     if (query.thicknessMm && device.dimensions?.thicknessMm) {
