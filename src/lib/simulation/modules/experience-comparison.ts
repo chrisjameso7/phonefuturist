@@ -142,14 +142,21 @@ export function compareSimulationExperienceToReleasedDevice(
     }
   }
 
+  const wiredWatts = snapshot.deviceContext?.charging?.wiredWatts;
+
   if (
     simCapacity !== undefined &&
-    snapshot.input.charging?.wiredWatts !== undefined
+    wiredWatts !== undefined
   ) {
     const charging = estimateChargingFromCorpus(corpus, {
       batteryMah: simCapacity,
-      wiredWatts: snapshot.input.charging.wiredWatts,
-      manufacturer: snapshot.input.manufacturer,
+      wiredChargingWatts: wiredWatts,
+      manufacturer: snapshot.deviceContext?.manufacturer,
+      region: snapshot.deviceContext?.region,
+      batteryChemistry: snapshot.deviceContext?.batteryChemistry,
+      cellArchitecture: snapshot.deviceContext?.cellArchitecture,
+      chargingStandard:
+        snapshot.deviceContext?.charging?.chargingStandard,
       displayDiagonalInches: snapshot.input.displays.primary.diagonalInches,
       thicknessMm: snapshot.input.dimensions?.thicknessMm,
       weightG: snapshot.input.dimensions?.weightG,
@@ -165,18 +172,21 @@ export function compareSimulationExperienceToReleasedDevice(
 
     if (
       charging.status === 'resolved' &&
-      charging.estimate &&
+      charging.estimate?.timeTo100Minutes &&
       releasedFull
     ) {
+      const simulatedFullMinutes =
+        charging.estimate.timeTo100Minutes.expected;
+
       deltas.push({
         domain: 'charging',
         label: 'Full wired charge time',
-        simulated: charging.estimate.timeTo100Minutes.expected,
+        simulated: simulatedFullMinutes,
         released: releasedFull.value,
         unit: 'min',
-        delta: charging.estimate.timeTo100Minutes.expected - releasedFull.value,
+        delta: simulatedFullMinutes - releasedFull.value,
         deltaPercent: pctDelta(
-          charging.estimate.timeTo100Minutes.expected,
+          simulatedFullMinutes,
           releasedFull.value,
         ),
         confidence: charging.estimate.confidence,
