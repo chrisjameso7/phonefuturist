@@ -127,10 +127,51 @@ function predictionFromReference(
   };
 }
 
+const BRAND_FAMILIES: Record<string, string> = {
+  samsung: 'conservative',
+  google: 'conservative',
+  apple: 'conservative',
+  oneplus: 'bbk',
+  oppo: 'bbk',
+  realme: 'bbk',
+  vivo: 'bbk',
+  iqoo: 'bbk',
+  xiaomi: 'xiaomi',
+  poco: 'xiaomi',
+  redmi: 'xiaomi',
+  honor: 'huawei-honor',
+  huawei: 'huawei-honor',
+  motorola: 'motorola',
+  redmagic: 'gaming',
+  'zte nubia': 'gaming',
+  asus: 'gaming',
+};
+
+function inferBrand(name: string | undefined): string | undefined {
+  const normalized = name?.trim().toLowerCase();
+  if (!normalized) return undefined;
+
+  const manufacturers = [...new Set(
+    refs.map((reference) => reference.manufacturer.toLowerCase()),
+  )].sort((a, b) => b.length - a.length);
+
+  return manufacturers.find(
+    (manufacturer) =>
+      normalized === manufacturer ||
+      normalized.startsWith(`${manufacturer} `) ||
+      normalized.includes(` ${manufacturer} `),
+  );
+}
+
+function brandFamily(manufacturer: string): string | undefined {
+  return BRAND_FAMILIES[manufacturer.toLowerCase()];
+}
+
 function scoreReference(
   capacityMah: number,
   wiredChargerW: number,
   reference: ChargingReference,
+  inferredBrand?: string,
 ): number {
   const capacityDistance = Math.abs(
     Math.log(capacityMah / reference.battery_capacity_mah),
@@ -140,7 +181,36 @@ function scoreReference(
     Math.log(wiredChargerW / reference.wired_charger_w),
   );
 
-  return chargerDistance * 1.6 + capacityDistance;
+  let brandAdjustment = 0;
+
+  if (inferredBrand) {
+    const referenceBrand = reference.manufacturer.toLowerCase();
+
+    if (referenceBrand === inferredBrand) {
+      // Same-brand charging control, taper strategy and thermal limits are
+      // often more predictive than raw advertised wattage alone.
+      brandAdjustment = -0.9;
+    } else {
+      const inputFamily = brandFamily(inferredBrand);
+      const referenceFamily = brandFamily(referenceBrand);
+
+      if (
+        inputFamily !== undefined &&
+        referenceFamily !== undefined &&
+        inputFamily === referenceFamily
+      ) {
+        brandAdjustment = -0.35;
+      } else {
+        brandAdjustment = 0.15;
+      }
+    }
+  }
+
+  return (
+    chargerDistance * 1.6 +
+    capacityDistance +
+    brandAdjustment
+  );
 }
 
 function bounds(values: number[]): { min: number; max: number } {
@@ -257,10 +327,17 @@ export function simulateCharging(
     };
   }
 
+  const inferredBrand = inferBrand(input.deviceName);
+
   const neighbors = refs
     .map((reference) => ({
       reference,
-      score: scoreReference(capacity, chargerW, reference),
+      score: scoreReference(
+        capacity,
+        chargerW,
+        reference,
+        inferredBrand,
+      ),
     }))
     .sort((a, b) => a.score - b.score)
     .slice(0, 7);
@@ -289,7 +366,9 @@ export function simulateCharging(
       ),
       neighborIds: neighbors.map(({ reference }) => reference.id),
       note:
-        'Estimate uses the seven closest released-phone references by charger power and battery capacity. It preserves real charging taper by deriving the curve from each reference phone’s measured 30-minute and full-charge observations instead of assuming charger wattage is sustained.',
+        inferredBrand
+          ? 'Estimate uses the seven closest released-phone references by charger power and battery capacity, with extra weight for the same manufacturer and a smaller weight for closely related charging families. This helps future devices follow the brand’s real charging behavior instead of treating every 60 W phone alike.'
+          : 'Estimate uses the seven closest released-phone references by charger power and battery capacity. It preserves real charging taper by deriving the curve from each reference phone’s measured 30-minute and full-charge observations instead of assuming charger wattage is sustained.',
     },
   };
 }
