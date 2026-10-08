@@ -1,7 +1,8 @@
 import runtimeJson from '../../../data/calibration/battery/workload-runtimes.json';
 import type { SimulationInput } from './types';
+import { applySystemEfficiencyToDrain } from './modules/system-efficiency';
 
-export const WORKLOAD_RUNTIME_VERSION = '0.5.1';
+export const WORKLOAD_RUNTIME_VERSION = '0.6.0';
 
 export type SupportedActiveWorkload =
   | 'web_browsing'
@@ -63,7 +64,16 @@ export interface ActiveUseRuntimeResult {
       workload: SupportedActiveWorkload;
       hoursPerDay: number;
       share: number;
+      baselineDrainMahPerHour: { min: number; max: number };
       drainMahPerHour: { min: number; max: number };
+      systemEfficiency: {
+        applied: boolean;
+        consumptionMultiplier: number;
+        evidenceKind?: string;
+        confidence?: number;
+        sourceIds?: string[];
+        note?: string;
+      };
     }>;
     note: string;
   };
@@ -298,11 +308,24 @@ export function simulateActiveUseRuntime(
     };
   }
 
-  const resolved = supported.map(([workload, hours]) => ({
-    workload,
-    hours,
-    band: resolveWorkloadDrainBand(input, workload),
-  }));
+  const resolved = supported.map(([workload, hours]) => {
+    const band = resolveWorkloadDrainBand(input, workload);
+    const adjusted = band
+      ? applySystemEfficiencyToDrain(
+          band.minMahPerHour,
+          band.maxMahPerHour,
+          input.systemEfficiency,
+          workload,
+        )
+      : undefined;
+
+    return {
+      workload,
+      hours,
+      band,
+      adjusted,
+    };
+  });
 
   const missing = resolved
     .filter((entry) => !entry.band)
@@ -324,18 +347,41 @@ export function simulateActiveUseRuntime(
   let minDrain = 0;
   let maxDrain = 0;
 
-  const workloads = resolved.map(({ workload, hours, band }) => {
+  const workloads = resolved.map(({ workload, hours, band, adjusted }) => {
     const share = hours / activeHoursPerDay;
-    minDrain += band!.minMahPerHour * share;
-    maxDrain += band!.maxMahPerHour * share;
+    const effective = adjusted!.adjusted;
+
+    minDrain += effective.minMahPerHour * share;
+    maxDrain += effective.maxMahPerHour * share;
 
     return {
       workload,
       hoursPerDay: hours,
       share,
-      drainMahPerHour: {
+      baselineDrainMahPerHour: {
         min: band!.minMahPerHour,
         max: band!.maxMahPerHour,
+      },
+      drainMahPerHour: {
+        min: effective.minMahPerHour,
+        max: effective.maxMahPerHour,
+      },
+      systemEfficiency: {
+        applied: adjusted!.efficiency.applied,
+        consumptionMultiplier:
+          adjusted!.efficiency.consumptionMultiplier,
+        ...(adjusted!.efficiency.evidenceKind
+          ? { evidenceKind: adjusted!.efficiency.evidenceKind }
+          : {}),
+        ...(adjusted!.efficiency.confidence !== undefined
+          ? { confidence: adjusted!.efficiency.confidence }
+          : {}),
+        ...(adjusted!.efficiency.sourceIds
+          ? { sourceIds: adjusted!.efficiency.sourceIds }
+          : {}),
+        ...(adjusted!.efficiency.note
+          ? { note: adjusted!.efficiency.note }
+          : {}),
       },
     };
   });
@@ -358,7 +404,7 @@ export function simulateActiveUseRuntime(
       },
       workloads,
       note:
-        'Active-use equivalent only. The model is capacity-normalized against a 100-plus-phone recent released-device calibration database, with a broad common-protocol cohort and retained cross-source references. Idle and standby drain are not included, so this is not a full 24-hour real-world battery-life prediction.',
+        'Active-use equivalent only. The model is capacity-normalized against the released-device calibration database, then applies only explicitly supplied workload-specific system-efficiency evidence. Missing software coefficients are neutral rather than guessed from brand or OS. Idle and standby drain are not included, so this is not a full 24-hour real-world battery-life prediction.',
     },
   };
 }
