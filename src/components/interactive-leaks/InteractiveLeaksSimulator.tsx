@@ -1695,6 +1695,115 @@ export default function InteractiveLeaksSimulator() {
                     <span>Known volume cm³</span>
                   </div>
                 </div>
+
+                {result.cameras?.map((camera, index) => (
+                  <div
+                    className="il-camera-result"
+                    key={`${camera.type}-${index}`}
+                  >
+                    <strong>
+                      {camera.type.replaceAll('_', ' ')} · Camera {index + 1}
+                    </strong>
+
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(camera.approximateSensorAreaMm2, 1)}
+                        </strong>
+                        <span>Approx. sensor area mm²</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.approximatePixelPitchMicrons,
+                            2,
+                          )}
+                          {camera.approximatePixelPitchMicrons !== undefined
+                            ? ' µm'
+                            : ''}
+                        </strong>
+                        <span>Approx. pixel pitch</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.geometricLightCaptureIndex,
+                            2,
+                          )}
+                        </strong>
+                        <span>Total-light geometry proxy</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.perPixelLightCaptureIndex,
+                            3,
+                          )}
+                        </strong>
+                        <span>Per-pixel light proxy</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.equivalentApertureFNumber !== undefined
+                            ? `f/${format(
+                                camera.equivalentApertureFNumber,
+                                1,
+                              )}`
+                            : 'Unknown'}
+                        </strong>
+                        <span>35 mm equivalent aperture</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.diagonalFieldOfViewDeg,
+                            1,
+                          )}
+                          {camera.diagonalFieldOfViewDeg !== undefined
+                            ? '°'
+                            : ''}
+                        </strong>
+                        <span>Approx. diagonal field of view</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.entrancePupilDiameterMm,
+                            2,
+                          )}
+                          {camera.entrancePupilDiameterMm !== undefined
+                            ? ' mm'
+                            : ''}
+                        </strong>
+                        <span>Entrance pupil</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.airyDiskToPixelPitchRatio,
+                            2,
+                          )}
+                        </strong>
+                        <span>Diffraction / pixel pitch ratio</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      Light-capture values are geometric comparison proxies
+                      derived from optical sensor format and aperture. They do
+                      not claim final image quality, exposure or noise because
+                      shutter time, lens transmission, sensor efficiency,
+                      stabilization and processing are not inferred.
+                    </p>
+                  </div>
+                ))}
               </div>
 
               <div className="il-result-group">
