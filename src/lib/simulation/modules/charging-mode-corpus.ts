@@ -36,7 +36,9 @@ export function buildChargingModeCorpus(): DeviceCorpus {
       ...(row.advertisedWirelessWatts !== undefined
         ? { advertisedWirelessWatts: row.advertisedWirelessWatts }
         : {}),
-      ...(row.cellArchitecture
+      ...(row.cellArchitecture === 'single-cell' ||
+      row.cellArchitecture === 'dual-cell' ||
+      row.cellArchitecture === 'unknown'
         ? { cellArchitecture: row.cellArchitecture }
         : {}),
     },
