@@ -121,7 +121,7 @@ describe('unified corpus battery experience', () => {
       simulation: {
         formFactor: 'phone',
         displays: {
-          primary: { diagonalInches: 6.8, refreshRateHz: 120 },
+          primary: { diagonalInches: 6.8 },
         },
         dimensions: { thicknessMm: 8.5, weightG: 220 },
         battery: { cells: [{ capacityMah: 5000 }] },
