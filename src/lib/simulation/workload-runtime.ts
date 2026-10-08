@@ -1,4 +1,3 @@
-import devicesJson from '../../../data/calibration/battery/devices.json';
 import runtimeJson from '../../../data/calibration/battery/workload-runtimes.json';
 
 import type { SimulationInput } from './types';
@@ -16,17 +15,13 @@ export type UserActiveWorkload =
 
 export type DailyWorkloadHours = Partial<Record<UserActiveWorkload, number>>;
 
-interface CalibrationDevice {
-  id: string;
+interface RuntimeMeasurement {
+  device_id: string;
   manufacturer: string;
   model: string;
-  battery: {
-    rated_energy_wh?: number | null;
-    typical_energy_wh?: number | null;
-  };
-}
+  release_date: string;
+  capacity_mah: number;
 
-interface RuntimeMeasurement {
   device_id: string;
   workload: SupportedActiveWorkload;
   runtime_seconds: number;
@@ -81,50 +76,36 @@ function positive(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
-function energyForDevice(device: CalibrationDevice): number | undefined {
-  if (positive(device.battery.rated_energy_wh)) return device.battery.rated_energy_wh;
-  if (positive(device.battery.typical_energy_wh)) return device.battery.typical_energy_wh;
-  return undefined;
-}
-
-function inputEnergy(input: SimulationInput): number | undefined {
+function inputCapacityMah(input: SimulationInput): number | undefined {
   const cells = input.battery?.cells ?? [];
   if (
     !cells.length ||
-    !cells.every(
-      (cell) =>
-        positive(cell.capacityMah) &&
-        positive(cell.nominalVoltageV),
-    )
+    !cells.every((cell) => positive(cell.capacityMah))
   ) return undefined;
 
   return cells.reduce(
-    (sum, cell) =>
-      sum + (cell.capacityMah! * cell.nominalVoltageV!) / 1000,
+    (sum, cell) => sum + cell.capacityMah!,
     0,
   );
 }
 
-const devices = (devicesJson as unknown as { devices: CalibrationDevice[] }).devices;
-const measurements = (runtimeJson as unknown as { measurements: RuntimeMeasurement[] }).measurements;
-const deviceById = new Map(devices.map((device) => [device.id, device]));
-
 export const WORKLOAD_POWER_REFERENCES = measurements.flatMap((measurement) => {
-  const device = deviceById.get(measurement.device_id);
-  if (!device || !positive(measurement.runtime_seconds)) return [];
-
-  const energyWh = energyForDevice(device);
-  if (!energyWh) return [];
+  if (
+    !positive(measurement.runtime_seconds) ||
+    !positive(measurement.capacity_mah)
+  ) return [];
 
   const runtimeHours = measurement.runtime_seconds / 3600;
+  const drainMahPerHour = measurement.capacity_mah / runtimeHours;
+
   return [{
     workload: measurement.workload,
-    deviceId: device.id,
-    manufacturer: device.manufacturer,
-    model: device.model,
-    energyWh,
+    deviceId: measurement.device_id,
+    manufacturer: measurement.manufacturer,
+    model: measurement.model,
+    capacityMah: measurement.capacity_mah,
     runtimeHours,
-    powerW: energyWh / runtimeHours,
+    drainMahPerHour,
     sourceUrl: measurement.source_url,
   }];
 });
@@ -133,9 +114,9 @@ function matchReference(
   input: SimulationInput,
   workload: SupportedActiveWorkload,
 ) {
-  const energyWh = inputEnergy(input);
+  const capacityMah = inputCapacityMah(input);
   const name = input.name?.trim().toLowerCase();
-  if (!energyWh || !name) return undefined;
+  if (!capacityMah || !name) return undefined;
 
   const ENERGY_TOLERANCE = 0.16;
 
@@ -147,7 +128,7 @@ function matchReference(
       name === reference.model.toLowerCase() ||
       name === fullName;
     const closeEnergy =
-      Math.abs(reference.energyWh - energyWh) / reference.energyWh <=
+      Math.abs(reference.capacityMah - capacityMah) / reference.capacityMah <=
       ENERGY_TOLERANCE;
     return sameName && closeEnergy;
   });
@@ -168,8 +149,8 @@ export function resolveWorkloadPowerBand(
   if (matched) {
     return {
       workload,
-      minW: matched.powerW,
-      maxW: matched.powerW,
+      minW: matched.drainMahPerHour,
+      maxW: matched.drainMahPerHour,
       referenceCount: 1,
       basis: 'matched-reference',
       reference: {
@@ -177,12 +158,12 @@ export function resolveWorkloadPowerBand(
         manufacturer: matched.manufacturer,
         model: matched.model,
         runtimeHours: matched.runtimeHours,
-        powerW: matched.powerW,
+        powerW: matched.drainMahPerHour,
       },
     };
   }
 
-  const power = refs.map((reference) => reference.powerW).sort((a, b) => a - b);
+  const power = refs.map((reference) => reference.drainMahPerHour).sort((a, b) => a - b);
 
   return {
     workload,
@@ -197,17 +178,17 @@ export function simulateActiveUseRuntime(
   input: SimulationInput,
   dailyHours: DailyWorkloadHours,
 ): ActiveUseRuntimeResult {
-  const energyWh = inputEnergy(input);
+  const capacityMah = inputCapacityMah(input);
 
-  if (!energyWh) {
+  if (!capacityMah) {
     return {
       version: WORKLOAD_RUNTIME_VERSION,
       status: 'unresolved',
       unresolved: {
         code: 'MISSING_ENERGY',
         message:
-          'Battery capacity and nominal voltage are required to calculate active-use runtime.',
-        missing: ['battery.capacityMah', 'battery.nominalVoltageV'],
+          'Battery capacity is required to calculate active-use runtime.',
+        missing: ['battery.capacityMah'],
       },
     };
   }
@@ -328,8 +309,8 @@ export function simulateActiveUseRuntime(
   });
 
   const runtimeHours = {
-    min: energyWh / maxPower,
-    max: energyWh / minPower,
+    min: capacityMah / maxPower,
+    max: capacityMah / minPower,
   };
 
   return {
