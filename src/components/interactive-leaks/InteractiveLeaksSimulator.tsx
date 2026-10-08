@@ -2560,6 +2560,98 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
+                    {cameraExperiences[index]?.sensitivity.length ? (
+                      <div className="il-camera-sensitivity">
+                        <span className="il-result-label">
+                          Optical what-if sensitivity
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {cameraExperiences[index]?.sensitivity.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+
+                                {scenario.deltaTotalLightPercent !== undefined ? (
+                                  <span>
+                                    Δ total light{' '}
+                                    {scenario.deltaTotalLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaTotalLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPerPixelLightPercent !== undefined ? (
+                                  <span>
+                                    Δ per-pixel light{' '}
+                                    {scenario.deltaPerPixelLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPerPixelLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPixelPitchPercent !== undefined ? (
+                                  <span>
+                                    Δ pixel pitch{' '}
+                                    {scenario.deltaPixelPitchPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPixelPitchPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaEquivalentAperturePercent !== undefined ? (
+                                  <span>
+                                    Δ equiv. aperture{' '}
+                                    {scenario.deltaEquivalentAperturePercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaEquivalentAperturePercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.sensorFootprintPressurePercent !== undefined ? (
+                                  <small>
+                                    Sensor footprint pressure{' '}
+                                    {scenario.sensorFootprintPressurePercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.sensorFootprintPressurePercent,
+                                      1,
+                                    )}%
+                                  </small>
+                                ) : null}
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                        <p className="il-help">
+                          Controlled optical probes only. Sensor footprint
+                          pressure is a linear sensor-size proxy, not a claim
+                          about exact camera-module volume.
+                        </p>
+                      </div>
+                    ) : null}
+
                     {cameraExperiences[index]?.outcomes.some(
                       (outcome) => outcome.status === 'resolved',
                     ) ? (
