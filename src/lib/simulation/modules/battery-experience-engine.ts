@@ -17,6 +17,10 @@ export interface BatteryExperienceInput {
   wirelessWatts?: number;
   wiredChargingStandard?: string;
   wirelessChargingStandard?: string;
+  dailyUseHours?: Partial<Record<
+    'web_browsing' | 'video_playback' | 'gaming',
+    number
+  >>;
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -38,11 +42,28 @@ export interface BatteryRuntimeExperience {
   note?: string;
 }
 
+export interface MixedUseBatteryEstimate {
+  activeHoursPerDay: number;
+  expectedDrainMahPerDay: number;
+  minDrainMahPerDay: number;
+  maxDrainMahPerDay: number;
+  expectedDaysPerCharge: number;
+  minDaysPerCharge: number;
+  maxDaysPerCharge: number;
+  confidence: number;
+  workloads: Array<{
+    workload: 'web_browsing' | 'video_playback' | 'gaming';
+    hoursPerDay: number;
+    expectedDrainMahPerHour: number;
+  }>;
+}
+
 export interface BatteryExperienceResult {
   version: string;
   status: 'resolved' | 'partial' | 'unresolved';
   capacityMah?: number;
   runtimes: BatteryRuntimeExperience[];
+  mixedUse?: MixedUseBatteryEstimate;
   charging?: ReturnType<typeof estimateChargingFromCorpus>;
   wirelessCharging?: ReturnType<typeof estimateWirelessChargingFromCorpus>;
   warnings: string[];
@@ -126,6 +147,90 @@ export function simulateBatteryExperience(
     };
   });
 
+  let mixedUse: MixedUseBatteryEstimate | undefined;
+
+  if (input.dailyUseHours) {
+    const selected = runtimes.flatMap((runtime) => {
+      const hours = input.dailyUseHours?.[runtime.workload] ?? 0;
+
+      if (
+        hours <= 0 ||
+        runtime.status !== 'resolved' ||
+        runtime.expectedDrainMahPerHour === undefined
+      ) {
+        return [];
+      }
+
+      const sourceBand = resolveCorpusRuntimeBand(
+        corpus,
+        input.simulation,
+        runtime.workload,
+      );
+
+      if (sourceBand.status !== 'resolved' || !sourceBand.estimate) {
+        return [];
+      }
+
+      return [{
+        workload: runtime.workload,
+        hoursPerDay: hours,
+        expectedDrainMahPerHour:
+          sourceBand.estimate.expectedMahPerHour,
+        minDrainMahPerHour: sourceBand.estimate.minMahPerHour,
+        maxDrainMahPerHour: sourceBand.estimate.maxMahPerHour,
+        confidence: sourceBand.estimate.confidence,
+      }];
+    });
+
+    const activeHoursPerDay = selected.reduce(
+      (sum, row) => sum + row.hoursPerDay,
+      0,
+    );
+
+    if (activeHoursPerDay > 0 && selected.length > 0) {
+      const expectedDrainMahPerDay = selected.reduce(
+        (sum, row) =>
+          sum + row.hoursPerDay * row.expectedDrainMahPerHour,
+        0,
+      );
+      const minDrainMahPerDay = selected.reduce(
+        (sum, row) =>
+          sum + row.hoursPerDay * row.minDrainMahPerHour,
+        0,
+      );
+      const maxDrainMahPerDay = selected.reduce(
+        (sum, row) =>
+          sum + row.hoursPerDay * row.maxDrainMahPerHour,
+        0,
+      );
+
+      const confidence =
+        selected.reduce(
+          (sum, row) => sum + row.confidence * row.hoursPerDay,
+          0,
+        ) / activeHoursPerDay;
+
+      mixedUse = {
+        activeHoursPerDay,
+        expectedDrainMahPerDay,
+        minDrainMahPerDay,
+        maxDrainMahPerDay,
+        expectedDaysPerCharge:
+          capacity / Math.max(expectedDrainMahPerDay, Number.EPSILON),
+        minDaysPerCharge:
+          capacity / Math.max(maxDrainMahPerDay, Number.EPSILON),
+        maxDaysPerCharge:
+          capacity / Math.max(minDrainMahPerDay, Number.EPSILON),
+        confidence,
+        workloads: selected.map((row) => ({
+          workload: row.workload,
+          hoursPerDay: row.hoursPerDay,
+          expectedDrainMahPerHour: row.expectedDrainMahPerHour,
+        })),
+      };
+    }
+  }
+
   let charging: ReturnType<typeof estimateChargingFromCorpus> | undefined;
 
   if (input.wiredWatts !== undefined) {
@@ -202,6 +307,7 @@ export function simulateBatteryExperience(
     status,
     capacityMah: capacity,
     runtimes,
+    ...(mixedUse ? { mixedUse } : {}),
     ...(charging ? { charging } : {}),
     ...(wirelessCharging ? { wirelessCharging } : {}),
     warnings,
