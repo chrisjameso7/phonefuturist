@@ -1,0 +1,39 @@
+{
+  "version": "future-soc-priors-0.1.0",
+  "principles": [
+    "Unreleased SoCs receive probabilistic priors, never fixed winner labels.",
+    "Priors must distinguish peak performance, sustained performance, power efficiency, thermals, modem/RF and workload class.",
+    "Current-generation evidence can shift priors for successors, but uncertainty must remain wider than for released silicon.",
+    "Architecture/process rumors are supporting evidence only until silicon measurements exist."
+  ],
+  "priors": [
+    {
+      "soc": "Exynos 2700",
+      "status": "unreleased",
+      "baselineAgainst": "Snapdragon 8 Elite Gen 5 class",
+      "prior": {
+        "sustainedPerformance": "edge",
+        "sustainedEfficiency": "edge",
+        "peakSingleCore": "uncertain_to_disadvantage",
+        "peakMultiCore": "competitive",
+        "gpuSustained": "edge",
+        "gamingThermals": "uncertain",
+        "modemEfficiency": "uncertain",
+        "confidence": 0.42
+      },
+      "rationale": [
+        "Snapdragon 8 Elite Gen 5 shows repeated thermal/stability problems in conventional passive-cooling flagships.",
+        "Exynos 2600 already demonstrated strong synthetic sustained stability in some workloads despite weaker real-game thermals.",
+        "Rumors claim Exynos 2700 uses Samsung SF2P with materially lower power than Exynos 2600, but this is unverified.",
+        "Early Exynos 2700 engineering-sample benchmarks are too immature for final performance ranking."
+      ],
+      "evidenceUrls": [
+        "https://www.androidauthority.com/realme-gt8-pro-benchmarks-3613186/",
+        "https://www.phonearena.com/news/the-snapdragon-8-elite-gen-5-is-fast-but-not-all-phones-can-handle-the-heat_id175544",
+        "https://www.androidauthority.com/exynos-vs-snapdragon-galaxy-s26-benchmarks-3653459/",
+        "https://www.gsmarena.com/samsung_exynos_2700_chipset_details_leak-news-71076.php",
+        "https://www.gsmarena.com/samsung_exynos_2700_emerges_in_early_geekbench_listings-news-72296.php"
+      ]
+    }
+  ]
+}
