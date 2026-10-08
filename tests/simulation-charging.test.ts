@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   CHARGING_MODEL_VERSION,
+  CHARGING_ACTIVE_REFERENCE_COUNT,
   CHARGING_REFERENCE_COUNT,
   simulateCharging,
 } from '../src/lib/simulation/charging';
 
 describe('v0.6.0 charging model', () => {
-  it('ships a 40-phone calibration cohort', () => {
+  it('ships a 100-plus-phone charging database', () => {
     expect(CHARGING_MODEL_VERSION).toBe('0.6.0');
-    expect(CHARGING_REFERENCE_COUNT).toBe(40);
+    expect(CHARGING_REFERENCE_COUNT).toBe(119);
+    expect(CHARGING_ACTIVE_REFERENCE_COUNT).toBe(111);
+    expect(CHARGING_REFERENCE_COUNT).toBeGreaterThan(100);
   });
 
   it('returns the measured values for a matched reference phone', () => {
