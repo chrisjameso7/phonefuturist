@@ -740,6 +740,46 @@ export default function InteractiveLeaksSimulator() {
   const wirelessChargingResult =
     batteryExperience?.wirelessCharging;
 
+  const targetSocPowerW = numeric(form.targetSocPowerW);
+  const ambientTemperatureC = numeric(form.ambientTemperatureC);
+  const thermalResistanceCPerW = numeric(
+    form.thermalResistanceCPerW,
+  );
+  const thermalMassJPerC = numeric(form.thermalMassJPerC);
+  const throttleTemperatureC = numeric(
+    form.throttleTemperatureC,
+  );
+
+  const thermalResult =
+    simulationInput &&
+    result &&
+    targetSocPowerW !== undefined &&
+    ambientTemperatureC !== undefined &&
+    thermalResistanceCPerW !== undefined &&
+    thermalMassJPerC !== undefined &&
+    throttleTemperatureC !== undefined
+      ? simulateLiveThermalExperience({
+          domain: form.thermalDomain,
+          batteryMah: result.battery?.totalCapacityMah,
+          socVendor: form.socVendor.trim() || undefined,
+          displayDiagonalInches:
+            simulationInput.displays.primary.diagonalInches,
+          thicknessMm: simulationInput.dimensions?.thicknessMm,
+          weightG: simulationInput.dimensions?.weightG,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+          targetPowerW: targetSocPowerW,
+          ambientTemperatureC,
+          thermalResistanceCPerW,
+          thermalMassJPerC,
+          throttleTemperatureC,
+          durationSeconds:
+            numeric(form.thermalDurationSeconds) ?? 600,
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
