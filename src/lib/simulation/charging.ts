@@ -14,9 +14,9 @@ export interface ChargingReference {
   model: string;
   release_date: string;
   battery_capacity_mah: number;
-  wired_charger_w: number;
-  full_charge_minutes: number;
-  charge_30m_percent: number;
+  wired_charger_w: number | null;
+  full_charge_minutes: number | null;
+  charge_30m_percent: number | null;
 }
 
 export interface ChargingEstimate {
@@ -49,9 +49,20 @@ export interface ChargingEstimate {
   };
 }
 
-const refs = (
+const allRefs = (
   chargingJson as unknown as { references: ChargingReference[] }
 ).references;
+
+const refs = allRefs.filter(
+  (reference): reference is ChargingReference & {
+    wired_charger_w: number;
+    full_charge_minutes: number;
+    charge_30m_percent: number;
+  } =>
+    positive(reference.wired_charger_w) &&
+    positive(reference.full_charge_minutes) &&
+    positive(reference.charge_30m_percent),
+);
 
 function positive(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;
@@ -373,4 +384,5 @@ export function simulateCharging(
   };
 }
 
-export const CHARGING_REFERENCE_COUNT = refs.length;
+export const CHARGING_REFERENCE_COUNT = allRefs.length;
+export const CHARGING_ACTIVE_REFERENCE_COUNT = refs.length;
