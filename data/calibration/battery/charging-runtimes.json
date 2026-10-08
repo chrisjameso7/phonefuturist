@@ -1,12 +1,13 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "dataset": "phonefuturist_interactive_leaks_charging",
   "model_version": "0.6.0",
   "cohort_window": "2025-01-01 through 2026-10-08",
   "protocol_notes": [
-    "Primary comparable observations use PhoneArena's controlled wired charging test: powered-on phone starting at 1%, compatible maximum-speed charger, controlled lab environment.",
-    "Selected flagship records also preserve independent secondary observations from GSMArena and Tom's Guide to expose cross-lab variance instead of assuming one lab is ground truth.",
-    "Reference values are observations. The simulator derives an empirical charging envelope from nearby battery-capacity and charger-power references; it does not treat advertised charger wattage as sustained battery input power."
+    "Primary comparable observations use PhoneArena's controlled wired charging benchmark for recent phones.",
+    "Selected flagship records preserve independent secondary observations from GSMArena and Tom's Guide to expose cross-lab variance.",
+    "Reference values are observations. The simulator derives its charging envelope from released-device behavior and does not assume advertised charger wattage is sustained.",
+    "Only rows with measured full-charge time, measured 30-minute percentage and stated wired charging wattage are active model references."
   ],
   "sources": [
     {
@@ -27,29 +28,13 @@
   ],
   "references": [
     {
-      "id": "vivo_x300_pro",
-      "manufacturer": "vivo",
-      "model": "X300 Pro",
-      "release_date": "2025-10-17",
-      "battery_capacity_mah": 6510,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 31,
-      "charge_30m_percent": 98,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
       "id": "honor_magic7_pro",
       "manufacturer": "Honor",
       "model": "Magic7 Pro",
-      "release_date": "2025-01-15",
+      "release_date": "Jan 15, 2025",
       "battery_capacity_mah": 5270,
       "wired_charger_w": 100,
-      "full_charge_minutes": 31,
+      "full_charge_minutes": 47,
       "charge_30m_percent": 98,
       "primary_source": {
         "provider": "PhoneArena",
@@ -62,75 +47,11 @@
       "id": "xiaomi_poco_f7_ultra",
       "manufacturer": "Xiaomi",
       "model": "Poco F7 Ultra",
-      "release_date": "2025-03-27",
+      "release_date": "Mar 27, 2025",
       "battery_capacity_mah": 5300,
       "wired_charger_w": 120,
-      "full_charge_minutes": 32,
+      "full_charge_minutes": 75,
       "charge_30m_percent": 99,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "oppo_find_x8_ultra",
-      "manufacturer": "OPPO",
-      "model": "Find X8 Ultra",
-      "release_date": "2025-04-16",
-      "battery_capacity_mah": 6100,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 32,
-      "charge_30m_percent": 98,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_poco_f7_pro",
-      "manufacturer": "Xiaomi",
-      "model": "Poco F7 Pro",
-      "release_date": "2025-03-27",
-      "battery_capacity_mah": 6000,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 36,
-      "charge_30m_percent": 88,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "redmagic_10s_pro",
-      "manufacturer": "RedMagic",
-      "model": "10S Pro",
-      "release_date": "2025-06-04",
-      "battery_capacity_mah": 7050,
-      "wired_charger_w": 80,
-      "full_charge_minutes": 38,
-      "charge_30m_percent": 88,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_poco_f8_ultra",
-      "manufacturer": "Xiaomi",
-      "model": "Poco F8 Ultra",
-      "release_date": "2025-11-26",
-      "battery_capacity_mah": 6500,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 39,
-      "charge_30m_percent": 78,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -142,10 +63,10 @@
       "id": "huawei_pura_80_ultra",
       "manufacturer": "Huawei",
       "model": "Pura 80 Ultra",
-      "release_date": "2025-07-10",
+      "release_date": "Jul 10, 2025",
       "battery_capacity_mah": 5170,
       "wired_charger_w": 100,
-      "full_charge_minutes": 39,
+      "full_charge_minutes": 55,
       "charge_30m_percent": 88,
       "primary_source": {
         "provider": "PhoneArena",
@@ -155,94 +76,14 @@
       "secondary_sources": []
     },
     {
-      "id": "xiaomi_15t_pro",
-      "manufacturer": "Xiaomi",
-      "model": "15T Pro",
-      "release_date": "2025-09-24",
-      "battery_capacity_mah": 5500,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 40,
-      "charge_30m_percent": 75,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_moto_g_stylus_2025",
-      "manufacturer": "Motorola",
-      "model": "Moto G Stylus 5G (2025)",
-      "release_date": "2025-04-17",
-      "battery_capacity_mah": 5000,
-      "wired_charger_w": 68,
-      "full_charge_minutes": 40,
-      "charge_30m_percent": 90,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_edge_70",
-      "manufacturer": "Motorola",
-      "model": "Edge 70",
-      "release_date": "2025-10-29",
-      "battery_capacity_mah": 4800,
-      "wired_charger_w": 68,
-      "full_charge_minutes": 41,
-      "charge_30m_percent": 84,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_edge_60_fusion",
-      "manufacturer": "Motorola",
-      "model": "Edge 60 Fusion",
-      "release_date": "2025-04-15",
-      "battery_capacity_mah": 5200,
-      "wired_charger_w": 68,
-      "full_charge_minutes": 41,
-      "charge_30m_percent": 82,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_poco_f8_pro",
-      "manufacturer": "Xiaomi",
-      "model": "Poco F8 Pro",
-      "release_date": "2025-11-26",
-      "battery_capacity_mah": 6210,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 42,
-      "charge_30m_percent": 78,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_poco_f7",
-      "manufacturer": "Xiaomi",
-      "model": "Poco F7",
-      "release_date": "2025-06-24",
-      "battery_capacity_mah": 6500,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 42,
-      "charge_30m_percent": 75,
+      "id": "huawei_mate_x7",
+      "manufacturer": "Huawei",
+      "model": "Mate X7",
+      "release_date": "Nov 26, 2025",
+      "battery_capacity_mah": 5600,
+      "wired_charger_w": 66,
+      "full_charge_minutes": 73,
+      "charge_30m_percent": 79,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -254,10 +95,10 @@
       "id": "oneplus_13",
       "manufacturer": "OnePlus",
       "model": "13",
-      "release_date": "2025-01-07",
+      "release_date": "Jan 07, 2025",
       "battery_capacity_mah": 6000,
       "wired_charger_w": 100,
-      "full_charge_minutes": 43,
+      "full_charge_minutes": 89,
       "charge_30m_percent": 86,
       "primary_source": {
         "provider": "PhoneArena",
@@ -276,10 +117,10 @@
       "id": "oneplus_15",
       "manufacturer": "OnePlus",
       "model": "15",
-      "release_date": "2025-10-28",
+      "release_date": "Oct 28, 2025",
       "battery_capacity_mah": 7300,
       "wired_charger_w": 80,
-      "full_charge_minutes": 45,
+      "full_charge_minutes": 112,
       "charge_30m_percent": 68,
       "primary_source": {
         "provider": "PhoneArena",
@@ -300,265 +141,14 @@
       ]
     },
     {
-      "id": "honor_400",
-      "manufacturer": "Honor",
-      "model": "400",
-      "release_date": "2025-05-23",
-      "battery_capacity_mah": 5300,
-      "wired_charger_w": 66,
-      "full_charge_minutes": 45,
-      "charge_30m_percent": 75,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "asus_zenfone_12_ultra",
-      "manufacturer": "Asus",
-      "model": "Zenfone 12 Ultra",
-      "release_date": "2025-02-28",
-      "battery_capacity_mah": 5500,
-      "wired_charger_w": 65,
-      "full_charge_minutes": 45,
-      "charge_30m_percent": 74,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_moto_g_stylus_2026",
-      "manufacturer": "Motorola",
-      "model": "Moto G Stylus 5G (2026)",
-      "release_date": "2026-04-16",
-      "battery_capacity_mah": 5200,
-      "wired_charger_w": 68,
-      "full_charge_minutes": 46,
-      "charge_30m_percent": 80,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_signature",
-      "manufacturer": "Motorola",
-      "model": "Signature",
-      "release_date": "2026-01-07",
-      "battery_capacity_mah": 5200,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 47,
-      "charge_30m_percent": 78,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "honor_magic_v5",
-      "manufacturer": "Honor",
-      "model": "Magic V5",
-      "release_date": "2025-07-02",
-      "battery_capacity_mah": 5820,
-      "wired_charger_w": 66,
-      "full_charge_minutes": 47,
-      "charge_30m_percent": 80,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_edge_60",
-      "manufacturer": "Motorola",
-      "model": "Edge 60",
-      "release_date": "2025-04-30",
-      "battery_capacity_mah": 5200,
-      "wired_charger_w": 68,
-      "full_charge_minutes": 47,
-      "charge_30m_percent": 75,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "vivo_x200_ultra",
-      "manufacturer": "vivo",
-      "model": "X200 Ultra",
-      "release_date": "2025-04-29",
-      "battery_capacity_mah": 6000,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 47,
-      "charge_30m_percent": 64,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "samsung_galaxy_s26_ultra",
-      "manufacturer": "Samsung",
-      "model": "Galaxy S26 Ultra",
-      "release_date": "2026-03-11",
-      "battery_capacity_mah": 5000,
-      "wired_charger_w": 60,
-      "full_charge_minutes": 49,
-      "charge_30m_percent": 78,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": [
-        {
-          "provider": "PhoneArena",
-          "url": "https://www.phonearena.com/news/Phones-fast-charging-speeds-comparison_id125026",
-          "kind": "independent_lab"
-        },
-        {
-          "provider": "Tom's Guide",
-          "url": "https://www.tomsguide.com/phones/i-put-iphone-17-pro-max-vs-samsung-galaxy-s26-ultra-through-a-7-round-face-off-heres-which-is-best-for-you",
-          "kind": "independent_lab"
-        }
-      ]
-    },
-    {
-      "id": "motorola_edge_60_pro",
-      "manufacturer": "Motorola",
-      "model": "Edge 60 Pro",
-      "release_date": "2025-04-30",
-      "battery_capacity_mah": 6000,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 49,
-      "charge_30m_percent": 75,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_15t",
-      "manufacturer": "Xiaomi",
-      "model": "15T",
-      "release_date": "2025-09-24",
-      "battery_capacity_mah": 5500,
-      "wired_charger_w": 67,
-      "full_charge_minutes": 50,
-      "charge_30m_percent": 67,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "vivo_x300_ultra",
-      "manufacturer": "vivo",
-      "model": "X300 Ultra",
-      "release_date": "2026-03-30",
-      "battery_capacity_mah": 6600,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 51,
-      "charge_30m_percent": 59,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
       "id": "honor_magic_v6",
       "manufacturer": "Honor",
       "model": "Magic V6",
-      "release_date": "2026-03-13",
+      "release_date": "Mar 13, 2026",
       "battery_capacity_mah": 6660,
       "wired_charger_w": 80,
-      "full_charge_minutes": 52,
+      "full_charge_minutes": 73,
       "charge_30m_percent": 75,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "honor_600",
-      "manufacturer": "Honor",
-      "model": "600",
-      "release_date": "2026-04-29",
-      "battery_capacity_mah": 7000,
-      "wired_charger_w": 80,
-      "full_charge_minutes": 53,
-      "charge_30m_percent": 56,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "motorola_edge_70_pro",
-      "manufacturer": "Motorola",
-      "model": "Edge 70 Pro",
-      "release_date": "2026-04-29",
-      "battery_capacity_mah": 6500,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 56,
-      "charge_30m_percent": 64,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "xiaomi_redmi_note_15_pro_plus_5g",
-      "manufacturer": "Xiaomi",
-      "model": "Redmi Note 15 Pro+ 5G",
-      "release_date": "2025-12-25",
-      "battery_capacity_mah": 6500,
-      "wired_charger_w": 100,
-      "full_charge_minutes": 56,
-      "charge_30m_percent": 70,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
-      "id": "vivo_x300",
-      "manufacturer": "vivo",
-      "model": "X300",
-      "release_date": "2025-10-17",
-      "battery_capacity_mah": 6040,
-      "wired_charger_w": 90,
-      "full_charge_minutes": 56,
-      "charge_30m_percent": 54,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -570,11 +160,27 @@
       "id": "redmagic_11_pro",
       "manufacturer": "RedMagic",
       "model": "11 Pro",
-      "release_date": "2025-10-17",
+      "release_date": "Oct 17, 2025",
       "battery_capacity_mah": 7500,
       "wired_charger_w": 80,
-      "full_charge_minutes": 57,
+      "full_charge_minutes": 68,
       "charge_30m_percent": 70,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "nubia_z80_ultra",
+      "manufacturer": "nubia",
+      "model": "Z80 Ultra",
+      "release_date": "Nov 06, 2025",
+      "battery_capacity_mah": 7200,
+      "wired_charger_w": 90,
+      "full_charge_minutes": 75,
+      "charge_30m_percent": 66,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -586,10 +192,10 @@
       "id": "samsung_galaxy_s25_ultra",
       "manufacturer": "Samsung",
       "model": "Galaxy S25 Ultra",
-      "release_date": "2025-02-07",
+      "release_date": "Feb 07, 2025",
       "battery_capacity_mah": 5000,
       "wired_charger_w": 45,
-      "full_charge_minutes": 69,
+      "full_charge_minutes": 118,
       "charge_30m_percent": 68,
       "primary_source": {
         "provider": "PhoneArena",
@@ -610,29 +216,13 @@
       ]
     },
     {
-      "id": "samsung_galaxy_s26_plus",
-      "manufacturer": "Samsung",
-      "model": "Galaxy S26+",
-      "release_date": "2026-03-11",
-      "battery_capacity_mah": 4900,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 63,
-      "charge_30m_percent": 67,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": []
-    },
-    {
       "id": "apple_iphone_17_pro_max",
       "manufacturer": "Apple",
       "model": "iPhone 17 Pro Max",
-      "release_date": "2025-09-19",
+      "release_date": "Sep 19, 2025",
       "battery_capacity_mah": 5088,
       "wired_charger_w": 40,
-      "full_charge_minutes": 76,
+      "full_charge_minutes": 128,
       "charge_30m_percent": 64,
       "primary_source": {
         "provider": "PhoneArena",
@@ -653,41 +243,14 @@
       ]
     },
     {
-      "id": "google_pixel_10_pro_xl",
-      "manufacturer": "Google",
-      "model": "Pixel 10 Pro XL",
-      "release_date": "2025-08-28",
-      "battery_capacity_mah": 5200,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 77,
-      "charge_30m_percent": 63,
-      "primary_source": {
-        "provider": "PhoneArena",
-        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-        "kind": "independent_lab"
-      },
-      "secondary_sources": [
-        {
-          "provider": "GSMArena",
-          "url": "https://www.gsmarena.com/google_pixel_10_pro_xl-review-2876p3.php",
-          "kind": "independent_lab"
-        },
-        {
-          "provider": "Tom's Guide",
-          "url": "https://www.tomsguide.com/phones/google-pixel-phones/google-pixel-10-pro-xl-review",
-          "kind": "independent_lab"
-        }
-      ]
-    },
-    {
-      "id": "apple_iphone_18_pro",
+      "id": "apple_iphone_17_pro",
       "manufacturer": "Apple",
-      "model": "iPhone 18 Pro",
-      "release_date": "2026-09-18",
-      "battery_capacity_mah": 4288,
-      "wired_charger_w": 60,
-      "full_charge_minutes": 64,
-      "charge_30m_percent": 73,
+      "model": "iPhone 17 Pro",
+      "release_date": "Sep 19, 2025",
+      "battery_capacity_mah": 4252,
+      "wired_charger_w": 40,
+      "full_charge_minutes": 140,
+      "charge_30m_percent": 67,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
@@ -696,53 +259,84 @@
       "secondary_sources": []
     },
     {
-      "id": "apple_iphone_18_pro_max",
+      "id": "apple_iphone_17",
       "manufacturer": "Apple",
-      "model": "iPhone 18 Pro Max",
-      "release_date": "2026-09-18",
-      "battery_capacity_mah": 5567,
-      "wired_charger_w": 60,
-      "full_charge_minutes": 68,
-      "charge_30m_percent": 71,
+      "model": "iPhone 17",
+      "release_date": "Sep 19, 2025",
+      "battery_capacity_mah": 3692,
+      "wired_charger_w": 40,
+      "full_charge_minutes": 119,
+      "charge_30m_percent": 67,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": [
-        {
-          "provider": "PhoneArena",
-          "url": "https://www.phonearena.com/news/I-tested-how-fast-the-iPhone-18-Pro-Max-really-charges_id183232",
-          "kind": "independent_lab"
-        },
-        {
-          "provider": "Tom's Guide",
-          "url": "https://www.tomsguide.com/phones/iphones/i-tested-the-iphone-18-pro-max-vs-iphone-16-pro-max-side-by-side-should-you-upgrade",
-          "kind": "independent_review"
-        }
-      ]
+      "secondary_sources": []
     },
     {
-      "id": "google_pixel_11_pro_xl",
-      "manufacturer": "Google",
-      "model": "Pixel 11 Pro XL",
-      "release_date": "2026-08-20",
-      "battery_capacity_mah": 5115,
-      "wired_charger_w": 45,
-      "full_charge_minutes": 69,
-      "charge_30m_percent": 70,
+      "id": "samsung_galaxy_s25",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S25",
+      "release_date": "Feb 07, 2025",
+      "battery_capacity_mah": 4000,
+      "wired_charger_w": 25,
+      "full_charge_minutes": 97,
+      "charge_30m_percent": 54,
       "primary_source": {
         "provider": "PhoneArena",
         "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
         "kind": "independent_lab"
       },
-      "secondary_sources": [
-        {
-          "provider": "PhoneArena",
-          "url": "https://www.phonearena.com/news/I-tested-how-fast-the-iPhone-18-Pro-Max-really-charges_id183232",
-          "kind": "independent_lab"
-        }
-      ]
+      "secondary_sources": []
+    },
+    {
+      "id": "samsung_galaxy_z_fold_7",
+      "manufacturer": "Samsung",
+      "model": "Galaxy Z Fold 7",
+      "release_date": "Jul 25, 2025",
+      "battery_capacity_mah": 4400,
+      "wired_charger_w": 25,
+      "full_charge_minutes": 138,
+      "charge_30m_percent": 46,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "apple_iphone_air",
+      "manufacturer": "Apple",
+      "model": "iPhone Air",
+      "release_date": "Sep 19, 2025",
+      "battery_capacity_mah": 3149,
+      "wired_charger_w": 20,
+      "full_charge_minutes": 140,
+      "charge_30m_percent": 54,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "apple_iphone_16e",
+      "manufacturer": "Apple",
+      "model": "iPhone 16e",
+      "release_date": "Feb 28, 2025",
+      "battery_capacity_mah": 4005,
+      "wired_charger_w": 20,
+      "full_charge_minutes": 294,
+      "charge_30m_percent": 47,
+      "primary_source": {
+        "provider": "PhoneArena",
+        "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
     }
   ]
 }
