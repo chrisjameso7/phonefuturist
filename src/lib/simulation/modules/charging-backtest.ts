@@ -25,6 +25,7 @@ export interface ChargingBacktestAggregate {
 
 export interface ChargingBacktestSummary {
   version: string;
+  health: 'healthy' | 'borderline' | 'poor' | 'insufficient';
   evaluatedModes: number;
   skippedModes: number;
   coveragePercent: number;
@@ -208,8 +209,18 @@ export function backtestChargingCorpus(
 
   const totalModes = candidates.length;
 
+  const health: ChargingBacktestSummary['health'] =
+    rows.length < 3 || maeMinutes === undefined || mapePercent === undefined
+      ? 'insufficient'
+      : maeMinutes <= 10 && mapePercent <= 15
+        ? 'healthy'
+        : maeMinutes <= 18 && mapePercent <= 25
+          ? 'borderline'
+          : 'poor';
+
   return {
     version: CHARGING_BACKTEST_VERSION,
+    health,
     evaluatedModes: rows.length,
     skippedModes,
     coveragePercent:
