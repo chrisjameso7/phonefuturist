@@ -2202,7 +2202,7 @@
     },
     {
       "id": "oppo_reno15_pro_mini",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Reno15 Pro (mini)",
       "release_date": "January 16, 2026",
       "battery_capacity_mah": 6200,
@@ -2218,7 +2218,7 @@
     },
     {
       "id": "oppo_reno15",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Reno15",
       "release_date": "2026",
       "battery_capacity_mah": 6500,
@@ -2234,7 +2234,7 @@
     },
     {
       "id": "oppo_reno16_pro",
-      "manufacturer": "Oppo",
+      "manufacturer": "OPPO",
       "model": "Reno16 Pro",
       "release_date": "2026",
       "battery_capacity_mah": 6700,
