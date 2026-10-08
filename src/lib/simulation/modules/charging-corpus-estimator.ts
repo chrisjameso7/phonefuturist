@@ -28,6 +28,8 @@ export interface ChargingCurveEstimate {
       elasticity?: number;
       confidence?: number;
       evidenceCount: number;
+      targetPosition?: 'interpolation' | 'near-extrapolation' | 'far-extrapolation';
+      evidenceRangeWatts?: { min: number; max: number };
     };
     normalized?: {
       expectedFullChargeMahPerMinute?: number;
@@ -207,6 +209,8 @@ export function estimateChargingFromCorpus(
       elasticity: powerResponse.elasticity,
       confidence: powerResponse.confidence,
       evidenceCount: powerResponse.evidence?.length ?? 0,
+      targetPosition: powerResponse.targetPosition,
+      evidenceRangeWatts: powerResponse.evidenceRangeWatts,
     },
     note:
       powerResponse.status === 'resolved'
