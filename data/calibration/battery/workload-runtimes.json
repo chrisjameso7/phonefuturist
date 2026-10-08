@@ -1,83 +1,824 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "dataset": "phonefuturist_interactive_leaks_active_workload_runtime",
   "model_version": "0.5.1",
+  "cohort_window": "2025-08-01 through 2026-10-08",
   "protocol": {
     "id": "gsmarena_battery_life_test_v2",
     "provider": "GSMArena",
     "methodology_url": "https://www.gsmarena.com/how_we_test_gsmarena_battery_life_test_v2-news-60429.php",
     "notes": [
-      "Battery Life Test 2.0 measures continuous active-use runtime for web browsing, video streaming and gaming.",
-      "Web browsing uses modern pages with scrolling and touch input; video streams from YouTube; gaming loops a 3D game with above-average GPU load.",
-      "These runtimes are comparative lab observations, not universal real-world battery-life guarantees."
+      "Battery Life Test 2.0 continuous active-use runtimes are stored as observations, not model coefficients.",
+      "The v0.5.1 runtime model normalizes each observation by the tested phone's battery capacity (mAh/hour) before applying it to a simulated phone.",
+      "Web browsing, video streaming and gaming are supported. Camera use remains unresolved until isolated compatible observations are added.",
+      "Region-specific batteries use the capacity of the variant GSMArena tested where that distinction is known."
     ]
   },
+  "devices": [
+    {
+      "id": "samsung_galaxy_s26_ultra",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "capacity_mah": 5000,
+      "release_date": "2026-03-06"
+    },
+    {
+      "id": "samsung_galaxy_s26_plus",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26+",
+      "capacity_mah": 4900,
+      "release_date": "2026-03-06"
+    },
+    {
+      "id": "samsung_galaxy_s26",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26",
+      "capacity_mah": 4300,
+      "release_date": "2026-03-06"
+    },
+    {
+      "id": "apple_iphone_17",
+      "manufacturer": "Apple",
+      "model": "iPhone 17",
+      "capacity_mah": 3692,
+      "release_date": "2025-09-19"
+    },
+    {
+      "id": "apple_iphone_17_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro",
+      "capacity_mah": 3998,
+      "release_date": "2025-09-19"
+    },
+    {
+      "id": "apple_iphone_17_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "capacity_mah": 4823,
+      "release_date": "2025-09-19"
+    },
+    {
+      "id": "apple_iphone_18_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro",
+      "capacity_mah": 4056,
+      "release_date": "2026-09-18"
+    },
+    {
+      "id": "apple_iphone_18_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "capacity_mah": 5391,
+      "release_date": "2026-09-18"
+    },
+    {
+      "id": "google_pixel_10_pro",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro",
+      "capacity_mah": 4870,
+      "release_date": "2025-08-28"
+    },
+    {
+      "id": "google_pixel_10_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro XL",
+      "capacity_mah": 5200,
+      "release_date": "2025-08-28"
+    },
+    {
+      "id": "google_pixel_11_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro XL",
+      "capacity_mah": 5115,
+      "release_date": "2026-08-20"
+    },
+    {
+      "id": "oneplus_15",
+      "manufacturer": "OnePlus",
+      "model": "OnePlus 15",
+      "capacity_mah": 7300,
+      "release_date": "2025-10-28"
+    },
+    {
+      "id": "oppo_find_x9_pro",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "capacity_mah": 7500,
+      "release_date": "2025-10-22"
+    },
+    {
+      "id": "vivo_x300_pro_eu",
+      "manufacturer": "vivo",
+      "model": "X300 Pro",
+      "capacity_mah": 5440,
+      "release_date": "2025-10-17"
+    },
+    {
+      "id": "honor_magic8_pro_eu",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "capacity_mah": 6270,
+      "release_date": "2025-10-23"
+    },
+    {
+      "id": "xiaomi_17_pro_max",
+      "manufacturer": "Xiaomi",
+      "model": "17 Pro Max",
+      "capacity_mah": 7500,
+      "release_date": "2025-09-25"
+    },
+    {
+      "id": "xiaomi_17_ultra_global",
+      "manufacturer": "Xiaomi",
+      "model": "17 Ultra",
+      "capacity_mah": 6000,
+      "release_date": "2026-03-10"
+    },
+    {
+      "id": "realme_gt8_pro",
+      "manufacturer": "Realme",
+      "model": "GT 8 Pro",
+      "capacity_mah": 7000,
+      "release_date": "2025-10-21"
+    },
+    {
+      "id": "zte_redmagic_11_pro",
+      "manufacturer": "ZTE nubia",
+      "model": "RedMagic 11 Pro",
+      "capacity_mah": 7500,
+      "release_date": "2025-11-17"
+    },
+    {
+      "id": "oppo_find_x9_ultra",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Ultra",
+      "capacity_mah": 7050,
+      "release_date": "2026-05-02"
+    }
+  ],
   "measurements": [
     {
-      "device_id": "samsung_galaxy_s24_ultra",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_ultra",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "release_date": "2026-03-06",
+      "capacity_mah": 5000,
       "workload": "web_browsing",
-      "runtime_seconds": 40080,
-      "source_display_value": "11h 08min"
+      "runtime_seconds": 46860,
+      "source_display_value": "13h 01min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "samsung_galaxy_s24_ultra",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_ultra",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "release_date": "2026-03-06",
+      "capacity_mah": 5000,
       "workload": "video_playback",
-      "runtime_seconds": 60480,
-      "source_display_value": "16h 48min"
+      "runtime_seconds": 89280,
+      "source_display_value": "24h 48min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "samsung_galaxy_s24_ultra",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_ultra",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "release_date": "2026-03-06",
+      "capacity_mah": 5000,
       "workload": "gaming",
-      "runtime_seconds": 32760,
-      "source_display_value": "9h 06min"
+      "runtime_seconds": 34920,
+      "source_display_value": "9h 42min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "apple_iphone_16_pro_max",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_plus",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26+",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4900,
       "workload": "web_browsing",
-      "runtime_seconds": 59460,
-      "source_display_value": "16h 31min"
+      "runtime_seconds": 47820,
+      "source_display_value": "13h 17min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "apple_iphone_16_pro_max",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_plus",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26+",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4900,
       "workload": "video_playback",
-      "runtime_seconds": 81240,
-      "source_display_value": "22h 34min"
+      "runtime_seconds": 90720,
+      "source_display_value": "25h 12min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "apple_iphone_16_pro_max",
-      "source_url": "https://www.gsmarena.com/apple_iphone_16_pro_max-review-2750p3.php",
+      "device_id": "samsung_galaxy_s26_plus",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26+",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4900,
       "workload": "gaming",
       "runtime_seconds": 36240,
-      "source_display_value": "10h 04min"
+      "source_display_value": "10h 04min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "oneplus_13",
-      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "device_id": "samsung_galaxy_s26",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4300,
       "workload": "web_browsing",
-      "runtime_seconds": 53220,
-      "source_display_value": "14h 47min"
+      "runtime_seconds": 44400,
+      "source_display_value": "12h 20min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "oneplus_13",
-      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "device_id": "samsung_galaxy_s26",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4300,
       "workload": "video_playback",
-      "runtime_seconds": 84300,
-      "source_display_value": "23h 25min"
+      "runtime_seconds": 86640,
+      "source_display_value": "24h 04min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     },
     {
-      "device_id": "oneplus_13",
-      "source_url": "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+      "device_id": "samsung_galaxy_s26",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26",
+      "release_date": "2026-03-06",
+      "capacity_mah": 4300,
       "workload": "gaming",
-      "runtime_seconds": 28080,
-      "source_display_value": "7h 48min"
+      "runtime_seconds": 34020,
+      "source_display_value": "9h 27min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17",
+      "manufacturer": "Apple",
+      "model": "iPhone 17",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3692,
+      "workload": "web_browsing",
+      "runtime_seconds": 43620,
+      "source_display_value": "12h 07min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17",
+      "manufacturer": "Apple",
+      "model": "iPhone 17",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3692,
+      "workload": "video_playback",
+      "runtime_seconds": 79980,
+      "source_display_value": "22h 13min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17",
+      "manufacturer": "Apple",
+      "model": "iPhone 17",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3692,
+      "workload": "gaming",
+      "runtime_seconds": 37920,
+      "source_display_value": "10h 32min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3998,
+      "workload": "web_browsing",
+      "runtime_seconds": 45540,
+      "source_display_value": "12h 39min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3998,
+      "workload": "video_playback",
+      "runtime_seconds": 82020,
+      "source_display_value": "22h 47min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro",
+      "release_date": "2025-09-19",
+      "capacity_mah": 3998,
+      "workload": "gaming",
+      "runtime_seconds": 36840,
+      "source_display_value": "10h 14min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "release_date": "2025-09-19",
+      "capacity_mah": 4823,
+      "workload": "web_browsing",
+      "runtime_seconds": 55980,
+      "source_display_value": "15h 33min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "release_date": "2025-09-19",
+      "capacity_mah": 4823,
+      "workload": "video_playback",
+      "runtime_seconds": 92460,
+      "source_display_value": "25h 41min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_17_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "release_date": "2025-09-19",
+      "capacity_mah": 4823,
+      "workload": "gaming",
+      "runtime_seconds": 43680,
+      "source_display_value": "12h 08min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro",
+      "release_date": "2026-09-18",
+      "capacity_mah": 4056,
+      "workload": "web_browsing",
+      "runtime_seconds": 51120,
+      "source_display_value": "14h 12min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro",
+      "release_date": "2026-09-18",
+      "capacity_mah": 4056,
+      "workload": "video_playback",
+      "runtime_seconds": 87000,
+      "source_display_value": "24h 10min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro",
+      "release_date": "2026-09-18",
+      "capacity_mah": 4056,
+      "workload": "gaming",
+      "runtime_seconds": 40560,
+      "source_display_value": "11h 16min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "release_date": "2026-09-18",
+      "capacity_mah": 5391,
+      "workload": "web_browsing",
+      "runtime_seconds": 61980,
+      "source_display_value": "17h 13min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "release_date": "2026-09-18",
+      "capacity_mah": 5391,
+      "workload": "video_playback",
+      "runtime_seconds": 94320,
+      "source_display_value": "26h 12min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "apple_iphone_18_pro_max",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "release_date": "2026-09-18",
+      "capacity_mah": 5391,
+      "workload": "gaming",
+      "runtime_seconds": 43740,
+      "source_display_value": "12h 09min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro",
+      "release_date": "2025-08-28",
+      "capacity_mah": 4870,
+      "workload": "web_browsing",
+      "runtime_seconds": 49980,
+      "source_display_value": "13h 53min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro",
+      "release_date": "2025-08-28",
+      "capacity_mah": 4870,
+      "workload": "video_playback",
+      "runtime_seconds": 71160,
+      "source_display_value": "19h 46min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro",
+      "release_date": "2025-08-28",
+      "capacity_mah": 4870,
+      "workload": "gaming",
+      "runtime_seconds": 19740,
+      "source_display_value": "5h 29min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro XL",
+      "release_date": "2025-08-28",
+      "capacity_mah": 5200,
+      "workload": "web_browsing",
+      "runtime_seconds": 50160,
+      "source_display_value": "13h 56min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro XL",
+      "release_date": "2025-08-28",
+      "capacity_mah": 5200,
+      "workload": "video_playback",
+      "runtime_seconds": 70980,
+      "source_display_value": "19h 43min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_10_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro XL",
+      "release_date": "2025-08-28",
+      "capacity_mah": 5200,
+      "workload": "gaming",
+      "runtime_seconds": 21060,
+      "source_display_value": "5h 51min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_11_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro XL",
+      "release_date": "2026-08-20",
+      "capacity_mah": 5115,
+      "workload": "web_browsing",
+      "runtime_seconds": 55860,
+      "source_display_value": "15h 31min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_11_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro XL",
+      "release_date": "2026-08-20",
+      "capacity_mah": 5115,
+      "workload": "video_playback",
+      "runtime_seconds": 92040,
+      "source_display_value": "25h 34min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "google_pixel_11_pro_xl",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro XL",
+      "release_date": "2026-08-20",
+      "capacity_mah": 5115,
+      "workload": "gaming",
+      "runtime_seconds": 35040,
+      "source_display_value": "9h 44min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oneplus_15",
+      "manufacturer": "OnePlus",
+      "model": "OnePlus 15",
+      "release_date": "2025-10-28",
+      "capacity_mah": 7300,
+      "workload": "web_browsing",
+      "runtime_seconds": 78480,
+      "source_display_value": "21h 48min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oneplus_15",
+      "manufacturer": "OnePlus",
+      "model": "OnePlus 15",
+      "release_date": "2025-10-28",
+      "capacity_mah": 7300,
+      "workload": "video_playback",
+      "runtime_seconds": 118620,
+      "source_display_value": "32h 57min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oneplus_15",
+      "manufacturer": "OnePlus",
+      "model": "OnePlus 15",
+      "release_date": "2025-10-28",
+      "capacity_mah": 7300,
+      "workload": "gaming",
+      "runtime_seconds": 47100,
+      "source_display_value": "13h 05min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_pro",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "release_date": "2025-10-22",
+      "capacity_mah": 7500,
+      "workload": "web_browsing",
+      "runtime_seconds": 80400,
+      "source_display_value": "22h 20min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_pro",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "release_date": "2025-10-22",
+      "capacity_mah": 7500,
+      "workload": "video_playback",
+      "runtime_seconds": 103140,
+      "source_display_value": "28h 39min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_pro",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "release_date": "2025-10-22",
+      "capacity_mah": 7500,
+      "workload": "gaming",
+      "runtime_seconds": 49080,
+      "source_display_value": "13h 38min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "vivo_x300_pro_eu",
+      "manufacturer": "vivo",
+      "model": "X300 Pro",
+      "release_date": "2025-10-17",
+      "capacity_mah": 5440,
+      "workload": "web_browsing",
+      "runtime_seconds": 41340,
+      "source_display_value": "11h 29min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "vivo_x300_pro_eu",
+      "manufacturer": "vivo",
+      "model": "X300 Pro",
+      "release_date": "2025-10-17",
+      "capacity_mah": 5440,
+      "workload": "video_playback",
+      "runtime_seconds": 61440,
+      "source_display_value": "17h 04min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "vivo_x300_pro_eu",
+      "manufacturer": "vivo",
+      "model": "X300 Pro",
+      "release_date": "2025-10-17",
+      "capacity_mah": 5440,
+      "workload": "gaming",
+      "runtime_seconds": 28560,
+      "source_display_value": "7h 56min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "honor_magic8_pro_eu",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "release_date": "2025-10-23",
+      "capacity_mah": 6270,
+      "workload": "web_browsing",
+      "runtime_seconds": 62760,
+      "source_display_value": "17h 26min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "honor_magic8_pro_eu",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "release_date": "2025-10-23",
+      "capacity_mah": 6270,
+      "workload": "video_playback",
+      "runtime_seconds": 99840,
+      "source_display_value": "27h 44min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "honor_magic8_pro_eu",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "release_date": "2025-10-23",
+      "capacity_mah": 6270,
+      "workload": "gaming",
+      "runtime_seconds": 40020,
+      "source_display_value": "11h 07min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_pro_max",
+      "manufacturer": "Xiaomi",
+      "model": "17 Pro Max",
+      "release_date": "2025-09-25",
+      "capacity_mah": 7500,
+      "workload": "web_browsing",
+      "runtime_seconds": 70620,
+      "source_display_value": "19h 37min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_pro_max",
+      "manufacturer": "Xiaomi",
+      "model": "17 Pro Max",
+      "release_date": "2025-09-25",
+      "capacity_mah": 7500,
+      "workload": "video_playback",
+      "runtime_seconds": 104400,
+      "source_display_value": "29h 00min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_pro_max",
+      "manufacturer": "Xiaomi",
+      "model": "17 Pro Max",
+      "release_date": "2025-09-25",
+      "capacity_mah": 7500,
+      "workload": "gaming",
+      "runtime_seconds": 41340,
+      "source_display_value": "11h 29min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_ultra_global",
+      "manufacturer": "Xiaomi",
+      "model": "17 Ultra",
+      "release_date": "2026-03-10",
+      "capacity_mah": 6000,
+      "workload": "web_browsing",
+      "runtime_seconds": 69420,
+      "source_display_value": "19h 17min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_ultra_global",
+      "manufacturer": "Xiaomi",
+      "model": "17 Ultra",
+      "release_date": "2026-03-10",
+      "capacity_mah": 6000,
+      "workload": "video_playback",
+      "runtime_seconds": 93540,
+      "source_display_value": "25h 59min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "xiaomi_17_ultra_global",
+      "manufacturer": "Xiaomi",
+      "model": "17 Ultra",
+      "release_date": "2026-03-10",
+      "capacity_mah": 6000,
+      "workload": "gaming",
+      "runtime_seconds": 36900,
+      "source_display_value": "10h 15min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "realme_gt8_pro",
+      "manufacturer": "Realme",
+      "model": "GT 8 Pro",
+      "release_date": "2025-10-21",
+      "capacity_mah": 7000,
+      "workload": "web_browsing",
+      "runtime_seconds": 69900,
+      "source_display_value": "19h 25min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "realme_gt8_pro",
+      "manufacturer": "Realme",
+      "model": "GT 8 Pro",
+      "release_date": "2025-10-21",
+      "capacity_mah": 7000,
+      "workload": "video_playback",
+      "runtime_seconds": 102360,
+      "source_display_value": "28h 26min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "realme_gt8_pro",
+      "manufacturer": "Realme",
+      "model": "GT 8 Pro",
+      "release_date": "2025-10-21",
+      "capacity_mah": 7000,
+      "workload": "gaming",
+      "runtime_seconds": 38700,
+      "source_display_value": "10h 45min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "zte_redmagic_11_pro",
+      "manufacturer": "ZTE nubia",
+      "model": "RedMagic 11 Pro",
+      "release_date": "2025-11-17",
+      "capacity_mah": 7500,
+      "workload": "web_browsing",
+      "runtime_seconds": 63540,
+      "source_display_value": "17h 39min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "zte_redmagic_11_pro",
+      "manufacturer": "ZTE nubia",
+      "model": "RedMagic 11 Pro",
+      "release_date": "2025-11-17",
+      "capacity_mah": 7500,
+      "workload": "video_playback",
+      "runtime_seconds": 99180,
+      "source_display_value": "27h 33min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "zte_redmagic_11_pro",
+      "manufacturer": "ZTE nubia",
+      "model": "RedMagic 11 Pro",
+      "release_date": "2025-11-17",
+      "capacity_mah": 7500,
+      "workload": "gaming",
+      "runtime_seconds": 42960,
+      "source_display_value": "11h 56min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_ultra",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Ultra",
+      "release_date": "2026-05-02",
+      "capacity_mah": 7050,
+      "workload": "web_browsing",
+      "runtime_seconds": 71700,
+      "source_display_value": "19h 55min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_ultra",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Ultra",
+      "release_date": "2026-05-02",
+      "capacity_mah": 7050,
+      "workload": "video_playback",
+      "runtime_seconds": 108300,
+      "source_display_value": "30h 05min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
+    },
+    {
+      "device_id": "oppo_find_x9_ultra",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Ultra",
+      "release_date": "2026-05-02",
+      "capacity_mah": 7050,
+      "workload": "gaming",
+      "runtime_seconds": 36600,
+      "source_display_value": "10h 10min",
+      "source_url": "https://www.gsmarena.com/battery-test-v2.php3"
     }
   ],
   "unsupported_workloads": {
-    "camera_use": "No isolated, protocol-compatible camera runtime observation is present in the calibration dataset. Positive camera-use hours remain unresolved."
+    "camera_use": "No isolated, protocol-compatible camera runtime observation is present in this calibration dataset."
   }
 }
