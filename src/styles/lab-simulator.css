@@ -4810,3 +4810,52 @@
     grid-column: 1 / -1;
   }
 }
+
+
+/* Thermal sensitivity */
+
+.il-thermal-sensitivity {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+}
+
+.il-sensitivity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .65rem;
+}
+
+.il-sensitivity-card {
+  min-width: 0;
+  display: grid;
+  gap: .32rem;
+  padding: .9rem;
+  border: 1px solid #ffffff14;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, #ffffff08, #ffffff03);
+}
+
+.il-sensitivity-card strong {
+  margin-bottom: .15rem;
+  font-size: .78rem;
+  color: #fff;
+}
+
+.il-sensitivity-card span {
+  font-size: .72rem;
+  color: #c2c8d1;
+}
+
+.il-sensitivity-card small {
+  margin-top: .15rem;
+  font-size: .65rem;
+  color: #8f98a5;
+}
+
+@media (max-width: 760px) {
+  .il-sensitivity-grid {
+    grid-template-columns: 1fr;
+  }
+}
