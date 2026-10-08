@@ -2121,6 +2121,114 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
+                  Thermal & performance · {LIVE_THERMAL_EXPERIENCE_VERSION}
+                </span>
+
+                {thermalResult?.status === 'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {thermalResult.peakTemperatureC !== undefined
+                            ? `${format(
+                                thermalResult.peakTemperatureC,
+                                1,
+                              )} °C`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Peak temperature</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.endTemperatureC !== undefined
+                            ? `${format(
+                                thermalResult.endTemperatureC,
+                                1,
+                              )} °C`
+                            : 'Unknown'}
+                        </strong>
+                        <span>End temperature</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.sustainedPerformancePercent !== undefined
+                            ? `${format(
+                                thermalResult.sustainedPerformancePercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Sustained performance</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.sustainedPowerW !== undefined
+                            ? `${format(
+                                thermalResult.sustainedPowerW,
+                                2,
+                              )} W`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Sustained SoC power</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.throttleStartSecond !== undefined
+                            ? formatDurationMinutes(
+                                thermalResult.throttleStartSecond / 60,
+                              )
+                            : 'No throttle detected'}
+                        </strong>
+                        <span>Throttle onset</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.evidenceMode === 'calibrated'
+                            ? 'Calibrated'
+                            : 'Physics fallback'}
+                        </strong>
+                        <span>Evidence mode</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.referenceCount ?? 'None'}
+                        </strong>
+                        <span>Measured references</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.confidence !== undefined
+                            ? `${format(
+                                thermalResult.confidence * 100,
+                                0,
+                              )}%`
+                            : 'Unrated'}
+                        </strong>
+                        <span>Evidence confidence</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      {thermalResult.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    {thermalResult?.unresolvedReason ??
+                      'Add target SoC power, ambient temperature, throttle ceiling, thermal resistance and thermal mass to simulate sustained performance.'}
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
                   Camera system
                 </span>
 
