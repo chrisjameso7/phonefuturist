@@ -44,6 +44,9 @@ export interface LiveThermalExperienceResult {
     sustainedPerformancePercent: number;
     sustainedPowerW: number;
     throttleStartSecond?: number;
+    deltaPeakTemperatureC: number;
+    deltaSustainedPerformancePercent: number;
+    deltaSustainedPowerW: number;
   }>;
   note?: string;
   unresolvedReason?: string;
@@ -55,6 +58,11 @@ function thermalSensitivityScenarios(
   corpus: DeviceCorpus,
   input: LiveThermalExperienceInput,
   evidenceMode: 'calibrated' | 'physics-fallback',
+  baseline: {
+    peakTemperatureC: number;
+    sustainedPerformancePercent: number;
+    sustainedPowerW: number;
+  },
 ) {
   const scenarios = [
     {
@@ -110,6 +118,15 @@ function thermalSensitivityScenarios(
           result.simulation.sustainedPowerW,
         throttleStartSecond:
           result.simulation.throttleStartSecond,
+        deltaPeakTemperatureC:
+          result.simulation.peakTemperatureC -
+          baseline.peakTemperatureC,
+        deltaSustainedPerformancePercent:
+          result.simulation.sustainedPerformancePercent -
+          baseline.sustainedPerformancePercent,
+        deltaSustainedPowerW:
+          result.simulation.sustainedPowerW -
+          baseline.sustainedPowerW,
       }];
     }
 
@@ -136,6 +153,15 @@ function thermalSensitivityScenarios(
         result.sustainedPerformancePercent,
       sustainedPowerW: result.sustainedPowerW,
       throttleStartSecond: result.throttleStartSecond,
+      deltaPeakTemperatureC:
+        result.peakTemperatureC -
+        baseline.peakTemperatureC,
+      deltaSustainedPerformancePercent:
+        result.sustainedPerformancePercent -
+        baseline.sustainedPerformancePercent,
+      deltaSustainedPowerW:
+        result.sustainedPowerW -
+        baseline.sustainedPowerW,
     }];
   });
 }
@@ -241,6 +267,14 @@ export function simulateThermalExperience(
         corpus,
         input,
         'calibrated',
+        {
+          peakTemperatureC:
+            calibrated.simulation.peakTemperatureC,
+          sustainedPerformancePercent:
+            calibrated.simulation.sustainedPerformancePercent,
+          sustainedPowerW:
+            calibrated.simulation.sustainedPowerW,
+        },
       ),
       note:
         'Sustained performance is calibrated from comparable measured thermal evidence, then propagated through the deterministic thermal model.',
@@ -293,6 +327,12 @@ export function simulateThermalExperience(
       corpus,
       input,
       'physics-fallback',
+      {
+        peakTemperatureC: fallback.peakTemperatureC,
+        sustainedPerformancePercent:
+          fallback.sustainedPerformancePercent,
+        sustainedPowerW: fallback.sustainedPowerW,
+      },
     ),
     note:
       'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence.',
