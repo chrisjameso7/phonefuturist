@@ -37,10 +37,108 @@ export interface LiveThermalExperienceResult {
     code: string;
     message: string;
   }>;
+  sensitivity?: Array<{
+    scenario: 'hot-ambient' | 'improved-cooling' | 'higher-power';
+    label: string;
+    peakTemperatureC: number;
+    sustainedPerformancePercent: number;
+    sustainedPowerW: number;
+    throttleStartSecond?: number;
+  }>;
   note?: string;
   unresolvedReason?: string;
 }
 
+
+
+function thermalSensitivityScenarios(
+  corpus: DeviceCorpus,
+  input: LiveThermalExperienceInput,
+  evidenceMode: 'calibrated' | 'physics-fallback',
+) {
+  const scenarios = [
+    {
+      scenario: 'hot-ambient' as const,
+      label: 'Ambient +5 °C',
+      input: {
+        ...input,
+        ambientTemperatureC:
+          input.ambientTemperatureC + 5,
+      },
+    },
+    {
+      scenario: 'improved-cooling' as const,
+      label: 'Cooling resistance -20%',
+      input: {
+        ...input,
+        thermalResistanceCPerW:
+          input.thermalResistanceCPerW * 0.8,
+      },
+    },
+    {
+      scenario: 'higher-power' as const,
+      label: 'SoC power +20%',
+      input: {
+        ...input,
+        targetPowerW: input.targetPowerW * 1.2,
+      },
+    },
+  ];
+
+  return scenarios.flatMap((entry) => {
+    if (evidenceMode === 'calibrated') {
+      const result = simulateCalibratedSocThermals(
+        corpus,
+        entry.input,
+      );
+
+      if (
+        result.status !== 'resolved' ||
+        !result.simulation
+      ) {
+        return [];
+      }
+
+      return [{
+        scenario: entry.scenario,
+        label: entry.label,
+        peakTemperatureC:
+          result.simulation.peakTemperatureC,
+        sustainedPerformancePercent:
+          result.simulation.sustainedPerformancePercent,
+        sustainedPowerW:
+          result.simulation.sustainedPowerW,
+        throttleStartSecond:
+          result.simulation.throttleStartSecond,
+      }];
+    }
+
+    const result = simulateSocThermals({
+      targetPowerW: entry.input.targetPowerW,
+      ambientTemperatureC:
+        entry.input.ambientTemperatureC,
+      thermalResistanceCPerW:
+        entry.input.thermalResistanceCPerW,
+      thermalMassJPerC: entry.input.thermalMassJPerC,
+      throttleTemperatureC:
+        entry.input.throttleTemperatureC,
+      durationSeconds: entry.input.durationSeconds,
+      stepSeconds: entry.input.stepSeconds,
+    });
+
+    if (!result) return [];
+
+    return [{
+      scenario: entry.scenario,
+      label: entry.label,
+      peakTemperatureC: result.peakTemperatureC,
+      sustainedPerformancePercent:
+        result.sustainedPerformancePercent,
+      sustainedPowerW: result.sustainedPowerW,
+      throttleStartSecond: result.throttleStartSecond,
+    }];
+  });
+}
 
 function thermalWarnings(
   input: LiveThermalExperienceInput,
@@ -139,6 +237,11 @@ export function simulateThermalExperience(
         calibrated.simulation.sustainedPowerW,
       points: calibrated.simulation.points,
       warnings,
+      sensitivity: thermalSensitivityScenarios(
+        corpus,
+        input,
+        'calibrated',
+      ),
       note:
         'Sustained performance is calibrated from comparable measured thermal evidence, then propagated through the deterministic thermal model.',
     };
@@ -186,6 +289,11 @@ export function simulateThermalExperience(
     sustainedPowerW: fallback.sustainedPowerW,
     points: fallback.points,
     warnings,
+    sensitivity: thermalSensitivityScenarios(
+      corpus,
+      input,
+      'physics-fallback',
+    ),
     note:
       'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence.',
   };
