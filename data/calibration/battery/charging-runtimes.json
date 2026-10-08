@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.4.0",
+  "schema_version": "0.5.0",
   "dataset": "phonefuturist_interactive_leaks_charging",
   "model_version": "0.6.0",
   "cohort_window": "2025-01-01 through 2026-10-08",
@@ -2007,9 +2007,346 @@
         "kind": "independent_lab"
       },
       "secondary_sources": []
+    },
+    {
+      "id": "realme_15_pro",
+      "manufacturer": "Realme",
+      "model": "15 Pro",
+      "release_date": "23 August 2025",
+      "battery_capacity_mah": 7000,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 53,
+      "charge_30m_percent": 61,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/realme_15_pro-review-2871p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "realme_p3_ultra",
+      "manufacturer": "Realme",
+      "model": "P3 Ultra",
+      "release_date": "March 2025",
+      "battery_capacity_mah": 6000,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 51,
+      "charge_30m_percent": 65,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/realme_p3_ultra_battery_life_and_charging_test_results-news-68891.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "realme_16_pro",
+      "manufacturer": "Realme",
+      "model": "16 Pro+",
+      "release_date": "January 14, 2026",
+      "battery_capacity_mah": 7000,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 64,
+      "charge_30m_percent": 62,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/realme_16_pro_plus-review-2919p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "realme_16t",
+      "manufacturer": "Realme",
+      "model": "16T",
+      "release_date": "May 22, 2026",
+      "battery_capacity_mah": 8000,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 92,
+      "charge_30m_percent": 34,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/our_realme_16t_battery_life_and_charging_test_is_done-news-72959.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "realme_p4_power",
+      "manufacturer": "Realme",
+      "model": "P4 Power",
+      "release_date": "February 4, 2026",
+      "battery_capacity_mah": 10001,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 79,
+      "charge_30m_percent": 45,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/the_realme_p4_power_battery_life_and_charging_tests_are_ready-news-71406.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "tecno_camon_40_premier",
+      "manufacturer": "Tecno",
+      "model": "Camon 40 Premier",
+      "release_date": "July 3, 2025",
+      "battery_capacity_mah": 5100,
+      "wired_charger_w": 70,
+      "full_charge_minutes": 45,
+      "charge_30m_percent": 40,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/tecno_camon_40_premier-review-2847p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "tecno_spark_40_pro",
+      "manufacturer": "Tecno",
+      "model": "Spark 40 Pro+",
+      "release_date": "August 4, 2025",
+      "battery_capacity_mah": 5200,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 61,
+      "charge_30m_percent": 54,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/tecno_spark_40_pro_plus-review-2862p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "infinix_note_60_ultra",
+      "manufacturer": "Infinix",
+      "model": "Note 60 Ultra",
+      "release_date": "April 23, 2026",
+      "battery_capacity_mah": 7000,
+      "wired_charger_w": 100,
+      "full_charge_minutes": 57,
+      "charge_30m_percent": 60,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_note_60_ultra-review-2953p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "infinix_gt_50_pro",
+      "manufacturer": "Infinix",
+      "model": "GT 50 Pro",
+      "release_date": "June 8, 2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 67,
+      "charge_30m_percent": 50,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_gt_50_pro-review-2966p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "infinix_note_60_pro",
+      "manufacturer": "Infinix",
+      "model": "Note 60 Pro",
+      "release_date": "May 22, 2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 90,
+      "full_charge_minutes": 41,
+      "charge_30m_percent": 81,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_note_60_pro-review-2962p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "infinix_note_edge",
+      "manufacturer": "Infinix",
+      "model": "Note Edge",
+      "release_date": "February 9, 2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 74,
+      "charge_30m_percent": 44,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_note_edge-review-2929p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "iqoo_15",
+      "manufacturer": "iQOO",
+      "model": "15",
+      "release_date": "2025",
+      "battery_capacity_mah": 7000,
+      "wired_charger_w": 100,
+      "full_charge_minutes": 52,
+      "charge_30m_percent": 60,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/iqoo_15-review-2905p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "oppo_reno15_pro_mini",
+      "manufacturer": "Oppo",
+      "model": "Reno15 Pro (mini)",
+      "release_date": "January 16, 2026",
+      "battery_capacity_mah": 6200,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 54,
+      "charge_30m_percent": 62,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/oppo_reno15_pro_mini-review-2920p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "oppo_reno15",
+      "manufacturer": "Oppo",
+      "model": "Reno15",
+      "release_date": "2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 57,
+      "charge_30m_percent": 68,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/oppo_reno15-review-2924p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "oppo_reno16_pro",
+      "manufacturer": "Oppo",
+      "model": "Reno16 Pro",
+      "release_date": "2026",
+      "battery_capacity_mah": 6700,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 63,
+      "charge_30m_percent": 29,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/oppo_reno16_pro-review-2973p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "oneplus_nord_ce5",
+      "manufacturer": "OnePlus",
+      "model": "Nord CE5",
+      "release_date": "July 17, 2025",
+      "battery_capacity_mah": 5200,
+      "wired_charger_w": 80,
+      "full_charge_minutes": 55,
+      "charge_30m_percent": 62,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://m.gsmarena.com/oneplus_nord_ce5-review-2855p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "samsung_galaxy_s26_fe",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 FE",
+      "release_date": "September 8, 2026",
+      "battery_capacity_mah": 4900,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 68,
+      "charge_30m_percent": 40,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/samsung_galaxy_s26_fe-review-2999p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "infinix_note_50_pro_4g",
+      "manufacturer": "Infinix",
+      "model": "Note 50 Pro 4G",
+      "release_date": "March 2025",
+      "battery_capacity_mah": 5200,
+      "wired_charger_w": 90,
+      "full_charge_minutes": 37,
+      "charge_30m_percent": 88,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/tecno_spark_40_pro_plus-review-2862p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "tecno_camon_50_ultra",
+      "manufacturer": "Tecno",
+      "model": "Camon 50 Ultra",
+      "release_date": "March 2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 80,
+      "charge_30m_percent": 42,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_note_60_pro-review-2962p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "xiaomi_poco_m8_pro",
+      "manufacturer": "Xiaomi",
+      "model": "Poco M8 Pro",
+      "release_date": "January 8, 2026",
+      "battery_capacity_mah": 6500,
+      "wired_charger_w": 100,
+      "full_charge_minutes": 47,
+      "charge_30m_percent": 83,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/infinix_note_60_pro-review-2962p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
+    },
+    {
+      "id": "xiaomi_poco_x7",
+      "manufacturer": "Xiaomi",
+      "model": "Poco X7",
+      "release_date": "January 9, 2025",
+      "battery_capacity_mah": 5110,
+      "wired_charger_w": 45,
+      "full_charge_minutes": 65,
+      "charge_30m_percent": 62,
+      "primary_source": {
+        "provider": "GSMArena",
+        "url": "https://www.gsmarena.com/tecno_spark_40_pro_plus-review-2862p3.php",
+        "kind": "independent_lab"
+      },
+      "secondary_sources": []
     }
   ],
   "notes": [
-    "Charging database contains 119 recent released phones; incomplete lab rows remain stored but are excluded from active curve fitting."
+    "Charging database contains 119 recent released phones; incomplete lab rows remain stored but are excluded from active curve fitting.",
+    "Supplemental GSMArena lab records expand the charging database to 140 recent phones and add Realme, Tecno, Infinix and iQOO coverage."
   ]
 }
