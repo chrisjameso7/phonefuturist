@@ -1,0 +1,198 @@
+{
+  "version": "device-variant-cohort-0.2.0",
+  "description": "Verified variant families for calibration. A family can contain multiple hardware variants under one marketing name. Unknown identifiers remain unknown.",
+  "samsungSplitSocFamilies": [
+    {
+      "family": "Galaxy S24",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "most markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2400"
+          }
+        },
+        {
+          "region": "US/Canada/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 3"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s24-review-2663.php",
+      "use": "variant identity; later pairwise runtime fitting"
+    },
+    {
+      "family": "Galaxy S23 FE",
+      "batteryMah": 4500,
+      "variants": [
+        {
+          "region": "global",
+          "modelNumber": "SM-S711B",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2200"
+          }
+        },
+        {
+          "region": "North America",
+          "modelNumber": "SM-S711U1",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 1"
+          }
+        }
+      ],
+      "pairedEvidence": {
+        "protocol": "GSMArena Active Use",
+        "snapdragonActiveUseHours": 9.75,
+        "exynosActiveUseHours": 8.4667,
+        "snapdragonCpuStabilityPercent": 66,
+        "exynosCpuStabilityPercent": 58,
+        "snapdragonGpuStabilityPercent": 46,
+        "exynosGpuStabilityPercent": 50,
+        "note": "Same stated battery capacity and near-identical display/camera hardware make this a high-value natural experiment. Do not attribute the entire runtime gap to software."
+      },
+      "source": "https://www.gsmarena.com/galaxy_s23_fe_exynos_2200_vs_snapdragon_8_gen_1_review_battery_camera_price_compared-news-60961.php",
+      "use": "high-priority pairwise SoC/platform calibration"
+    },
+    {
+      "family": "Galaxy S22",
+      "batteryMah": 3700,
+      "variants": [
+        {
+          "region": "Europe",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2200"
+          }
+        },
+        {
+          "region": "most other markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 1"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s22-review-2396.php",
+      "use": "variant identity; seek matched protocol pair"
+    },
+    {
+      "family": "Galaxy S21 5G",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "rest of world",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2100"
+          }
+        },
+        {
+          "region": "North America/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 888"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s21-review-2218.php",
+      "use": "variant identity; seek matched protocol pair"
+    },
+    {
+      "family": "Galaxy Note20 Ultra 5G",
+      "variants": [
+        {
+          "region": "Europe/India/Brazil/Australia and other Exynos markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 990"
+          }
+        },
+        {
+          "region": "North America/South Korea/Japan/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 865+"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_note20_ultra_5g-review-2149p4.php",
+      "use": "historical split-platform anchor"
+    },
+    {
+      "family": "Galaxy S20",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "global",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 990"
+          }
+        },
+        {
+          "region": "USA and selected markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 865"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s20-10081.php",
+      "use": "historical split-platform anchor"
+    }
+  ],
+  "appleSimBatteryFamilies": [
+    {
+      "family": "iPhone 17 Pro",
+      "variants": [
+        {
+          "simConfiguration": "nano_sim_plus_esim",
+          "batteryMah": 3988,
+          "markets": "physical-SIM markets"
+        },
+        {
+          "simConfiguration": "esim_only",
+          "batteryMah": 4252,
+          "markets": "eSIM-only markets"
+        }
+      ],
+      "sources": [
+        "https://www.apple.com/newsroom/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/",
+        "https://www.macrumors.com/2025/09/19/iphone-17-and-17-pro-sim-esim-battery-capacities/"
+      ],
+      "note": "Apple explicitly states eSIM-only 17 Pro models use freed SIM-tray space for a larger battery."
+    },
+    {
+      "family": "iPhone 17 Pro Max",
+      "variants": [
+        {
+          "simConfiguration": "nano_sim_plus_esim",
+          "batteryMah": 4823,
+          "markets": "physical-SIM markets"
+        },
+        {
+          "simConfiguration": "esim_only",
+          "batteryMah": 5088,
+          "markets": "eSIM-only markets"
+        }
+      ],
+      "sources": [
+        "https://www.apple.com/newsroom/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/",
+        "https://www.macrumors.com/2025/09/19/iphone-17-and-17-pro-sim-esim-battery-capacities/"
+      ],
+      "note": "These variants must not share one battery-capacity record in runtime calibration."
+    }
+  ],
+  "modelingRules": [
+    "Prefer pairwise same-family comparisons when isolating SoC/platform effects.",
+    "A same-name device with a different SoC is a different hardware variant.",
+    "A same-name device with a different battery capacity is a different hardware variant.",
+    "Do not copy a runtime measurement from one regional variant to another unless the tested configuration is explicitly verified.",
+    "Separate SoC/platform residuals from OEM/software residuals whenever matched-family evidence permits."
+  ]
+}
