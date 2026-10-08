@@ -22,6 +22,7 @@ export interface ChargingComparableQuery {
   protocol?: string;
   protocolVersion?: string;
   chargingStandard?: string;
+  ambientTemperatureC?: number;
 }
 
 export interface ChargingComparableEvidence {
