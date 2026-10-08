@@ -22,10 +22,25 @@ export interface ChargingPowerResponseEvidence {
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
 }
 
+export interface EarlyChargePowerResponseEvidence {
+  deviceVariantId: string;
+  lowWatts: number;
+  highWatts: number;
+  lowThirtyMinutePercent: number;
+  highThirtyMinutePercent: number;
+  elasticity: number;
+  manufacturer: string;
+  batteryChemistry?: string;
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+}
+
 export interface ChargingPowerResponse {
   version: string;
   status: 'resolved' | 'unresolved';
   elasticity?: number;
+  earlyChargeElasticity?: number;
+  earlyChargeConfidence?: number;
+  earlyEvidence?: EarlyChargePowerResponseEvidence[];
   confidence?: number;
   evidence?: ChargingPowerResponseEvidence[];
   targetPosition?: 'interpolation' | 'near-extrapolation' | 'far-extrapolation';
@@ -43,6 +58,15 @@ function fullChargeMetric(metric: string) {
     value === 'wiredfullchargeminutes' ||
     value === 'fullchargeminutes' ||
     value === 'timeto100minutes'
+  );
+}
+
+function thirtyMinuteMetric(metric: string) {
+  const value = metric.toLowerCase();
+  return (
+    value === 'wiredthirtyminutepercent' ||
+    value === 'charge30mpercent' ||
+    value === 'thirtyminutepercent'
   );
 }
 
@@ -121,6 +145,78 @@ export function collectChargingPowerResponseEvidence(
   return evidence;
 }
 
+export function collectEarlyChargePowerResponseEvidence(
+  corpus: DeviceCorpus,
+): EarlyChargePowerResponseEvidence[] {
+  const evidence: EarlyChargePowerResponseEvidence[] = [];
+
+  for (const device of corpus.devices) {
+    const p30 = corpus.measurements.filter(
+      (measurement) =>
+        measurement.deviceVariantId === device.variant.id &&
+        measurement.workload === 'charging' &&
+        thirtyMinuteMetric(measurement.metric) &&
+        measurement.testChargerWatts !== undefined &&
+        measurement.testChargerWatts > 0 &&
+        measurement.value > 0 &&
+        measurement.value <= 100,
+    );
+
+    for (let i = 0; i < p30.length; i += 1) {
+      for (let j = i + 1; j < p30.length; j += 1) {
+        const a = p30[i];
+        const b = p30[j];
+
+        if (
+          a.testChargerWatts === undefined ||
+          b.testChargerWatts === undefined ||
+          a.testChargerWatts === b.testChargerWatts
+        ) {
+          continue;
+        }
+
+        const low =
+          a.testChargerWatts < b.testChargerWatts ? a : b;
+        const high = low === a ? b : a;
+
+        if (
+          low.testChargerWatts === undefined ||
+          high.testChargerWatts === undefined ||
+          high.value <= low.value
+        ) {
+          continue;
+        }
+
+        const elasticity =
+          Math.log(high.value / low.value) /
+          Math.log(high.testChargerWatts / low.testChargerWatts);
+
+        if (
+          !Number.isFinite(elasticity) ||
+          elasticity <= 0 ||
+          elasticity > 1.5
+        ) {
+          continue;
+        }
+
+        evidence.push({
+          deviceVariantId: device.variant.id,
+          lowWatts: low.testChargerWatts,
+          highWatts: high.testChargerWatts,
+          lowThirtyMinutePercent: low.value,
+          highThirtyMinutePercent: high.value,
+          elasticity,
+          manufacturer: device.variant.identity.manufacturer,
+          batteryChemistry: capacityChemistry(device),
+          cellArchitecture: device.charging?.cellArchitecture,
+        });
+      }
+    }
+  }
+
+  return evidence;
+}
+
 function evidenceWeight(
   item: ChargingPowerResponseEvidence,
   query: ChargingPowerResponseQuery,
@@ -172,6 +268,8 @@ export function resolveChargingPowerResponse(
   }
 
   const evidence = collectChargingPowerResponseEvidence(corpus);
+  const earlyEvidence =
+    collectEarlyChargePowerResponseEvidence(corpus);
 
   if (!evidence.length) {
     return {
@@ -185,6 +283,14 @@ export function resolveChargingPowerResponse(
   const weighted = evidence.map((item) => ({
     item,
     weight: evidenceWeight(item, query),
+  }));
+
+  const earlyWeighted = earlyEvidence.map((item) => ({
+    item,
+    weight: evidenceWeight(
+      item as ChargingPowerResponseEvidence,
+      query,
+    ),
   }));
 
   const evidenceMinWatts = Math.min(...evidence.map((item) => item.lowWatts));
@@ -223,10 +329,41 @@ export function resolveChargingPowerResponse(
 
   const confidence = baseConfidence * positionPenalty;
 
+  const earlyTotalWeight = earlyWeighted.reduce(
+    (sum, row) => sum + row.weight,
+    0,
+  );
+  const earlyChargeElasticity =
+    earlyTotalWeight > 0
+      ? earlyWeighted.reduce(
+          (sum, row) =>
+            sum + row.item.elasticity * row.weight,
+          0,
+        ) / earlyTotalWeight
+      : undefined;
+  const earlyStrongMatches = earlyWeighted.filter(
+    (row) => row.weight >= 5,
+  ).length;
+  const earlyChargeConfidence =
+    earlyChargeElasticity !== undefined
+      ? Math.min(
+          1,
+          0.3 +
+            Math.min(earlyEvidence.length, 6) * 0.08 +
+            Math.min(earlyStrongMatches, 3) * 0.08,
+        ) * positionPenalty
+      : undefined;
+
   return {
     version: CHARGING_POWER_RESPONSE_VERSION,
     status: 'resolved',
     elasticity,
+    earlyChargeElasticity,
+    earlyChargeConfidence,
+    earlyEvidence: earlyWeighted
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, 6)
+      .map((row) => row.item),
     confidence,
     targetPosition,
     evidenceRangeWatts: {
