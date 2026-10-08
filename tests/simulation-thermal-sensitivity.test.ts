@@ -42,6 +42,8 @@ describe('thermal sensitivity scenarios', () => {
     expect(cooling!.peakTemperatureC).toBeLessThanOrEqual(
       result.peakTemperatureC!,
     );
+    expect(hot!.deltaPeakTemperatureC).toBeGreaterThanOrEqual(0);
+    expect(cooling!.deltaPeakTemperatureC).toBeLessThanOrEqual(0);
   });
 
   it('labels higher SoC load as a separate controlled scenario', () => {
