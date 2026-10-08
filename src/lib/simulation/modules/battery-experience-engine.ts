@@ -2,6 +2,7 @@ import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
+import { estimateWirelessChargingFromCorpus } from './wireless-charging-estimator';
 
 export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.1.0';
 
@@ -14,7 +15,8 @@ export interface BatteryExperienceInput {
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
   wiredWatts?: number;
   wirelessWatts?: number;
-  chargingStandard?: string;
+  wiredChargingStandard?: string;
+  wirelessChargingStandard?: string;
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -42,6 +44,7 @@ export interface BatteryExperienceResult {
   capacityMah?: number;
   runtimes: BatteryRuntimeExperience[];
   charging?: ReturnType<typeof estimateChargingFromCorpus>;
+  wirelessCharging?: ReturnType<typeof estimateWirelessChargingFromCorpus>;
   warnings: string[];
 }
 
@@ -139,7 +142,7 @@ export function simulateBatteryExperience(
       weightG: input.simulation.dimensions?.weightG,
       coolingClass: input.coolingClass,
       cellArchitecture: input.cellArchitecture,
-      chargingStandard: input.chargingStandard,
+      chargingStandard: input.wiredChargingStandard,
     });
 
     if (charging.status === 'unresolved') {
@@ -154,15 +157,43 @@ export function simulateBatteryExperience(
     );
   }
 
+  let wirelessCharging:
+    | ReturnType<typeof estimateWirelessChargingFromCorpus>
+    | undefined;
+
+  if (input.wirelessWatts !== undefined) {
+    wirelessCharging = estimateWirelessChargingFromCorpus(corpus, {
+      batteryMah: capacity,
+      wirelessChargingWatts: input.wirelessWatts,
+      manufacturer: input.manufacturer,
+      batteryChemistry: input.batteryChemistry,
+      chargingStandard: input.wirelessChargingStandard,
+    });
+
+    if (wirelessCharging.status === 'unresolved') {
+      warnings.push(
+        wirelessCharging.unresolvedReason ??
+          'Wireless charging estimate could not be resolved from the corpus.',
+      );
+    }
+  }
+
   const runtimeResolved = runtimes.filter(
     (runtime) => runtime.status === 'resolved',
   ).length;
   const chargingResolved = charging?.status === 'resolved';
+  const wirelessResolved =
+    input.wirelessWatts === undefined ||
+    wirelessCharging?.status === 'resolved';
 
   const status =
-    runtimeResolved === workloads.length && chargingResolved
+    runtimeResolved === workloads.length &&
+    chargingResolved &&
+    wirelessResolved
       ? 'resolved'
-      : runtimeResolved > 0 || chargingResolved
+      : runtimeResolved > 0 ||
+          chargingResolved ||
+          wirelessCharging?.status === 'resolved'
         ? 'partial'
         : 'unresolved';
 
@@ -172,6 +203,7 @@ export function simulateBatteryExperience(
     capacityMah: capacity,
     runtimes,
     ...(charging ? { charging } : {}),
+    ...(wirelessCharging ? { wirelessCharging } : {}),
     warnings,
   };
 }
