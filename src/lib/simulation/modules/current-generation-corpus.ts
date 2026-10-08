@@ -1,5 +1,5 @@
-import currentJson from '../../../data/calibration/current-generation-2026-10-08-0.1.json';
-import expansionJson from '../../../data/calibration/current-generation-expansion-2026-10-08-0.2.json';
+import currentJson from '../../../../data/calibration/current-generation-2026-10-08-0.1.json';
+import expansionJson from '../../../../data/calibration/current-generation-expansion-2026-10-08-0.2.json';
 import type {
   DeviceCorpus,
   DeviceCorpusRecord,
