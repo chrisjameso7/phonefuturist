@@ -8,25 +8,25 @@ import {
 import type { SimulationInput } from '../src/lib/simulation/types';
 
 const iphone: SimulationInput = {
-  name: 'iPhone 16 Pro Max',
+  name: 'iPhone 17 Pro Max',
   formFactor: 'phone',
   displays: { primary: { diagonalInches: 6.9, resolutionWidthPx: 1320, resolutionHeightPx: 2868 } },
-  battery: { cells: [{ capacityMah: 4685, nominalVoltageV: 3.878 }] },
+  battery: { cells: [{ capacityMah: 4823 }] },
 };
 
 const concept: SimulationInput = {
   name: 'Future flagship',
   formFactor: 'phone',
   displays: { primary: { diagonalInches: 6.8, resolutionWidthPx: 1440, resolutionHeightPx: 3200 } },
-  battery: { cells: [{ capacityMah: 5500, nominalVoltageV: 3.88 }] },
+  battery: { cells: [{ capacityMah: 5500 }] },
 };
 
 describe('v0.5.1 active workload runtime', () => {
   it('ships calibrated web, video and gaming references', () => {
     expect(WORKLOAD_RUNTIME_VERSION).toBe('0.5.1');
-    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'web_browsing')).toHaveLength(3);
-    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'video_playback')).toHaveLength(3);
-    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'gaming')).toHaveLength(3);
+    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'web_browsing')).toHaveLength(20);
+    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'video_playback')).toHaveLength(20);
+    expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'gaming')).toHaveLength(20);
   });
 
   it('uses a matching released-device reference without asking for watts', () => {
@@ -55,7 +55,7 @@ describe('v0.5.1 active workload runtime', () => {
   it('uses the reference-population power band for an unreleased concept', () => {
     const gaming = resolveWorkloadPowerBand(concept, 'gaming');
     expect(gaming?.basis).toBe('reference-population');
-    expect(gaming?.referenceCount).toBe(3);
+    expect(gaming?.referenceCount).toBe(20);
     expect(gaming!.maxW).toBeGreaterThanOrEqual(gaming!.minW);
 
     const result = simulateActiveUseRuntime(concept, {
@@ -92,7 +92,7 @@ describe('v0.5.1 active workload runtime', () => {
     expect(result.unresolved?.code).toBe('INVALID_HOURS');
   });
 
-  it('requires battery energy but never battery dimensions', () => {
+  it('requires battery capacity but never battery dimensions or voltage', () => {
     const noEnergy: SimulationInput = {
       name: 'No pack',
       formFactor: 'phone',
@@ -101,7 +101,7 @@ describe('v0.5.1 active workload runtime', () => {
 
     const result = simulateActiveUseRuntime(noEnergy, { web_browsing: 2 });
     expect(result.status).toBe('unresolved');
-    expect(result.unresolved?.code).toBe('MISSING_ENERGY');
+    expect(result.unresolved?.code).toBe('MISSING_CAPACITY');
 
     const withEnergyNoDimensions = simulateActiveUseRuntime(concept, {
       video_playback: 2,
