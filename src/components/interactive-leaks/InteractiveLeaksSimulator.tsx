@@ -2560,6 +2560,22 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
+                    {cameraExperiences[index]?.warnings.length ? (
+                      <div className="il-warnings">
+                        {cameraExperiences[index]?.warnings.map(
+                          (warning) => (
+                            <div
+                              className="il-warning"
+                              key={warning.code}
+                            >
+                              <strong>{warning.code}</strong>
+                              <p>{warning.message}</p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : null}
+
                     {cameraExperiences[index]?.sensitivity.length ? (
                       <div className="il-camera-sensitivity">
                         <span className="il-result-label">
