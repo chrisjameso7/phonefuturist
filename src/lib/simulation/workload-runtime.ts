@@ -358,7 +358,7 @@ export function simulateActiveUseRuntime(
       },
       workloads,
       note:
-        'Active-use equivalent only. The model is capacity-normalized against 20 recent released phones under one lab protocol. Idle and standby drain are not included, so this is not a full 24-hour real-world battery-life prediction.',
+        'Active-use equivalent only. The model is capacity-normalized against a 100-plus-phone recent released-device calibration database, with a broad common-protocol cohort and retained cross-source references. Idle and standby drain are not included, so this is not a full 24-hour real-world battery-life prediction.',
     },
   };
 }
