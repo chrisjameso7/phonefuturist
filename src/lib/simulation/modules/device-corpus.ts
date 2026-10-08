@@ -31,6 +31,9 @@ export interface CorpusMeasurement {
   ambientTemperatureC?: number;
   displayBrightnessNits?: number;
   refreshRateHz?: number;
+  testChargerWatts?: number;
+  chargingStandard?: string;
+  measuredPeakWatts?: number;
   notes?: string[];
 }
 
