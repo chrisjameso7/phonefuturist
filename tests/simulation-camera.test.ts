@@ -46,6 +46,62 @@ describe('camera simulation module', () => {
     expect(calculation.warnings).toEqual([]);
   });
 
+  it('compares total-light capture from sensor size and aperture', () => {
+    const largeFast = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.0,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.6,
+    });
+
+    const smallSlow = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 2.0,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 2.0,
+    });
+
+    expect(
+      largeFast.result.geometricLightCaptureIndex!,
+    ).toBeGreaterThan(
+      smallSlow.result.geometricLightCaptureIndex!,
+    );
+
+    expect(
+      largeFast.result.approximatePixelPitchMicrons!,
+    ).toBeGreaterThan(
+      smallSlow.result.approximatePixelPitchMicrons!,
+    );
+
+    expect(
+      largeFast.result.perPixelLightCaptureIndex!,
+    ).toBeGreaterThan(
+      smallSlow.result.perPixelLightCaptureIndex!,
+    );
+  });
+
+  it('derives field of view and diffraction indicators when geometry is available', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.6,
+    });
+
+    expect(calculation.result.horizontalFieldOfViewDeg).toBeGreaterThan(0);
+    expect(calculation.result.diagonalFieldOfViewDeg).toBeGreaterThan(
+      calculation.result.horizontalFieldOfViewDeg!,
+    );
+    expect(calculation.result.airyDiskDiameterMicrons).toBeGreaterThan(0);
+    expect(calculation.result.airyDiskToPixelPitchRatio).toBeGreaterThan(0);
+    expect(calculation.result.equivalentApertureFNumber).toBeGreaterThan(
+      1.6,
+    );
+  });
+
   it('calculates camera module volume only from explicit module dimensions', () => {
     const calculation = calculateCamera({
       type: 'periscope',
@@ -94,8 +150,16 @@ describe('camera simulation module', () => {
     ).toBeUndefined();
 
     expect(
+      calculation.result.effectivePhysicalFocalLengthMm,
+    ).toBeGreaterThan(0);
+
+    expect(
       calculation.result.entrancePupilDiameterMm,
-    ).toBeUndefined();
+    ).toBeGreaterThan(0);
+
+    expect(
+      calculation.result.geometricLightCaptureIndex,
+    ).toBeGreaterThan(0);
 
     expect(calculation.warnings).toEqual([]);
   });
