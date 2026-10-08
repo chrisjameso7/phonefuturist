@@ -33,8 +33,68 @@ export interface LiveThermalExperienceResult {
     powerW: number;
     performancePercent: number;
   }>;
+  warnings?: Array<{
+    code: string;
+    message: string;
+  }>;
   note?: string;
   unresolvedReason?: string;
+}
+
+
+function thermalWarnings(
+  input: LiveThermalExperienceInput,
+  result: {
+    peakTemperatureC: number;
+    sustainedPerformancePercent: number;
+    throttleStartSecond?: number;
+  },
+) {
+  const warnings: Array<{ code: string; message: string }> = [];
+  const steadyStateC =
+    input.ambientTemperatureC +
+    input.targetPowerW * input.thermalResistanceCPerW;
+
+  if (
+    input.throttleTemperatureC -
+      input.ambientTemperatureC <
+    8
+  ) {
+    warnings.push({
+      code: 'LOW_THROTTLE_HEADROOM',
+      message:
+        'Throttle temperature is less than 8 °C above ambient. This may represent a surface-temperature limit rather than a realistic internal SoC junction ceiling.',
+    });
+  }
+
+  if (steadyStateC >= input.throttleTemperatureC + 20) {
+    warnings.push({
+      code: 'HIGH_UNTHROTTLED_STEADY_STATE',
+      message:
+        'The unthrottled steady-state temperature would sit more than 20 °C above the throttle ceiling, so sustained performance depends heavily on throttling behavior.',
+    });
+  }
+
+  if (
+    result.throttleStartSecond !== undefined &&
+    result.throttleStartSecond < 60
+  ) {
+    warnings.push({
+      code: 'EARLY_THROTTLE',
+      message:
+        'The model reaches the thermal ceiling within the first minute. Recheck target power, thermal resistance, thermal mass and throttle temperature.',
+    });
+  }
+
+  if (result.sustainedPerformancePercent < 60) {
+    warnings.push({
+      code: 'SEVERE_SUSTAINED_THROTTLE',
+      message:
+        'Sustained performance falls below 60% of target. Treat this as a strong thermal bottleneck signal.',
+    });
+  }
+
+  return warnings;
 }
 
 export function simulateThermalExperience(
@@ -51,6 +111,15 @@ export function simulateThermalExperience(
     calibrated.simulation &&
     calibrated.evidence
   ) {
+    const warnings = thermalWarnings(input, {
+      peakTemperatureC:
+        calibrated.simulation.peakTemperatureC,
+      sustainedPerformancePercent:
+        calibrated.simulation.sustainedPerformancePercent,
+      throttleStartSecond:
+        calibrated.simulation.throttleStartSecond,
+    });
+
     return {
       version: LIVE_THERMAL_EXPERIENCE_VERSION,
       status: 'resolved',
@@ -69,6 +138,7 @@ export function simulateThermalExperience(
       sustainedPowerW:
         calibrated.simulation.sustainedPowerW,
       points: calibrated.simulation.points,
+      warnings,
       note:
         'Sustained performance is calibrated from comparable measured thermal evidence, then propagated through the deterministic thermal model.',
     };
@@ -97,6 +167,13 @@ export function simulateThermalExperience(
     };
   }
 
+  const warnings = thermalWarnings(input, {
+    peakTemperatureC: fallback.peakTemperatureC,
+    sustainedPerformancePercent:
+      fallback.sustainedPerformancePercent,
+    throttleStartSecond: fallback.throttleStartSecond,
+  });
+
   return {
     version: LIVE_THERMAL_EXPERIENCE_VERSION,
     status: 'resolved',
@@ -108,6 +185,7 @@ export function simulateThermalExperience(
       fallback.sustainedPerformancePercent,
     sustainedPowerW: fallback.sustainedPowerW,
     points: fallback.points,
+    warnings,
     note:
       'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence.',
   };
