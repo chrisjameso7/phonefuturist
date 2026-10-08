@@ -10,6 +10,8 @@ import {
 
 export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.1.0';
 
+export type ChargingConfidenceGrade = 'high' | 'moderate' | 'low';
+
 export interface ChargingCurveEstimate {
   version: string;
   status: 'resolved' | 'unresolved';
@@ -18,6 +20,7 @@ export interface ChargingCurveEstimate {
     basis: 'weighted-comparable-corpus';
     referenceCount: number;
     confidence: number;
+    confidenceGrade: ChargingConfidenceGrade;
     charge30mPercent?: { min: number; expected: number; max: number };
     timeTo50Minutes?: { min: number; expected: number; max: number };
     timeTo80Minutes?: { min: number; expected: number; max: number };
@@ -199,10 +202,24 @@ export function estimateChargingFromCorpus(
     comparable.references.reduce((sum, ref) => sum + ref.score, 0) /
     comparable.references.length;
 
+  const adjustedConfidence =
+    confidence *
+    (powerResponse.status === 'resolved'
+      ? powerResponse.confidence ?? 1
+      : 0.72);
+
+  const confidenceGrade: ChargingConfidenceGrade =
+    adjustedConfidence >= 0.72
+      ? 'high'
+      : adjustedConfidence >= 0.48
+        ? 'moderate'
+        : 'low';
+
   const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
     basis: 'weighted-comparable-corpus',
     referenceCount: comparable.references.length,
-    confidence: clamp(confidence, 0, 1),
+    confidence: clamp(adjustedConfidence, 0, 1),
+    confidenceGrade,
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     powerResponse: {
       applied: powerResponse.status === 'resolved',
