@@ -4764,3 +4764,49 @@
   .il-library-tabs{border-radius:999px}
   .il-library-tabs button{border-radius:999px}
 }
+
+
+/* Thermal timeline */
+
+.il-thermal-timeline {
+  margin-top: 1rem;
+  display: grid;
+  gap: .7rem;
+}
+
+.il-thermal-table {
+  display: grid;
+  gap: .45rem;
+}
+
+.il-thermal-row {
+  display: grid;
+  grid-template-columns: minmax(72px, .8fr) repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+  align-items: center;
+  padding: .72rem .8rem;
+  border: 1px solid #ffffff12;
+  border-radius: 10px;
+  background: #ffffff05;
+  font-size: .76rem;
+}
+
+.il-thermal-row strong {
+  color: #fff;
+  font-size: .78rem;
+}
+
+.il-thermal-row span {
+  color: #aeb5c0;
+}
+
+@media (max-width: 760px) {
+  .il-thermal-row {
+    grid-template-columns: 1fr 1fr;
+    gap: .35rem .7rem;
+  }
+
+  .il-thermal-row strong {
+    grid-column: 1 / -1;
+  }
+}
