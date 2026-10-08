@@ -291,6 +291,36 @@ function formatDurationMinutes(
     : `${hours} h`;
 }
 
+function formatDurationSeconds(
+  seconds: number | undefined,
+): string {
+  if (seconds === undefined || !Number.isFinite(seconds)) {
+    return 'Unknown';
+  }
+
+  const rounded = Math.max(0, Math.round(seconds));
+
+  if (rounded < 60) {
+    return `${rounded} s`;
+  }
+
+  const minutes = Math.floor(rounded / 60);
+  const remainingSeconds = rounded % 60;
+
+  if (minutes < 60) {
+    return remainingSeconds > 0
+      ? `${minutes} min ${remainingSeconds} s`
+      : `${minutes} min`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  return remainingMinutes > 0
+    ? `${hours} h ${remainingMinutes} min`
+    : `${hours} h`;
+}
+
 function NumericField({
   label,
   value,
@@ -2178,8 +2208,8 @@ export default function InteractiveLeaksSimulator() {
                       <div>
                         <strong>
                           {thermalResult.throttleStartSecond !== undefined
-                            ? formatDurationMinutes(
-                                thermalResult.throttleStartSecond / 60,
+                            ? formatDurationSeconds(
+                                thermalResult.throttleStartSecond,
                               )
                             : 'No throttle detected'}
                         </strong>
@@ -2241,8 +2271,8 @@ export default function InteractiveLeaksSimulator() {
                                 key={point.second}
                               >
                                 <strong>
-                                  {formatDurationMinutes(
-                                    point.second / 60,
+                                  {formatDurationSeconds(
+                                    point.second,
                                   )}
                                 </strong>
                                 <span>
@@ -2266,6 +2296,58 @@ export default function InteractiveLeaksSimulator() {
                               </div>
                             ))}
                         </div>
+                      </div>
+                    ) : null}
+
+                    {thermalResult.sensitivity?.length ? (
+                      <div className="il-thermal-sensitivity">
+                        <div className="il-result-label">
+                          What-if sensitivity
+                        </div>
+
+                        <div className="il-sensitivity-grid">
+                          {thermalResult.sensitivity.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+                                <span>
+                                  {format(
+                                    scenario.peakTemperatureC,
+                                    1,
+                                  )} °C peak
+                                </span>
+                                <span>
+                                  {format(
+                                    scenario.sustainedPerformancePercent,
+                                    1,
+                                  )}% sustained
+                                </span>
+                                <span>
+                                  {format(
+                                    scenario.sustainedPowerW,
+                                    2,
+                                  )} W sustained
+                                </span>
+                                <small>
+                                  {scenario.throttleStartSecond !== undefined
+                                    ? `Throttle ${formatDurationSeconds(
+                                        scenario.throttleStartSecond,
+                                      )}`
+                                    : 'No throttle detected'}
+                                </small>
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                        <p className="il-help">
+                          Controlled sensitivity probes only. They change one
+                          thermal assumption at a time and are not additional
+                          measured device results.
+                        </p>
                       </div>
                     ) : null}
 
