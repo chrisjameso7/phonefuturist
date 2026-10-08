@@ -21,7 +21,7 @@ export interface CorpusSource {
 export interface CorpusMeasurement {
   id: string;
   deviceVariantId: string;
-  workload: SystemEfficiencyWorkload | 'charging' | 'thermal' | 'benchmark';
+  workload: SystemEfficiencyWorkload | 'charging' | 'thermal' | 'benchmark' | 'camera';
   metric: string;
   value: number;
   unit: string;
