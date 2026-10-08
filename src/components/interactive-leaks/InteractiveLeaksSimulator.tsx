@@ -1288,9 +1288,154 @@ export default function InteractiveLeaksSimulator() {
           </div>
 
           <div className="il-section">
+            <div className="il-section-heading">
+              <span>05</span>
+              <div>
+                <h2>Thermal & performance</h2>
+                <p>
+                  Model sustained SoC power, heat and throttling.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <label className="il-field">
+                <span>Thermal workload</span>
+                <select
+                  value={form.thermalDomain}
+                  onChange={(event) =>
+                    update(
+                      'thermalDomain',
+                      event.currentTarget.value as
+                        | 'cpu_sustained'
+                        | 'gpu_sustained'
+                        | 'gaming_sustained'
+                        | 'ray_tracing',
+                    )
+                  }
+                >
+                  <option value="cpu_sustained">CPU sustained</option>
+                  <option value="gpu_sustained">GPU sustained</option>
+                  <option value="gaming_sustained">Gaming sustained</option>
+                  <option value="ray_tracing">Ray tracing</option>
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>SoC vendor</span>
+                <input
+                  type="text"
+                  value={form.socVendor}
+                  placeholder="Qualcomm"
+                  onChange={(event) =>
+                    update('socVendor', event.currentTarget.value)
+                  }
+                />
+              </label>
+
+              <label className="il-field">
+                <span>Cooling class</span>
+                <select
+                  value={form.coolingClass}
+                  onChange={(event) =>
+                    update(
+                      'coolingClass',
+                      event.currentTarget.value as FormState['coolingClass'],
+                    )
+                  }
+                >
+                  <option value="unknown">Unknown</option>
+                  <option value="passive-graphite">Passive graphite</option>
+                  <option value="vapor-chamber">Vapor chamber</option>
+                  <option value="large-vapor-chamber">Large vapor chamber</option>
+                  <option value="active-fan">Active fan</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Target SoC power"
+                suffix="W"
+                value={form.targetSocPowerW}
+                placeholder="10"
+                onChange={(value) =>
+                  update('targetSocPowerW', value)
+                }
+              />
+
+              <NumericField
+                label="Ambient temperature"
+                suffix="°C"
+                value={form.ambientTemperatureC}
+                placeholder="25"
+                onChange={(value) =>
+                  update('ambientTemperatureC', value)
+                }
+              />
+
+              <NumericField
+                label="Throttle ceiling"
+                suffix="°C"
+                value={form.throttleTemperatureC}
+                placeholder="42"
+                onChange={(value) =>
+                  update('throttleTemperatureC', value)
+                }
+              />
+            </div>
+
+            <details className="il-advanced">
+              <summary>Advanced thermal model</summary>
+
+              <p className="il-help">
+                Thermal resistance and thermal mass are physical model inputs.
+                Leave them blank rather than guessing if they are unknown.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Thermal resistance"
+                  suffix="°C/W"
+                  value={form.thermalResistanceCPerW}
+                  placeholder="3"
+                  onChange={(value) =>
+                    update('thermalResistanceCPerW', value)
+                  }
+                />
+
+                <NumericField
+                  label="Thermal mass"
+                  suffix="J/°C"
+                  value={form.thermalMassJPerC}
+                  placeholder="45"
+                  onChange={(value) =>
+                    update('thermalMassJPerC', value)
+                  }
+                />
+
+                <NumericField
+                  label="Test duration"
+                  suffix="s"
+                  value={form.thermalDurationSeconds}
+                  placeholder="600"
+                  onChange={(value) =>
+                    update('thermalDurationSeconds', value)
+                  }
+                />
+              </div>
+            </details>
+
+            <p className="il-help">
+              Comparable measured sustained-performance evidence is used when
+              available. Otherwise the simulator falls back to the deterministic
+              first-order thermal model and labels that result accordingly.
+            </p>
+          </div>
+
+          <div className="il-section">
             <div className="il-section-heading il-section-heading-action">
               <div className="il-heading-copy">
-                <span>05</span>
+                <span>06</span>
                 <div>
                   <h2>Cameras</h2>
                   <p>
@@ -1493,7 +1638,7 @@ export default function InteractiveLeaksSimulator() {
 
           <div className="il-section">
             <div className="il-section-heading">
-              <span>06</span>
+              <span>07</span>
               <div>
                 <h2>Packaging</h2>
                 <p>
