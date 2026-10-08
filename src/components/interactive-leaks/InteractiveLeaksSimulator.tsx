@@ -21,14 +21,9 @@ import {
 } from '../../lib/simulation/workload-runtime';
 
 import {
-  LIVE_CHARGING_SIMULATOR_VERSION,
-  simulateChargingFromLiveCorpus,
-} from '../../lib/simulation/live-charging';
-
-import {
-  LIVE_WIRELESS_CHARGING_VERSION,
-  simulateWirelessChargingFromLiveCorpus,
-} from '../../lib/simulation/live-wireless-charging';
+  LIVE_BATTERY_EXPERIENCE_VERSION,
+  simulateLiveBatteryExperience,
+} from '../../lib/simulation/live-battery-experience';
 
 type NumericFieldProps = {
   label: string;
@@ -660,50 +655,31 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
-  const chargingCapacityMah = result?.battery?.totalCapacityMah;
   const chargingWatts = numeric(form.wiredChargeW);
+  const wirelessChargingWatts = numeric(form.wirelessChargeW);
 
-  const chargingResult =
-    simulationInput &&
-    result &&
-    chargingCapacityMah !== undefined &&
-    chargingWatts !== undefined
-      ? simulateChargingFromLiveCorpus({
-          batteryMah: chargingCapacityMah,
-          wiredChargingWatts: chargingWatts,
-          displayDiagonalInches:
-            simulationInput.displays.primary.diagonalInches,
-          thicknessMm: simulationInput.dimensions?.thicknessMm,
-          weightG: simulationInput.dimensions?.weightG,
+  const batteryExperience =
+    simulationInput && result
+      ? simulateLiveBatteryExperience({
+          simulation: simulationInput,
           batteryChemistry:
             form.batteryChemistry.trim() || undefined,
           cellArchitecture:
             form.cellArchitecture === 'unknown'
               ? undefined
               : form.cellArchitecture,
-          chargingStandard:
+          wiredWatts: chargingWatts,
+          wirelessWatts: wirelessChargingWatts,
+          wiredChargingStandard:
             form.chargingStandard.trim() || undefined,
-        })
-      : undefined;
-
-  const wirelessChargingWatts = numeric(
-    form.wirelessChargeW,
-  );
-
-  const wirelessChargingResult =
-    simulationInput &&
-    result &&
-    chargingCapacityMah !== undefined &&
-    wirelessChargingWatts !== undefined
-      ? simulateWirelessChargingFromLiveCorpus({
-          batteryMah: chargingCapacityMah,
-          wirelessChargingWatts,
-          batteryChemistry:
-            form.batteryChemistry.trim() || undefined,
-          chargingStandard:
+          wirelessChargingStandard:
             form.wirelessChargingStandard.trim() || undefined,
         })
       : undefined;
+
+  const chargingResult = batteryExperience?.charging;
+  const wirelessChargingResult =
+    batteryExperience?.wirelessCharging;
 
   const knownCameraVolumeMm3 =
     result?.cameras
@@ -1719,7 +1695,7 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Charging · {LIVE_CHARGING_SIMULATOR_VERSION}
+                  Charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
 
                 {chargingResult?.status === 'resolved' &&
@@ -1831,7 +1807,7 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Wireless charging · {LIVE_WIRELESS_CHARGING_VERSION}
+                  Wireless charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
 
                 {wirelessChargingResult?.status === 'resolved' ? (
