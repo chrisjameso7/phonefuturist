@@ -23,7 +23,7 @@ const concept: SimulationInput = {
 
 describe('v0.5.1 active workload runtime', () => {
   it('ships calibrated web, video and gaming references', () => {
-    expect(WORKLOAD_RUNTIME_VERSION).toBe('0.5.1');
+    expect(WORKLOAD_RUNTIME_VERSION).toBe('0.6.0');
     expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'web_browsing')).toHaveLength(135);
     expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'video_playback')).toHaveLength(20);
     expect(WORKLOAD_POWER_REFERENCES.filter(r => r.workload === 'gaming')).toHaveLength(20);
@@ -67,6 +67,49 @@ describe('v0.5.1 active workload runtime', () => {
     expect(result.status).toBe('resolved');
     expect(result.estimate!.runtimeHours.max).toBeGreaterThanOrEqual(
       result.estimate!.runtimeHours.min,
+    );
+  });
+
+  it('applies workload-specific system efficiency without changing the hardware baseline', () => {
+    const efficientConcept: SimulationInput = {
+      ...concept,
+      systemEfficiency: {
+        label: 'Measured tuning profile',
+        coefficients: {
+          web_browsing: {
+            consumptionMultiplier: 0.9,
+            evidenceKind: 'measured-residual',
+            confidence: 0.85,
+            sourceIds: ['held-out-web-test'],
+          },
+          gaming: {
+            consumptionMultiplier: 1.08,
+            evidenceKind: 'measured-residual',
+            confidence: 0.8,
+          },
+        },
+      },
+    };
+
+    const baseline = simulateActiveUseRuntime(concept, {
+      web_browsing: 2,
+    });
+    const adjusted = simulateActiveUseRuntime(efficientConcept, {
+      web_browsing: 2,
+    });
+
+    expect(baseline.status).toBe('resolved');
+    expect(adjusted.status).toBe('resolved');
+
+    const workload = adjusted.estimate!.workloads[0];
+    expect(workload.systemEfficiency.applied).toBe(true);
+    expect(workload.systemEfficiency.consumptionMultiplier).toBe(0.9);
+    expect(workload.drainMahPerHour.min).toBeCloseTo(
+      workload.baselineDrainMahPerHour.min * 0.9,
+      8,
+    );
+    expect(adjusted.estimate!.runtimeHours.min).toBeGreaterThan(
+      baseline.estimate!.runtimeHours.min,
     );
   });
 
