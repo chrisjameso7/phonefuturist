@@ -21,6 +21,7 @@ export interface ChargingComparableQuery {
   limit?: number;
   protocol?: string;
   protocolVersion?: string;
+  chargingStandard?: string;
 }
 
 export interface ChargingComparableEvidence {
@@ -108,6 +109,42 @@ function metricFromGroup(
   )?.value;
 }
 
+function modeAdjustedScore(
+  baseScore: number,
+  query: ChargingComparableQuery,
+  testChargerWatts?: number,
+  chargingStandard?: string,
+) {
+  let score = baseScore;
+  let weight = 1;
+
+  if (
+    testChargerWatts !== undefined &&
+    testChargerWatts > 0 &&
+    query.wiredChargingWatts > 0
+  ) {
+    const ratio =
+      Math.min(testChargerWatts, query.wiredChargingWatts) /
+      Math.max(testChargerWatts, query.wiredChargingWatts);
+    score += ratio * 0.75;
+    weight += 0.75;
+  }
+
+  if (query.chargingStandard && chargingStandard) {
+    const same =
+      chargingStandard.toLowerCase().includes(
+        query.chargingStandard.toLowerCase(),
+      ) ||
+      query.chargingStandard.toLowerCase().includes(
+        chargingStandard.toLowerCase(),
+      );
+    score += (same ? 1 : 0) * 1.25;
+    weight += 1.25;
+  }
+
+  return Math.max(0, Math.min(1, score / weight));
+}
+
 export function selectChargingComparables(
   corpus: DeviceCorpus,
   query: ChargingComparableQuery,
@@ -186,10 +223,16 @@ export function selectChargingComparables(
       }
 
       const first = group[0];
+      const adjustedScore = modeAdjustedScore(
+        candidate.score,
+        query,
+        first.testChargerWatts,
+        first.chargingStandard,
+      );
 
       return [{
         deviceVariantId: device.variant.id,
-        score: candidate.score,
+        score: adjustedScore,
         reasons: candidate.reasons,
         sourceId: first.sourceId,
         ...(first.testChargerWatts !== undefined
@@ -242,6 +285,8 @@ export function selectChargingComparables(
   return {
     version: CHARGING_COMPARABLE_MODEL_VERSION,
     status: 'resolved',
-    references: references.slice(0, query.limit ?? 5),
+    references: references
+      .sort((a, b) => b.score - a.score)
+      .slice(0, query.limit ?? 5),
   };
 }
