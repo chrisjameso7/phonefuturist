@@ -317,6 +317,44 @@ export function calculateCamera(
     }
   }
 
+
+  if (
+    input.apertureFNumber !== undefined &&
+    input.equivalentFocalLengthMm !== undefined &&
+    isPositiveFinite(input.apertureFNumber) &&
+    isPositiveFinite(input.equivalentFocalLengthMm) &&
+    input.equivalentFocalLengthMm >= 85 &&
+    input.apertureFNumber < 1.8
+  ) {
+    warnings.push({
+      code: 'AGGRESSIVE_TELEPHOTO_APERTURE',
+      message:
+        'A telephoto equivalent focal length of 85 mm or longer with an aperture faster than f/1.8 is an aggressive optical/package target. Verify lens diameter, module depth and mechanical feasibility.',
+    });
+  }
+
+  if (
+    result.airyDiskToPixelPitchRatio !== undefined &&
+    result.airyDiskToPixelPitchRatio >= 3
+  ) {
+    warnings.push({
+      code: 'DIFFRACTION_SAMPLING_PRESSURE',
+      message:
+        'The reference-wavelength Airy disk is at least 3× the estimated pixel pitch. Extra native resolution may deliver diminishing optical detail before processing.',
+    });
+  }
+
+  if (
+    result.approximatePixelPitchMicrons !== undefined &&
+    result.approximatePixelPitchMicrons < 0.6
+  ) {
+    warnings.push({
+      code: 'VERY_SMALL_PIXEL_PITCH',
+      message:
+        'Estimated native pixel pitch is below 0.6 µm. Treat per-pixel light estimates cautiously because real sensors may rely heavily on binning and processing.',
+    });
+  }
+
   if (
     physicalFocalLength !== undefined &&
     result.approximateSensorWidthMm !== undefined &&
