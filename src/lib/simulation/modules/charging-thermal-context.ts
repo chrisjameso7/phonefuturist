@@ -1,4 +1,4 @@
-import type { DeviceCorpus, CorpusMeasurement } from './device-corpus';
+import type { CorpusMeasurement } from './device-corpus';
 
 export const CHARGING_THERMAL_CONTEXT_VERSION =
   'charging-thermal-context-0.1.0';
