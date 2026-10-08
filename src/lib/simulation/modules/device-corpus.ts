@@ -61,6 +61,12 @@ export interface DeviceCorpusRecord {
   charging?: {
     advertisedWiredWatts?: number;
     advertisedWirelessWatts?: number;
+    cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  };
+  cooling?: {
+    class?: 'passive-graphite' | 'vapor-chamber' | 'large-vapor-chamber' | 'active-fan' | 'other';
+    vaporChamberAreaMm2?: number;
+    fan?: boolean;
   };
   sourceIds?: string[];
 }
