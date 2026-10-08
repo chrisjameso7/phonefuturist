@@ -135,7 +135,6 @@ export function simulateBatteryExperience(
       socVendor: input.socVendor,
       region: input.region,
       displayDiagonalInches: input.simulation.displays.primary.diagonalInches,
-      refreshRateHz: input.simulation.displays.primary.refreshRateHz,
       thicknessMm: input.simulation.dimensions?.thicknessMm,
       weightG: input.simulation.dimensions?.weightG,
       coolingClass: input.coolingClass,
