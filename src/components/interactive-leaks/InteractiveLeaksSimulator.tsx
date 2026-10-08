@@ -83,6 +83,7 @@ type FormState = {
   batteryChemistry: string;
   cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell';
   chargingStandard: string;
+  wirelessChargingStandard: string;
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -126,6 +127,7 @@ const initialForm: FormState = {
   batteryChemistry: '',
   cellArchitecture: 'unknown',
   chargingStandard: '',
+  wirelessChargingStandard: '',
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -169,6 +171,7 @@ const flagshipExample: FormState = {
   batteryChemistry: 'silicon-carbon',
   cellArchitecture: 'single-cell',
   chargingStandard: 'USB PD/PPS',
+  wirelessChargingStandard: 'Qi2',
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
@@ -697,6 +700,8 @@ export default function InteractiveLeaksSimulator() {
           wirelessChargingWatts,
           batteryChemistry:
             form.batteryChemistry.trim() || undefined,
+          chargingStandard:
+            form.wirelessChargingStandard.trim() || undefined,
         })
       : undefined;
 
@@ -1177,6 +1182,21 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(event) =>
                     update(
                       'chargingStandard',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
+
+              <label className="il-field">
+                <span>Wireless standard</span>
+                <input
+                  type="text"
+                  value={form.wirelessChargingStandard}
+                  placeholder="Qi2"
+                  onChange={(event) =>
+                    update(
+                      'wirelessChargingStandard',
                       event.currentTarget.value,
                     )
                   }
