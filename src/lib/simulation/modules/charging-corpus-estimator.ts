@@ -76,6 +76,48 @@ function curveTime(targetPercent: number, p30: number, fullMinutes: number) {
   );
 }
 
+function reconcileChargingMilestones(
+  estimate: NonNullable<ChargingCurveEstimate['estimate']>,
+) {
+  const t50 = estimate.timeTo50Minutes;
+  const t80 = estimate.timeTo80Minutes;
+  const t100 = estimate.timeTo100Minutes;
+
+  if (t50 && t80) {
+    t80.expected = Math.max(t80.expected, t50.expected);
+    t80.min = Math.max(t80.min, t50.min);
+    t80.max = Math.max(t80.max, t50.max);
+  }
+
+  if (t80 && t100) {
+    t100.expected = Math.max(t100.expected, t80.expected);
+    t100.min = Math.max(t100.min, t80.min);
+    t100.max = Math.max(t100.max, t80.max);
+  } else if (t50 && t100) {
+    t100.expected = Math.max(t100.expected, t50.expected);
+    t100.min = Math.max(t100.min, t50.min);
+    t100.max = Math.max(t100.max, t50.max);
+  }
+
+  if (
+    estimate.charge30mPercent &&
+    estimate.timeTo50Minutes?.expected &&
+    estimate.charge30mPercent.expected >= 50 &&
+    estimate.timeTo50Minutes.expected > 30
+  ) {
+    estimate.timeTo50Minutes.expected = 30;
+  }
+
+  if (
+    estimate.charge30mPercent &&
+    estimate.timeTo80Minutes?.expected &&
+    estimate.charge30mPercent.expected >= 80 &&
+    estimate.timeTo80Minutes.expected > 30
+  ) {
+    estimate.timeTo80Minutes.expected = 30;
+  }
+}
+
 export function estimateChargingFromCorpus(
   corpus: DeviceCorpus,
   query: ChargingComparableQuery,
@@ -318,6 +360,8 @@ export function estimateChargingFromCorpus(
       };
     }
   }
+
+  reconcileChargingMilestones(estimate);
 
   if (estimate.timeTo100Minutes?.expected) {
     const fullMinutes = estimate.timeTo100Minutes.expected;
