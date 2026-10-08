@@ -255,13 +255,17 @@ export function simulateActiveUseRuntime(
     };
   }
 
-  const supported: Array<[SupportedActiveWorkload, number]> = [
+  const supportedCandidates: Array<
+    [SupportedActiveWorkload, number]
+  > = [
     ['web_browsing', dailyHours.web_browsing ?? 0],
     ['video_playback', dailyHours.video_playback ?? 0],
     ['gaming', dailyHours.gaming ?? 0],
-  ].filter(([, hours]) => hours > 0) as Array<
-    [SupportedActiveWorkload, number]
-  >;
+  ];
+
+  const supported = supportedCandidates.filter(
+    ([, hours]) => hours > 0,
+  );
 
   const activeHoursPerDay = supported.reduce(
     (sum, [, hours]) => sum + hours,
