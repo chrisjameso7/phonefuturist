@@ -20,6 +20,11 @@ import {
   simulateLiveBatteryExperience,
 } from '../../lib/simulation/live-battery-experience';
 
+import {
+  LIVE_THERMAL_EXPERIENCE_VERSION,
+  simulateLiveThermalExperience,
+} from '../../lib/simulation/live-thermal-experience';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -74,6 +79,27 @@ type FormState = {
   cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell';
   chargingStandard: string;
   wirelessChargingStandard: string;
+
+  socVendor: string;
+  coolingClass:
+    | 'unknown'
+    | 'passive-graphite'
+    | 'vapor-chamber'
+    | 'large-vapor-chamber'
+    | 'active-fan'
+    | 'other';
+  thermalDomain:
+    | 'cpu_sustained'
+    | 'gpu_sustained'
+    | 'gaming_sustained'
+    | 'ray_tracing';
+  targetSocPowerW: string;
+  ambientTemperatureC: string;
+  thermalResistanceCPerW: string;
+  thermalMassJPerC: string;
+  throttleTemperatureC: string;
+  thermalDurationSeconds: string;
+
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -118,6 +144,17 @@ const initialForm: FormState = {
   cellArchitecture: 'unknown',
   chargingStandard: '',
   wirelessChargingStandard: '',
+
+  socVendor: '',
+  coolingClass: 'unknown',
+  thermalDomain: 'gpu_sustained',
+  targetSocPowerW: '',
+  ambientTemperatureC: '',
+  thermalResistanceCPerW: '',
+  thermalMassJPerC: '',
+  throttleTemperatureC: '',
+  thermalDurationSeconds: '',
+
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -162,6 +199,17 @@ const flagshipExample: FormState = {
   cellArchitecture: 'single-cell',
   chargingStandard: 'USB PD/PPS',
   wirelessChargingStandard: 'Qi2',
+
+  socVendor: 'Qualcomm',
+  coolingClass: 'large-vapor-chamber',
+  thermalDomain: 'gpu_sustained',
+  targetSocPowerW: '10',
+  ambientTemperatureC: '25',
+  thermalResistanceCPerW: '3',
+  thermalMassJPerC: '45',
+  throttleTemperatureC: '42',
+  thermalDurationSeconds: '600',
+
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
