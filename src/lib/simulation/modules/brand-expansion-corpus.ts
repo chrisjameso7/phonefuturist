@@ -1,4 +1,4 @@
-import cohortJson from '../../../data/calibration/brand-expansion-cohort-0.1.json';
+import cohortJson from '../../../../data/calibration/brand-expansion-cohort-0.1.json';
 import type {
   DeviceCorpus,
   DeviceCorpusRecord,
