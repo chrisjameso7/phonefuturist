@@ -52,3 +52,102 @@ describe('merged corpus and comparable-device selection', () => {
     expect(matches[0].score).toBeGreaterThan(matches[1].score);
   });
 });
+
+
+describe('advanced comparable dimensions', () => {
+  it('prefers chemistry, cooling and chassis similarity over battery size alone', () => {
+    const corpus: DeviceCorpus = {
+      version: 'advanced',
+      sources: [],
+      devices: [
+        {
+          variant: {
+            id: 'gaming-active',
+            identity: {
+              manufacturer: 'Gaming',
+              family: 'Gaming',
+              modelName: 'Active',
+            },
+            battery: {
+              capacityMah: 6000,
+              chemistry: 'silicon-carbon',
+            },
+            soc: { vendor: 'Qualcomm', name: 'Chip X' },
+          },
+          display: {
+            diagonalInches: 6.8,
+            resolutionWidthPx: 1440,
+            resolutionHeightPx: 3200,
+            refreshRateHz: 165,
+          },
+          dimensions: {
+            widthMm: 77,
+            heightMm: 164,
+            thicknessMm: 9.5,
+            weightG: 230,
+          },
+          charging: {
+            advertisedWiredWatts: 80,
+          },
+          cooling: {
+            class: 'active-fan',
+            fan: true,
+          },
+        },
+        {
+          variant: {
+            id: 'thin-passive',
+            identity: {
+              manufacturer: 'Thin',
+              family: 'Thin',
+              modelName: 'Passive',
+            },
+            battery: {
+              capacityMah: 6000,
+              chemistry: 'silicon-carbon',
+            },
+            soc: { vendor: 'Qualcomm', name: 'Chip X' },
+          },
+          display: {
+            diagonalInches: 6.8,
+            resolutionWidthPx: 1440,
+            resolutionHeightPx: 3200,
+            refreshRateHz: 120,
+          },
+          dimensions: {
+            widthMm: 75,
+            heightMm: 162,
+            thicknessMm: 7.2,
+            weightG: 195,
+          },
+          charging: {
+            advertisedWiredWatts: 80,
+          },
+          cooling: {
+            class: 'vapor-chamber',
+            fan: false,
+          },
+        },
+      ],
+      measurements: [],
+    };
+
+    const matches = findComparableDevices(corpus, {
+      batteryMah: 6000,
+      batteryChemistry: 'silicon-carbon',
+      socVendor: 'Qualcomm',
+      displayDiagonalInches: 6.8,
+      resolutionWidthPx: 1440,
+      resolutionHeightPx: 3200,
+      refreshRateHz: 165,
+      wiredChargingWatts: 80,
+      thicknessMm: 9.4,
+      weightG: 228,
+      coolingClass: 'active-fan',
+    });
+
+    expect(matches[0].device.variant.id).toBe('gaming-active');
+    expect(matches[0].reasons).toContain('same cooling class');
+    expect(matches[0].reasons).toContain('same battery chemistry');
+  });
+});
