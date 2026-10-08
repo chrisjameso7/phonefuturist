@@ -15,6 +15,16 @@ import type {
   CameraModuleType,
 } from '../../lib/simulation/modules/camera';
 
+import {
+  BATTERY_EXPERIENCE_VERSION,
+  simulateBatteryExperience,
+} from '../../lib/simulation/modules/battery-experience';
+
+import {
+  evidenceDeviceFrom,
+  resolvePowerEvidence,
+} from '../../lib/simulation/power-evidence';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -59,6 +69,7 @@ type FormState = {
 
   batteryCapacityMah: string;
   batteryVoltageV: string;
+  dailyUseHours: string;
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -93,6 +104,7 @@ const initialForm: FormState = {
 
   batteryCapacityMah: '',
   batteryVoltageV: '',
+  dailyUseHours: '',
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -127,6 +139,7 @@ const flagshipExample: FormState = {
 
   batteryCapacityMah: '5000',
   batteryVoltageV: '3.85',
+  dailyUseHours: '6',
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
@@ -185,6 +198,91 @@ function format(
   return value.toLocaleString(undefined, {
     maximumFractionDigits: digits,
   });
+}
+
+type BatteryExperienceView = {
+  runtimeHours: { min: number; max: number };
+  daysPerCharge?: { min: number; max: number };
+  basis: 'matched-reference' | 'reference-population';
+  modelVersion: string;
+};
+
+function batteryExperienceFor(
+  input: SimulationInput,
+  result: DeterministicResult,
+  dailyUseHours: number | undefined,
+): BatteryExperienceView | undefined {
+  const totalEnergyWh = result.battery?.totalEnergyWh;
+  if (totalEnergyWh === undefined || totalEnergyWh <= 0) return undefined;
+
+  const evidence = resolvePowerEvidence(evidenceDeviceFrom(input));
+  if (!evidence) return undefined;
+
+  const calculation = simulateBatteryExperience({
+    energy: {
+      totalEnergyWh: {
+        value: totalEnergyWh,
+        provenance: {
+          kind: 'user',
+          note: 'Calculated from the user-supplied battery capacity and nominal voltage.',
+        },
+      },
+    },
+    workloads: {
+      web_browsing: {
+        subsystems: {
+          workloadSpecific: {
+            whole_device: {
+              range: {
+                min: evidence.webPowerW.min,
+                max: evidence.webPowerW.max,
+              },
+              provenance: {
+                kind:
+                  evidence.basis === 'matched-reference'
+                    ? 'calibrated'
+                    : 'reference',
+                note:
+                  'Derived from PhoneFuturist reference-device continuous web runtime evidence.',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const runtime = calculation.result.estimate?.runtimeHours;
+  const min = runtime?.min;
+  const max = runtime?.max;
+  if (
+    min === undefined ||
+    max === undefined ||
+    !Number.isFinite(min) ||
+    !Number.isFinite(max)
+  ) return undefined;
+
+  const validDailyHours =
+    dailyUseHours !== undefined &&
+    Number.isFinite(dailyUseHours) &&
+    dailyUseHours > 0 &&
+    dailyUseHours <= 24
+      ? dailyUseHours
+      : undefined;
+
+  return {
+    runtimeHours: { min, max },
+    ...(validDailyHours
+      ? {
+          daysPerCharge: {
+            min: min / validDailyHours,
+            max: max / validDailyHours,
+          },
+        }
+      : {}),
+    basis: evidence.basis,
+    modelVersion: BATTERY_EXPERIENCE_VERSION,
+  };
 }
 
 function NumericField({
@@ -605,6 +703,16 @@ export default function InteractiveLeaksSimulator() {
   const battery = result?.battery;
   const packaging = result?.packaging;
 
+  const dailyUseHours = numeric(form.dailyUseHours);
+  const batteryExperience =
+    simulationInput && result
+      ? batteryExperienceFor(
+          simulationInput,
+          result,
+          dailyUseHours,
+        )
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -870,8 +978,8 @@ export default function InteractiveLeaksSimulator() {
               <div>
                 <h2>Battery</h2>
                 <p>
-                  Capacity, energy and physical cell
-                  volume.
+                  Capacity, runtime and optional physical
+                  battery analysis.
                 </p>
               </div>
             </div>
@@ -901,48 +1009,75 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Cell width"
-                suffix="mm"
-                value={form.batteryWidthMm}
-                placeholder="60"
+                label="Daily screen-on use"
+                suffix="hours"
+                value={form.dailyUseHours}
+                placeholder="6"
                 onChange={(value) =>
-                  update('batteryWidthMm', value)
-                }
-              />
-
-              <NumericField
-                label="Cell height"
-                suffix="mm"
-                value={form.batteryHeightMm}
-                placeholder="80"
-                onChange={(value) =>
-                  update('batteryHeightMm', value)
-                }
-              />
-
-              <NumericField
-                label="Cell thickness"
-                suffix="mm"
-                value={form.batteryThicknessMm}
-                placeholder="5"
-                onChange={(value) =>
-                  update(
-                    'batteryThicknessMm',
-                    value,
-                  )
-                }
-              />
-
-              <NumericField
-                label="Cell weight"
-                suffix="g"
-                value={form.batteryWeightG}
-                placeholder="70"
-                onChange={(value) =>
-                  update('batteryWeightG', value)
+                  update('dailyUseHours', value)
                 }
               />
             </div>
+
+            <p className="il-help">
+              Enter how many screen-on hours you expect to use the device per day.
+              Interactive Leaks converts the calibrated runtime into an equivalent
+              days-per-charge estimate. You never need to enter watts.
+            </p>
+
+            <details className="il-advanced">
+              <summary>Advanced physical battery data</summary>
+
+              <p className="il-help">
+                Optional. Cell dimensions and weight are used only for packaging
+                and energy-density calculations, not to calculate battery life.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Cell width"
+                  suffix="mm"
+                  value={form.batteryWidthMm}
+                  placeholder="60"
+                  onChange={(value) =>
+                    update('batteryWidthMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Cell height"
+                  suffix="mm"
+                  value={form.batteryHeightMm}
+                  placeholder="80"
+                  onChange={(value) =>
+                    update('batteryHeightMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Cell thickness"
+                  suffix="mm"
+                  value={form.batteryThicknessMm}
+                  placeholder="5"
+                  onChange={(value) =>
+                    update(
+                      'batteryThicknessMm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cell weight"
+                  suffix="g"
+                  value={form.batteryWeightG}
+                  placeholder="70"
+                  onChange={(value) =>
+                    update('batteryWeightG', value)
+                  }
+                />
+              </div>
+            </details>
           </div>
 
           <div className="il-section">
@@ -1367,6 +1502,59 @@ export default function InteractiveLeaksSimulator() {
                     <span>cm³</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Battery life · v0.5.1
+                </span>
+
+                {batteryExperience ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.runtimeHours.min,
+                            1,
+                          )}
+                          –
+                          {format(
+                            batteryExperience.runtimeHours.max,
+                            1,
+                          )}
+                        </strong>
+                        <span>Continuous reference hours</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {batteryExperience.daysPerCharge
+                            ? `${format(
+                                batteryExperience.daysPerCharge.min,
+                                1,
+                              )}–${format(
+                                batteryExperience.daysPerCharge.max,
+                                1,
+                              )}`
+                            : 'Enter hours/day'}
+                        </strong>
+                        <span>Equivalent days per charge</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      Based on calibrated continuous web-use reference power.
+                      Daily hours are converted into an equivalent endurance figure.
+                      Other workload types remain unknown until separately calibrated.
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Add battery capacity and nominal voltage to calculate the
+                    v0.5.1 battery runtime.
+                  </div>
+                )}
               </div>
 
               <div className="il-result-group">
