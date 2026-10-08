@@ -25,7 +25,8 @@ export interface ChargingCurveEstimate {
     evidenceMode:
       | 'measured-match'
       | 'interpolated'
-      | 'extrapolated'
+      | 'near-extrapolated'
+      | 'far-extrapolated'
       | 'comparable-only';
     charge30mPercent?: { min: number; expected: number; max: number };
     timeTo50Minutes?: { min: number; expected: number; max: number };
@@ -325,7 +326,9 @@ export function estimateChargingFromCorpus(
         ? 'comparable-only'
         : powerResponse.targetPosition === 'interpolation'
           ? 'interpolated'
-          : 'extrapolated',
+          : powerResponse.targetPosition === 'near-extrapolation'
+            ? 'near-extrapolated'
+            : 'far-extrapolated',
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     thermalContext: {
       status: thermalContext.status,
