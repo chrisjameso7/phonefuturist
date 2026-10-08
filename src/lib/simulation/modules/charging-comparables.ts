@@ -19,6 +19,8 @@ export interface ChargingComparableQuery {
   bodyVolumeMm3?: number;
   coolingClass?: NonNullable<DeviceCorpusRecord['cooling']>['class'];
   limit?: number;
+  protocol?: string;
+  protocolVersion?: string;
 }
 
 export interface ChargingComparableEvidence {
@@ -43,15 +45,39 @@ function latestMetric(
   corpus: DeviceCorpus,
   deviceVariantId: string,
   candidates: string[],
+  protocol?: string,
+  protocolVersion?: string,
 ) {
   const candidateSet = new Set(candidates.map((value) => value.toLowerCase()));
 
   return corpus.measurements
     .filter(
-      (measurement) =>
-        measurement.deviceVariantId === deviceVariantId &&
-        measurement.workload === 'charging' &&
-        candidateSet.has(measurement.metric.toLowerCase()),
+      (measurement) => {
+        if (
+          measurement.deviceVariantId !== deviceVariantId ||
+          measurement.workload !== 'charging' ||
+          !candidateSet.has(measurement.metric.toLowerCase())
+        ) {
+          return false;
+        }
+
+        if (!protocol && !protocolVersion) return true;
+
+        const source = corpus.sources.find(
+          (candidate) => candidate.id === measurement.sourceId,
+        );
+
+        if (!source) return false;
+        if (protocol && source.protocol !== protocol) return false;
+        if (
+          protocolVersion &&
+          source.protocolVersion !== protocolVersion
+        ) {
+          return false;
+        }
+
+        return true;
+      },
     )
     .at(-1)?.value;
 }
