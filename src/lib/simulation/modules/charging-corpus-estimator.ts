@@ -29,6 +29,12 @@ export interface ChargingCurveEstimate {
       confidence?: number;
       evidenceCount: number;
     };
+    normalized?: {
+      expectedFullChargeMahPerMinute?: number;
+      expectedMinutesPer1000Mah?: number;
+      effectiveFullChargeCPerHour?: number;
+      expectedMahAddedIn30Minutes?: number;
+    };
     note: string;
   };
 }
@@ -290,6 +296,28 @@ export function estimateChargingFromCorpus(
         max: r.max,
       };
     }
+  }
+
+  if (estimate.timeTo100Minutes?.expected) {
+    const fullMinutes = estimate.timeTo100Minutes.expected;
+    estimate.normalized = {
+      ...(estimate.normalized ?? {}),
+      expectedFullChargeMahPerMinute:
+        query.batteryMah / fullMinutes,
+      expectedMinutesPer1000Mah:
+        fullMinutes / (query.batteryMah / 1000),
+      effectiveFullChargeCPerHour:
+        60 / fullMinutes,
+    };
+  }
+
+  if (estimate.charge30mPercent?.expected !== undefined) {
+    estimate.normalized = {
+      ...(estimate.normalized ?? {}),
+      expectedMahAddedIn30Minutes:
+        query.batteryMah *
+        (estimate.charge30mPercent.expected / 100),
+    };
   }
 
   return {
