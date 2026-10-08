@@ -9,8 +9,8 @@ import {
 describe('v0.6.0 charging model', () => {
   it('ships a 100-plus-phone charging database', () => {
     expect(CHARGING_MODEL_VERSION).toBe('0.6.0');
-    expect(CHARGING_REFERENCE_COUNT).toBe(119);
-    expect(CHARGING_ACTIVE_REFERENCE_COUNT).toBe(111);
+    expect(CHARGING_REFERENCE_COUNT).toBe(140);
+    expect(CHARGING_ACTIVE_REFERENCE_COUNT).toBe(132);
     expect(CHARGING_REFERENCE_COUNT).toBeGreaterThan(100);
   });
 
