@@ -4859,3 +4859,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Camera evidence */
+
+.il-camera-evidence {
+  margin-top: 1rem;
+  display: grid;
+  gap: .7rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
+
+.il-camera-evidence .il-metrics small {
+  display: block;
+  margin-top: .22rem;
+  font-size: .62rem;
+  color: #838d9a;
+}
