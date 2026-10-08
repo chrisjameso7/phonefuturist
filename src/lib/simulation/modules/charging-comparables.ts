@@ -4,6 +4,7 @@ import { findComparableDevices } from './comparable-devices';
 export const CHARGING_COMPARABLE_MODEL_VERSION = 'charging-comparable-0.1.0';
 
 export interface ChargingComparableQuery {
+  deviceVariantId?: string;
   batteryMah: number;
   batteryChemistry?: string;
   wiredChargingWatts: number;
