@@ -54,6 +54,7 @@ type CameraDraft = {
 
 type FormState = {
   name: string;
+  manufacturer: string;
   formFactor: DeviceFormFactor;
 
   widthMm: string;
@@ -119,6 +120,7 @@ type FormState = {
 
 const initialForm: FormState = {
   name: '',
+  manufacturer: '',
   formFactor: 'phone',
 
   widthMm: '',
@@ -174,6 +176,7 @@ const initialForm: FormState = {
 
 const flagshipExample: FormState = {
   name: 'Flagship reference',
+  manufacturer: 'Samsung',
   formFactor: 'phone',
 
   widthMm: '75',
@@ -751,6 +754,8 @@ export default function InteractiveLeaksSimulator() {
     simulationInput && result
       ? simulateLiveBatteryExperience({
           simulation: simulationInput,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
           batteryChemistry:
             form.batteryChemistry.trim() || undefined,
           cellArchitecture:
@@ -795,6 +800,8 @@ export default function InteractiveLeaksSimulator() {
     throttleTemperatureC !== undefined
       ? simulateLiveThermalExperience({
           domain: form.thermalDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
           batteryMah: result.battery?.totalCapacityMah,
           socVendor: form.socVendor.trim() || undefined,
           displayDiagonalInches:
@@ -827,9 +834,11 @@ export default function InteractiveLeaksSimulator() {
   const cameraExperiences =
     simulationInput && result
       ? cameras.map((camera) =>
-          simulateLiveCameraExperience(
-            cameraInput(camera),
-          ),
+          simulateLiveCameraExperience({
+            ...cameraInput(camera),
+            manufacturer:
+              form.manufacturer.trim() || undefined,
+          }),
         )
       : [];
 
@@ -892,6 +901,22 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(event) =>
                     update(
                       'name',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
+
+              <label className="il-field">
+                <span>Manufacturer</span>
+
+                <input
+                  type="text"
+                  value={form.manufacturer}
+                  placeholder="Samsung"
+                  onChange={(event) =>
+                    update(
+                      'manufacturer',
                       event.currentTarget.value,
                     )
                   }
