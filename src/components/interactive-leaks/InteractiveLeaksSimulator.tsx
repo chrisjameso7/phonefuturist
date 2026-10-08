@@ -20,6 +20,11 @@ import {
   WORKLOAD_RUNTIME_VERSION,
 } from '../../lib/simulation/workload-runtime';
 
+import {
+  CHARGING_MODEL_VERSION,
+  simulateCharging,
+} from '../../lib/simulation/charging';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -68,6 +73,7 @@ type FormState = {
   videoHours: string;
   gamingHours: string;
   cameraHours: string;
+  wiredChargeW: string;
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -106,6 +112,7 @@ const initialForm: FormState = {
   videoHours: '',
   gamingHours: '',
   cameraHours: '',
+  wiredChargeW: '',
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -144,6 +151,7 @@ const flagshipExample: FormState = {
   videoHours: '2',
   gamingHours: '1',
   cameraHours: '0',
+  wiredChargeW: '60',
   batteryWidthMm: '60',
   batteryHeightMm: '80',
   batteryThicknessMm: '5',
@@ -632,6 +640,15 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const chargingResult =
+    simulationInput && result
+      ? simulateCharging({
+          deviceName: simulationInput.name,
+          batteryCapacityMah: result.battery?.totalCapacityMah,
+          wiredChargerW: numeric(form.wiredChargeW),
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -1030,9 +1047,39 @@ export default function InteractiveLeaksSimulator() {
           </div>
 
           <div className="il-section">
+            <div className="il-section-heading">
+              <span>04</span>
+              <div>
+                <h2>Charging</h2>
+                <p>
+                  Estimate wired charging from real released-phone curves.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <NumericField
+                label="Wired charging"
+                suffix="W"
+                value={form.wiredChargeW}
+                placeholder="60"
+                onChange={(value) =>
+                  update('wiredChargeW', value)
+                }
+              />
+            </div>
+
+            <p className="il-help">
+              Enter the phone&apos;s supported wired charging wattage.
+              v0.6.0 compares it with 40 released phones and preserves
+              their measured taper instead of treating peak wattage as constant.
+            </p>
+          </div>
+
+          <div className="il-section">
             <div className="il-section-heading il-section-heading-action">
               <div className="il-heading-copy">
-                <span>04</span>
+                <span>05</span>
                 <div>
                   <h2>Cameras</h2>
                   <p>
@@ -1235,7 +1282,7 @@ export default function InteractiveLeaksSimulator() {
 
           <div className="il-section">
             <div className="il-section-heading">
-              <span>05</span>
+              <span>06</span>
               <div>
                 <h2>Packaging</h2>
                 <p>
@@ -1530,6 +1577,92 @@ export default function InteractiveLeaksSimulator() {
                   <div className="il-empty">
                     {activeUseResult?.unresolved?.message ??
                       'Add battery capacity, nominal voltage and daily active-use hours to calculate battery life.'}
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Charging · v{CHARGING_MODEL_VERSION}
+                </span>
+
+                {chargingResult?.status === 'resolved' &&
+                chargingResult.estimate ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(
+                            chargingResult.estimate.charge30mPercent.min,
+                            0,
+                          )}
+                          –
+                          {format(
+                            chargingResult.estimate.charge30mPercent.max,
+                            0,
+                          )}
+                          %
+                        </strong>
+                        <span>Charge after 30 min</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            chargingResult.estimate.timeTo50Minutes.min,
+                            0,
+                          )}
+                          –
+                          {format(
+                            chargingResult.estimate.timeTo50Minutes.max,
+                            0,
+                          )}
+                          min
+                        </strong>
+                        <span>0–50%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            chargingResult.estimate.timeTo80Minutes.min,
+                            0,
+                          )}
+                          –
+                          {format(
+                            chargingResult.estimate.timeTo80Minutes.max,
+                            0,
+                          )}
+                          min
+                        </strong>
+                        <span>0–80%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            chargingResult.estimate.timeTo100Minutes.min,
+                            0,
+                          )}
+                          –
+                          {format(
+                            chargingResult.estimate.timeTo100Minutes.max,
+                            0,
+                          )}
+                          min
+                        </strong>
+                        <span>0–100%</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      {chargingResult.estimate.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    {chargingResult?.unresolved?.message ??
+                      'Add battery capacity and wired charging wattage to estimate charging.'}
                   </div>
                 )}
               </div>
