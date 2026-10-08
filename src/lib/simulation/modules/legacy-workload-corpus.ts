@@ -1,4 +1,4 @@
-import runtimeJson from '../../../data/calibration/battery/workload-runtimes.json';
+import runtimeJson from '../../../../data/calibration/battery/workload-runtimes.json';
 import type {
   DeviceCorpus,
   DeviceCorpusRecord,
