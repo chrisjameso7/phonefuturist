@@ -166,11 +166,6 @@ export function calculateCamera(
       result.approximateCropFactor =
         FULL_FRAME_DIAGONAL_MM / diagonal;
 
-      warnings.push({
-        code: 'OPTICAL_FORMAT_GEOMETRY_APPROXIMATION',
-        message:
-          'Sensor width, height and area are approximated from optical format using a conventional 4:3 active area. Exact manufacturer sensor dimensions can differ.',
-      });
     } else {
       warnings.push({
         code: 'INVALID_SENSOR_FORMAT',
@@ -229,11 +224,6 @@ export function calculateCamera(
       physicalFocalLength;
     result.physicalFocalLengthWasDerived = true;
 
-    warnings.push({
-      code: 'PHYSICAL_FOCAL_LENGTH_DERIVED',
-      message:
-        'Physical focal length was approximated from equivalent focal length and optical-format-derived crop factor.',
-    });
   }
 
   if (
