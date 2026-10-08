@@ -22,7 +22,8 @@ export interface SimulationSnapshot {
     charging?: {
       wiredWatts?: number;
       wirelessWatts?: number;
-      chargingStandard?: string;
+      wiredChargingStandard?: string;
+      wirelessChargingStandard?: string;
     };
   };
   tags?: string[];
