@@ -1613,26 +1613,26 @@ export default function InteractiveLeaksSimulator() {
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.minDaysPerCharge,
+                            batteryExperience.mixedUse.minDaysPerCharge * 24,
                             1,
                           )}
                           –
                           {format(
-                            batteryExperience.mixedUse.maxDaysPerCharge,
+                            batteryExperience.mixedUse.maxDaysPerCharge * 24,
                             1,
-                          )}
+                          )} h
                         </strong>
-                        <span>Active-use equivalent days</span>
+                        <span>Active-use equivalent hours</span>
                       </div>
 
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.expectedDaysPerCharge,
+                            batteryExperience.mixedUse.expectedDaysPerCharge * 24,
                             1,
-                          )}
+                          )} h
                         </strong>
-                        <span>Expected active-use days</span>
+                        <span>Expected active-use hours</span>
                       </div>
 
                       <div>
@@ -1714,9 +1714,9 @@ export default function InteractiveLeaksSimulator() {
                         <strong>
                           {chargingResult.estimate.timeTo50Minutes
                             ? `${format(
-                                chargingResult.estimate.timeTo50Minutes.expected,
-                                0,
-                              )} min`
+                                chargingResult.estimate.timeTo50Minutes.expected / 60,
+                                2,
+                              )} h`
                             : 'Unknown'}
                         </strong>
                         <span>0–50%</span>
@@ -1726,9 +1726,9 @@ export default function InteractiveLeaksSimulator() {
                         <strong>
                           {chargingResult.estimate.timeTo80Minutes
                             ? `${format(
-                                chargingResult.estimate.timeTo80Minutes.expected,
-                                0,
-                              )} min`
+                                chargingResult.estimate.timeTo80Minutes.expected / 60,
+                                2,
+                              )} h`
                             : 'Unknown'}
                         </strong>
                         <span>0–80%</span>
@@ -1738,9 +1738,9 @@ export default function InteractiveLeaksSimulator() {
                         <strong>
                           {chargingResult.estimate.timeTo100Minutes
                             ? `${format(
-                                chargingResult.estimate.timeTo100Minutes.expected,
-                                0,
-                              )} min`
+                                chargingResult.estimate.timeTo100Minutes.expected / 60,
+                                2,
+                              )} h`
                             : 'Unknown'}
                         </strong>
                         <span>0–100%</span>
@@ -1814,9 +1814,9 @@ export default function InteractiveLeaksSimulator() {
                           {wirelessChargingResult.expectedFullChargeMinutes !==
                           undefined
                             ? `${format(
-                                wirelessChargingResult.expectedFullChargeMinutes,
-                                0,
-                              )} min`
+                                wirelessChargingResult.expectedFullChargeMinutes / 60,
+                                2,
+                              )} h`
                             : 'Unknown'}
                         </strong>
                         <span>Expected 0–100%</span>
