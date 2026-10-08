@@ -3,6 +3,75 @@
   "description": "Verified variant families for calibration. A family can contain multiple hardware variants under one marketing name. Unknown identifiers remain unknown.",
   "samsungSplitSocFamilies": [
     {
+      "family": "Galaxy S26",
+      "batteryMah": 4300,
+      "variants": [
+        {
+          "region": "North America and selected markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Elite Gen 5 for Galaxy"
+          }
+        },
+        {
+          "region": "most international markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2600"
+          }
+        }
+      ],
+      "pairedEvidence": {
+        "protocols": [
+          {
+            "source": "Tom's Guide",
+            "type": "Geekbench 6.6",
+            "snapdragon": {
+              "singleCore": 3531,
+              "multiCore": 10778
+            },
+            "exynos": {
+              "singleCore": 3197,
+              "multiCore": 11065
+            },
+            "interpretation": "Snapdragon leads single-core; Exynos narrowly leads this S26 multi-core run."
+          },
+          {
+            "source": "Android Authority",
+            "type": "3DMark Wild Life Extreme stress",
+            "snapdragonSustainabilityPercent": 53.8,
+            "exynosSustainabilityPercent": 74.9,
+            "interpretation": "Exynos retains a larger fraction of peak synthetic raster performance and converges with Snapdragon late in the run."
+          },
+          {
+            "source": "Android Authority",
+            "type": "3DMark Solar Bay stress",
+            "interpretation": "Exynos sustains peak ray-tracing performance longer and holds a slim lead late in the 20-minute run."
+          },
+          {
+            "source": "Android Addicts via SamMobile",
+            "type": "mixed battery drain",
+            "snapdragonRuntimeHours": 9.433,
+            "exynosRuntimeHours": 6.8,
+            "interpretation": "Snapdragon lasts substantially longer in this mixed-task test; treat as one protocol rather than universal battery truth."
+          },
+          {
+            "source": "Android Authority",
+            "type": "real-game thermal behavior",
+            "interpretation": "Exynos 2600 reaches its thermal ceiling sooner in demanding real games; Snapdragon-class comparison devices sustain higher frame rates and lower thermals in several titles."
+          }
+        ],
+        "conclusion": "No universal winner. Exynos 2600 is unusually competitive in sustained synthetic and ray-tracing workloads, while Snapdragon leads peak CPU, mainstream gaming consistency, thermals in real games, and the cited mixed-use battery test."
+      },
+      "sources": [
+        "https://www.tomsguide.com/phones/samsung-phones/galaxy-s26-performance-face-off-snapdragon-8-elite-gen-5-vs-exynos-2600",
+        "https://www.androidauthority.com/exynos-vs-snapdragon-galaxy-s26-benchmarks-3653459/",
+        "https://www.androidauthority.com/snapdragon-vs-exynos-gaming-test-2026-3677839/",
+        "https://www.sammobile.com/news/galaxy-s26-exynos-2600-vs-snapdragon-8-elite-gen-5-battery-test-reveals-massive-gap/"
+      ],
+      "use": "top-priority matched-family calibration across peak, sustained, thermal and battery domains"
+    },
+    {
       "family": "Galaxy S24",
       "batteryMah": 4000,
       "variants": [
