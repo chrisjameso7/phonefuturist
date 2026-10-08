@@ -1408,7 +1408,7 @@ describe('battery experience module (v0.5)', () => {
     const { simulateDevice, SIMULATION_ENGINE_VERSION } =
       await import('../src/lib/simulation/engine');
 
-    expect(SIMULATION_ENGINE_VERSION).toBe('0.4.0');
+    expect(SIMULATION_ENGINE_VERSION).toBe('0.5.1');
 
     const result = simulateDevice({
       formFactor: 'phone',
@@ -1423,7 +1423,7 @@ describe('battery experience module (v0.5)', () => {
       },
     });
 
-    expect(result.engineVersion).toBe('0.4.0');
+    expect(result.engineVersion).toBe('0.5.1');
     expect(result.battery?.totalEnergyWh).toBeCloseTo(19.25, 6);
     expect(result).not.toHaveProperty('batteryExperience');
   });
