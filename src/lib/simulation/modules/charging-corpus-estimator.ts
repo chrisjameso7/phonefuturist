@@ -22,6 +22,11 @@ export interface ChargingCurveEstimate {
     referenceCount: number;
     confidence: number;
     confidenceGrade: ChargingConfidenceGrade;
+    evidenceMode:
+      | 'measured-match'
+      | 'interpolated'
+      | 'extrapolated'
+      | 'comparable-only';
     charge30mPercent?: { min: number; expected: number; max: number };
     timeTo50Minutes?: { min: number; expected: number; max: number };
     timeTo80Minutes?: { min: number; expected: number; max: number };
@@ -315,6 +320,12 @@ export function estimateChargingFromCorpus(
     referenceCount: comparable.references.length,
     confidence: clamp(adjustedConfidence, 0, 1),
     confidenceGrade,
+    evidenceMode:
+      powerResponse.status !== 'resolved'
+        ? 'comparable-only'
+        : powerResponse.targetPosition === 'interpolation'
+          ? 'interpolated'
+          : 'extrapolated',
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     thermalContext: {
       status: thermalContext.status,
