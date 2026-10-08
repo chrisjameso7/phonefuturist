@@ -7,6 +7,7 @@ import {
   chargingTimePowerScale,
   resolveChargingPowerResponse,
 } from './charging-power-response';
+import { resolveChargingThermalContext } from './charging-thermal-context';
 
 export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.1.0';
 
@@ -33,6 +34,12 @@ export interface ChargingCurveEstimate {
       evidenceCount: number;
       targetPosition?: 'interpolation' | 'near-extrapolation' | 'far-extrapolation';
       evidenceRangeWatts?: { min: number; max: number };
+    };
+    thermalContext?: {
+      status: 'resolved' | 'unresolved';
+      confidenceMultiplier: number;
+      matchedMeasurementIds: string[];
+      note: string;
     };
     normalized?: {
       expectedFullChargeMahPerMinute?: number;
@@ -244,11 +251,23 @@ export function estimateChargingFromCorpus(
     comparable.references.reduce((sum, ref) => sum + ref.score, 0) /
     comparable.references.length;
 
+  const neighborIds = new Set(
+    comparable.references.map((reference) => reference.deviceVariantId),
+  );
+
+  const thermalContext = resolveChargingThermalContext(
+    corpus.measurements.filter((measurement) =>
+      neighborIds.has(measurement.deviceVariantId),
+    ),
+    { ambientTemperatureC: query.ambientTemperatureC },
+  );
+
   const adjustedConfidence =
     confidence *
     (powerResponse.status === 'resolved'
       ? powerResponse.confidence ?? 1
-      : 0.72);
+      : 0.72) *
+    thermalContext.confidenceMultiplier;
 
   const confidenceGrade: ChargingConfidenceGrade =
     adjustedConfidence >= 0.72
@@ -263,6 +282,12 @@ export function estimateChargingFromCorpus(
     confidence: clamp(adjustedConfidence, 0, 1),
     confidenceGrade,
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
+    thermalContext: {
+      status: thermalContext.status,
+      confidenceMultiplier: thermalContext.confidenceMultiplier,
+      matchedMeasurementIds: thermalContext.matchedMeasurementIds,
+      note: thermalContext.note,
+    },
     powerResponse: {
       applied: powerResponse.status === 'resolved',
       elasticity: powerResponse.elasticity,
