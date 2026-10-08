@@ -1,4 +1,5 @@
 import { buildCalibrationRegistry } from './modules/calibration-registry';
+import type { DeviceCorpus } from './modules/device-corpus';
 import {
   simulateCalibratedSocThermals,
   type CalibratedSocThermalInput,
@@ -36,10 +37,10 @@ export interface LiveThermalExperienceResult {
   unresolvedReason?: string;
 }
 
-export function simulateLiveThermalExperience(
+export function simulateThermalExperience(
+  corpus: DeviceCorpus,
   input: LiveThermalExperienceInput,
 ): LiveThermalExperienceResult {
-  const corpus = buildCalibrationRegistry();
   const calibrated = simulateCalibratedSocThermals(
     corpus,
     input,
@@ -110,4 +111,13 @@ export function simulateLiveThermalExperience(
     note:
       'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence.',
   };
+}
+
+export function simulateLiveThermalExperience(
+  input: LiveThermalExperienceInput,
+): LiveThermalExperienceResult {
+  return simulateThermalExperience(
+    buildCalibrationRegistry(),
+    input,
+  );
 }
