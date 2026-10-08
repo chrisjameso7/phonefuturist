@@ -88,6 +88,18 @@ export function estimateChargingFromCorpus(
       : [],
   );
 
+  const t50Values = weights.flatMap(({ reference, weight }) =>
+    reference.timeTo50Minutes !== undefined
+      ? [{ value: reference.timeTo50Minutes, weight }]
+      : [],
+  );
+
+  const t80Values = weights.flatMap(({ reference, weight }) =>
+    reference.timeTo80Minutes !== undefined
+      ? [{ value: reference.timeTo80Minutes, weight }]
+      : [],
+  );
+
   let expectedFull: number | undefined;
   let expectedP30: number | undefined;
 
@@ -99,7 +111,7 @@ export function estimateChargingFromCorpus(
     expectedP30 = weightedMean(p30Values);
   }
 
-  if (expectedFull === undefined && expectedP30 === undefined) {
+  if (expectedFull === undefined && expectedP30 === undefined && !t50Values.length && !t80Values.length) {
     return {
       version: CHARGING_CORPUS_ESTIMATOR_VERSION,
       status: 'unresolved',
@@ -118,7 +130,7 @@ export function estimateChargingFromCorpus(
     confidence: clamp(confidence, 0, 1),
     neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
     note:
-      'Estimate is weighted toward the closest released-device charging references. It preserves measured charging taper where 30-minute and full-charge data exist and does not assume advertised wattage is sustained.',
+      'Estimate is weighted toward the closest released-device charging references. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.',
   };
 
   if (p30Values.length && expectedP30 !== undefined) {
@@ -141,10 +153,15 @@ export function estimateChargingFromCorpus(
     };
   }
 
-  if (expectedFull !== undefined && expectedP30 !== undefined) {
-    const t50 = curveTime(50, expectedP30, expectedFull);
-    const t80 = curveTime(80, expectedP30, expectedFull);
-
+  if (t50Values.length) {
+    const raw = t50Values.map((item) => item.value);
+    const r = range(raw);
+    estimate.timeTo50Minutes = {
+      min: r.min,
+      expected: weightedMean(t50Values),
+      max: r.max,
+    };
+  } else if (expectedFull !== undefined && expectedP30 !== undefined) {
     const perReference50 = weights.flatMap(({ reference }) =>
       reference.fullChargeMinutes !== undefined &&
       reference.thirtyMinutePercent !== undefined
@@ -158,6 +175,25 @@ export function estimateChargingFromCorpus(
         : [],
     );
 
+    if (perReference50.length) {
+      const r = range(perReference50);
+      estimate.timeTo50Minutes = {
+        min: r.min,
+        expected: curveTime(50, expectedP30, expectedFull),
+        max: r.max,
+      };
+    }
+  }
+
+  if (t80Values.length) {
+    const raw = t80Values.map((item) => item.value);
+    const r = range(raw);
+    estimate.timeTo80Minutes = {
+      min: r.min,
+      expected: weightedMean(t80Values),
+      max: r.max,
+    };
+  } else if (expectedFull !== undefined && expectedP30 !== undefined) {
     const perReference80 = weights.flatMap(({ reference }) =>
       reference.fullChargeMinutes !== undefined &&
       reference.thirtyMinutePercent !== undefined
@@ -171,20 +207,11 @@ export function estimateChargingFromCorpus(
         : [],
     );
 
-    if (perReference50.length) {
-      const r = range(perReference50);
-      estimate.timeTo50Minutes = {
-        min: r.min,
-        expected: t50,
-        max: r.max,
-      };
-    }
-
     if (perReference80.length) {
       const r = range(perReference80);
       estimate.timeTo80Minutes = {
         min: r.min,
-        expected: t80,
+        expected: curveTime(80, expectedP30, expectedFull),
         max: r.max,
       };
     }
