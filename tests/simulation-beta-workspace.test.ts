@@ -93,6 +93,6 @@ describe('Interactive Leaks beta input boundary',()=>{
  it('repeats exactly with unchanged engine and model versions',()=>{
   const first=runWorkspace(device(),'95',buildProfile(powers,shares,'percent'));
   expect(runWorkspace(device(),'95',buildProfile(powers,shares,'percent'))).toEqual(first);
-  expect(SIMULATION_ENGINE_VERSION).toBe('0.5.1');expect(BATTERY_EXPERIENCE_VERSION).toBe('0.5.1-battery.1');expect(hasNonFinite(first)).toBe(false);
+  expect(SIMULATION_ENGINE_VERSION).toBe('0.6.0');expect(BATTERY_EXPERIENCE_VERSION).toBe('0.5.1-battery.1');expect(hasNonFinite(first)).toBe(false);
  });
 });
