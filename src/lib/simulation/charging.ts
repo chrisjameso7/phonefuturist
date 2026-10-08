@@ -156,6 +156,9 @@ const BRAND_FAMILIES: Record<string, string> = {
   redmagic: 'gaming',
   'zte nubia': 'gaming',
   asus: 'gaming',
+  nothing: 'nothing',
+  cmf: 'nothing',
+  sony: 'sony',
 };
 
 function inferBrand(name: string | undefined): string | undefined {
