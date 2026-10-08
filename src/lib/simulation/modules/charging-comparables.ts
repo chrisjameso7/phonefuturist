@@ -1,4 +1,4 @@
-import type { DeviceCorpus, DeviceCorpusRecord } from './device-corpus';
+import type { DeviceCorpus, DeviceCorpusRecord, CorpusMeasurement } from './device-corpus';
 import { findComparableDevices } from './comparable-devices';
 
 export const CHARGING_COMPARABLE_MODEL_VERSION = 'charging-comparable-0.1.0';
@@ -33,6 +33,10 @@ export interface ChargingComparableEvidence {
   timeTo80Minutes?: number;
   advertisedWiredWatts?: number;
   batteryMah?: number;
+  sourceId?: string;
+  testChargerWatts?: number;
+  chargingStandard?: string;
+  measuredPeakWatts?: number;
 }
 
 export interface ChargingComparableResult {
@@ -42,45 +46,66 @@ export interface ChargingComparableResult {
   unresolvedReason?: string;
 }
 
-function latestMetric(
+function groupedChargingEvidence(
   corpus: DeviceCorpus,
   deviceVariantId: string,
-  candidates: string[],
   protocol?: string,
   protocolVersion?: string,
 ) {
-  const candidateSet = new Set(candidates.map((value) => value.toLowerCase()));
+  const measurements = corpus.measurements.filter((measurement) => {
+    if (
+      measurement.deviceVariantId !== deviceVariantId ||
+      measurement.workload !== 'charging'
+    ) {
+      return false;
+    }
 
-  return corpus.measurements
-    .filter(
-      (measurement) => {
-        if (
-          measurement.deviceVariantId !== deviceVariantId ||
-          measurement.workload !== 'charging' ||
-          !candidateSet.has(measurement.metric.toLowerCase())
-        ) {
-          return false;
-        }
+    if (!protocol && !protocolVersion) return true;
 
-        if (!protocol && !protocolVersion) return true;
+    const source = corpus.sources.find(
+      (candidate) => candidate.id === measurement.sourceId,
+    );
 
-        const source = corpus.sources.find(
-          (candidate) => candidate.id === measurement.sourceId,
-        );
+    if (!source) return false;
+    if (protocol && source.protocol !== protocol) return false;
+    if (
+      protocolVersion &&
+      source.protocolVersion !== protocolVersion
+    ) {
+      return false;
+    }
 
-        if (!source) return false;
-        if (protocol && source.protocol !== protocol) return false;
-        if (
-          protocolVersion &&
-          source.protocolVersion !== protocolVersion
-        ) {
-          return false;
-        }
+    return true;
+  });
 
-        return true;
-      },
-    )
-    .at(-1)?.value;
+  const grouped = new Map<string, typeof measurements>();
+
+  for (const measurement of measurements) {
+    const key = [
+      measurement.sourceId,
+      measurement.testChargerWatts ?? 'unknown-w',
+      measurement.chargingStandard ?? 'unknown-standard',
+    ].join('|');
+
+    const list = grouped.get(key) ?? [];
+    list.push(measurement);
+    grouped.set(key, list);
+  }
+
+  return [...grouped.values()];
+}
+
+function metricFromGroup(
+  group: CorpusMeasurement[],
+  candidates: string[],
+) {
+  const candidateSet = new Set(
+    candidates.map((value) => value.toLowerCase()),
+  );
+
+  return group.find((measurement) =>
+    candidateSet.has(measurement.metric.toLowerCase()),
+  )?.value;
 }
 
 export function selectChargingComparables(
@@ -122,89 +147,86 @@ export function selectChargingComparables(
 
   const references = candidates.flatMap((candidate) => {
     const device = candidate.device;
-    const fullChargeMinutes = latestMetric(
+    const groups = groupedChargingEvidence(
       corpus,
       device.variant.id,
-      [
+      query.protocol,
+      query.protocolVersion,
+    );
+
+    return groups.flatMap((group) => {
+      const fullChargeMinutes = metricFromGroup(group, [
         'wiredFullChargeMinutes',
         'fullChargeMinutes',
         'timeTo100Minutes',
-      ],
-      query.protocol,
-      query.protocolVersion,
-    );
-    const thirtyMinutePercent = latestMetric(
-      corpus,
-      device.variant.id,
-      [
+      ]);
+      const thirtyMinutePercent = metricFromGroup(group, [
         'wiredThirtyMinutePercent',
         'charge30mPercent',
         'thirtyMinutePercent',
-      ],
-      query.protocol,
-      query.protocolVersion,
-    );
-    const timeTo50Minutes = latestMetric(
-      corpus,
-      device.variant.id,
-      [
+      ]);
+      const timeTo50Minutes = metricFromGroup(group, [
         'wiredTimeTo50Minutes',
         'timeTo50Minutes',
         'charge50Minutes',
-      ],
-      query.protocol,
-      query.protocolVersion,
-    );
-    const timeTo80Minutes = latestMetric(
-      corpus,
-      device.variant.id,
-      [
+      ]);
+      const timeTo80Minutes = metricFromGroup(group, [
         'wiredTimeTo80Minutes',
         'timeTo80Minutes',
         'charge80Minutes',
-      ],
-      query.protocol,
-      query.protocolVersion,
-    );
+      ]);
 
-    if (
-      fullChargeMinutes === undefined &&
-      thirtyMinutePercent === undefined &&
-      timeTo50Minutes === undefined &&
-      timeTo80Minutes === undefined
-    ) {
-      return [];
-    }
+      if (
+        fullChargeMinutes === undefined &&
+        thirtyMinutePercent === undefined &&
+        timeTo50Minutes === undefined &&
+        timeTo80Minutes === undefined
+      ) {
+        return [];
+      }
 
-    return [{
-      deviceVariantId: device.variant.id,
-      score: candidate.score,
-      reasons: candidate.reasons,
-      ...(fullChargeMinutes !== undefined ? { fullChargeMinutes } : {}),
-      ...(thirtyMinutePercent !== undefined
-        ? { thirtyMinutePercent }
-        : {}),
-      ...(timeTo50Minutes !== undefined
-        ? { timeTo50Minutes }
-        : {}),
-      ...(timeTo80Minutes !== undefined
-        ? { timeTo80Minutes }
-        : {}),
-      ...(device.charging?.advertisedWiredWatts !== undefined
-        ? {
-            advertisedWiredWatts:
-              device.charging.advertisedWiredWatts,
-          }
-        : {}),
-      ...((device.variant.battery?.capacityMah ??
-        device.variant.battery?.typicalCapacityMah) !== undefined
-        ? {
-            batteryMah:
-              device.variant.battery?.capacityMah ??
-              device.variant.battery?.typicalCapacityMah,
-          }
-        : {}),
-    }];
+      const first = group[0];
+
+      return [{
+        deviceVariantId: device.variant.id,
+        score: candidate.score,
+        reasons: candidate.reasons,
+        sourceId: first.sourceId,
+        ...(first.testChargerWatts !== undefined
+          ? { testChargerWatts: first.testChargerWatts }
+          : {}),
+        ...(first.chargingStandard
+          ? { chargingStandard: first.chargingStandard }
+          : {}),
+        ...(first.measuredPeakWatts !== undefined
+          ? { measuredPeakWatts: first.measuredPeakWatts }
+          : {}),
+        ...(fullChargeMinutes !== undefined ? { fullChargeMinutes } : {}),
+        ...(thirtyMinutePercent !== undefined
+          ? { thirtyMinutePercent }
+          : {}),
+        ...(timeTo50Minutes !== undefined
+          ? { timeTo50Minutes }
+          : {}),
+        ...(timeTo80Minutes !== undefined
+          ? { timeTo80Minutes }
+          : {}),
+        ...(device.charging?.advertisedWiredWatts !== undefined
+          ? {
+              advertisedWiredWatts:
+                device.charging.advertisedWiredWatts,
+            }
+          : {}),
+        ...((device.variant.battery?.capacityMah ??
+          device.variant.battery?.typicalCapacityMah) !== undefined
+          ? {
+              batteryMah:
+                device.variant.battery?.capacityMah ??
+                device.variant.battery?.typicalCapacityMah,
+            }
+          : {}),
+      }];
+    });
   });
 
   if (!references.length) {
