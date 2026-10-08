@@ -34,6 +34,20 @@
       "publisher": "OnePlus",
       "url": "https://www.oneplus.com/global/15/specs",
       "protocol": "official specifications"
+    },
+    {
+      "id": "gsmarena-pixel10proxl-wireless",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/google_pixel_10_pro_xl-review-2881p3.php",
+      "protocol": "GSMArena wireless charging test",
+      "protocolVersion": "2025"
+    },
+    {
+      "id": "gsmarena-pixel10pro-wireless",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/google_pixel_10_pro-review-2877p3.php",
+      "protocol": "GSMArena wireless charging test",
+      "protocolVersion": "2025"
     }
   ],
   "devices": [
@@ -88,6 +102,29 @@
       "advertisedWiredWatts": 100,
       "sourceIds": [
         "gsmarena-magic8pro-charging"
+      ]
+    },
+    {
+      "id": "google-pixel-10-pro-xl-5200",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro XL",
+      "region": "Global",
+      "batteryMah": 5200,
+      "advertisedWiredWatts": 45,
+      "advertisedWirelessWatts": 25,
+      "sourceIds": [
+        "gsmarena-pixel10proxl-wireless"
+      ]
+    },
+    {
+      "id": "google-pixel-10-pro-4870",
+      "manufacturer": "Google",
+      "model": "Pixel 10 Pro",
+      "region": "Global",
+      "batteryMah": 4870,
+      "advertisedWirelessWatts": 25,
+      "sourceIds": [
+        "gsmarena-pixel10pro-wireless"
       ]
     }
   ],
@@ -234,6 +271,38 @@
       "testChargerWatts": 67,
       "chargingStandard": "compatible adapter",
       "measuredPeakWatts": 50
+    },
+    {
+      "id": "pixel10proxl-qi2-wireless-full",
+      "deviceVariantId": "google-pixel-10-pro-xl-5200",
+      "metric": "wirelessFullChargeMinutes",
+      "value": 157,
+      "unit": "minutes",
+      "sourceId": "gsmarena-pixel10proxl-wireless",
+      "testChargerWatts": 25,
+      "chargingStandard": "Qi2",
+      "measuredPeakWatts": 23
+    },
+    {
+      "id": "pixel10pro-qi2-wireless-full",
+      "deviceVariantId": "google-pixel-10-pro-4870",
+      "metric": "wirelessFullChargeMinutes",
+      "value": 140,
+      "unit": "minutes",
+      "sourceId": "gsmarena-pixel10pro-wireless",
+      "testChargerWatts": 25,
+      "chargingStandard": "Qi2"
+    },
+    {
+      "id": "findx9pro-qi2-wireless-full",
+      "deviceVariantId": "oppo-find-x9-pro-global-7500",
+      "metric": "wirelessFullChargeMinutes",
+      "value": 540,
+      "unit": "minutes",
+      "sourceId": "gsmarena-findx9pro-charging",
+      "testChargerWatts": 25,
+      "chargingStandard": "Qi2",
+      "measuredPeakWatts": 7
     }
   ]
 }
