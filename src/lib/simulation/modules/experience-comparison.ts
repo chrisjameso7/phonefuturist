@@ -156,7 +156,7 @@ export function compareSimulationExperienceToReleasedDevice(
       batteryChemistry: snapshot.deviceContext?.batteryChemistry,
       cellArchitecture: snapshot.deviceContext?.cellArchitecture,
       chargingStandard:
-        snapshot.deviceContext?.charging?.chargingStandard,
+        snapshot.deviceContext?.charging?.wiredChargingStandard,
       displayDiagonalInches: snapshot.input.displays.primary.diagonalInches,
       thicknessMm: snapshot.input.dimensions?.thicknessMm,
       weightG: snapshot.input.dimensions?.weightG,
