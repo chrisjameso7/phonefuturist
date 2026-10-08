@@ -30,8 +30,11 @@ export interface ChargingCurveEstimate {
     powerResponse?: {
       applied: boolean;
       elasticity?: number;
+      earlyChargeElasticity?: number;
+      earlyChargeConfidence?: number;
       confidence?: number;
       evidenceCount: number;
+      earlyEvidenceCount?: number;
       targetPosition?: 'interpolation' | 'near-extrapolation' | 'far-extrapolation';
       evidenceRangeWatts?: { min: number; max: number };
     };
@@ -164,11 +167,22 @@ export function estimateChargingFromCorpus(
       powerResponse.elasticity,
     );
 
+    const earlyPowerScale =
+      referenceWatts !== undefined &&
+      referenceWatts > 0 &&
+      powerResponse.earlyChargeElasticity !== undefined
+        ? (
+            query.wiredChargingWatts /
+            referenceWatts
+          ) ** powerResponse.earlyChargeElasticity
+        : 1;
+
     return {
       reference,
       weight: Math.max(reference.score, 0.05) ** 2,
       capacityScale,
       powerScale,
+      earlyPowerScale,
     };
   });
 
@@ -186,13 +200,18 @@ export function estimateChargingFromCorpus(
   );
 
   const p30Values = weights.flatMap(
-    ({ reference, weight, capacityScale, powerScale }) =>
+    ({
+      reference,
+      weight,
+      capacityScale,
+      earlyPowerScale,
+    }) =>
       reference.thirtyMinutePercent !== undefined
         ? [{
             value: clamp(
-              reference.thirtyMinutePercent /
-                capacityScale /
-                Math.max(powerScale, 0.25),
+              reference.thirtyMinutePercent *
+                earlyPowerScale /
+                capacityScale,
               0,
               100,
             ),
@@ -291,14 +310,20 @@ export function estimateChargingFromCorpus(
     powerResponse: {
       applied: powerResponse.status === 'resolved',
       elasticity: powerResponse.elasticity,
+      earlyChargeElasticity:
+        powerResponse.earlyChargeElasticity,
+      earlyChargeConfidence:
+        powerResponse.earlyChargeConfidence,
       confidence: powerResponse.confidence,
       evidenceCount: powerResponse.evidence?.length ?? 0,
+      earlyEvidenceCount:
+        powerResponse.earlyEvidence?.length ?? 0,
       targetPosition: powerResponse.targetPosition,
       evidenceRangeWatts: powerResponse.evidenceRangeWatts,
     },
     note:
       powerResponse.status === 'resolved'
-        ? 'Estimate is weighted toward the closest released-device charging references. Milestones are normalized for battery capacity and adjusted using charging-power elasticity learned from same-device multi-watt tests. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.'
+        ? 'Estimate is weighted toward the closest released-device charging references. Full-charge time and early-charge percentage use separate same-device multi-watt response evidence when available, then normalize for battery capacity. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.'
         : 'Estimate is weighted toward the closest released-device charging references and normalized for battery capacity. No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.',
   };
 
@@ -331,17 +356,31 @@ export function estimateChargingFromCorpus(
       max: r.max,
     };
   } else if (expectedFull !== undefined && expectedP30 !== undefined) {
-    const perReference50 = weights.flatMap(({ reference }) =>
-      reference.fullChargeMinutes !== undefined &&
-      reference.thirtyMinutePercent !== undefined
-        ? [
-            curveTime(
-              50,
-              reference.thirtyMinutePercent,
-              reference.fullChargeMinutes,
-            ),
-          ]
-        : [],
+    const perReference50 = weights.flatMap(
+      ({
+        reference,
+        capacityScale,
+        powerScale,
+        earlyPowerScale,
+      }) =>
+        reference.fullChargeMinutes !== undefined &&
+        reference.thirtyMinutePercent !== undefined
+          ? [
+              curveTime(
+                50,
+                clamp(
+                  reference.thirtyMinutePercent *
+                    earlyPowerScale /
+                    capacityScale,
+                  0,
+                  100,
+                ),
+                reference.fullChargeMinutes *
+                  capacityScale *
+                  powerScale,
+              ),
+            ]
+          : [],
     );
 
     if (perReference50.length) {
@@ -363,17 +402,31 @@ export function estimateChargingFromCorpus(
       max: r.max,
     };
   } else if (expectedFull !== undefined && expectedP30 !== undefined) {
-    const perReference80 = weights.flatMap(({ reference }) =>
-      reference.fullChargeMinutes !== undefined &&
-      reference.thirtyMinutePercent !== undefined
-        ? [
-            curveTime(
-              80,
-              reference.thirtyMinutePercent,
-              reference.fullChargeMinutes,
-            ),
-          ]
-        : [],
+    const perReference80 = weights.flatMap(
+      ({
+        reference,
+        capacityScale,
+        powerScale,
+        earlyPowerScale,
+      }) =>
+        reference.fullChargeMinutes !== undefined &&
+        reference.thirtyMinutePercent !== undefined
+          ? [
+              curveTime(
+                80,
+                clamp(
+                  reference.thirtyMinutePercent *
+                    earlyPowerScale /
+                    capacityScale,
+                  0,
+                  100,
+                ),
+                reference.fullChargeMinutes *
+                  capacityScale *
+                  powerScale,
+              ),
+            ]
+          : [],
     );
 
     if (perReference80.length) {
