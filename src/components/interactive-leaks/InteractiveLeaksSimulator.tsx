@@ -21,9 +21,9 @@ import {
 } from '../../lib/simulation/workload-runtime';
 
 import {
-  CHARGING_MODEL_VERSION,
-  simulateCharging,
-} from '../../lib/simulation/charging';
+  LIVE_CHARGING_SIMULATOR_VERSION,
+  simulateChargingFromLiveCorpus,
+} from '../../lib/simulation/live-charging';
 
 type NumericFieldProps = {
   label: string;
@@ -640,12 +640,21 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const chargingCapacityMah = result?.battery?.totalCapacityMah;
+  const chargingWatts = numeric(form.wiredChargeW);
+
   const chargingResult =
-    simulationInput && result
-      ? simulateCharging({
-          deviceName: simulationInput.name,
-          batteryCapacityMah: result.battery?.totalCapacityMah,
-          wiredChargerW: numeric(form.wiredChargeW),
+    simulationInput &&
+    result &&
+    chargingCapacityMah !== undefined &&
+    chargingWatts !== undefined
+      ? simulateChargingFromLiveCorpus({
+          batteryMah: chargingCapacityMah,
+          wiredChargingWatts: chargingWatts,
+          displayDiagonalInches:
+            simulationInput.displays.primary.diagonalInches,
+          thicknessMm: simulationInput.dimensions?.thicknessMm,
+          weightG: simulationInput.dimensions?.weightG,
         })
       : undefined;
 
@@ -1583,7 +1592,7 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Charging · v{CHARGING_MODEL_VERSION}
+                  Charging · {LIVE_CHARGING_SIMULATOR_VERSION}
                 </span>
 
                 {chargingResult?.status === 'resolved' &&
@@ -1592,68 +1601,94 @@ export default function InteractiveLeaksSimulator() {
                     <div className="il-metrics">
                       <div>
                         <strong>
-                          {format(
-                            chargingResult.estimate.charge30mPercent.min,
-                            0,
-                          )}
-                          –
-                          {format(
-                            chargingResult.estimate.charge30mPercent.max,
-                            0,
-                          )}
-                          %
+                          {chargingResult.estimate.charge30mPercent
+                            ? `${format(
+                                chargingResult.estimate.charge30mPercent.expected,
+                                0,
+                              )}%`
+                            : 'Unknown'}
                         </strong>
-                        <span>Charge after 30 min</span>
+                        <span>Expected after 30 min</span>
                       </div>
 
                       <div>
                         <strong>
-                          {format(
-                            chargingResult.estimate.timeTo50Minutes.min,
-                            0,
-                          )}
-                          –
-                          {format(
-                            chargingResult.estimate.timeTo50Minutes.max,
-                            0,
-                          )}
-                          min
+                          {chargingResult.estimate.timeTo50Minutes
+                            ? `${format(
+                                chargingResult.estimate.timeTo50Minutes.expected,
+                                0,
+                              )} min`
+                            : 'Unknown'}
                         </strong>
                         <span>0–50%</span>
                       </div>
 
                       <div>
                         <strong>
-                          {format(
-                            chargingResult.estimate.timeTo80Minutes.min,
-                            0,
-                          )}
-                          –
-                          {format(
-                            chargingResult.estimate.timeTo80Minutes.max,
-                            0,
-                          )}
-                          min
+                          {chargingResult.estimate.timeTo80Minutes
+                            ? `${format(
+                                chargingResult.estimate.timeTo80Minutes.expected,
+                                0,
+                              )} min`
+                            : 'Unknown'}
                         </strong>
                         <span>0–80%</span>
                       </div>
 
                       <div>
                         <strong>
-                          {format(
-                            chargingResult.estimate.timeTo100Minutes.min,
-                            0,
-                          )}
-                          –
-                          {format(
-                            chargingResult.estimate.timeTo100Minutes.max,
-                            0,
-                          )}
-                          min
+                          {chargingResult.estimate.timeTo100Minutes
+                            ? `${format(
+                                chargingResult.estimate.timeTo100Minutes.expected,
+                                0,
+                              )} min`
+                            : 'Unknown'}
                         </strong>
                         <span>0–100%</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.confidenceGrade}
+                        </strong>
+                        <span>Evidence confidence</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.normalized
+                            ?.expectedMinutesPer1000Mah !== undefined
+                            ? `${format(
+                                chargingResult.estimate.normalized
+                                  .expectedMinutesPer1000Mah,
+                                1,
+                              )} min`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Per 1,000 mAh</span>
+                      </div>
                     </div>
+
+                    {chargingResult.estimate.powerResponse
+                      ?.targetPosition ? (
+                      <p className="il-help">
+                        Power response:{' '}
+                        {chargingResult.estimate.powerResponse.targetPosition
+                          .replaceAll('-', ' ')}
+                        {chargingResult.estimate.powerResponse
+                          .evidenceRangeWatts
+                          ? ` · evidence range ${format(
+                              chargingResult.estimate.powerResponse
+                                .evidenceRangeWatts.min,
+                              0,
+                            )}–${format(
+                              chargingResult.estimate.powerResponse
+                                .evidenceRangeWatts.max,
+                              0,
+                            )} W`
+                          : ''}
+                      </p>
+                    ) : null}
 
                     <p className="il-help">
                       {chargingResult.estimate.note}
@@ -1661,7 +1696,7 @@ export default function InteractiveLeaksSimulator() {
                   </>
                 ) : (
                   <div className="il-empty">
-                    {chargingResult?.unresolved?.message ??
+                    {chargingResult?.unresolvedReason ??
                       'Add battery capacity and wired charging wattage to estimate charging.'}
                   </div>
                 )}
