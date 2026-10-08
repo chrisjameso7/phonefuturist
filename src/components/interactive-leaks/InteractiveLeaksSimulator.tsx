@@ -1777,9 +1777,12 @@ export default function InteractiveLeaksSimulator() {
                                 'interpolated'
                               ? 'Interpolated'
                               : chargingResult.estimate.evidenceMode ===
-                                  'extrapolated'
-                                ? 'Extrapolated'
-                                : 'Measured'}
+                                  'near-extrapolated'
+                                ? 'Near extrapolation'
+                                : chargingResult.estimate.evidenceMode ===
+                                    'far-extrapolated'
+                                  ? 'Far extrapolation'
+                                  : 'Measured'}
                         </strong>
                         <span>Evidence mode</span>
                       </div>
