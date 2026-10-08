@@ -27,6 +27,8 @@ export interface ChargingComparableEvidence {
   reasons: string[];
   fullChargeMinutes?: number;
   thirtyMinutePercent?: number;
+  timeTo50Minutes?: number;
+  timeTo80Minutes?: number;
   advertisedWiredWatts?: number;
 }
 
@@ -103,10 +105,22 @@ export function selectChargingComparables(
       'charge30mPercent',
       'thirtyMinutePercent',
     ]);
+    const timeTo50Minutes = latestMetric(corpus, device.variant.id, [
+      'wiredTimeTo50Minutes',
+      'timeTo50Minutes',
+      'charge50Minutes',
+    ]);
+    const timeTo80Minutes = latestMetric(corpus, device.variant.id, [
+      'wiredTimeTo80Minutes',
+      'timeTo80Minutes',
+      'charge80Minutes',
+    ]);
 
     if (
       fullChargeMinutes === undefined &&
-      thirtyMinutePercent === undefined
+      thirtyMinutePercent === undefined &&
+      timeTo50Minutes === undefined &&
+      timeTo80Minutes === undefined
     ) {
       return [];
     }
@@ -118,6 +132,12 @@ export function selectChargingComparables(
       ...(fullChargeMinutes !== undefined ? { fullChargeMinutes } : {}),
       ...(thirtyMinutePercent !== undefined
         ? { thirtyMinutePercent }
+        : {}),
+      ...(timeTo50Minutes !== undefined
+        ? { timeTo50Minutes }
+        : {}),
+      ...(timeTo80Minutes !== undefined
+        ? { timeTo80Minutes }
         : {}),
       ...(device.charging?.advertisedWiredWatts !== undefined
         ? {
