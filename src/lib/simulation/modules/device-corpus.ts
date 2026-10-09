@@ -34,6 +34,9 @@ export interface CorpusMeasurement {
   testChargerWatts?: number;
   chargingStandard?: string;
   measuredPeakWatts?: number;
+  cameraRole?: string;
+  cameraSensorName?: string;
+  cameraCaptureMode?: string;
   notes?: string[];
 }
 
