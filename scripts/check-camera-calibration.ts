@@ -1,6 +1,7 @@
 import {
   backtestCameraSharpnessTiming,
   backtestCameraVideoStabilization,
+  backtestCameraPhotoTexture,
 } from '../src/lib/simulation/modules/camera-backtest';
 import { buildCalibrationRegistry } from '../src/lib/simulation/modules/calibration-registry';
 
@@ -72,6 +73,8 @@ console.log(`  Resolved detail:    ${domains.resolvedDetail}`);
 const backtest = backtestCameraSharpnessTiming(corpus);
 const stabilizationBacktest =
   backtestCameraVideoStabilization(corpus);
+const photoTextureBacktest =
+  backtestCameraPhotoTexture(corpus);
 
 function printBacktest(
   title: string,
@@ -94,6 +97,10 @@ printBacktest(
   'Video Stabilization leave-one-device-out backtest',
   stabilizationBacktest,
 );
+printBacktest(
+  'Photo Texture leave-one-device-out backtest',
+  photoTextureBacktest,
+);
 
 if (cameraDevices.length < 5 || cameraModules < 12) {
   console.error('');
@@ -108,7 +115,8 @@ if (cameraDevices.length < 5 || cameraModules < 12) {
   );
 } else if (
   backtest.health === 'poor' ||
-  stabilizationBacktest.health === 'poor'
+  stabilizationBacktest.health === 'poor' ||
+  photoTextureBacktest.health === 'poor'
 ) {
   console.error('');
   console.error(
@@ -117,7 +125,8 @@ if (cameraDevices.length < 5 || cameraModules < 12) {
   process.exitCode = 1;
 } else if (
   backtest.health === 'borderline' ||
-  stabilizationBacktest.health === 'borderline'
+  stabilizationBacktest.health === 'borderline' ||
+  photoTextureBacktest.health === 'borderline'
 ) {
   console.warn('');
   console.warn(
@@ -125,7 +134,8 @@ if (cameraDevices.length < 5 || cameraModules < 12) {
   );
 } else if (
   backtest.health === 'insufficient' ||
-  stabilizationBacktest.health === 'insufficient'
+  stabilizationBacktest.health === 'insufficient' ||
+  photoTextureBacktest.health === 'insufficient'
 ) {
   console.warn('');
   console.warn(
