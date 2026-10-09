@@ -2702,6 +2702,11 @@ export default function InteractiveLeaksSimulator() {
                                       )}% confidence`
                                     : 'confidence unrated'}
                                 </small>
+                                {outcome.protocolKey ? (
+                                  <small>
+                                    {outcome.protocolKey.replace('::', ' · ')}
+                                  </small>
+                                ) : null}
                               </div>
                             ))}
                         </div>
