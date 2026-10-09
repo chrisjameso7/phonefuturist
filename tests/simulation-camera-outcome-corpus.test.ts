@@ -38,4 +38,21 @@ describe('measured camera outcome registry', () => {
     expect(result.expected?.unit).toBe('score');
     expect(result.references.length).toBeGreaterThan(0);
   });
+
+  it('populates all current measured camera outcome families', () => {
+    const registry = buildCalibrationRegistry();
+
+    const metrics = new Set(
+      registry.measurements
+        .filter(
+          (measurement) =>
+            measurement.workload === 'camera',
+        )
+        .map((measurement) => measurement.metric),
+    );
+
+    expect(metrics.has('sharpness_timing_score')).toBe(true);
+    expect(metrics.has('video_stabilization_score')).toBe(true);
+    expect(metrics.has('photo_texture_score')).toBe(true);
+  });
 });
