@@ -2869,6 +2869,65 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 </div>
 
+                {packaging?.thinnerByHalfMm ? (
+                  <div className="il-packaging-sensitivity">
+                    <span className="il-result-label">
+                      Thin-phone what-if
+                    </span>
+
+                    <div className="il-sensitivity-card">
+                      <strong>
+                        Thickness → {format(
+                          packaging.thinnerByHalfMm
+                            .targetThicknessMm,
+                          2,
+                        )} mm
+                      </strong>
+
+                      <span>
+                        Lost internal volume{' '}
+                        {format(
+                          packaging.thinnerByHalfMm
+                            .lostAvailableVolumeCm3,
+                          2,
+                        )} cm³
+                      </span>
+
+                      <span>
+                        Known allocation{' '}
+                        {format(
+                          packaging.thinnerByHalfMm
+                            .usedInternalVolumePercent,
+                          1,
+                        )}%
+                      </span>
+
+                      <span>
+                        Remaining{' '}
+                        {format(
+                          packaging.thinnerByHalfMm
+                            .remainingVolumeCm3,
+                          2,
+                        )} cm³
+                      </span>
+
+                      <small>
+                        {packaging.thinnerByHalfMm
+                          .fitsAvailableVolume
+                          ? 'Aggregate volume budget still passes'
+                          : 'Aggregate volume budget fails'}
+                      </small>
+                    </div>
+
+                    <p className="il-help">
+                      This keeps all known component volumes unchanged and
+                      reduces device thickness by 0.5 mm. It is an aggregate
+                      volume sensitivity test, not a claim that the component
+                      shapes can be repackaged successfully.
+                    </p>
+                  </div>
+                ) : null}
+
                 {packaging?.componentVolumePercent ? (
                   <div className="il-packaging-breakdown">
                     <span className="il-result-label">
