@@ -1,4 +1,7 @@
-import { backtestCameraSharpnessTiming } from '../src/lib/simulation/modules/camera-backtest';
+import {
+  backtestCameraSharpnessTiming,
+  backtestCameraVideoStabilization,
+} from '../src/lib/simulation/modules/camera-backtest';
 import { buildCalibrationRegistry } from '../src/lib/simulation/modules/calibration-registry';
 
 const corpus = buildCalibrationRegistry();
@@ -67,14 +70,30 @@ console.log(`  Video thermal:      ${domains.videoThermal}`);
 console.log(`  Resolved detail:    ${domains.resolvedDetail}`);
 
 const backtest = backtestCameraSharpnessTiming(corpus);
+const stabilizationBacktest =
+  backtestCameraVideoStabilization(corpus);
 
-console.log('');
-console.log('Sharpness & Timing leave-one-device-out backtest');
-console.log(`  Health:             ${backtest.health}`);
-console.log(`  Evaluated devices:  ${backtest.evaluatedDevices}`);
-console.log(`  Skipped devices:    ${backtest.skippedDevices}`);
-console.log(`  MAE:                ${backtest.maeScore?.toFixed(2) ?? 'n/a'} score`);
-console.log(`  p90 error:          ${backtest.p90AbsoluteError?.toFixed(2) ?? 'n/a'} score`);
+function printBacktest(
+  title: string,
+  result: ReturnType<typeof backtestCameraSharpnessTiming>,
+) {
+  console.log('');
+  console.log(title);
+  console.log(`  Health:             ${result.health}`);
+  console.log(`  Evaluated devices:  ${result.evaluatedDevices}`);
+  console.log(`  Skipped devices:    ${result.skippedDevices}`);
+  console.log(`  MAE:                ${result.maeScore?.toFixed(2) ?? 'n/a'} score`);
+  console.log(`  p90 error:          ${result.p90AbsoluteError?.toFixed(2) ?? 'n/a'} score`);
+}
+
+printBacktest(
+  'Sharpness & Timing leave-one-device-out backtest',
+  backtest,
+);
+printBacktest(
+  'Video Stabilization leave-one-device-out backtest',
+  stabilizationBacktest,
+);
 
 if (cameraDevices.length < 5 || cameraModules < 12) {
   console.error('');
@@ -87,18 +106,27 @@ if (cameraDevices.length < 5 || cameraModules < 12) {
   console.warn(
     'WARN: Camera hardware coverage is available, but measured camera outcome coverage is still empty. Observed outcome cards will remain unresolved until measured evidence is added.',
   );
-} else if (backtest.health === 'poor') {
+} else if (
+  backtest.health === 'poor' ||
+  stabilizationBacktest.health === 'poor'
+) {
   console.error('');
   console.error(
-    'FAIL: Camera Sharpness & Timing backtest is poor. Review camera comparables or evidence before shipping.',
+    'FAIL: At least one camera outcome backtest is poor. Review camera comparables or evidence before shipping.',
   );
   process.exitCode = 1;
-} else if (backtest.health === 'borderline') {
+} else if (
+  backtest.health === 'borderline' ||
+  stabilizationBacktest.health === 'borderline'
+) {
   console.warn('');
   console.warn(
     'WARN: Camera Sharpness & Timing backtest is borderline. Verification will continue, but the predictor should be reviewed.',
   );
-} else if (backtest.health === 'insufficient') {
+} else if (
+  backtest.health === 'insufficient' ||
+  stabilizationBacktest.health === 'insufficient'
+) {
   console.warn('');
   console.warn(
     'WARN: Camera measured evidence exists, but the backtest sample is still too small for a hard quality gate.',
