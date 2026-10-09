@@ -2725,6 +2725,27 @@ export default function InteractiveLeaksSimulator() {
                                       )}% confidence`
                                     : 'confidence unrated'}
                                 </small>
+                                {outcome.averageSimilarity !== undefined ||
+                                outcome.averageCoverage !== undefined ? (
+                                  <small>
+                                    {outcome.averageSimilarity !== undefined
+                                      ? `${format(
+                                          outcome.averageSimilarity * 100,
+                                          0,
+                                        )}% similarity`
+                                      : ''}
+                                    {outcome.averageSimilarity !== undefined &&
+                                    outcome.averageCoverage !== undefined
+                                      ? ' · '
+                                      : ''}
+                                    {outcome.averageCoverage !== undefined
+                                      ? `${format(
+                                          outcome.averageCoverage * 100,
+                                          0,
+                                        )}% spec coverage`
+                                      : ''}
+                                  </small>
+                                ) : null}
                                 {outcome.protocolKey ? (
                                   <small>
                                     {outcome.protocolKey.replace('::', ' · ')}
