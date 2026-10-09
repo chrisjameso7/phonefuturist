@@ -6,6 +6,7 @@ import type {
   CorpusMeasurement,
   CorpusSource,
 } from './device-corpus';
+import type { SocVendor } from './device-variant';
 
 type RawSource = {
   id: string;
@@ -22,7 +23,7 @@ type RawDevice = {
   region?: string;
   batteryMah?: number;
   batteryChemistry?: string;
-  socVendor?: string;
+  socVendor?: SocVendor;
   socName?: string;
   sourceIds?: string[];
   measurements?: Record<string, number>;
@@ -89,15 +90,11 @@ function normalizeRawFile(raw: RawFile): DeviceCorpus {
             },
           }
         : {}),
-      ...(row.socVendor || row.socName
+      ...(row.socVendor && row.socName
         ? {
             soc: {
-              ...(row.socVendor
-                ? { vendor: row.socVendor }
-                : {}),
-              ...(row.socName
-                ? { name: row.socName }
-                : {}),
+              vendor: row.socVendor,
+              name: row.socName,
             },
           }
         : {}),
