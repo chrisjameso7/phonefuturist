@@ -2149,6 +2149,15 @@ export default function InteractiveLeaksSimulator() {
                           {displayRuntimeSensitivity.note}
                         </p>
                       </div>
+                    ) : displayRuntimeSensitivity?.status ===
+                      'unresolved' &&
+                    simulationInput?.battery ? (
+                      <p className="il-help">
+                        Measured display runtime impact is unresolved because
+                        the current corpus does not yet have enough strong
+                        protocol-compatible display/runtime references for
+                        this configuration.
+                      </p>
                     ) : null}
 
                     {displayExperience.scenarios.length ? (
