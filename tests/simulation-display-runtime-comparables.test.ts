@@ -105,5 +105,14 @@ describe('display-aware runtime comparables', () => {
     expect(
       result.estimate?.expectedMahPerHour,
     ).toBeGreaterThan(375);
+    expect(
+      result.estimate?.averageSimilarity,
+    ).toBeGreaterThan(0);
+    expect(
+      result.estimate?.averageCoverage,
+    ).toBeGreaterThan(0);
+    expect(
+      result.estimate?.averageCoverage,
+    ).toBeLessThanOrEqual(1);
   });
 });
