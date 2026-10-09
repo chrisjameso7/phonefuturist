@@ -2822,7 +2822,95 @@ export default function InteractiveLeaksSimulator() {
                     </strong>
                     <span>Known allocation</span>
                   </div>
+
+                  <div>
+                    <strong>
+                      {packaging?.packagingPressure
+                        ? packaging.packagingPressure
+                            .replaceAll('_', ' ')
+                        : 'Unknown'}
+                    </strong>
+                    <span>Aggregate pressure</span>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {packaging?.minimumAggregateThicknessMm !==
+                      undefined
+                        ? `${format(
+                            packaging.minimumAggregateThicknessMm,
+                            2,
+                          )} mm`
+                        : 'Unknown'}
+                    </strong>
+                    <span>Minimum aggregate thickness</span>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {packaging?.aggregateThicknessHeadroomMm !==
+                      undefined
+                        ? `${format(
+                            packaging.aggregateThicknessHeadroomMm,
+                            2,
+                          )} mm`
+                        : 'Unknown'}
+                    </strong>
+                    <span>Gross thickness headroom</span>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {packaging?.largestKnownComponent
+                        ? packaging.largestKnownComponent.component
+                        : 'Unknown'}
+                    </strong>
+                    <span>Largest known component</span>
+                  </div>
                 </div>
+
+                {packaging?.componentVolumePercent ? (
+                  <div className="il-packaging-breakdown">
+                    <span className="il-result-label">
+                      Known internal allocation
+                    </span>
+
+                    <div className="il-packaging-bars">
+                      {Object.entries(
+                        packaging.componentVolumePercent,
+                      ).map(([component, percent]) => (
+                        <div
+                          className="il-packaging-bar"
+                          key={component}
+                        >
+                          <div>
+                            <strong>{component}</strong>
+                            <span>
+                              {format(percent, 1)}%
+                            </span>
+                          </div>
+
+                          <div className="il-packaging-track">
+                            <span
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  Math.max(0, percent),
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="il-help">
+                      Shares are percentages of the aggregate allocatable
+                      internal volume. They do not model exact component shape,
+                      stacking, routing, shielding, or mechanical clearances.
+                    </p>
+                  </div>
+                ) : null}
               </div>
 
               {packaging?.fitsAvailableVolume !==
