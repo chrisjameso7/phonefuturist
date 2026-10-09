@@ -20,6 +20,9 @@ export interface LiveThermalExperienceResult {
   status: 'resolved' | 'unresolved';
   evidenceMode?: 'calibrated' | 'physics-fallback';
   confidence?: number;
+  averageSimilarity?: number;
+  averageCoverage?: number;
+  protocolKey?: string;
   referenceCount?: number;
   neighborIds?: string[];
   peakTemperatureC?: number;
@@ -249,6 +252,11 @@ export function simulateThermalExperience(
       status: 'resolved',
       evidenceMode: 'calibrated',
       confidence: calibrated.evidence.confidence,
+      averageSimilarity:
+        calibrated.evidence.averageSimilarity,
+      averageCoverage:
+        calibrated.evidence.averageCoverage,
+      protocolKey: calibrated.evidence.protocolKey,
       referenceCount: calibrated.evidence.referenceCount,
       neighborIds: calibrated.evidence.neighborIds,
       peakTemperatureC:
