@@ -15,6 +15,9 @@ export type CameraOutcomeDomain =
 
 export interface CameraOutcomeReference {
   deviceVariantId: string;
+  cameraRole?: string;
+  cameraSensorName?: string;
+  cameraCaptureMode?: string;
   score: number;
   metric: string;
   value: number;
@@ -75,11 +78,17 @@ export function calibrateCameraOutcome(
         (measurement) =>
           measurement.deviceVariantId === match.deviceVariantId &&
           measurement.workload === 'camera' &&
+          (!measurement.cameraRole ||
+            measurement.cameraRole.trim().toLowerCase() ===
+              match.role.trim().toLowerCase()) &&
           metricMatches(domain, measurement.metric) &&
           Number.isFinite(measurement.value),
       )
       .map((measurement) => ({
         deviceVariantId: match.deviceVariantId,
+        cameraRole: measurement.cameraRole,
+        cameraSensorName: measurement.cameraSensorName,
+        cameraCaptureMode: measurement.cameraCaptureMode,
         score: match.score,
         metric: measurement.metric,
         value: measurement.value,
