@@ -23,6 +23,8 @@ export interface ComparableDeviceQuery {
 export interface ComparableDeviceMatch {
   device: DeviceCorpusRecord;
   score: number;
+  similarityScore: number;
+  coverageScore: number;
   reasons: string[];
 }
 
@@ -49,163 +51,245 @@ export function findComparableDevices(
 
   for (const device of corpus.devices) {
     let weighted = 0;
-    let weightTotal = 0;
+    let coveredWeight = 0;
+    let possibleWeight = 0;
     const reasons: string[] = [];
 
     const capacity =
       device.variant.battery?.capacityMah ??
       device.variant.battery?.typicalCapacityMah;
 
-    if (query.batteryMah && capacity) {
-      const s = closeness(capacity, query.batteryMah, 0.3);
-      weighted += s * 4;
-      weightTotal += 4;
-      if (s > 0.75) reasons.push('similar battery capacity');
+    if (query.batteryMah) {
+      possibleWeight += 4;
+      if (capacity) {
+        const s = closeness(capacity, query.batteryMah, 0.3);
+        weighted += s * 4;
+        coveredWeight += 4;
+        if (s > 0.75) reasons.push('similar battery capacity');
+      }
     }
 
-    if (query.batteryChemistry && device.variant.battery?.chemistry) {
-      const same =
-        normalize(device.variant.battery.chemistry) ===
-        normalize(query.batteryChemistry);
-      weighted += (same ? 1 : 0) * 2.5;
-      weightTotal += 2.5;
-      if (same) reasons.push('same battery chemistry');
+    if (query.batteryChemistry) {
+      possibleWeight += 2.5;
+      if (device.variant.battery?.chemistry) {
+        const same =
+          normalize(device.variant.battery.chemistry) ===
+          normalize(query.batteryChemistry);
+        weighted += (same ? 1 : 0) * 2.5;
+        coveredWeight += 2.5;
+        if (same) reasons.push('same battery chemistry');
+      }
     }
 
-    if (query.socVendor && device.variant.soc?.vendor) {
-      const same =
-        normalize(device.variant.soc.vendor) === normalize(query.socVendor);
-      weighted += (same ? 1 : 0) * 3;
-      weightTotal += 3;
-      if (same) reasons.push('same SoC vendor');
+    if (query.socVendor) {
+      possibleWeight += 3;
+      if (device.variant.soc?.vendor) {
+        const same =
+          normalize(device.variant.soc.vendor) ===
+          normalize(query.socVendor);
+        weighted += (same ? 1 : 0) * 3;
+        coveredWeight += 3;
+        if (same) reasons.push('same SoC vendor');
+      }
     }
 
     if (query.manufacturer) {
+      possibleWeight += 2;
       const same =
         normalize(device.variant.identity.manufacturer) ===
         normalize(query.manufacturer);
       weighted += (same ? 1 : 0) * 2;
-      weightTotal += 2;
+      coveredWeight += 2;
       if (same) reasons.push('same manufacturer');
     }
 
-    if (query.region && device.variant.identity.region) {
-      const same = normalize(device.variant.identity.region).includes(
-        normalize(query.region),
-      );
-      weighted += (same ? 1 : 0) * 1.5;
-      weightTotal += 1.5;
-      if (same) reasons.push('matching region');
-    }
-
-    if (query.displayDiagonalInches && device.display?.diagonalInches) {
-      const s = closeness(
-        device.display.diagonalInches,
-        query.displayDiagonalInches,
-        0.1,
-      );
-      weighted += s * 2;
-      weightTotal += 2;
-      if (s > 0.75) reasons.push('similar display size');
-    }
-
-    if (query.resolutionWidthPx && device.display?.resolutionWidthPx) {
-      const s = closeness(
-        device.display.resolutionWidthPx,
-        query.resolutionWidthPx,
-        0.22,
-      );
-      weighted += s * 1;
-      weightTotal += 1;
-      if (s > 0.8) reasons.push('similar display resolution');
-    }
-
-    if (query.resolutionHeightPx && device.display?.resolutionHeightPx) {
-      const s = closeness(
-        device.display.resolutionHeightPx,
-        query.resolutionHeightPx,
-        0.22,
-      );
-      weighted += s * 1;
-      weightTotal += 1;
-      if (s > 0.8 && !reasons.includes('similar display resolution')) {
-        reasons.push('similar display resolution');
+    if (query.region) {
+      possibleWeight += 1.5;
+      if (device.variant.identity.region) {
+        const same = normalize(
+          device.variant.identity.region,
+        ).includes(normalize(query.region));
+        weighted += (same ? 1 : 0) * 1.5;
+        coveredWeight += 1.5;
+        if (same) reasons.push('matching region');
       }
     }
 
-    if (query.refreshRateHz && device.display?.refreshRateHz) {
-      const s = closeness(device.display.refreshRateHz, query.refreshRateHz, 0.35);
-      weighted += s * 1.5;
-      weightTotal += 1.5;
-      if (s > 0.85) reasons.push('similar refresh rate');
+    if (query.displayDiagonalInches) {
+      possibleWeight += 2;
+      if (device.display?.diagonalInches) {
+        const s = closeness(
+          device.display.diagonalInches,
+          query.displayDiagonalInches,
+          0.1,
+        );
+        weighted += s * 2;
+        coveredWeight += 2;
+        if (s > 0.75) reasons.push('similar display size');
+      }
     }
 
-    if (query.wiredChargingWatts && device.charging?.advertisedWiredWatts) {
-      const s = closeness(
-        device.charging.advertisedWiredWatts,
-        query.wiredChargingWatts,
-        0.55,
-      );
-      weighted += s * 1.5;
-      weightTotal += 1.5;
-      if (s > 0.75) reasons.push('similar wired charging class');
+    if (query.resolutionWidthPx) {
+      possibleWeight += 1;
+      if (device.display?.resolutionWidthPx) {
+        const s = closeness(
+          device.display.resolutionWidthPx,
+          query.resolutionWidthPx,
+          0.22,
+        );
+        weighted += s;
+        coveredWeight += 1;
+        if (s > 0.8) reasons.push('similar display resolution');
+      }
     }
 
-    if (
-      query.wirelessChargingWatts &&
-      device.charging?.advertisedWirelessWatts
-    ) {
-      const s = closeness(
-        device.charging.advertisedWirelessWatts,
-        query.wirelessChargingWatts,
-        0.6,
-      );
-      weighted += s * 0.75;
-      weightTotal += 0.75;
-      if (s > 0.75) reasons.push('similar wireless charging class');
+    if (query.resolutionHeightPx) {
+      possibleWeight += 1;
+      if (device.display?.resolutionHeightPx) {
+        const s = closeness(
+          device.display.resolutionHeightPx,
+          query.resolutionHeightPx,
+          0.22,
+        );
+        weighted += s;
+        coveredWeight += 1;
+        if (
+          s > 0.8 &&
+          !reasons.includes('similar display resolution')
+        ) {
+          reasons.push('similar display resolution');
+        }
+      }
     }
 
-    if (query.cellArchitecture && device.charging?.cellArchitecture) {
-      const same = device.charging.cellArchitecture === query.cellArchitecture;
-      weighted += (same ? 1 : 0) * 2.25;
-      weightTotal += 2.25;
-      if (same) reasons.push('same charging cell architecture');
+    if (query.refreshRateHz) {
+      possibleWeight += 1.5;
+      if (device.display?.refreshRateHz) {
+        const s = closeness(
+          device.display.refreshRateHz,
+          query.refreshRateHz,
+          0.35,
+        );
+        weighted += s * 1.5;
+        coveredWeight += 1.5;
+        if (s > 0.85) reasons.push('similar refresh rate');
+      }
     }
 
-    if (query.thicknessMm && device.dimensions?.thicknessMm) {
-      const s = closeness(device.dimensions.thicknessMm, query.thicknessMm, 0.18);
-      weighted += s * 1.5;
-      weightTotal += 1.5;
-      if (s > 0.8) reasons.push('similar chassis thickness');
+    if (query.wiredChargingWatts) {
+      possibleWeight += 1.5;
+      if (device.charging?.advertisedWiredWatts) {
+        const s = closeness(
+          device.charging.advertisedWiredWatts,
+          query.wiredChargingWatts,
+          0.55,
+        );
+        weighted += s * 1.5;
+        coveredWeight += 1.5;
+        if (s > 0.75) reasons.push('similar wired charging class');
+      }
     }
 
-    if (query.weightG && device.dimensions?.weightG) {
-      const s = closeness(device.dimensions.weightG, query.weightG, 0.25);
-      weighted += s * 1;
-      weightTotal += 1;
-      if (s > 0.8) reasons.push('similar device mass');
+    if (query.wirelessChargingWatts) {
+      possibleWeight += 0.75;
+      if (device.charging?.advertisedWirelessWatts) {
+        const s = closeness(
+          device.charging.advertisedWirelessWatts,
+          query.wirelessChargingWatts,
+          0.6,
+        );
+        weighted += s * 0.75;
+        coveredWeight += 0.75;
+        if (s > 0.75) reasons.push('similar wireless charging class');
+      }
+    }
+
+    if (query.cellArchitecture) {
+      possibleWeight += 2.25;
+      if (device.charging?.cellArchitecture) {
+        const same =
+          device.charging.cellArchitecture ===
+          query.cellArchitecture;
+        weighted += (same ? 1 : 0) * 2.25;
+        coveredWeight += 2.25;
+        if (same) reasons.push('same charging cell architecture');
+      }
+    }
+
+    if (query.thicknessMm) {
+      possibleWeight += 1.5;
+      if (device.dimensions?.thicknessMm) {
+        const s = closeness(
+          device.dimensions.thicknessMm,
+          query.thicknessMm,
+          0.18,
+        );
+        weighted += s * 1.5;
+        coveredWeight += 1.5;
+        if (s > 0.8) reasons.push('similar chassis thickness');
+      }
+    }
+
+    if (query.weightG) {
+      possibleWeight += 1;
+      if (device.dimensions?.weightG) {
+        const s = closeness(
+          device.dimensions.weightG,
+          query.weightG,
+          0.25,
+        );
+        weighted += s;
+        coveredWeight += 1;
+        if (s > 0.8) reasons.push('similar device mass');
+      }
     }
 
     const volume = bodyVolume(device);
-    if (query.bodyVolumeMm3 && volume) {
-      const s = closeness(volume, query.bodyVolumeMm3, 0.28);
-      weighted += s * 2;
-      weightTotal += 2;
-      if (s > 0.75) reasons.push('similar body volume');
+    if (query.bodyVolumeMm3) {
+      possibleWeight += 2;
+      if (volume) {
+        const s = closeness(
+          volume,
+          query.bodyVolumeMm3,
+          0.28,
+        );
+        weighted += s * 2;
+        coveredWeight += 2;
+        if (s > 0.75) reasons.push('similar body volume');
+      }
     }
 
-    if (query.coolingClass && device.cooling?.class) {
-      const same = device.cooling.class === query.coolingClass;
-      weighted += (same ? 1 : 0) * 2.5;
-      weightTotal += 2.5;
-      if (same) reasons.push('same cooling class');
+    if (query.coolingClass) {
+      possibleWeight += 2.5;
+      if (device.cooling?.class) {
+        const same =
+          device.cooling.class === query.coolingClass;
+        weighted += (same ? 1 : 0) * 2.5;
+        coveredWeight += 2.5;
+        if (same) reasons.push('same cooling class');
+      }
     }
 
-    if (weightTotal === 0) continue;
+    if (coveredWeight === 0 || possibleWeight === 0) {
+      continue;
+    }
+
+    const similarityScore = weighted / coveredWeight;
+    const coverageScore = coveredWeight / possibleWeight;
+    const score =
+      similarityScore * Math.sqrt(coverageScore);
+
+    if (coverageScore < 0.999) {
+      reasons.push(
+        `spec coverage ${Math.round(coverageScore * 100)}%`,
+      );
+    }
 
     matches.push({
       device,
-      score: weighted / weightTotal,
+      score,
+      similarityScore,
+      coverageScore,
       reasons,
     });
   }
