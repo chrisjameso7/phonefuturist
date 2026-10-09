@@ -35,6 +35,11 @@ import {
   simulateLiveDisplayExperience,
 } from '../../lib/simulation/live-display-experience';
 
+import {
+  DISPLAY_RUNTIME_SENSITIVITY_VERSION,
+  resolveLiveDisplayRuntimeSensitivity,
+} from '../../lib/simulation/modules/display-runtime-sensitivity';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -800,6 +805,13 @@ export default function InteractiveLeaksSimulator() {
           panelTechnology:
             form.panelTechnology.trim() || undefined,
         })
+      : undefined;
+
+  const displayRuntimeSensitivity =
+    simulationInput && result
+      ? resolveLiveDisplayRuntimeSensitivity(
+          simulationInput,
+        )
       : undefined;
 
   const battery = result?.battery;
@@ -2068,6 +2080,77 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
+                    {displayRuntimeSensitivity &&
+                    displayRuntimeSensitivity.status !==
+                      'unresolved' ? (
+                      <div className="il-display-runtime-impact">
+                        <span className="il-result-label">
+                          Measured runtime impact ·{' '}
+                          {DISPLAY_RUNTIME_SENSITIVITY_VERSION}
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {displayRuntimeSensitivity.scenarios.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={`${scenario.workload}-${scenario.scenario}`}
+                              >
+                                <strong>
+                                  {scenario.workload.replaceAll(
+                                    '_',
+                                    ' ',
+                                  )}
+                                </strong>
+
+                                <span>
+                                  {scenario.label}
+                                </span>
+
+                                <span>
+                                  Δ runtime{' '}
+                                  {scenario.deltaRuntimePercent >= 0
+                                    ? '+'
+                                    : ''}
+                                  {format(
+                                    scenario.deltaRuntimePercent,
+                                    1,
+                                  )}%
+                                </span>
+
+                                <span>
+                                  Δ drain{' '}
+                                  {scenario.deltaDrainPercent >= 0
+                                    ? '+'
+                                    : ''}
+                                  {format(
+                                    scenario.deltaDrainPercent,
+                                    1,
+                                  )}%
+                                </span>
+
+                                <small>
+                                  {scenario.referenceCount} refs ·{' '}
+                                  {format(
+                                    scenario.averageCoverage * 100,
+                                    0,
+                                  )}% coverage ·{' '}
+                                  {format(
+                                    scenario.averageSimilarity * 100,
+                                    0,
+                                  )}% similarity
+                                </small>
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                        <p className="il-help">
+                          {displayRuntimeSensitivity.note}
+                        </p>
+                      </div>
+                    ) : null}
+
                     {displayExperience.scenarios.length ? (
                       <div className="il-display-sensitivity">
                         <span className="il-result-label">
@@ -2127,7 +2210,9 @@ export default function InteractiveLeaksSimulator() {
                     ) : null}
 
                     <p className="il-help">
-                      {displayExperience.note}
+                      {displayExperience.note} Brightness is not yet
+                      propagated into battery life because the current runtime
+                      evidence does not consistently record test luminance.
                     </p>
                   </>
                 ) : (
