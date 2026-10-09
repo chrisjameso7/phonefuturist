@@ -172,6 +172,7 @@ const DOMAINS: CameraOutcomeDomain[] = [
   'shutter_lag',
   'sharpness_timing',
   'video_stabilization',
+  'photo_texture',
   'stabilization_crop',
   'video_thermal_limit',
   'resolved_detail',
