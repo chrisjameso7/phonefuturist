@@ -25,6 +25,14 @@ type RawDevice = {
   sourceIds?: string[];
   measurements?: Record<string, number>;
   charging?: Record<string, number>;
+  display?: {
+    diagonalInches?: number;
+    resolutionWidthPx?: number;
+    resolutionHeightPx?: number;
+    refreshRateHz?: number;
+    maximumGamingRefreshRateHz?: number;
+    panelTechnology?: string;
+  };
   notes?: string[];
 };
 
@@ -82,6 +90,27 @@ function normalizeRawFile(raw: RawFile): DeviceCorpus {
       ...(row.notes ? { notes: row.notes } : {}),
     },
     releaseDate: row.releaseDate,
+    ...(row.display
+      ? {
+          display: {
+            ...(row.display.diagonalInches !== undefined
+              ? { diagonalInches: row.display.diagonalInches }
+              : {}),
+            ...(row.display.resolutionWidthPx !== undefined
+              ? { resolutionWidthPx: row.display.resolutionWidthPx }
+              : {}),
+            ...(row.display.resolutionHeightPx !== undefined
+              ? { resolutionHeightPx: row.display.resolutionHeightPx }
+              : {}),
+            ...(row.display.refreshRateHz !== undefined
+              ? { refreshRateHz: row.display.refreshRateHz }
+              : {}),
+            ...(row.display.panelTechnology
+              ? { panelTechnology: row.display.panelTechnology }
+              : {}),
+          },
+        }
+      : {}),
     ...(row.charging
       ? {
           charging: {
