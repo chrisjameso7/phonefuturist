@@ -1550,7 +1550,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Throttle ceiling"
+                label="Lumped thermal ceiling"
                 suffix="°C"
                 value={form.throttleTemperatureC}
                 placeholder="42"
@@ -2611,7 +2611,7 @@ export default function InteractiveLeaksSimulator() {
                               )} °C`
                             : 'Unknown'}
                         </strong>
-                        <span>Peak temperature</span>
+                        <span>Peak model-node temperature</span>
                       </div>
 
                       <div>
@@ -2623,7 +2623,7 @@ export default function InteractiveLeaksSimulator() {
                               )} °C`
                             : 'Unknown'}
                         </strong>
-                        <span>End temperature</span>
+                        <span>End model-node temperature</span>
                       </div>
 
                       <div>
