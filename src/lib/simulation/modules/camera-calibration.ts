@@ -23,6 +23,8 @@ export interface CameraOutcomeReference {
   cameraCaptureMode?: string;
   protocolKey: string;
   score: number;
+  similarityScore: number;
+  coverageScore: number;
   metric: string;
   value: number;
   unit: string;
@@ -145,6 +147,8 @@ export function calibrateCameraOutcome(
             .toLowerCase();
         })(),
         score: match.score,
+        similarityScore: match.similarityScore,
+        coverageScore: match.coverageScore,
         metric: measurement.metric,
         value: measurement.value,
         unit: measurement.unit,
