@@ -4888,3 +4888,55 @@
   padding-top: .85rem;
   border-top: 1px solid #ffffff12;
 }
+
+
+/* Packaging allocation */
+
+.il-packaging-breakdown {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
+
+.il-packaging-bars {
+  display: grid;
+  gap: .65rem;
+}
+
+.il-packaging-bar {
+  display: grid;
+  gap: .35rem;
+}
+
+.il-packaging-bar > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  font-size: .7rem;
+}
+
+.il-packaging-bar strong {
+  color: #dce2e8;
+  text-transform: capitalize;
+}
+
+.il-packaging-bar span {
+  color: #9099a5;
+}
+
+.il-packaging-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #151a20;
+}
+
+.il-packaging-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #eef2f6;
+}
