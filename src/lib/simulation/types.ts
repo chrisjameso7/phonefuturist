@@ -48,6 +48,7 @@ export interface DisplayInput {
   diagonalInches?: number;
   resolutionWidthPx?: number;
   resolutionHeightPx?: number;
+  refreshRateHz?: number;
 
   /**
    * Physical display width:height ratio in the device's
