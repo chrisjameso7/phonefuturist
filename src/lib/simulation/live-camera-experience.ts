@@ -27,6 +27,8 @@ export interface LiveCameraOutcome {
   min?: number;
   max?: number;
   confidence?: number;
+  averageSimilarity?: number;
+  averageCoverage?: number;
   protocolKey?: string;
   referenceCount: number;
   neighborIds: string[];
@@ -222,6 +224,10 @@ export function simulateCameraExperience(
       min: calibrated.expected.min,
       max: calibrated.expected.max,
       confidence: calibrated.expected.confidence,
+      averageSimilarity:
+        calibrated.expected.averageSimilarity,
+      averageCoverage:
+        calibrated.expected.averageCoverage,
       protocolKey: calibrated.expected.protocolKey,
       referenceCount: calibrated.references.length,
       neighborIds: [
