@@ -12,7 +12,7 @@
     "build": "astro build",
     "test": "vitest run",
     "verify": "npm run check && npm test && npm run check:calibration && npm run build",
-    "check:calibration": "node data/calibration/battery/validate.mjs && tsx scripts/check-charging-calibration.ts && tsx scripts/check-camera-calibration.ts",
+    "check:calibration": "node data/calibration/battery/validate.mjs && tsx scripts/check-charging-calibration.ts && tsx scripts/check-camera-calibration.ts && tsx scripts/check-display-calibration.ts",
     "preview": "astro preview",
     "deploy": "npm run build && wrangler deploy"
   },
