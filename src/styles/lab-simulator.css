@@ -4940,3 +4940,18 @@
   border-radius: inherit;
   background: #eef2f6;
 }
+
+
+/* Packaging sensitivity */
+
+.il-packaging-sensitivity {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
+
+.il-packaging-sensitivity .il-sensitivity-card {
+  max-width: 520px;
+}
