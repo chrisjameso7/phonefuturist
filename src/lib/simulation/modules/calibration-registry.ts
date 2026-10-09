@@ -6,6 +6,7 @@ import { mergeDeviceCorpora } from './corpus-merge';
 import { buildChargingModeCorpus } from './charging-mode-corpus';
 import { buildCameraReferenceCorpus } from './camera-reference-corpus';
 import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
+import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
 
 export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.1.0';
 
@@ -22,6 +23,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildChargingModeCorpus(),
       buildCameraReferenceCorpus(),
       buildCameraOutcomeCorpus(),
+      buildPerformanceReferenceCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
