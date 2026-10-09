@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import ArticleCards from '../../components/ArticleCards.astro';
+import MobileTopics from '../../components/MobileTopics.astro';
 import {publishedArticles} from '../../lib/publication';
 import {sections} from '../../lib/editorial';
 const section=Astro.url.searchParams.get('section');
@@ -13,6 +14,7 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
 ---
 <Page title={validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}>
   <section class="publication-index newsroom-index">
+    <MobileTopics/>
     <header class="newsroom-head">
       <p class="eyebrow">PhoneFuturist Newsroom</p>
       <h1>{validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}</h1>

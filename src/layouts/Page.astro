@@ -4,6 +4,7 @@ import '../styles/observatory.css';
 import '../styles/navigation-glass.css';
 import '../styles/optical-pointer.css';
 import '../styles/brand-theme.css';
+import '../styles/mobile-editorial.css';
 import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
@@ -68,20 +69,33 @@ const active = activeNavigation(Astro.url);
           <div class="header-scroll-sentinel" aria-hidden="true"></div>
 
           <div class="mobile-appbar" aria-label="PhoneFuturist mobile header">
+            <details class="mobile-app-menu">
+              <summary aria-label="Browse PhoneFuturist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary>
+              <div class="mobile-app-menu-panel">
+                <p>Explore PhoneFuturist</p>
+                <nav aria-label="Browse all pages">
+                  <a href="/">Home</a><a href="/articles">Newsroom</a>
+                  <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
+                  <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
+                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
+                  {showStudio && <a href="/studio">The Studio</a>}
+                  {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
+                </nav>
+                {signedIn && <form action="/auth/signout" method="post"><button type="submit">Sign out</button></form>}
+              </div>
+            </details>
             <a class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
-              <img src="/assets/phonefuturist-mark.svg" alt="" width="46" height="22" />
-              <span>Phone<span>Futurist</span></span>
+              <span class="mobile-app-logo"><img src="/assets/phonefuturist-official-logo.png" alt="" width="1024" height="1024" /></span>
+              <span>PhoneFuturist</span>
             </a>
-            <a class="mobile-app-action" href={signedIn ? '/account' : '/login'} aria-label={signedIn ? 'Open account' : 'Sign in'}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
-              <span aria-hidden="true"></span>
-            </a>
+            <a class="mobile-app-icon" href={signedIn?'/account':'/login'} aria-label={signedIn?'My account':'Sign in'}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></a>
+
           </div>
 
           <header class="site-header">
             <div class="header-brand-row">
               <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
-                <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
+                <img class="brand-mark" src="/assets/phonefuturist-official-logo.png" alt="" width="58" height="26" />
                 <span class="brand-word">PhoneFuturist</span>
               </a>
 
@@ -265,7 +279,7 @@ const active = activeNavigation(Astro.url);
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-4v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
             <span>Home</span>
           </a>
-          <a href="/articles" aria-current={['newsroom','news','leaks','analysis'].includes(active ?? '') ? 'page' : undefined}>
+          <a href="/articles" aria-current={['newsroom','news','leaks','analysis','reports'].includes(active ?? '') ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
@@ -281,7 +295,7 @@ const active = activeNavigation(Astro.url);
               <span>Studio</span>
             </a>
           )}
-          <a href={signedIn ? '/account' : '/login'} aria-current={active === 'account' ? 'page' : undefined}>
+          <a href={signedIn ? '/account' : '/login'} aria-current={Astro.url.pathname.startsWith('/account') || ['/login','/join'].includes(Astro.url.pathname) ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></svg>
             <span>{signedIn ? 'Account' : 'Sign in'}</span>
           </a>
@@ -304,7 +318,7 @@ const active = activeNavigation(Astro.url);
         <footer>
 
           <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
-            <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
+            <img class="brand-mark" src="/assets/phonefuturist-official-logo.png" alt="" width="58" height="26" />
             <span class="brand-word">PhoneFuturist</span>
           </a>
 
@@ -328,4 +342,7 @@ const active = activeNavigation(Astro.url);
 
   enhanceNavigation();
   enhanceOpticalPointer();
+  const mobileMenu=document.querySelector<HTMLDetailsElement>('.mobile-app-menu');
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileMenu?.open){mobileMenu.open=false;mobileMenu.querySelector('summary')?.focus();}});
+  document.addEventListener('click',event=>{if(mobileMenu?.open&&event.target instanceof Node&&!mobileMenu.contains(event.target))mobileMenu.open=false;});
 </script>

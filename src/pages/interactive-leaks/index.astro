@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { SIMULATION_ENGINE_VERSION } from '../../lib/simulation/engine';
 import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
 ---
 
@@ -32,7 +33,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
           <span>No invented specifications</span>
         </div>
 
-        <p class="interactive-community-link">
+        <p class="interactive-community-link"><a class="workspace-jump" href="#simulator">Open workspace ↓</a>
           <a href="/interactive-leaks/explore">Explore community builds →</a>
         </p>
       </div>
@@ -49,7 +50,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
           <div class="model-mark">
             <strong>PF</strong>
-            <span>SIM 0.4</span>
+            <span>SIM {SIMULATION_ENGINE_VERSION}</span>
           </div>
         </div>
       </div>
@@ -74,7 +75,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
       </div>
     </section>
 
-    <section class="interactive-workspace">
+    <section class="interactive-workspace" id="simulator">
       <div class="interactive-workspace-header">
         <div>
           <p class="interactive-section-label">Simulator</p>
@@ -83,7 +84,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
         <div class="interactive-engine-badge">
           <span class="interactive-engine-dot"></span>
-          Beta engine · v0.4.0
+          Beta engine · v{SIMULATION_ENGINE_VERSION}
         </div>
       </div>
 
@@ -1306,4 +1307,46 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     grid-template-columns:1fr;
   }
 }
+</style>
+<style is:global>
+ /* Shared editorial branding, quieter engineering workspace. */
+ body .interactive-page{color:#f3f0e9;padding-top:32px}
+ body .interactive-hero{min-height:0;gap:28px;padding:0 0 28px;grid-template-columns:minmax(0,1fr) 220px}
+ body .interactive-hero h1{font-size:clamp(36px,5vw,64px);line-height:1.05;margin:12px 0 18px}
+ body .interactive-hero h1 span{color:#89dce8}
+ body .interactive-model-wrap{min-height:200px;max-height:240px;overflow:hidden}
+ body .interactive-model-wrap .model-phone{transform:scale(.65) rotate(-12deg)}
+ body .interactive-description,body .interactive-context p,body .interactive-method-grid p{color:#c1c8ce}
+ body .interactive-principles span{color:#c1c8ce;border-color:#606a72}
+ body .interactive-community-link{display:flex;flex-wrap:wrap;gap:12px 24px}
+ body .interactive-community-link a{color:#9de3eb}
+ body .workspace-jump{font-weight:700}
+ body .interactive-context{padding:20px 0;margin-bottom:28px;gap:20px}
+ body .interactive-context h2{font-size:24px}
+ body .interactive-workspace{scroll-margin-top:100px}
+ body .interactive-simulator-shell{background:#1c2126;border-color:#41494f}
+ body .il-section{background:#20262b;border:1px solid #3f484f;border-radius:14px;margin-bottom:18px;padding:22px}
+ body .il-section-heading p,body .il-field>span,body .il-engine{color:#c1c8ce}
+ body .il-field input,body .il-field select{background:#14191e;color:#f3f0e9;border-color:#55616b;min-height:46px}
+ body .il-field input:focus-visible,body .il-field select:focus-visible{outline:2px solid #81deeb;outline-offset:2px}
+ body .il-advanced{background:#1a2025;border-color:#424b53}
+ body .il-result-empty{background:#1a2025;color:#c1c8ce}
+ @media(max-width:760px){
+  body .interactive-page{width:calc(100% - 32px);padding:24px 0 32px}
+  body .interactive-hero{display:block}
+  body .interactive-model-wrap{display:none}
+  body .interactive-hero h1{font-size:40px}
+  body .interactive-intro{font-size:18px}
+  body .interactive-description{font-size:14px;line-height:1.6}
+  body .interactive-context{display:block;padding:16px 0;margin:0 0 20px}
+  body .interactive-context h2{font-size:20px}
+  body .interactive-context p{font-size:13px;line-height:1.6}
+  body .interactive-workspace-header{align-items:flex-start;gap:12px;flex-wrap:wrap}
+  body .interactive-workspace-header h2{font-size:26px}
+  body .il-section{padding:16px}
+  body .il-toolbar{flex-wrap:wrap;gap:12px}
+  body .il-grid{gap:12px}
+  body .il-field{min-width:0}
+  body .il-field input,body .il-field select{width:100%;min-width:0;font-size:16px}
+ }
 </style>
