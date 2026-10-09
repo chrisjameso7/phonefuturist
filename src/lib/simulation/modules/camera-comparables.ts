@@ -59,6 +59,8 @@ export function findComparableCameras(
       coveredWeight += 3;
       reasons.push('same camera role');
 
+      let opticalEvidenceWeight = 0;
+
       if (target.approximateSensorAreaMm2) {
         possibleWeight += 4;
       }
@@ -74,6 +76,7 @@ export function findComparableCameras(
         );
         weighted += s * 4;
         coveredWeight += 4;
+        opticalEvidenceWeight += 4;
         if (s > 0.75) reasons.push('similar sensor area');
       }
 
@@ -92,6 +95,7 @@ export function findComparableCameras(
         );
         weighted += s * 3;
         coveredWeight += 3;
+        opticalEvidenceWeight += 3;
         if (s > 0.8) reasons.push('similar aperture');
       }
 
@@ -110,6 +114,7 @@ export function findComparableCameras(
         );
         weighted += s * 2;
         coveredWeight += 2;
+        opticalEvidenceWeight += 2;
         if (s > 0.8) reasons.push('similar focal length');
       }
 
@@ -121,6 +126,7 @@ export function findComparableCameras(
         const s = closeness(camera.resolutionMp, query.resolutionMp, 0.75);
         weighted += s * 1;
         coveredWeight += 1;
+        opticalEvidenceWeight += 1;
         if (s > 0.8) reasons.push('similar sensor resolution');
       }
 
@@ -135,7 +141,13 @@ export function findComparableCameras(
         if (sameManufacturer) reasons.push('same manufacturer');
       }
 
-      if (!coveredWeight || !possibleWeight) continue;
+      if (
+        !coveredWeight ||
+        !possibleWeight ||
+        opticalEvidenceWeight <= 0
+      ) {
+        continue;
+      }
 
       const similarityScore = weighted / coveredWeight;
       const coverageScore = coveredWeight / possibleWeight;
