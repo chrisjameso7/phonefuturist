@@ -1,5 +1,8 @@
 import type { DeviceCorpus } from './device-corpus';
-import { calibrateCameraOutcome } from './camera-calibration';
+import {
+  calibrateCameraOutcome,
+  type CameraOutcomeDomain,
+} from './camera-calibration';
 
 export const CAMERA_BACKTEST_VERSION =
   'camera-backtest-0.1.0';
@@ -14,6 +17,8 @@ export interface CameraBacktestRow {
 
 export interface CameraBacktestSummary {
   version: string;
+  domain: CameraOutcomeDomain;
+  metric: string;
   evaluatedDevices: number;
   skippedDevices: number;
   maeScore?: number;
@@ -32,14 +37,21 @@ function percentile(values: number[], fraction: number) {
   return sorted[index];
 }
 
-export function backtestCameraSharpnessTiming(
+export function backtestCameraOutcome(
   corpus: DeviceCorpus,
+  options: {
+    domain: CameraOutcomeDomain;
+    metric: string;
+    cameraRole?: string;
+  },
 ): CameraBacktestSummary {
+  const role = options.cameraRole ?? 'wide';
   const candidates = corpus.measurements.filter(
     (measurement) =>
       measurement.workload === 'camera' &&
-      measurement.metric === 'sharpness_timing_score' &&
-      measurement.cameraRole?.toLowerCase() === 'wide' &&
+      measurement.metric === options.metric &&
+      measurement.cameraRole?.toLowerCase() ===
+        role.toLowerCase() &&
       Number.isFinite(measurement.value),
   );
 
@@ -52,7 +64,8 @@ export function backtestCameraSharpnessTiming(
         row.variant.id === measurement.deviceVariantId,
     );
     const camera = device?.cameras?.find(
-      (row) => row.role.toLowerCase() === 'wide',
+      (row) =>
+        row.role.toLowerCase() === role.toLowerCase(),
     );
 
     if (!device || !camera) {
@@ -76,7 +89,7 @@ export function backtestCameraSharpnessTiming(
     const result = calibrateCameraOutcome(
       holdout,
       {
-        type: 'wide',
+        type: role as 'wide' | 'ultrawide' | 'telephoto' | 'periscope' | 'front' | 'other',
         sensorFormatDenominator:
           camera.sensorFormatDenominator,
         resolutionMp: camera.resolutionMp,
@@ -86,7 +99,7 @@ export function backtestCameraSharpnessTiming(
         manufacturer:
           device.variant.identity.manufacturer,
       },
-      'sharpness_timing',
+      options.domain,
     );
 
     if (
@@ -128,6 +141,8 @@ export function backtestCameraSharpnessTiming(
 
   return {
     version: CAMERA_BACKTEST_VERSION,
+    domain: options.domain,
+    metric: options.metric,
     evaluatedDevices: rows.length,
     skippedDevices,
     maeScore,
@@ -135,4 +150,25 @@ export function backtestCameraSharpnessTiming(
     health,
     rows,
   };
+}
+
+
+export function backtestCameraSharpnessTiming(
+  corpus: DeviceCorpus,
+): CameraBacktestSummary {
+  return backtestCameraOutcome(corpus, {
+    domain: 'sharpness_timing',
+    metric: 'sharpness_timing_score',
+    cameraRole: 'wide',
+  });
+}
+
+export function backtestCameraVideoStabilization(
+  corpus: DeviceCorpus,
+): CameraBacktestSummary {
+  return backtestCameraOutcome(corpus, {
+    domain: 'video_stabilization',
+    metric: 'video_stabilization_score',
+    cameraRole: 'wide',
+  });
 }
