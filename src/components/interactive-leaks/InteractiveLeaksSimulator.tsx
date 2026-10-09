@@ -2928,6 +2928,65 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 ) : null}
 
+                {packaging?.componentGrowthSensitivity?.length ? (
+                  <div className="il-packaging-growth">
+                    <span className="il-result-label">
+                      Subsystem growth tradeoffs
+                    </span>
+
+                    <div className="il-sensitivity-grid">
+                      {packaging.componentGrowthSensitivity.map(
+                        (scenario) => (
+                          <div
+                            className="il-sensitivity-card"
+                            key={scenario.component}
+                          >
+                            <strong>
+                              +{scenario.growthPercent}%{' '}
+                              {scenario.component}
+                            </strong>
+
+                            <span>
+                              Added volume{' '}
+                              {format(
+                                scenario.addedVolumeCm3,
+                                2,
+                              )} cm³
+                            </span>
+
+                            <span>
+                              Known allocation{' '}
+                              {format(
+                                scenario.usedInternalVolumePercent,
+                                1,
+                              )}%
+                            </span>
+
+                            <span>
+                              Remaining{' '}
+                              {format(
+                                scenario.remainingVolumeCm3,
+                                2,
+                              )} cm³
+                            </span>
+
+                            <small>
+                              {scenario.fitsAvailableVolume
+                                ? 'Aggregate volume budget passes'
+                                : 'Aggregate volume budget fails'}
+                            </small>
+                          </div>
+                        ),
+                      )}
+                    </div>
+
+                    <p className="il-help">
+                      Each probe grows one known subsystem by 10% while all
+                      other known component volumes stay fixed.
+                    </p>
+                  </div>
+                ) : null}
+
                 {packaging?.componentVolumePercent ? (
                   <div className="il-packaging-breakdown">
                     <span className="il-result-label">
