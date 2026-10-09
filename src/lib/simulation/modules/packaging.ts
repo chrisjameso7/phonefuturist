@@ -50,6 +50,36 @@ export interface CalculatedPackaging {
 
   batteryVolumePercent?: number;
 
+  componentVolumePercent?: {
+    battery?: number;
+    camera?: number;
+    thermal?: number;
+    board?: number;
+    speakers?: number;
+    other?: number;
+  };
+
+  largestKnownComponent?: {
+    component:
+      | 'battery'
+      | 'camera'
+      | 'thermal'
+      | 'board'
+      | 'speakers'
+      | 'other';
+    volumeMm3: number;
+    percentOfAvailableInternalVolume?: number;
+  };
+
+  minimumAggregateThicknessMm?: number;
+  aggregateThicknessHeadroomMm?: number;
+
+  packagingPressure?:
+    | 'relaxed'
+    | 'constrained'
+    | 'tight'
+    | 'exceeded';
+
   /**
    * Indicates only whether the aggregate known component
    * volume is within the calculated internal volume budget.
@@ -103,6 +133,19 @@ function calculateKnownComponentVolume(
   }
 
   return { total, warnings };
+}
+
+
+function componentKey(
+  key: keyof NonNullable<PackagingInput['componentVolumes']>,
+) {
+  return key.replace(/Mm3$/, '') as
+    | 'battery'
+    | 'camera'
+    | 'thermal'
+    | 'board'
+    | 'speakers'
+    | 'other';
 }
 
 export function calculatePackaging(
@@ -198,6 +241,51 @@ export function calculatePackaging(
       componentCalculation.total / 1000;
 
     if (
+      result.availableInternalVolumeMm3 !== undefined &&
+      result.availableInternalVolumeMm3 > 0
+    ) {
+      const shares: NonNullable<
+        CalculatedPackaging['componentVolumePercent']
+      > = {};
+
+      let largest:
+        | NonNullable<CalculatedPackaging['largestKnownComponent']>
+        | undefined;
+
+      for (const [key, volume] of Object.entries(
+        input.componentVolumes,
+      )) {
+        if (
+          volume === undefined ||
+          !isNonNegativeFinite(volume)
+        ) {
+          continue;
+        }
+
+        const component = componentKey(
+          key as keyof NonNullable<
+            PackagingInput['componentVolumes']
+          >,
+        );
+        const percent =
+          (volume / result.availableInternalVolumeMm3) * 100;
+
+        shares[component] = percent;
+
+        if (!largest || volume > largest.volumeMm3) {
+          largest = {
+            component,
+            volumeMm3: volume,
+            percentOfAvailableInternalVolume: percent,
+          };
+        }
+      }
+
+      result.componentVolumePercent = shares;
+      result.largestKnownComponent = largest;
+    }
+
+    if (
       input.componentVolumes.batteryMm3 !== undefined &&
       isNonNegativeFinite(
         input.componentVolumes.batteryMm3,
@@ -238,6 +326,63 @@ export function calculatePackaging(
     result.fitsAvailableVolume =
       result.knownComponentVolumeMm3 <=
       result.availableInternalVolumeMm3;
+
+    if (
+      input.widthMm !== undefined &&
+      input.heightMm !== undefined &&
+      isPositiveFinite(input.widthMm) &&
+      isPositiveFinite(input.heightMm)
+    ) {
+      const allocatableFraction =
+        1 - reservedVolumePercent / 100;
+
+      if (allocatableFraction > 0) {
+        result.minimumAggregateThicknessMm =
+          result.knownComponentVolumeMm3 /
+          (
+            input.widthMm *
+            input.heightMm *
+            allocatableFraction
+          );
+
+        if (
+          input.thicknessMm !== undefined &&
+          isPositiveFinite(input.thicknessMm)
+        ) {
+          result.aggregateThicknessHeadroomMm =
+            input.thicknessMm -
+            result.minimumAggregateThicknessMm;
+        }
+      }
+    }
+
+    if (!result.fitsAvailableVolume) {
+      result.packagingPressure = 'exceeded';
+    } else if (
+      result.usedInternalVolumePercent !== undefined &&
+      result.usedInternalVolumePercent >= 90
+    ) {
+      result.packagingPressure = 'tight';
+    } else if (
+      result.usedInternalVolumePercent !== undefined &&
+      result.usedInternalVolumePercent >= 75
+    ) {
+      result.packagingPressure = 'constrained';
+    } else if (
+      result.usedInternalVolumePercent !== undefined
+    ) {
+      result.packagingPressure = 'relaxed';
+    }
+
+    if (
+      result.packagingPressure === 'tight'
+    ) {
+      warnings.push({
+        code: 'PACKAGING_HEADROOM_TIGHT',
+        message:
+          'Known components consume at least 90% of the aggregate internal volume budget. This leaves little unallocated volume for routing, tolerances, shielding, adhesives, connectors, and shape inefficiency.',
+      });
+    }
 
     if (!result.fitsAvailableVolume) {
       warnings.push({
