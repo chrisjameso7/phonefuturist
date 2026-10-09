@@ -657,6 +657,7 @@ export default function InteractiveLeaksSimulator() {
       resolutionHeightPx: numeric(
         form.resolutionHeightPx,
       ),
+      refreshRateHz: numeric(form.refreshRateHz),
       aspectWidth: numeric(form.aspectWidth),
       aspectHeight: numeric(form.aspectHeight),
 
