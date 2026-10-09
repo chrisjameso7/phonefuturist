@@ -22,6 +22,8 @@ type RawDevice = {
   region?: string;
   batteryMah?: number;
   batteryChemistry?: string;
+  socVendor?: string;
+  socName?: string;
   sourceIds?: string[];
   measurements?: Record<string, number>;
   charging?: Record<string, number>;
@@ -83,6 +85,18 @@ function normalizeRawFile(raw: RawFile): DeviceCorpus {
               ...(row.batteryMah ? { capacityMah: row.batteryMah } : {}),
               ...(row.batteryChemistry
                 ? { chemistry: row.batteryChemistry }
+                : {}),
+            },
+          }
+        : {}),
+      ...(row.socVendor || row.socName
+        ? {
+            soc: {
+              ...(row.socVendor
+                ? { vendor: row.socVendor }
+                : {}),
+              ...(row.socName
+                ? { name: row.socName }
                 : {}),
             },
           }
