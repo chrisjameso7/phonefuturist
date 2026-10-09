@@ -38,6 +38,7 @@ export interface CameraOutcomeCalibration {
     min: number;
     max: number;
     confidence: number;
+    protocolKey: string;
   };
   unresolvedReason?: string;
 }
@@ -182,6 +183,7 @@ export function calibrateCameraOutcome(
       min: Math.min(...values),
       max: Math.max(...values),
       confidence: Math.min(1, Math.max(0, confidence)),
+      protocolKey: compatible[0].protocolKey,
     },
   };
 }
