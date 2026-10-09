@@ -1,12 +1,6 @@
 {
   "version": "current-generation-2026-10-08-0.1.0",
   "cutoff": "2026-10-08",
-  "source": {
-    "id": "phonearena-battery-2026",
-    "publisher": "PhoneArena",
-    "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
-    "protocol": "PhoneArena battery benchmark table"
-  },
   "devices": [
     {
       "id": "apple-iphone-18-pro-max-5567",
@@ -19,7 +13,18 @@
         "browsingHours": 29.633,
         "videoHours": 12.067,
         "gamingHours": 14.567
-      }
+      },
+      "display": {
+        "diagonalInches": 6.9,
+        "resolutionWidthPx": 1320,
+        "resolutionHeightPx": 2868,
+        "refreshRateHz": 120,
+        "panelTechnology": "OLED"
+      },
+      "sourceIds": [
+        "phonearena-battery-2026",
+        "official-apple-iphone18-pro-max-display"
+      ]
     },
     {
       "id": "google-pixel-11-pro-xl-5115",
@@ -38,7 +43,18 @@
         "advertisedWiredWatts": 45,
         "advertisedWirelessWatts": 25,
         "wiredThirtyMinutePercent": 70
-      }
+      },
+      "display": {
+        "diagonalInches": 6.8,
+        "resolutionWidthPx": 1344,
+        "resolutionHeightPx": 2992,
+        "refreshRateHz": 120,
+        "panelTechnology": "LTPO OLED"
+      },
+      "sourceIds": [
+        "phonearena-battery-2026",
+        "official-google-pixel11-pro-xl-display"
+      ]
     },
     {
       "id": "huawei-mate-80-pro-5750",
@@ -153,5 +169,25 @@
     "This batch intentionally emphasizes devices released in 2026 before the October 8 cutoff.",
     "More 2026 flagships and midrange models should be appended as protocol-compatible evidence is ingested.",
     "Future October launches after October 8 must remain in the unreleased-prior dataset until their actual release date."
+  ],
+  "sources": [
+    {
+      "id": "phonearena-battery-2026",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+      "protocol": "PhoneArena battery benchmark table"
+    },
+    {
+      "id": "official-apple-iphone18-pro-max-display",
+      "publisher": "Apple",
+      "url": "https://support.apple.com/en-euro/148591",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-google-pixel11-pro-xl-display",
+      "publisher": "Google",
+      "url": "https://store.google.com/us/product/pixel_11_pro_specs?hl=en-US",
+      "protocol": "official product specification"
+    }
   ]
 }
