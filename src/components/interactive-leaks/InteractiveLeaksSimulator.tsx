@@ -2688,7 +2688,41 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>Evidence confidence</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.averageSimilarity !== undefined
+                            ? `${format(
+                                thermalResult.averageSimilarity * 100,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Comparable similarity</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.averageCoverage !== undefined
+                            ? `${format(
+                                thermalResult.averageCoverage * 100,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Spec coverage</span>
+                      </div>
                     </div>
+
+                    {thermalResult.protocolKey ? (
+                      <p className="il-help">
+                        Measured sustained-performance protocol:{' '}
+                        {thermalResult.protocolKey.replace(
+                          '::',
+                          ' · ',
+                        )}
+                      </p>
+                    ) : null}
 
                     {thermalResult.points &&
                     thermalResult.points.length > 1 ? (
