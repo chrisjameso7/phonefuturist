@@ -1,3 +1,4 @@
+import { buildCalibrationRegistry } from './calibration-registry';
 import type { DeviceCorpus } from './device-corpus';
 import type { SimulationInput } from '../types';
 import {
@@ -243,4 +244,14 @@ export function resolveDisplayRuntimeSensitivity(
     note:
       'These deltas come from shifts in protocol-compatible measured runtime comparables after changing display resolution or refresh rate. They are evidence-derived scenario estimates, not direct electrical panel-power measurements.',
   };
+}
+
+
+export function resolveLiveDisplayRuntimeSensitivity(
+  input: SimulationInput,
+): DisplayRuntimeSensitivityResult {
+  return resolveDisplayRuntimeSensitivity(
+    buildCalibrationRegistry(),
+    input,
+  );
 }
