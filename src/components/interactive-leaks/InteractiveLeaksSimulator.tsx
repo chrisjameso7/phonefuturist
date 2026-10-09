@@ -30,6 +30,11 @@ import {
   simulateLiveCameraExperience,
 } from '../../lib/simulation/live-camera-experience';
 
+import {
+  LIVE_DISPLAY_EXPERIENCE_VERSION,
+  simulateLiveDisplayExperience,
+} from '../../lib/simulation/live-display-experience';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -67,6 +72,9 @@ type FormState = {
   resolutionHeightPx: string;
   aspectWidth: string;
   aspectHeight: string;
+  refreshRateHz: string;
+  brightnessNits: string;
+  panelTechnology: string;
 
   bezelTopMm: string;
   bezelRightMm: string;
@@ -133,6 +141,9 @@ const initialForm: FormState = {
   resolutionHeightPx: '',
   aspectWidth: '',
   aspectHeight: '',
+  refreshRateHz: '',
+  brightnessNits: '',
+  panelTechnology: '',
 
   bezelTopMm: '',
   bezelRightMm: '',
@@ -189,6 +200,9 @@ const flagshipExample: FormState = {
   resolutionHeightPx: '3200',
   aspectWidth: '9',
   aspectHeight: '20',
+  refreshRateHz: '120',
+  brightnessNits: '1000',
+  panelTechnology: 'LTPO OLED',
 
   bezelTopMm: '1.5',
   bezelRightMm: '1.5',
