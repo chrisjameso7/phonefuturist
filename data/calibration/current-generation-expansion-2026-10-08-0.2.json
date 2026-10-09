@@ -44,6 +44,30 @@
       "publisher": "GSMArena",
       "url": "https://www.gsmarena.com/honor_magic8_pro_oppo_find_x9_pro_vivo_x300_pro-review-2912.php",
       "protocol": "Cross-device camera comparison"
+    },
+    {
+      "id": "official-oneplus15-display",
+      "publisher": "OnePlus",
+      "url": "https://www.oneplus.com/global/15/specs",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-oppo-findx9pro-display",
+      "publisher": "OPPO",
+      "url": "https://www.oppo.com/in/smartphones/series-find-x/find-x9-pro/specs/",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-vivo-x300-ultra-display",
+      "publisher": "vivo",
+      "url": "https://www.vivo.com/en/products/param/x300-ultra",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-samsung-s26-ultra-display",
+      "publisher": "Samsung",
+      "url": "https://www.samsung.com/uk/business/smartphones/galaxy-s/galaxy-s26-ultra-cobalt-violet-1tb-sm-s948bzvheub/",
+      "protocol": "official product specification"
     }
   ],
   "devices": [
@@ -56,7 +80,8 @@
       "batteryMah": 6600,
       "batteryChemistry": "silicon-carbon",
       "sourceIds": [
-        "phonearena-vivo-x300-ultra"
+        "phonearena-vivo-x300-ultra",
+        "official-vivo-x300-ultra-display"
       ],
       "measurements": {
         "batteryEstimateHours": 8.467,
@@ -66,7 +91,14 @@
       },
       "notes": [
         "PhoneArena reports the 6600 mAh pack as global rather than region-split."
-      ]
+      ],
+      "display": {
+        "diagonalInches": 6.82,
+        "resolutionWidthPx": 1440,
+        "resolutionHeightPx": 3168,
+        "refreshRateHz": 144,
+        "panelTechnology": "AMOLED"
+      }
     },
     {
       "id": "honor-magic8-pro-eu-6270",
@@ -125,7 +157,8 @@
       "batteryMah": 7300,
       "batteryChemistry": "silicon-carbon",
       "sourceIds": [
-        "phonearena-oneplus15"
+        "phonearena-oneplus15",
+        "official-oneplus15-display"
       ],
       "measurements": {
         "batteryEstimateHours": 10.733,
@@ -136,6 +169,14 @@
       "charging": {
         "advertisedWiredWatts": 80,
         "advertisedWirelessWatts": 50
+      },
+      "display": {
+        "diagonalInches": 6.78,
+        "resolutionWidthPx": 1272,
+        "resolutionHeightPx": 2772,
+        "refreshRateHz": 120,
+        "maximumGamingRefreshRateHz": 165,
+        "panelTechnology": "LTPO"
       }
     },
     {
@@ -147,7 +188,8 @@
       "batteryMah": 7500,
       "batteryChemistry": "silicon-carbon",
       "sourceIds": [
-        "phonearena-oppo-findx9pro"
+        "phonearena-oppo-findx9pro",
+        "official-oppo-findx9pro-display"
       ],
       "measurements": {
         "batteryEstimateHours": 9.833,
@@ -160,6 +202,13 @@
         "advertisedWirelessWatts": 50,
         "wiredThirtyMinutePercent": 52,
         "wiredFullChargeMinutes": 80
+      },
+      "display": {
+        "diagonalInches": 6.78,
+        "resolutionWidthPx": 1272,
+        "resolutionHeightPx": 2772,
+        "refreshRateHz": 120,
+        "panelTechnology": "AMOLED"
       }
     },
     {
@@ -169,7 +218,8 @@
       "releaseDate": "2026",
       "batteryMah": 5000,
       "sourceIds": [
-        "phonearena-vivo-x300-ultra"
+        "phonearena-vivo-x300-ultra",
+        "official-samsung-s26-ultra-display"
       ],
       "measurements": {
         "batteryEstimateHours": 7.883,
@@ -179,7 +229,14 @@
       },
       "notes": [
         "Use as a current-gen control against much larger Si/C batteries."
-      ]
+      ],
+      "display": {
+        "diagonalInches": 6.9,
+        "resolutionWidthPx": 1440,
+        "resolutionHeightPx": 3120,
+        "refreshRateHz": 120,
+        "panelTechnology": "Dynamic AMOLED 2X"
+      }
     }
   ],
   "inclusionRules": [
