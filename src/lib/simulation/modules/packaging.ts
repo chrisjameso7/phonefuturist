@@ -80,6 +80,15 @@ export interface CalculatedPackaging {
     | 'tight'
     | 'exceeded';
 
+  thinnerByHalfMm?: {
+    targetThicknessMm: number;
+    availableInternalVolumeCm3: number;
+    lostAvailableVolumeCm3: number;
+    remainingVolumeCm3: number;
+    usedInternalVolumePercent: number;
+    fitsAvailableVolume: boolean;
+  };
+
   /**
    * Indicates only whether the aggregate known component
    * volume is within the calculated internal volume budget.
@@ -352,6 +361,48 @@ export function calculatePackaging(
           result.aggregateThicknessHeadroomMm =
             input.thicknessMm -
             result.minimumAggregateThicknessMm;
+
+          const targetThicknessMm =
+            input.thicknessMm - 0.5;
+
+          if (
+            targetThicknessMm > 0 &&
+            result.availableInternalVolumeMm3 !== undefined
+          ) {
+            const scenarioExternalVolumeMm3 =
+              input.widthMm *
+              input.heightMm *
+              targetThicknessMm;
+            const scenarioAvailableMm3 =
+              scenarioExternalVolumeMm3 *
+              allocatableFraction;
+            const remainingMm3 =
+              scenarioAvailableMm3 -
+              result.knownComponentVolumeMm3;
+
+            result.thinnerByHalfMm = {
+              targetThicknessMm,
+              availableInternalVolumeCm3:
+                scenarioAvailableMm3 / 1000,
+              lostAvailableVolumeCm3:
+                (
+                  result.availableInternalVolumeMm3 -
+                  scenarioAvailableMm3
+                ) / 1000,
+              remainingVolumeCm3:
+                remainingMm3 / 1000,
+              usedInternalVolumePercent:
+                scenarioAvailableMm3 > 0
+                  ? (
+                      result.knownComponentVolumeMm3 /
+                      scenarioAvailableMm3
+                    ) * 100
+                  : Number.POSITIVE_INFINITY,
+              fitsAvailableVolume:
+                result.knownComponentVolumeMm3 <=
+                scenarioAvailableMm3,
+            };
+          }
         }
       }
     }
