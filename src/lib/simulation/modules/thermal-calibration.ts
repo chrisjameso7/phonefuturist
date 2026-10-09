@@ -67,18 +67,49 @@ export function selectThermalCalibrationReferences(
     corpus.sources.map((source) => [source.id, source]),
   );
 
-  const comparables = findComparableDevices(corpus, {
-    batteryMah: query.batteryMah,
-    manufacturer: query.manufacturer,
-    socVendor: query.socVendor,
-    displayDiagonalInches: query.displayDiagonalInches,
-    refreshRateHz: query.refreshRateHz,
-    thicknessMm: query.thicknessMm,
-    weightG: query.weightG,
-    bodyVolumeMm3: query.bodyVolumeMm3,
-    coolingClass: query.coolingClass,
-    limit: Math.max(query.limit ?? 8, 8),
-  });
+  const eligibleVariantIds = new Set(
+    corpus.measurements
+      .filter(
+        (measurement) =>
+          (
+            measurement.workload === 'thermal' ||
+            measurement.workload === 'benchmark'
+          ) &&
+          metricMatches(
+            query.domain,
+            measurement.metric,
+          ) &&
+          Number.isFinite(measurement.value),
+      )
+      .map(
+        (measurement) =>
+          measurement.deviceVariantId,
+      ),
+  );
+
+  const evidenceCorpus: DeviceCorpus = {
+    ...corpus,
+    devices: corpus.devices.filter((device) =>
+      eligibleVariantIds.has(device.variant.id),
+    ),
+  };
+
+  const comparables = findComparableDevices(
+    evidenceCorpus,
+    {
+      batteryMah: query.batteryMah,
+      manufacturer: query.manufacturer,
+      socVendor: query.socVendor,
+      displayDiagonalInches:
+        query.displayDiagonalInches,
+      refreshRateHz: query.refreshRateHz,
+      thicknessMm: query.thicknessMm,
+      weightG: query.weightG,
+      bodyVolumeMm3: query.bodyVolumeMm3,
+      coolingClass: query.coolingClass,
+      limit: Math.max(query.limit ?? 8, 8),
+    },
+  );
 
   const references = comparables.flatMap((match) =>
     corpus.measurements
