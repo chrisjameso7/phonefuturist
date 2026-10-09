@@ -100,6 +100,32 @@ describe('packaging simulation module', () => {
       packaging.thinnerByHalfMm?.fitsAvailableVolume,
     ).toBe(true);
 
+    expect(packaging.componentGrowthSensitivity).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          component: 'battery',
+          growthPercent: 10,
+        }),
+        expect.objectContaining({
+          component: 'camera',
+          growthPercent: 10,
+        }),
+        expect.objectContaining({
+          component: 'thermal',
+          growthPercent: 10,
+        }),
+      ]),
+    );
+
+    const batteryGrowth =
+      packaging.componentGrowthSensitivity?.find(
+        (row) => row.component === 'battery',
+      );
+
+    expect(batteryGrowth?.addedVolumeCm3).toBeCloseTo(2.4, 6);
+    expect(batteryGrowth?.remainingVolumeCm3).toBeCloseTo(14.4, 6);
+    expect(batteryGrowth?.fitsAvailableVolume).toBe(true);
+
     expect(packaging.fitsAvailableVolume).toBe(true);
     expect(calculation.warnings).toEqual([]);
   });
