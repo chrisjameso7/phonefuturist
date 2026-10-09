@@ -27,6 +27,9 @@ export interface ThermalCalibrationQuery {
 export interface ThermalCalibrationReference {
   deviceVariantId: string;
   score: number;
+  similarityScore: number;
+  coverageScore: number;
+  protocolKey: string;
   metric: string;
   value: number;
   unit: string;
@@ -60,6 +63,10 @@ export function selectThermalCalibrationReferences(
   corpus: DeviceCorpus,
   query: ThermalCalibrationQuery,
 ): ThermalCalibrationResult {
+  const sourceById = new Map(
+    corpus.sources.map((source) => [source.id, source]),
+  );
+
   const comparables = findComparableDevices(corpus, {
     batteryMah: query.batteryMah,
     manufacturer: query.manufacturer,
@@ -82,14 +89,30 @@ export function selectThermalCalibrationReferences(
           metricMatches(query.domain, measurement.metric) &&
           Number.isFinite(measurement.value),
       )
-      .map((measurement) => ({
-        deviceVariantId: match.device.variant.id,
-        score: match.score,
-        metric: measurement.metric,
-        value: measurement.value,
-        unit: measurement.unit,
-        reasons: match.reasons,
-      })),
+      .map((measurement) => {
+        const source = sourceById.get(measurement.sourceId);
+        const protocolKey = [
+          source?.publisher ?? measurement.sourceId,
+          source?.protocolVersion ??
+            source?.protocol ??
+            'unspecified',
+        ]
+          .join('::')
+          .trim()
+          .toLowerCase();
+
+        return {
+          deviceVariantId: match.device.variant.id,
+          score: match.score,
+          similarityScore: match.similarityScore,
+          coverageScore: match.coverageScore,
+          protocolKey,
+          metric: measurement.metric,
+          value: measurement.value,
+          unit: measurement.unit,
+          reasons: match.reasons,
+        };
+      }),
   );
 
   if (!references.length) {
@@ -102,9 +125,53 @@ export function selectThermalCalibrationReferences(
     };
   }
 
+  const groups = new Map<
+    string,
+    ThermalCalibrationReference[]
+  >();
+
+  for (const reference of references) {
+    const key = [
+      reference.unit.trim().toLowerCase(),
+      reference.protocolKey,
+    ].join('::');
+
+    const group = groups.get(key) ?? [];
+    group.push(reference);
+    groups.set(key, group);
+  }
+
+  const compatible = [...groups.values()]
+    .sort((a, b) => {
+      const weightA = a.reduce(
+        (sum, reference) =>
+          sum + Math.max(reference.score, 0.05) ** 2,
+        0,
+      );
+      const weightB = b.reduce(
+        (sum, reference) =>
+          sum + Math.max(reference.score, 0.05) ** 2,
+        0,
+      );
+      return weightB - weightA;
+    })[0];
+
+  if (!compatible?.length) {
+    return {
+      version: THERMAL_CALIBRATION_VERSION,
+      status: 'unresolved',
+      references: [],
+      unresolvedReason:
+        'No protocol-compatible sustained thermal/performance evidence was found.',
+    };
+  }
+
   return {
     version: THERMAL_CALIBRATION_VERSION,
     status: 'resolved',
-    references: references.slice(0, query.limit ?? 5),
+    references: compatible.slice(
+      0,
+      query.limit ?? 5,
+    ),
   };
 }
