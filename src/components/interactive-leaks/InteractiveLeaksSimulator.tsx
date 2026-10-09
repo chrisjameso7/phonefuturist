@@ -329,6 +329,28 @@ function formatDurationSeconds(
     : `${hours} h`;
 }
 
+
+function cameraOutcomeLabel(domain: string) {
+  switch (domain) {
+    case 'sharpness_timing':
+      return 'Photo sharpness & timing';
+    case 'video_stabilization':
+      return 'Video stabilization';
+    case 'photo_texture':
+      return 'Photo texture / detail';
+    case 'stabilization_crop':
+      return 'Stabilization crop';
+    case 'video_thermal_limit':
+      return 'Video thermal limit';
+    case 'low_light_exposure':
+      return 'Low-light exposure';
+    case 'resolved_detail':
+      return 'Resolved detail';
+    default:
+      return domain.replaceAll('_', ' ');
+  }
+}
+
 function NumericField({
   label,
   value,
@@ -2690,8 +2712,9 @@ export default function InteractiveLeaksSimulator() {
                                   {outcome.unit ? ` ${outcome.unit}` : ''}
                                 </strong>
                                 <span>
-                                  {outcome.domain
-                                    .replaceAll('_', ' ')}
+                                  {cameraOutcomeLabel(
+                                    outcome.domain,
+                                  )}
                                 </span>
                                 <small>
                                   {outcome.referenceCount} refs ·{' '}
