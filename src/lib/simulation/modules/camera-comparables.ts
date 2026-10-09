@@ -1,10 +1,17 @@
 import type { DeviceCorpus } from './device-corpus';
 import { calculateCamera, type CameraInput } from './camera';
 
-export const CAMERA_COMPARABLE_MODEL_VERSION = 'camera-comparable-0.1.0';
+export const CAMERA_COMPARABLE_MODEL_VERSION = 'camera-comparable-0.2.0';
+
+export type CameraComparableProfile =
+  | 'generic'
+  | 'photo-detail'
+  | 'capture-timing'
+  | 'video-stabilization';
 
 export interface CameraComparableQuery extends CameraInput {
   manufacturer?: string;
+  profile?: CameraComparableProfile;
   limit?: number;
 }
 
@@ -16,6 +23,50 @@ export interface CameraComparableMatch {
   coverageScore: number;
   reasons: string[];
   calculated: ReturnType<typeof calculateCamera>['result'];
+}
+
+
+function weightsForProfile(
+  profile: CameraComparableProfile | undefined,
+) {
+  switch (profile ?? 'generic') {
+    case 'photo-detail':
+      return {
+        role: 3,
+        sensorArea: 5,
+        aperture: 2,
+        focalLength: 1,
+        resolution: 3,
+        manufacturer: 1,
+      };
+    case 'capture-timing':
+      return {
+        role: 3,
+        sensorArea: 2,
+        aperture: 1,
+        focalLength: 1,
+        resolution: 0.5,
+        manufacturer: 3,
+      };
+    case 'video-stabilization':
+      return {
+        role: 3,
+        sensorArea: 2,
+        aperture: 1,
+        focalLength: 3,
+        resolution: 0.5,
+        manufacturer: 3,
+      };
+    case 'generic':
+      return {
+        role: 3,
+        sensorArea: 4,
+        aperture: 3,
+        focalLength: 2,
+        resolution: 1,
+        manufacturer: 1,
+      };
+  }
 }
 
 function closeness(a: number, b: number, tolerance: number) {
@@ -32,6 +83,7 @@ export function findComparableCameras(
   query: CameraComparableQuery,
 ): CameraComparableMatch[] {
   const target = calculateCamera(query).result;
+  const weights = weightsForProfile(query.profile);
   const matches: CameraComparableMatch[] = [];
 
   for (const device of corpus.devices) {
@@ -46,7 +98,7 @@ export function findComparableCameras(
 
       let weighted = 0;
       let coveredWeight = 0;
-      let possibleWeight = 3;
+      let possibleWeight = weights.role;
       const reasons: string[] = [];
 
       const sameRole = norm(camera.role) === norm(query.type);
@@ -55,14 +107,14 @@ export function findComparableCameras(
         continue;
       }
 
-      weighted += 3;
-      coveredWeight += 3;
+      weighted += weights.role;
+      coveredWeight += weights.role;
       reasons.push('same camera role');
 
       let opticalEvidenceWeight = 0;
 
       if (target.approximateSensorAreaMm2) {
-        possibleWeight += 4;
+        possibleWeight += weights.sensorArea;
       }
 
       if (
@@ -74,14 +126,14 @@ export function findComparableCameras(
           target.approximateSensorAreaMm2,
           0.45,
         );
-        weighted += s * 4;
-        coveredWeight += 4;
-        opticalEvidenceWeight += 4;
+        weighted += s * weights.sensorArea;
+        coveredWeight += weights.sensorArea;
+        opticalEvidenceWeight += weights.sensorArea;
         if (s > 0.75) reasons.push('similar sensor area');
       }
 
       if (query.apertureFNumber) {
-        possibleWeight += 3;
+        possibleWeight += weights.aperture;
       }
 
       if (
@@ -93,14 +145,14 @@ export function findComparableCameras(
           query.apertureFNumber,
           0.35,
         );
-        weighted += s * 3;
-        coveredWeight += 3;
-        opticalEvidenceWeight += 3;
+        weighted += s * weights.aperture;
+        coveredWeight += weights.aperture;
+        opticalEvidenceWeight += weights.aperture;
         if (s > 0.8) reasons.push('similar aperture');
       }
 
       if (query.equivalentFocalLengthMm) {
-        possibleWeight += 2;
+        possibleWeight += weights.focalLength;
       }
 
       if (
@@ -112,32 +164,34 @@ export function findComparableCameras(
           query.equivalentFocalLengthMm,
           0.4,
         );
-        weighted += s * 2;
-        coveredWeight += 2;
-        opticalEvidenceWeight += 2;
+        weighted += s * weights.focalLength;
+        coveredWeight += weights.focalLength;
+        opticalEvidenceWeight += weights.focalLength;
         if (s > 0.8) reasons.push('similar focal length');
       }
 
       if (query.resolutionMp) {
-        possibleWeight += 1;
+        possibleWeight += weights.resolution;
       }
 
       if (query.resolutionMp && camera.resolutionMp) {
         const s = closeness(camera.resolutionMp, query.resolutionMp, 0.75);
-        weighted += s * 1;
-        coveredWeight += 1;
-        opticalEvidenceWeight += 1;
+        weighted += s * weights.resolution;
+        coveredWeight += weights.resolution;
+        opticalEvidenceWeight += weights.resolution;
         if (s > 0.8) reasons.push('similar sensor resolution');
       }
 
       if (query.manufacturer) {
-        possibleWeight += 1;
+        possibleWeight += weights.manufacturer;
 
         const sameManufacturer =
           norm(device.variant.identity.manufacturer) ===
           norm(query.manufacturer);
-        weighted += (sameManufacturer ? 1 : 0) * 1;
-        coveredWeight += 1;
+        weighted +=
+          (sameManufacturer ? 1 : 0) *
+          weights.manufacturer;
+        coveredWeight += weights.manufacturer;
         if (sameManufacturer) reasons.push('same manufacturer');
       }
 
