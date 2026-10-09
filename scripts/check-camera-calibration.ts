@@ -98,7 +98,7 @@ function printBacktest(
     console.log('  Worst misses:');
     for (const row of result.worstMisses) {
       console.log(
-        `    ${row.deviceVariantId} · actual ${row.actualScore.toFixed(1)} · predicted ${row.predictedScore.toFixed(1)} · error ${row.absoluteError.toFixed(1)} · ${row.referenceCount} refs`,
+        `    ${row.deviceVariantId} · actual ${row.actualScore.toFixed(1)} · predicted ${row.predictedScore.toFixed(1)} · error ${row.absoluteError.toFixed(1)} · ${row.referenceCount} refs · similarity ${row.averageSimilarity !== undefined ? (row.averageSimilarity * 100).toFixed(0) + '%' : 'n/a'} · coverage ${row.averageCoverage !== undefined ? (row.averageCoverage * 100).toFixed(0) + '%' : 'n/a'}`,
       );
     }
   }
