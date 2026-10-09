@@ -35,6 +35,9 @@ export interface CalibratedSocThermalResult {
     referenceCount: number;
     targetSustainedPerformancePercent: number;
     confidence: number;
+    averageSimilarity: number;
+    averageCoverage: number;
+    protocolKey: string;
     neighborIds: string[];
   };
   simulation?: {
@@ -81,6 +84,9 @@ function weightedTarget(
       value: Math.min(100, Math.max(1, value)),
       weight: Math.max(reference.score, 0.05) ** 2,
       score: reference.score,
+      similarityScore: reference.similarityScore,
+      coverageScore: reference.coverageScore,
+      protocolKey: reference.protocolKey,
       id: reference.deviceVariantId,
     }];
   });
@@ -94,6 +100,17 @@ function weightedTarget(
       Math.max(weight, Number.EPSILON),
     confidence:
       usable.reduce((sum, item) => sum + item.score, 0) / usable.length,
+    averageSimilarity:
+      usable.reduce(
+        (sum, item) => sum + item.similarityScore,
+        0,
+      ) / usable.length,
+    averageCoverage:
+      usable.reduce(
+        (sum, item) => sum + item.coverageScore,
+        0,
+      ) / usable.length,
+    protocolKey: usable[0].protocolKey,
     neighborIds: [...new Set(usable.map((item) => item.id))],
     count: usable.length,
   };
@@ -219,6 +236,15 @@ export function simulateCalibratedSocThermals(
       referenceCount: calibrated.count,
       targetSustainedPerformancePercent: q(calibrated.percent, 10),
       confidence: q(Math.min(1, Math.max(0, calibrated.confidence)), 100),
+      averageSimilarity: q(
+        Math.min(1, Math.max(0, calibrated.averageSimilarity)),
+        100,
+      ),
+      averageCoverage: q(
+        Math.min(1, Math.max(0, calibrated.averageCoverage)),
+        100,
+      ),
+      protocolKey: calibrated.protocolKey,
       neighborIds: calibrated.neighborIds,
     },
     simulation: {
