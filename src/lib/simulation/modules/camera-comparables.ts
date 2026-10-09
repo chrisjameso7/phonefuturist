@@ -47,9 +47,14 @@ export function findComparableCameras(
       const reasons: string[] = [];
 
       const sameRole = norm(camera.role) === norm(query.type);
-      weighted += (sameRole ? 1 : 0) * 3;
+
+      if (!sameRole) {
+        continue;
+      }
+
+      weighted += 3;
       total += 3;
-      if (sameRole) reasons.push('same camera role');
+      reasons.push('same camera role');
 
       if (
         target.approximateSensorAreaMm2 &&
