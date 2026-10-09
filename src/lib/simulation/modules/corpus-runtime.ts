@@ -67,26 +67,78 @@ export function resolveCorpusRuntimeBand(
     };
   }
 
-  const comparables = findComparableDevices(corpus, {
-    batteryMah: capacityMah,
-    displayDiagonalInches: input.displays.primary.diagonalInches,
-    resolutionWidthPx:
-      input.displays.primary.resolutionWidthPx,
-    resolutionHeightPx:
-      input.displays.primary.resolutionHeightPx,
-    refreshRateHz:
-      input.displays.primary.refreshRateHz,
-    thicknessMm: input.dimensions?.thicknessMm,
-    weightG: input.dimensions?.weightG,
-    limit: 20,
-  });
+  const sourceById = new Map(
+    corpus.sources.map((source) => [source.id, source]),
+  );
+
+  const eligibleVariantIds = new Set(
+    corpus.measurements
+      .filter((measurement) => {
+        if (
+          measurement.workload !== workload ||
+          measurement.unit.toLowerCase() !== 'hours' ||
+          !positive(measurement.value)
+        ) {
+          return false;
+        }
+
+        const source = sourceById.get(
+          measurement.sourceId,
+        );
+
+        if (
+          protocolSelector.protocol &&
+          source?.protocol !== protocolSelector.protocol
+        ) {
+          return false;
+        }
+
+        if (
+          protocolSelector.protocolVersion &&
+          source?.protocolVersion !==
+            protocolSelector.protocolVersion
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .map(
+        (measurement) =>
+          measurement.deviceVariantId,
+      ),
+  );
+
+  const evidenceCorpus: DeviceCorpus = {
+    ...corpus,
+    devices: corpus.devices.filter((device) =>
+      eligibleVariantIds.has(device.variant.id),
+    ),
+  };
+
+  const comparables = findComparableDevices(
+    evidenceCorpus,
+    {
+      batteryMah: capacityMah,
+      displayDiagonalInches:
+        input.displays.primary.diagonalInches,
+      resolutionWidthPx:
+        input.displays.primary.resolutionWidthPx,
+      resolutionHeightPx:
+        input.displays.primary.resolutionHeightPx,
+      refreshRateHz:
+        input.displays.primary.refreshRateHz,
+      thicknessMm: input.dimensions?.thicknessMm,
+      weightG: input.dimensions?.weightG,
+      limit: 20,
+    },
+  );
 
   const rawValues = comparables.flatMap((match) => {
     const measurements = corpus.measurements.filter(
       (measurement) =>
         measurement.deviceVariantId === match.device.variant.id &&
         measurement.workload === workload &&
-        measurement.metric.toLowerCase().includes('runtime') &&
         measurement.unit.toLowerCase() === 'hours' &&
         positive(measurement.value),
     );
@@ -98,8 +150,8 @@ export function resolveCorpusRuntimeBand(
     if (!refCapacity || !measurements.length) return [];
 
     return measurements.flatMap((measurement) => {
-      const source = corpus.sources.find(
-        (candidate) => candidate.id === measurement.sourceId,
+      const source = sourceById.get(
+        measurement.sourceId,
       );
 
       if (protocolSelector.protocol) {
