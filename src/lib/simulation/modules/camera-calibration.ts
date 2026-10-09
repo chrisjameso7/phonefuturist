@@ -9,6 +9,7 @@ export const CAMERA_CALIBRATION_VERSION = 'camera-calibration-0.1.0';
 export type CameraOutcomeDomain =
   | 'low_light_exposure'
   | 'shutter_lag'
+  | 'sharpness_timing'
   | 'stabilization_crop'
   | 'video_thermal_limit'
   | 'resolved_detail';
@@ -18,6 +19,7 @@ export interface CameraOutcomeReference {
   cameraRole?: string;
   cameraSensorName?: string;
   cameraCaptureMode?: string;
+  protocolKey: string;
   score: number;
   metric: string;
   value: number;
@@ -47,6 +49,8 @@ function metricMatches(domain: CameraOutcomeDomain, metric: string) {
       return m.includes('low_light') || m.includes('low light') || m.includes('night exposure');
     case 'shutter_lag':
       return m.includes('shutter') && m.includes('lag');
+    case 'sharpness_timing':
+      return m.includes('sharpness') && m.includes('timing');
     case 'stabilization_crop':
       return (m.includes('stabilization') || m.includes('eis')) && m.includes('crop');
     case 'video_thermal_limit':
@@ -72,6 +76,10 @@ export function calibrateCameraOutcome(
     limit: Math.max(query.limit ?? 8, 8),
   });
 
+  const sourceById = new Map(
+    corpus.sources.map((source) => [source.id, source]),
+  );
+
   const references = comparables.flatMap((match) =>
     corpus.measurements
       .filter(
@@ -89,6 +97,16 @@ export function calibrateCameraOutcome(
         cameraRole: measurement.cameraRole,
         cameraSensorName: measurement.cameraSensorName,
         cameraCaptureMode: measurement.cameraCaptureMode,
+        protocolKey: (() => {
+          const source = sourceById.get(measurement.sourceId);
+          return [
+            source?.publisher ?? measurement.sourceId,
+            source?.protocolVersion ?? source?.protocol ?? 'unspecified',
+          ]
+            .join('::')
+            .trim()
+            .toLowerCase();
+        })(),
         score: match.score,
         metric: measurement.metric,
         value: measurement.value,
@@ -108,8 +126,42 @@ export function calibrateCameraOutcome(
     };
   }
 
-  const unit = references[0].unit;
-  const compatible = references.filter((reference) => reference.unit === unit);
+  const groups = new Map<string, CameraOutcomeReference[]>();
+
+  for (const reference of references) {
+    const key = `${reference.unit.trim().toLowerCase()}::${reference.protocolKey}`;
+    const current = groups.get(key) ?? [];
+    current.push(reference);
+    groups.set(key, current);
+  }
+
+  const compatible = [...groups.values()]
+    .sort((a, b) => {
+      const weightA = a.reduce(
+        (sum, reference) =>
+          sum + Math.max(reference.score, 0.05) ** 2,
+        0,
+      );
+      const weightB = b.reduce(
+        (sum, reference) =>
+          sum + Math.max(reference.score, 0.05) ** 2,
+        0,
+      );
+      return weightB - weightA;
+    })[0];
+
+  if (!compatible?.length) {
+    return {
+      version: CAMERA_CALIBRATION_VERSION,
+      status: 'unresolved',
+      domain,
+      references: [],
+      unresolvedReason:
+        'No protocol-compatible camera outcome evidence was found.',
+    };
+  }
+
+  const unit = compatible[0].unit;
   const weighted = compatible.map((reference) => ({
     value: reference.value,
     weight: Math.max(reference.score, 0.05) ** 2,
