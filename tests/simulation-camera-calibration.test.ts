@@ -76,6 +76,9 @@ describe('camera outcome calibration', () => {
     expect(result.expected?.value).toBeGreaterThan(82);
     expect(result.expected?.value).toBeLessThan(145);
     expect(result.references[0].deviceVariantId).toBe('near');
+    expect(result.expected?.averageSimilarity).toBeGreaterThan(0);
+    expect(result.expected?.averageCoverage).toBeGreaterThan(0);
+    expect(result.expected?.averageCoverage).toBeLessThanOrEqual(1);
   });
 
   it('fails closed for unsupported camera outcomes', () => {
