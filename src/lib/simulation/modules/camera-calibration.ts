@@ -2,6 +2,7 @@ import type { DeviceCorpus } from './device-corpus';
 import {
   findComparableCameras,
   type CameraComparableQuery,
+  type CameraComparableProfile,
 } from './camera-comparables';
 
 export const CAMERA_CALIBRATION_VERSION = 'camera-calibration-0.1.0';
@@ -49,6 +50,26 @@ export interface CameraOutcomeCalibration {
   unresolvedReason?: string;
 }
 
+
+
+function comparableProfileForDomain(
+  domain: CameraOutcomeDomain,
+): CameraComparableProfile {
+  switch (domain) {
+    case 'photo_texture':
+    case 'resolved_detail':
+      return 'photo-detail';
+    case 'sharpness_timing':
+    case 'shutter_lag':
+      return 'capture-timing';
+    case 'video_stabilization':
+    case 'stabilization_crop':
+      return 'video-stabilization';
+    case 'low_light_exposure':
+    case 'video_thermal_limit':
+      return 'generic';
+  }
+}
 
 function captureModeMatches(
   domain: CameraOutcomeDomain,
@@ -110,6 +131,7 @@ export function calibrateCameraOutcome(
 ): CameraOutcomeCalibration {
   const comparables = findComparableCameras(corpus, {
     ...query,
+    profile: comparableProfileForDomain(domain),
     limit: Math.max(query.limit ?? 8, 8),
   });
 
