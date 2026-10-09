@@ -4988,3 +4988,14 @@
   padding-top: .85rem;
   border-top: 1px solid #ffffff12;
 }
+
+
+/* Evidence-derived display runtime impact */
+
+.il-display-runtime-impact {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
