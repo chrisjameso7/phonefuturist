@@ -24,6 +24,7 @@ export interface CameraBacktestSummary {
   maeScore?: number;
   p90AbsoluteError?: number;
   health: 'healthy' | 'borderline' | 'poor' | 'insufficient';
+  worstMisses: CameraBacktestRow[];
   rows: CameraBacktestRow[];
 }
 
@@ -148,6 +149,9 @@ export function backtestCameraOutcome(
     maeScore,
     p90AbsoluteError,
     health,
+    worstMisses: [...rows]
+      .sort((a, b) => b.absoluteError - a.absoluteError)
+      .slice(0, 3),
     rows,
   };
 }
