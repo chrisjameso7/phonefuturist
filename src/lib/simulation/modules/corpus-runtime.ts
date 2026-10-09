@@ -22,6 +22,8 @@ export interface CorpusRuntimeBand {
     maxMahPerHour: number;
     referenceCount: number;
     confidence: number;
+    averageSimilarity: number;
+    averageCoverage: number;
     neighborIds: string[];
     protocol?: string;
     protocolVersion?: string;
@@ -127,6 +129,8 @@ export function resolveCorpusRuntimeBand(
         weight: Math.max(match.score, 0.05) ** 2,
         deviceVariantId: match.device.variant.id,
         score: match.score,
+        similarityScore: match.similarityScore,
+        coverageScore: match.coverageScore,
         sourceId: measurement.sourceId,
         protocol: source?.protocol,
         protocolVersion: source?.protocolVersion,
@@ -165,6 +169,16 @@ export function resolveCorpusRuntimeBand(
   const drains = values.map((item) => item.value);
   const confidence =
     values.reduce((sum, item) => sum + item.score, 0) / values.length;
+  const averageSimilarity =
+    values.reduce(
+      (sum, item) => sum + item.similarityScore,
+      0,
+    ) / values.length;
+  const averageCoverage =
+    values.reduce(
+      (sum, item) => sum + item.coverageScore,
+      0,
+    ) / values.length;
 
   return {
     version: CORPUS_RUNTIME_MODEL_VERSION,
@@ -178,6 +192,14 @@ export function resolveCorpusRuntimeBand(
       maxMahPerHour: Math.max(...drains),
       referenceCount: values.length,
       confidence: Math.min(1, Math.max(0, confidence)),
+      averageSimilarity: Math.min(
+        1,
+        Math.max(0, averageSimilarity),
+      ),
+      averageCoverage: Math.min(
+        1,
+        Math.max(0, averageCoverage),
+      ),
       neighborIds: [...new Set(values.map((item) => item.deviceVariantId))],
       protocol: values[0]?.protocol,
       protocolVersion: values[0]?.protocolVersion,
