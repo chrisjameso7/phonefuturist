@@ -4955,3 +4955,14 @@
 .il-packaging-sensitivity .il-sensitivity-card {
   max-width: 520px;
 }
+
+
+/* Packaging subsystem growth */
+
+.il-packaging-growth {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
