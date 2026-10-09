@@ -37,6 +37,8 @@ export interface BatteryRuntimeExperience {
   maxHours?: number;
   expectedDrainMahPerHour?: number;
   confidence?: number;
+  averageSimilarity?: number;
+  averageCoverage?: number;
   referenceCount?: number;
   neighborIds?: string[];
   note?: string;
@@ -141,6 +143,10 @@ export function simulateBatteryExperience(
       ...runtime,
       expectedDrainMahPerHour: band.estimate.expectedMahPerHour,
       confidence: band.estimate.confidence,
+      averageSimilarity:
+        band.estimate.averageSimilarity,
+      averageCoverage:
+        band.estimate.averageCoverage,
       referenceCount: band.estimate.referenceCount,
       neighborIds: band.estimate.neighborIds,
       note: band.estimate.note,
