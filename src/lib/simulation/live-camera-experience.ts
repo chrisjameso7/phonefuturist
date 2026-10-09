@@ -27,6 +27,7 @@ export interface LiveCameraOutcome {
   min?: number;
   max?: number;
   confidence?: number;
+  protocolKey?: string;
   referenceCount: number;
   neighborIds: string[];
   unresolvedReason?: string;
@@ -219,6 +220,7 @@ export function simulateCameraExperience(
       min: calibrated.expected.min,
       max: calibrated.expected.max,
       confidence: calibrated.expected.confidence,
+      protocolKey: calibrated.expected.protocolKey,
       referenceCount: calibrated.references.length,
       neighborIds: [
         ...new Set(
