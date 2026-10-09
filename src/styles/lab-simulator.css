@@ -4977,3 +4977,14 @@
   padding-top: .85rem;
   border-top: 1px solid #ffffff12;
 }
+
+
+/* Runtime evidence quality */
+
+.il-runtime-evidence {
+  margin-top: 1rem;
+  display: grid;
+  gap: .75rem;
+  padding-top: .85rem;
+  border-top: 1px solid #ffffff12;
+}
