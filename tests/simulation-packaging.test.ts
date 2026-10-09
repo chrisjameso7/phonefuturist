@@ -84,6 +84,21 @@ describe('packaging simulation module', () => {
       packaging.aggregateThicknessHeadroomMm,
     ).toBeCloseTo(1.75, 6);
     expect(packaging.packagingPressure).toBe('constrained');
+    expect(
+      packaging.thinnerByHalfMm?.targetThicknessMm,
+    ).toBeCloseTo(7.5, 6);
+    expect(
+      packaging.thinnerByHalfMm?.lostAvailableVolumeCm3,
+    ).toBeCloseTo(4.8, 6);
+    expect(
+      packaging.thinnerByHalfMm?.remainingVolumeCm3,
+    ).toBeCloseTo(12, 6);
+    expect(
+      packaging.thinnerByHalfMm?.usedInternalVolumePercent,
+    ).toBeCloseTo(83.3333333, 6);
+    expect(
+      packaging.thinnerByHalfMm?.fitsAvailableVolume,
+    ).toBe(true);
 
     expect(packaging.fitsAvailableVolume).toBe(true);
     expect(calculation.warnings).toEqual([]);
