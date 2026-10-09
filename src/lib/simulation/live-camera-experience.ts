@@ -169,6 +169,7 @@ function cameraSensitivityScenarios(
 const DOMAINS: CameraOutcomeDomain[] = [
   'low_light_exposure',
   'shutter_lag',
+  'sharpness_timing',
   'stabilization_crop',
   'video_thermal_limit',
   'resolved_detail',
