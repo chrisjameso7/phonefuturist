@@ -151,3 +151,68 @@ describe('advanced comparable dimensions', () => {
     expect(matches[0].reasons).toContain('same battery chemistry');
   });
 });
+
+describe('comparable-device evidence coverage', () => {
+  it('penalizes sparse records even when their known fields match', () => {
+    const corpus: DeviceCorpus = {
+      version: 'coverage',
+      sources: [],
+      devices: [
+        {
+          variant: {
+            id: 'complete',
+            identity: {
+              manufacturer: 'A',
+              family: 'A',
+              modelName: 'Complete',
+            },
+            battery: { capacityMah: 5000 },
+            soc: { vendor: 'Qualcomm', name: 'Chip' },
+          },
+          display: {
+            diagonalInches: 6.7,
+            resolutionWidthPx: 1440,
+            resolutionHeightPx: 3200,
+            refreshRateHz: 120,
+          },
+          dimensions: {
+            thicknessMm: 8,
+            weightG: 200,
+          },
+        },
+        {
+          variant: {
+            id: 'sparse',
+            identity: {
+              manufacturer: 'B',
+              family: 'B',
+              modelName: 'Sparse',
+            },
+            battery: { capacityMah: 5000 },
+          },
+          display: {
+            diagonalInches: 6.7,
+          },
+        },
+      ],
+      measurements: [],
+    };
+
+    const matches = findComparableDevices(corpus, {
+      batteryMah: 5000,
+      socVendor: 'Qualcomm',
+      displayDiagonalInches: 6.7,
+      resolutionWidthPx: 1440,
+      resolutionHeightPx: 3200,
+      refreshRateHz: 120,
+      thicknessMm: 8,
+      weightG: 200,
+    });
+
+    expect(matches[0].device.variant.id).toBe('complete');
+    expect(matches[0].coverageScore).toBe(1);
+    expect(matches[1].coverageScore).toBeLessThan(1);
+    expect(matches[0].score).toBeGreaterThan(matches[1].score);
+  });
+});
+
