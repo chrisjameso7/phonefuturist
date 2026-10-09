@@ -11,14 +11,14 @@ describe('measured camera outcome registry', () => {
         measurement.metric === 'sharpness_timing_score',
     );
 
-    expect(measurements).toHaveLength(5);
+    expect(measurements).toHaveLength(7);
     expect(
       new Set(
         measurements.map(
           (measurement) => measurement.deviceVariantId,
         ),
       ).size,
-    ).toBe(5);
+    ).toBe(7);
   });
 
   it('resolves a flagship wide-camera sharpness timing estimate', () => {
