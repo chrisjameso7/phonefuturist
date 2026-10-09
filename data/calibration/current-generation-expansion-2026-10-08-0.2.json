@@ -68,6 +68,12 @@
       "publisher": "Samsung",
       "url": "https://www.samsung.com/uk/business/smartphones/galaxy-s/galaxy-s26-ultra-cobalt-violet-1tb-sm-s948bzvheub/",
       "protocol": "official product specification"
+    },
+    {
+      "id": "official-honor-magic8-pro-display",
+      "publisher": "HONOR",
+      "url": "https://www.honor.com/ie/phones/honor-magic8-pro/spec/",
+      "protocol": "official product specification"
     }
   ],
   "devices": [
@@ -109,13 +115,21 @@
       "batteryMah": 6270,
       "sourceIds": [
         "phonearena-honor-magic8-pro",
-        "tomsguide-honor-magic8pro"
+        "tomsguide-honor-magic8pro",
+        "official-honor-magic8-pro-display"
       ],
       "measurements": {
         "batteryEstimateHours": 8,
         "browsingHours": 18.683,
         "videoHours": 12.117,
         "gamingHours": 9.55
+      },
+      "display": {
+        "diagonalInches": 6.71,
+        "resolutionWidthPx": 1256,
+        "resolutionHeightPx": 2808,
+        "refreshRateHz": 120,
+        "panelTechnology": "LTPO OLED"
       }
     },
     {
