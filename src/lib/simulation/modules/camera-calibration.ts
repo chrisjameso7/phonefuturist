@@ -45,6 +45,28 @@ export interface CameraOutcomeCalibration {
   unresolvedReason?: string;
 }
 
+
+function captureModeMatches(
+  domain: CameraOutcomeDomain,
+  captureMode: string | undefined,
+) {
+  if (!captureMode) return true;
+
+  const mode = captureMode.trim().toLowerCase();
+
+  switch (domain) {
+    case 'sharpness_timing':
+    case 'photo_texture':
+    case 'low_light_exposure':
+    case 'resolved_detail':
+      return mode.startsWith('photo');
+    case 'video_stabilization':
+    case 'stabilization_crop':
+    case 'video_thermal_limit':
+      return mode.startsWith('video');
+  }
+}
+
 function metricMatches(domain: CameraOutcomeDomain, metric: string) {
   const m = metric.toLowerCase();
   switch (domain) {
@@ -100,6 +122,10 @@ export function calibrateCameraOutcome(
           (!measurement.cameraRole ||
             measurement.cameraRole.trim().toLowerCase() ===
               match.role.trim().toLowerCase()) &&
+          captureModeMatches(
+            domain,
+            measurement.cameraCaptureMode,
+          ) &&
           metricMatches(domain, measurement.metric) &&
           Number.isFinite(measurement.value),
       )
