@@ -68,6 +68,12 @@ export function resolveCorpusRuntimeBand(
   const comparables = findComparableDevices(corpus, {
     batteryMah: capacityMah,
     displayDiagonalInches: input.displays.primary.diagonalInches,
+    resolutionWidthPx:
+      input.displays.primary.resolutionWidthPx,
+    resolutionHeightPx:
+      input.displays.primary.resolutionHeightPx,
+    refreshRateHz:
+      input.displays.primary.refreshRateHz,
     thicknessMm: input.dimensions?.thicknessMm,
     weightG: input.dimensions?.weightG,
     limit: 20,
