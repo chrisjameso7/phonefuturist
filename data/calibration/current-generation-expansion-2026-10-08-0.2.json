@@ -104,7 +104,9 @@
         "resolutionHeightPx": 3168,
         "refreshRateHz": 144,
         "panelTechnology": "AMOLED"
-      }
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
     },
     {
       "id": "honor-magic8-pro-eu-6270",
@@ -130,7 +132,9 @@
         "resolutionHeightPx": 2808,
         "refreshRateHz": 120,
         "panelTechnology": "LTPO OLED"
-      }
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
     },
     {
       "id": "honor-magic8-pro-global-7100",
@@ -191,7 +195,9 @@
         "refreshRateHz": 120,
         "maximumGamingRefreshRateHz": 165,
         "panelTechnology": "LTPO"
-      }
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
     },
     {
       "id": "oppo-find-x9-pro-global-7500",
@@ -223,7 +229,9 @@
         "resolutionHeightPx": 2772,
         "refreshRateHz": 120,
         "panelTechnology": "AMOLED"
-      }
+      },
+      "socVendor": "MediaTek",
+      "socName": "Dimensity 9500"
     },
     {
       "id": "samsung-galaxy-s26-ultra-global-5000",
@@ -250,7 +258,9 @@
         "resolutionHeightPx": 3120,
         "refreshRateHz": 120,
         "panelTechnology": "Dynamic AMOLED 2X"
-      }
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5 for Galaxy"
     }
   ],
   "inclusionRules": [
