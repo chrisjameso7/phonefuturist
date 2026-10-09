@@ -780,6 +780,27 @@ export default function InteractiveLeaksSimulator() {
   }
 
   const display = result?.displays.primary;
+
+  const displayExperience =
+    simulationInput && result
+      ? simulateLiveDisplayExperience({
+          diagonalInches:
+            simulationInput.displays.primary.diagonalInches,
+          resolutionWidthPx:
+            simulationInput.displays.primary.resolutionWidthPx,
+          resolutionHeightPx:
+            simulationInput.displays.primary.resolutionHeightPx,
+          aspectWidth:
+            simulationInput.displays.primary.aspectWidth,
+          aspectHeight:
+            simulationInput.displays.primary.aspectHeight,
+          refreshRateHz: numeric(form.refreshRateHz),
+          brightnessNits: numeric(form.brightnessNits),
+          panelTechnology:
+            form.panelTechnology.trim() || undefined,
+        })
+      : undefined;
+
   const battery = result?.battery;
   const packaging = result?.packaging;
 
@@ -1095,6 +1116,43 @@ export default function InteractiveLeaksSimulator() {
                   update('aspectHeight', value)
                 }
               />
+            </div>
+
+            <div className="il-grid">
+              <NumericField
+                label="Refresh rate"
+                suffix="Hz"
+                value={form.refreshRateHz}
+                placeholder="120"
+                onChange={(value) =>
+                  update('refreshRateHz', value)
+                }
+              />
+
+              <NumericField
+                label="Brightness"
+                suffix="nits"
+                value={form.brightnessNits}
+                placeholder="1000"
+                onChange={(value) =>
+                  update('brightnessNits', value)
+                }
+              />
+
+              <label className="il-field">
+                <span>Panel technology</span>
+                <input
+                  type="text"
+                  value={form.panelTechnology}
+                  placeholder="LTPO OLED"
+                  onChange={(event) =>
+                    update(
+                      'panelTechnology',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
             </div>
 
             <details className="il-advanced">
@@ -1921,6 +1979,162 @@ export default function InteractiveLeaksSimulator() {
                     <span>Screen to body</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Display load · {LIVE_DISPLAY_EXPERIENCE_VERSION}
+                </span>
+
+                {displayExperience &&
+                displayExperience.status !== 'unresolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {displayExperience.megapixelsPerFrame !==
+                          undefined
+                            ? `${format(
+                                displayExperience.megapixelsPerFrame,
+                                2,
+                              )} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Pixels per frame</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.pixelThroughputMpxPerSecond !==
+                          undefined
+                            ? `${format(
+                                displayExperience
+                                  .pixelThroughputMpxPerSecond,
+                                1,
+                              )} MP/s`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Pixel throughput</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.refreshMultiplierVs60 !==
+                          undefined
+                            ? `${format(
+                                displayExperience
+                                  .refreshMultiplierVs60,
+                                2,
+                              )}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Refresh load vs 60 Hz</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.rasterLoadIndex !==
+                          undefined
+                            ? `${format(
+                                displayExperience.rasterLoadIndex,
+                                2,
+                              )}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Raster load vs 1080×2400@60</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.luminanceAreaNitCm2 !==
+                          undefined
+                            ? format(
+                                displayExperience
+                                  .luminanceAreaNitCm2,
+                                0,
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>Luminance-area demand</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.panelTechnology ??
+                            'Unknown'}
+                        </strong>
+                        <span>Panel technology</span>
+                      </div>
+                    </div>
+
+                    {displayExperience.scenarios.length ? (
+                      <div className="il-display-sensitivity">
+                        <span className="il-result-label">
+                          Display what-if sensitivity
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {displayExperience.scenarios.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>
+                                  {scenario.label}
+                                </strong>
+                                <span>
+                                  {format(
+                                    scenario
+                                      .pixelThroughputMpxPerSecond,
+                                    1,
+                                  )} MP/s
+                                </span>
+                                <span>
+                                  Δ throughput{' '}
+                                  {scenario
+                                    .deltaPixelThroughputPercent >= 0
+                                    ? '+'
+                                    : ''}
+                                  {format(
+                                    scenario
+                                      .deltaPixelThroughputPercent,
+                                    1,
+                                  )}%
+                                </span>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {displayExperience.warnings.length ? (
+                      <div className="il-warnings">
+                        {displayExperience.warnings.map(
+                          (warning) => (
+                            <div
+                              className="il-warning"
+                              key={warning}
+                            >
+                              <strong>DISPLAY_INPUT</strong>
+                              <p>{warning}</p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : null}
+
+                    <p className="il-help">
+                      {displayExperience.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Add resolution, refresh rate and optional brightness
+                    to calculate display workload.
+                  </div>
+                )}
               </div>
 
               <div className="il-result-group">
