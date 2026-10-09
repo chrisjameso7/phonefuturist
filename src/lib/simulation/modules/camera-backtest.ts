@@ -13,6 +13,8 @@ export interface CameraBacktestRow {
   predictedScore: number;
   absoluteError: number;
   referenceCount: number;
+  averageSimilarity?: number;
+  averageCoverage?: number;
 }
 
 export interface CameraBacktestSummary {
@@ -119,6 +121,8 @@ export function backtestCameraOutcome(
         result.expected.value - measurement.value,
       ),
       referenceCount: result.references.length,
+      averageSimilarity: result.expected.averageSimilarity,
+      averageCoverage: result.expected.averageCoverage,
     });
   }
 
