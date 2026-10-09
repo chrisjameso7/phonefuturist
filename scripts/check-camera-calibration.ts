@@ -87,6 +87,15 @@ function printBacktest(
   console.log(`  Skipped devices:    ${result.skippedDevices}`);
   console.log(`  MAE:                ${result.maeScore?.toFixed(2) ?? 'n/a'} score`);
   console.log(`  p90 error:          ${result.p90AbsoluteError?.toFixed(2) ?? 'n/a'} score`);
+
+  if (result.worstMisses.length > 0) {
+    console.log('  Worst misses:');
+    for (const row of result.worstMisses) {
+      console.log(
+        `    ${row.deviceVariantId} · actual ${row.actualScore.toFixed(1)} · predicted ${row.predictedScore.toFixed(1)} · error ${row.absoluteError.toFixed(1)} · ${row.referenceCount} refs`,
+      );
+    }
+  }
 }
 
 printBacktest(
