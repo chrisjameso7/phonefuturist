@@ -172,3 +172,14 @@ export function backtestCameraVideoStabilization(
     cameraRole: 'wide',
   });
 }
+
+
+export function backtestCameraPhotoTexture(
+  corpus: DeviceCorpus,
+): CameraBacktestSummary {
+  return backtestCameraOutcome(corpus, {
+    domain: 'photo_texture',
+    metric: 'photo_texture_score',
+    cameraRole: 'wide',
+  });
+}
