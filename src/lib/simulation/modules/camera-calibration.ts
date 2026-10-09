@@ -42,6 +42,8 @@ export interface CameraOutcomeCalibration {
     min: number;
     max: number;
     confidence: number;
+    averageSimilarity: number;
+    averageCoverage: number;
     protocolKey: string;
   };
   unresolvedReason?: string;
@@ -211,6 +213,16 @@ export function calibrateCameraOutcome(
   const confidence =
     compatible.reduce((sum, reference) => sum + reference.score, 0) /
     compatible.length;
+  const averageSimilarity =
+    compatible.reduce(
+      (sum, reference) => sum + reference.similarityScore,
+      0,
+    ) / compatible.length;
+  const averageCoverage =
+    compatible.reduce(
+      (sum, reference) => sum + reference.coverageScore,
+      0,
+    ) / compatible.length;
 
   return {
     version: CAMERA_CALIBRATION_VERSION,
@@ -223,6 +235,14 @@ export function calibrateCameraOutcome(
       min: Math.min(...values),
       max: Math.max(...values),
       confidence: Math.min(1, Math.max(0, confidence)),
+      averageSimilarity: Math.min(
+        1,
+        Math.max(0, averageSimilarity),
+      ),
+      averageCoverage: Math.min(
+        1,
+        Math.max(0, averageCoverage),
+      ),
       protocolKey: compatible[0].protocolKey,
     },
   };
