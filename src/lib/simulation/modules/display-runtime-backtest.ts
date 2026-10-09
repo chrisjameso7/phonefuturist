@@ -161,7 +161,6 @@ export function backtestDisplayAwareRuntime(
         (row) =>
           row.deviceVariantId === device.variant.id &&
           row.workload === workload &&
-          row.metric.toLowerCase().includes('runtime') &&
           row.unit.toLowerCase() === 'hours' &&
           positive(row.value),
       );
