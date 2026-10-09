@@ -10,6 +10,7 @@ export type CameraOutcomeDomain =
   | 'low_light_exposure'
   | 'shutter_lag'
   | 'sharpness_timing'
+  | 'video_stabilization'
   | 'stabilization_crop'
   | 'video_thermal_limit'
   | 'resolved_detail';
@@ -52,6 +53,10 @@ function metricMatches(domain: CameraOutcomeDomain, metric: string) {
       return m.includes('shutter') && m.includes('lag');
     case 'sharpness_timing':
       return m.includes('sharpness') && m.includes('timing');
+    case 'video_stabilization':
+      return m.includes('video') &&
+        m.includes('stabilization') &&
+        m.includes('score');
     case 'stabilization_crop':
       return (m.includes('stabilization') || m.includes('eis')) && m.includes('crop');
     case 'video_thermal_limit':
