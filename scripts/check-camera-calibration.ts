@@ -18,6 +18,10 @@ const domains = {
     m.metric.toLowerCase().includes('shutter') &&
     m.metric.toLowerCase().includes('lag'),
   ).length,
+  sharpnessTiming: cameraMeasurements.filter((m) =>
+    m.metric.toLowerCase().includes('sharpness') &&
+    m.metric.toLowerCase().includes('timing'),
+  ).length,
   lowLight: cameraMeasurements.filter((m) =>
     m.metric.toLowerCase().includes('low_light') ||
     m.metric.toLowerCase().includes('low light') ||
@@ -49,6 +53,7 @@ console.log(`Measured camera outcomes:  ${cameraMeasurements.length}`);
 console.log('');
 console.log('Outcome coverage');
 console.log(`  Shutter lag:        ${domains.shutterLag}`);
+console.log(`  Sharpness & timing: ${domains.sharpnessTiming}`);
 console.log(`  Low-light exposure: ${domains.lowLight}`);
 console.log(`  Stabilization crop: ${domains.stabilizationCrop}`);
 console.log(`  Video thermal:      ${domains.videoThermal}`);
