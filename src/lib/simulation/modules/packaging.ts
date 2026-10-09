@@ -89,6 +89,17 @@ export interface CalculatedPackaging {
     fitsAvailableVolume: boolean;
   };
 
+  componentGrowthSensitivity?: Array<{
+    component: 'battery' | 'camera' | 'thermal';
+    growthPercent: 10;
+    baselineVolumeCm3: number;
+    targetVolumeCm3: number;
+    addedVolumeCm3: number;
+    remainingVolumeCm3: number;
+    usedInternalVolumePercent: number;
+    fitsAvailableVolume: boolean;
+  }>;
+
   /**
    * Indicates only whether the aggregate known component
    * volume is within the calculated internal volume budget.
@@ -330,6 +341,61 @@ export function calculatePackaging(
         (result.remainingVolumeMm3 /
           result.availableInternalVolumeMm3) *
         100;
+    }
+
+    const growthSensitivity: NonNullable<
+      CalculatedPackaging['componentGrowthSensitivity']
+    > = [];
+
+    for (const component of [
+      'battery',
+      'camera',
+      'thermal',
+    ] as const) {
+      const key = `${component}Mm3` as keyof NonNullable<
+        PackagingInput['componentVolumes']
+      >;
+      const baselineVolume =
+        input.componentVolumes?.[key];
+
+      if (
+        baselineVolume === undefined ||
+        !isNonNegativeFinite(baselineVolume)
+      ) {
+        continue;
+      }
+
+      const targetVolume = baselineVolume * 1.1;
+      const addedVolume = targetVolume - baselineVolume;
+      const scenarioKnownVolume =
+        result.knownComponentVolumeMm3 + addedVolume;
+      const remainingVolume =
+        result.availableInternalVolumeMm3 -
+        scenarioKnownVolume;
+
+      growthSensitivity.push({
+        component,
+        growthPercent: 10,
+        baselineVolumeCm3: baselineVolume / 1000,
+        targetVolumeCm3: targetVolume / 1000,
+        addedVolumeCm3: addedVolume / 1000,
+        remainingVolumeCm3: remainingVolume / 1000,
+        usedInternalVolumePercent:
+          result.availableInternalVolumeMm3 > 0
+            ? (
+                scenarioKnownVolume /
+                result.availableInternalVolumeMm3
+              ) * 100
+            : Number.POSITIVE_INFINITY,
+        fitsAvailableVolume:
+          scenarioKnownVolume <=
+          result.availableInternalVolumeMm3,
+      });
+    }
+
+    if (growthSensitivity.length > 0) {
+      result.componentGrowthSensitivity =
+        growthSensitivity;
     }
 
     result.fitsAvailableVolume =
