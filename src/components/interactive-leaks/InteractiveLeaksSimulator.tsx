@@ -2252,10 +2252,71 @@ export default function InteractiveLeaksSimulator() {
                       )}
                     </div>
 
+                    <div className="il-runtime-evidence">
+                      <span className="il-result-label">
+                        Runtime evidence quality
+                      </span>
+
+                      <div className="il-sensitivity-grid">
+                        {batteryExperience.runtimes
+                          .filter(
+                            (runtime) =>
+                              runtime.status === 'resolved',
+                          )
+                          .map((runtime) => (
+                            <div
+                              className="il-sensitivity-card"
+                              key={runtime.workload}
+                            >
+                              <strong>
+                                {runtime.workload.replaceAll(
+                                  '_',
+                                  ' ',
+                                )}
+                              </strong>
+
+                              <span>
+                                {runtime.averageSimilarity !== undefined
+                                  ? `${format(
+                                      runtime.averageSimilarity * 100,
+                                      0,
+                                    )}% similarity`
+                                  : 'Similarity unknown'}
+                              </span>
+
+                              <span>
+                                {runtime.averageCoverage !== undefined
+                                  ? `${format(
+                                      runtime.averageCoverage * 100,
+                                      0,
+                                    )}% spec coverage`
+                                  : 'Coverage unknown'}
+                              </span>
+
+                              <span>
+                                {runtime.confidence !== undefined
+                                  ? `${format(
+                                      runtime.confidence * 100,
+                                      0,
+                                    )}% confidence`
+                                  : 'Confidence unknown'}
+                              </span>
+
+                              <small>
+                                {runtime.referenceCount ?? 0}{' '}
+                                measured refs
+                              </small>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
                     <p className="il-help">
-                      Runtime uses protocol-isolated released-device evidence.
-                      Camera-use runtime remains excluded until isolated camera
-                      battery measurements are available.
+                      Runtime uses protocol-isolated released-device evidence,
+                      now matched on display resolution and refresh rate when
+                      those fields are available. Camera-use runtime remains
+                      excluded until isolated camera battery measurements are
+                      available.
                     </p>
                   </>
                 ) : (
