@@ -67,6 +67,24 @@ describe('packaging simulation module', () => {
       6,
     );
 
+    expect(
+      packaging.componentVolumePercent?.battery,
+    ).toBeCloseTo(31.25, 6);
+    expect(
+      packaging.componentVolumePercent?.camera,
+    ).toBeCloseTo(10.4166667, 6);
+    expect(packaging.largestKnownComponent).toMatchObject({
+      component: 'battery',
+      volumeMm3: 24000,
+    });
+    expect(
+      packaging.minimumAggregateThicknessMm,
+    ).toBeCloseTo(6.25, 6);
+    expect(
+      packaging.aggregateThicknessHeadroomMm,
+    ).toBeCloseTo(1.75, 6);
+    expect(packaging.packagingPressure).toBe('constrained');
+
     expect(packaging.fitsAvailableVolume).toBe(true);
     expect(calculation.warnings).toEqual([]);
   });
@@ -147,4 +165,28 @@ describe('packaging simulation module', () => {
         'batteryMm3 volume must be a non-negative finite value.',
     });
   });
+
+  it('warns when aggregate packaging headroom is tight even before volume is exceeded', () => {
+    const calculation = calculatePackaging({
+      widthMm: 75,
+      heightMm: 160,
+      thicknessMm: 8,
+      reservedVolumePercent: 20,
+      componentVolumes: {
+        batteryMm3: 40000,
+        cameraMm3: 12000,
+        thermalMm3: 5000,
+        boardMm3: 13000,
+      },
+    });
+
+    expect(calculation.result.fitsAvailableVolume).toBe(true);
+    expect(calculation.result.packagingPressure).toBe('tight');
+    expect(calculation.warnings).toContainEqual({
+      code: 'PACKAGING_HEADROOM_TIGHT',
+      message:
+        'Known components consume at least 90% of the aggregate internal volume budget. This leaves little unallocated volume for routing, tolerances, shielding, adhesives, connectors, and shape inefficiency.',
+    });
+  });
+
 });
