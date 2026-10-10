@@ -154,7 +154,10 @@ export function estimateSustainedPerformance(
         ? sameVendor
         : usable;
 
-  const evidenceScope =
+  const evidenceScope:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort' =
     references === sameFamily
       ? 'same-soc-family'
       : references === sameVendor
