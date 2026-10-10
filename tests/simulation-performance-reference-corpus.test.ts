@@ -11,14 +11,14 @@ describe('sustained GPU performance corpus', () => {
         measurement.metric === 'gpu_stability_percent',
     );
 
-    expect(rows).toHaveLength(7);
+    expect(rows).toHaveLength(9);
     expect(
       new Set(
         rows.map(
           (measurement) => measurement.deviceVariantId,
         ),
       ).size,
-    ).toBe(7);
+    ).toBe(9);
     expect(
       rows.every(
         (measurement) =>
