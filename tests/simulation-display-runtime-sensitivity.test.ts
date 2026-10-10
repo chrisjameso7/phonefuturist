@@ -98,6 +98,59 @@ describe('display runtime sensitivity', () => {
     expect(sixty!.deltaDrainPercent).toBeLessThan(0);
   });
 
+  it('uses Wh/h for display runtime sensitivity when target and reference energy are known', () => {
+    const energyCorpus: DeviceCorpus = {
+      ...corpus,
+      devices: corpus.devices.map((row) => ({
+        ...row,
+        variant: {
+          ...row.variant,
+          battery: {
+            ...(row.variant.battery ?? {}),
+            typicalEnergyWh: 20,
+            nominalVoltageV: 4,
+          },
+        },
+      })),
+    };
+
+    const energyTarget: SimulationInput = {
+      ...target,
+      battery: {
+        cells: [
+          {
+            capacityMah: 5000,
+            nominalVoltageV: 4.4,
+          },
+        ],
+      },
+    };
+
+    const result =
+      resolveDisplayRuntimeSensitivity(
+        energyCorpus,
+        energyTarget,
+      );
+
+    const sixty = result.scenarios.find(
+      (row) =>
+        row.workload === 'web_browsing' &&
+        row.scenario === '60hz',
+    );
+
+    expect(sixty).toBeDefined();
+    expect(sixty?.energyBasis).toBe('wh');
+    expect(
+      sixty?.baselineWhPerHour,
+    ).toBeGreaterThan(0);
+    expect(
+      sixty?.scenarioWhPerHour,
+    ).toBeGreaterThan(0);
+    expect(
+      sixty?.baselineMahPerHour,
+    ).toBeUndefined();
+  });
+
   it('fails closed when measured reference coverage is too weak', () => {
     const weak: DeviceCorpus = {
       ...corpus,
