@@ -3402,6 +3402,20 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
+                          {thermalResult.sourceRecordCount ?? 0}
+                        </strong>
+                        <span>Source pages</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.publisherCount ?? 0}
+                        </strong>
+                        <span>Distinct publishers</span>
+                      </div>
+
+                      <div>
+                        <strong>
                           {thermalResult.confidence !== undefined
                             ? `${format(
                                 thermalResult.confidence * 100,
@@ -4055,6 +4069,16 @@ export default function InteractiveLeaksSimulator() {
                                         0,
                                       )}% confidence`
                                     : 'confidence unrated'}
+                                </small>
+                                <small>
+                                  {outcome.sourceRecordCount ?? 0} source page
+                                  {(outcome.sourceRecordCount ?? 0) === 1
+                                    ? ''
+                                    : 's'} ·{' '}
+                                  {outcome.publisherCount ?? 0} publisher
+                                  {(outcome.publisherCount ?? 0) === 1
+                                    ? ''
+                                    : 's'}
                                 </small>
                                 {outcome.averageSimilarity !== undefined ||
                                 outcome.averageCoverage !== undefined ? (
