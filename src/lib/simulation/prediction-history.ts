@@ -1,7 +1,7 @@
 import type {
   PredictionSnapshot,
   RealitySnapshot,
-} from './prediction-validation';
+} from './modules/prediction-validation';
 
 export const PREDICTION_HISTORY_VERSION =
   'prediction-history-0.1.0';
