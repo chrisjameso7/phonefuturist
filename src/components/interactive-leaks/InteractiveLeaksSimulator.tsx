@@ -934,6 +934,20 @@ export default function InteractiveLeaksSimulator() {
     simulationInput && result
       ? resolveLiveDisplayRuntimeSensitivity(
           simulationInput,
+          {
+            manufacturer:
+              form.manufacturer.trim() || undefined,
+            socVendor:
+              form.socVendor.trim() || undefined,
+            socName:
+              form.socName.trim() || undefined,
+            batteryChemistry:
+              form.batteryChemistry.trim() || undefined,
+            coolingClass:
+              form.coolingClass === 'unknown'
+                ? undefined
+                : form.coolingClass,
+          },
         )
       : undefined;
 
