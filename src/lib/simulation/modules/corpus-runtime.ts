@@ -44,7 +44,8 @@ export interface CorpusRuntimeBand {
     protocol?: string;
     protocolVersion?: string;
     sourceIds: string[];
-    independentSourceCount: number;
+    sourceRecordCount: number;
+    publisherCount: number;
     protocolFamilyCount: number;
     evidenceScope:
       | 'same-soc-family'
@@ -220,6 +221,7 @@ export function resolveCorpusRuntimeBand(
         protocol: source?.protocol,
         protocolVersion: source?.protocolVersion,
         protocolKey,
+        publisher: source.publisher,
         socVendor:
           match.device.variant.soc?.vendor,
         socName:
@@ -323,10 +325,16 @@ export function resolveCorpusRuntimeBand(
       protocol: values[0]?.protocol,
       protocolVersion: values[0]?.protocolVersion,
       sourceIds: [...new Set(values.map((item) => item.sourceId))],
-      independentSourceCount:
+      sourceRecordCount:
         new Set(
           values.map(
             (item) => item.sourceId,
+          ),
+        ).size,
+      publisherCount:
+        new Set(
+          values.map(
+            (item) => item.publisher,
           ),
         ).size,
       protocolFamilyCount:
