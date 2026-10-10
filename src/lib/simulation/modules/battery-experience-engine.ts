@@ -484,6 +484,9 @@ export function simulateBatteryExperience(
   if (input.wiredWatts !== undefined) {
     charging = estimateChargingFromCorpus(corpus, {
       batteryMah: capacity,
+      ...(packEnergyWh !== undefined
+        ? { batteryEnergyWh: packEnergyWh }
+        : {}),
       batteryChemistry: input.batteryChemistry,
       wiredChargingWatts: input.wiredWatts,
       wirelessChargingWatts: input.wirelessWatts,
