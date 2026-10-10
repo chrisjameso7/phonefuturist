@@ -4,7 +4,7 @@ import { resolveCorpusRuntimeBand } from './corpus-runtime';
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
 import { estimateWirelessChargingFromCorpus } from './wireless-charging-estimator';
 
-export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.1.0';
+export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.2.0';
 
 export interface BatteryExperienceInput {
   simulation: SimulationInput;
