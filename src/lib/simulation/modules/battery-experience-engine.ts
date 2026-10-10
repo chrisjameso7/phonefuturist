@@ -42,6 +42,12 @@ export interface BatteryRuntimeExperience {
   averageCoverage?: number;
   referenceCount?: number;
   neighborIds?: string[];
+  evidenceScope?:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort';
+  sameSocFamilyReferences?: number;
+  sameSocVendorReferences?: number;
   note?: string;
 }
 
@@ -159,6 +165,12 @@ export function simulateBatteryExperience(
         band.estimate.averageCoverage,
       referenceCount: band.estimate.referenceCount,
       neighborIds: band.estimate.neighborIds,
+      evidenceScope:
+        band.estimate.evidenceScope,
+      sameSocFamilyReferences:
+        band.estimate.sameSocFamilyReferences,
+      sameSocVendorReferences:
+        band.estimate.sameSocVendorReferences,
       note: band.estimate.note,
     };
   });
