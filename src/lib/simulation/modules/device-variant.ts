@@ -30,6 +30,8 @@ export interface BatteryVariant {
   capacityMah?: number;
   typicalCapacityMah?: number;
   ratedCapacityMah?: number;
+  typicalEnergyWh?: number;
+  ratedEnergyWh?: number;
   nominalVoltageV?: number;
   cellCount?: number;
   chemistry?: string;
