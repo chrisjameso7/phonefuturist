@@ -1052,11 +1052,27 @@ export default function InteractiveLeaksSimulator() {
       form.surfaceComfortTemperatureC,
     );
 
+  const twoNodeRawFields = [
+    form.socToChassisResistanceCPerW,
+    form.chassisToAmbientResistanceCPerW,
+    form.socThermalMassJPerC,
+    form.chassisThermalMassJPerC,
+  ];
+
+  const hasAnyTwoNodeInput =
+    twoNodeRawFields.some(
+      (value) => value.trim() !== '',
+    );
+
   const hasCompleteTwoNodeInput =
     socToChassisResistanceCPerW !== undefined &&
     chassisToAmbientResistanceCPerW !== undefined &&
     socThermalMassJPerC !== undefined &&
     chassisThermalMassJPerC !== undefined;
+
+  const incompleteTwoNodeInput =
+    hasAnyTwoNodeInput &&
+    !hasCompleteTwoNodeInput;
 
   const thermalResult =
     simulationInput &&
@@ -1824,7 +1840,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Lumped thermal ceiling"
+                label="Thermal throttle ceiling"
                 suffix="°C"
                 value={form.throttleTemperatureC}
                 placeholder="42"
@@ -1948,6 +1964,15 @@ export default function InteractiveLeaksSimulator() {
                   }
                 />
               </div>
+
+              {incompleteTwoNodeInput ? (
+                <p className="il-simple-error" role="alert">
+                  Two-node thermal physics needs all four physical parameters:
+                  SoC-to-chassis resistance, chassis-to-ambient resistance,
+                  SoC/package thermal mass and chassis thermal mass. The
+                  two-node trace is disabled until all four are supplied.
+                </p>
+              ) : null}
             </details>
 
             <p className="il-help">
