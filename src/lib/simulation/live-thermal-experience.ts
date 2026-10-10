@@ -49,6 +49,9 @@ export interface LiveThermalExperienceResult {
   peakTemperatureC?: number;
   endTemperatureC?: number;
   throttleStartSecond?: number;
+  evidencePriorPercent?: number;
+  rawPhysicsSustainedPercent?: number;
+  thermalAdjustmentMultiplier?: number;
   sustainedPerformancePercent?: number;
   sustainedPowerW?: number;
   points?: Array<{
@@ -375,6 +378,12 @@ export function simulateThermalExperience(
         calibrated.simulation.endTemperatureC,
       throttleStartSecond:
         calibrated.simulation.throttleStartSecond,
+      evidencePriorPercent:
+        calibrated.simulation.evidencePriorPercent,
+      rawPhysicsSustainedPercent:
+        calibrated.simulation.rawPhysicsSustainedPercent,
+      thermalAdjustmentMultiplier:
+        calibrated.simulation.thermalAdjustmentMultiplier,
       sustainedPerformancePercent:
         calibrated.simulation.sustainedPerformancePercent,
       sustainedPowerW:
@@ -395,7 +404,7 @@ export function simulateThermalExperience(
         },
       ),
       note:
-        'Sustained performance is calibrated from comparable measured thermal evidence. What-if sensitivity keeps that measured baseline, then applies deterministic physics-derived deltas for changed ambient temperature, cooling resistance or SoC power. When explicit two-node parameters are supplied, package and chassis temperatures are also simulated separately without replacing the calibrated baseline.'
+        'Sustained performance is anchored to comparable measured stability as an evidence prior, then deterministic thermal physics may reduce that prior when the supplied power and thermal conditions are harsher. The evidence prior is no longer treated as an untouchable power floor. What-if sensitivity applies physics-derived deltas around the calibrated result.'
     };
   }
 
