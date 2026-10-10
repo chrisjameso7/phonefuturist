@@ -7,31 +7,31 @@
       "id": "phonearena-battery",
       "publisher": "PhoneArena",
       "url": "https://www.phonearena.com/phones/benchmarks/battery",
-      "protocol": "Battery estimate + browsing + video + gaming"
+      "protocol": "PhoneArena battery benchmark"
     },
     {
       "id": "phonearena-vivo-x300-ultra",
       "publisher": "PhoneArena",
       "url": "https://www.phonearena.com/reviews/vivo-x300-ultra-review_id7930",
-      "protocol": "Battery estimate + browsing + video + gaming"
+      "protocol": "PhoneArena battery benchmark"
     },
     {
       "id": "phonearena-honor-magic8-pro",
       "publisher": "PhoneArena",
       "url": "https://www.phonearena.com/reviews/honor-magic-8-pro-review_id7814",
-      "protocol": "Battery estimate + browsing + video + gaming"
+      "protocol": "PhoneArena battery benchmark"
     },
     {
       "id": "phonearena-oneplus15",
       "publisher": "PhoneArena",
       "url": "https://www.phonearena.com/reviews/oneplus-15-review_id7768",
-      "protocol": "Battery estimate + browsing + video + gaming"
+      "protocol": "PhoneArena battery benchmark"
     },
     {
       "id": "phonearena-oppo-findx9pro",
       "publisher": "PhoneArena",
       "url": "https://www.phonearena.com/reviews/oppo-find-x9-pro-review_id7759",
-      "protocol": "Battery estimate + browsing + video + gaming"
+      "protocol": "PhoneArena battery benchmark"
     },
     {
       "id": "tomsguide-honor-magic8pro",
