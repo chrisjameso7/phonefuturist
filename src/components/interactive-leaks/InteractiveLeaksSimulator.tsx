@@ -53,6 +53,10 @@ import {
   estimateLiveSustainedPerformance,
 } from '../../lib/simulation/modules/sustained-performance-estimator';
 
+import {
+  simulateTwoNodeThermals,
+} from '../../lib/simulation/modules/two-node-thermal';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -1124,25 +1128,36 @@ export default function InteractiveLeaksSimulator() {
           throttleTemperatureC,
           durationSeconds:
             numeric(form.thermalDurationSeconds) ?? 600,
-          ...(hasCompleteTwoNodeInput &&
-          socPackageThrottleTemperatureC !== undefined
+
+        })
+      : undefined;
+
+  const twoNodeThermalResult =
+    simulationInput &&
+    result &&
+    targetSocPowerW !== undefined &&
+    ambientTemperatureC !== undefined &&
+    hasCompleteTwoNodeInput &&
+    socPackageThrottleTemperatureC !== undefined
+      ? simulateTwoNodeThermals({
+          targetPowerW: targetSocPowerW,
+          ambientTemperatureC,
+          socToChassisResistanceCPerW,
+          chassisToAmbientResistanceCPerW,
+          socThermalMassJPerC,
+          chassisThermalMassJPerC,
+          socThrottleTemperatureC:
+            socPackageThrottleTemperatureC,
+          ...(surfaceComfortTemperatureC !==
+          undefined
             ? {
-                twoNode: {
-                  socToChassisResistanceCPerW,
-                  chassisToAmbientResistanceCPerW,
-                  socThermalMassJPerC,
-                  chassisThermalMassJPerC,
-                  socThrottleTemperatureC:
-                    socPackageThrottleTemperatureC,
-                  ...(surfaceComfortTemperatureC !==
-                  undefined
-                    ? {
-                        surfaceComfortTemperatureC,
-                      }
-                    : {}),
-                },
+                surfaceComfortTemperatureC,
               }
             : {}),
+          durationSeconds:
+            numeric(
+              form.thermalDurationSeconds,
+            ) ?? 600,
         })
       : undefined;
 
@@ -1211,6 +1226,77 @@ export default function InteractiveLeaksSimulator() {
         )
       : [];
 
+  const twoNodeThermalSummary =
+    twoNodeThermalResult ? (
+      <div className="il-thermal-two-node">
+        <span className="il-result-label">
+          Package / surface physics
+        </span>
+        <div className="il-metrics">
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .peakSocPackageTemperatureC,
+                1,
+              )} °C
+            </strong>
+            <span>Peak SoC/package</span>
+          </div>
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .peakChassisSurfaceTemperatureC,
+                1,
+              )} °C
+            </strong>
+            <span>Peak chassis/surface</span>
+          </div>
+          <div>
+            <strong>
+              {twoNodeThermalResult
+                .throttleStartSecond !== undefined
+                ? formatDurationSeconds(
+                    twoNodeThermalResult
+                      .throttleStartSecond,
+                  )
+                : 'No package throttle'}
+            </strong>
+            <span>Package throttle onset</span>
+          </div>
+          <div>
+            <strong>
+              {twoNodeThermalResult
+                .surfaceComfortCrossSecond !== undefined
+                ? formatDurationSeconds(
+                    twoNodeThermalResult
+                      .surfaceComfortCrossSecond,
+                  )
+                : 'Not crossed'}
+            </strong>
+            <span>Surface comfort threshold</span>
+          </div>
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .sustainedPerformancePercent,
+                1,
+              )}%
+            </strong>
+            <span>Two-node physics sustained perf</span>
+          </div>
+        </div>
+        <p className="il-help">
+          Independent two-node physics using only the explicit
+          package-to-chassis and chassis-to-ambient parameters above.
+          It does not require or inherit the legacy lumped thermal
+          resistance or thermal mass.
+        </p>
+      </div>
+    ) : null;
+
   return (
     <div className="il-app">
       <div className="il-toolbar">
@@ -1259,6 +1345,7 @@ export default function InteractiveLeaksSimulator() {
               displayExperience,
               batteryExperience,
               thermalResult,
+              twoNodeThermalResult,
               sustainedPerformanceEstimate,
               cameraExperiences,
             }}
@@ -3237,51 +3324,7 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
-                    {thermalResult.twoNode ? (
-                      <div className="il-thermal-two-node">
-                        <span className="il-result-label">
-                          Package / surface physics
-                        </span>
-                        <div className="il-metrics">
-                          <div>
-                            <strong>
-                              {format(
-                                thermalResult.twoNode
-                                  .peakSocPackageTemperatureC,
-                                1,
-                              )} °C
-                            </strong>
-                            <span>Peak SoC/package</span>
-                          </div>
-                          <div>
-                            <strong>
-                              {format(
-                                thermalResult.twoNode
-                                  .peakChassisSurfaceTemperatureC,
-                                1,
-                              )} °C
-                            </strong>
-                            <span>Peak chassis/surface</span>
-                          </div>
-                          <div>
-                            <strong>
-                              {thermalResult.twoNode
-                                .surfaceComfortCrossSecond !== undefined
-                                ? formatDurationSeconds(
-                                    thermalResult.twoNode
-                                      .surfaceComfortCrossSecond,
-                                  )
-                                : 'Not crossed'}
-                            </strong>
-                            <span>Surface comfort threshold</span>
-                          </div>
-                        </div>
-                        <p className="il-help">
-                          Two-node values appear only when explicit package-to-chassis
-                          and chassis-to-ambient physical parameters are supplied.
-                        </p>
-                      </div>
-                    ) : null}
+                    {twoNodeThermalSummary}
 
                     {thermalResult.protocolKey ? (
                       <p className="il-help">
@@ -3502,6 +3545,8 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     </div>
 
+                    {twoNodeThermalSummary}
+
                     <p className="il-help">
                       Evidence-only estimate ·{' '}
                       {SUSTAINED_PERFORMANCE_ESTIMATOR_VERSION}. This
@@ -3510,6 +3555,14 @@ export default function InteractiveLeaksSimulator() {
                       temperatures. Add explicit thermal physics in Advanced
                       Mode to simulate temperatures.
                     </p>
+                  </>
+                ) : twoNodeThermalResult ? (
+                  <>
+                    {twoNodeThermalSummary}
+                    <div className="il-empty">
+                      {sustainedPerformanceEstimate?.unresolvedReason ??
+                        'No compatible measured sustained-performance evidence is available for this configuration. Package and surface temperatures are still shown from the explicit two-node physics.'}
+                    </div>
                   </>
                 ) : (
                   <div className="il-empty">
