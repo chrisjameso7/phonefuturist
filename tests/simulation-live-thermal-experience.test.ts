@@ -98,6 +98,7 @@ describe('live thermal experience', () => {
           chassisToAmbientResistanceCPerW: 3.4,
           socThermalMassJPerC: 12,
           chassisThermalMassJPerC: 55,
+          socThrottleTemperatureC: 80,
           surfaceComfortTemperatureC: 40,
         },
       },
