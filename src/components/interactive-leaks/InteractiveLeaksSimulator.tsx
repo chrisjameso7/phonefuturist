@@ -73,6 +73,10 @@ import {
   calculateSocArchitecture,
 } from '../../lib/simulation/modules/soc-architecture';
 
+import {
+  buildPredictionSnapshot,
+} from '../../lib/simulation/modules/prediction-snapshot-builder';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -808,6 +812,14 @@ export default function InteractiveLeaksSimulator() {
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
 
+  const [predictionSaveState, setPredictionSaveState] =
+    useState<
+      | { status: 'idle' }
+      | { status: 'saving'; message: string }
+      | { status: 'saved'; message: string }
+      | { status: 'error'; message: string }
+    >({ status: 'idle' });
+
   const result = useMemo(
     () =>
       simulationInput
@@ -1108,11 +1120,13 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function simulate() {
+    setPredictionSaveState({ status: 'idle' });
     setSimulationInput(buildInput());
     setHasSimulated(true);
   }
 
   function loadExample() {
+    setPredictionSaveState({ status: 'idle' });
     setForm(flagshipExample);
     setCameras(flagshipCameras);
     setSimulationInput(null);
@@ -1120,6 +1134,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function clearSimulation() {
+    setPredictionSaveState({ status: 'idle' });
     setForm(initialForm);
     setCameras([]);
     setSimulationInput(null);
@@ -1665,6 +1680,188 @@ export default function InteractiveLeaksSimulator() {
     cameraZoomHandoff,
   };
 
+  async function savePrediction() {
+    if (
+      !result ||
+      !simulationInput ||
+      predictionSaveState.status === 'saving'
+    ) {
+      return;
+    }
+
+    const runtime = (
+      workload:
+        | 'web_browsing'
+        | 'video_playback'
+        | 'gaming',
+    ) =>
+      batteryExperience?.runtimes.find(
+        (row) =>
+          row.workload === workload &&
+          row.status === 'resolved',
+      )?.expectedHours;
+
+    const fullChargeMinutes =
+      chargingResult?.status === 'resolved'
+        ? chargingResult.estimate
+            ?.timeTo100Minutes?.expected
+        : undefined;
+
+    const peakScore =
+      peakPerformanceEstimate?.status === 'resolved'
+        ? peakPerformanceEstimate.adjustedExpected
+        : undefined;
+
+    const snapshot =
+      buildPredictionSnapshot({
+        deviceName:
+          simulationInput.name?.trim() ||
+          form.name.trim() ||
+          'Untitled concept',
+        simulation: result,
+        corpusVersion:
+          batteryExperience?.corpusVersion,
+        simulatorVersion:
+          'interactive-leaks-beta',
+        experiences: {
+          ...(fullChargeMinutes !== undefined
+            ? {
+                wiredFullChargeMinutes:
+                  fullChargeMinutes,
+              }
+            : {}),
+          ...(runtime('web_browsing') !== undefined
+            ? {
+                webRuntimeHours:
+                  runtime('web_browsing'),
+              }
+            : {}),
+          ...(runtime('video_playback') !== undefined
+            ? {
+                videoRuntimeHours:
+                  runtime('video_playback'),
+              }
+            : {}),
+          ...(runtime('gaming') !== undefined
+            ? {
+                gamingRuntimeHours:
+                  runtime('gaming'),
+              }
+            : {}),
+          ...(thermalResult?.status === 'resolved' &&
+          thermalResult.sustainedPerformancePercent !==
+            undefined
+            ? {
+                sustainedPerformancePercent:
+                  thermalResult.sustainedPerformancePercent,
+              }
+            : {}),
+          ...(peakScore !== undefined
+            ? {
+                peakBenchmarkScore:
+                  peakScore,
+                peakBenchmarkLabel:
+                  form.peakBenchmarkDomain.replaceAll(
+                    '_',
+                    ' ',
+                  ),
+                peakBenchmarkProvenance:
+                  peakPerformanceEstimate?.assumptionApplied
+                    ? ('assumption-adjusted' as const)
+                    : ('measured-calibrated' as const),
+              }
+            : {}),
+          ...(displayExperience?.electricalPower.status ===
+            'resolved' &&
+          displayExperience.electricalPower
+            .expectedPowerW !== undefined
+            ? {
+                displayPanelPowerW:
+                  displayExperience.electricalPower
+                    .expectedPowerW,
+              }
+            : {}),
+        },
+        assumptions: {
+          workspaceMode,
+          manufacturer:
+            form.manufacturer.trim() || null,
+          socVendor:
+            form.socVendor.trim() || null,
+          socName:
+            form.socName.trim() || null,
+          peakBenchmarkDomain:
+            form.peakBenchmarkDomain,
+          assumedGenerationUpliftPercent:
+            numeric(
+              form.assumedGenerationUpliftPercent,
+            ) ?? null,
+          thermalDomain:
+            form.thermalDomain,
+          batteryChemistry:
+            form.batteryChemistry.trim() || null,
+          chargingStandard:
+            form.chargingStandard.trim() || null,
+          form,
+          cameras,
+        },
+      });
+
+    setPredictionSaveState({
+      status: 'saving',
+      message: 'Saving frozen prediction…',
+    });
+
+    try {
+      const response = await fetch(
+        '/api/simulation-predictions',
+        {
+          method: 'POST',
+          headers: {
+            'content-type':
+              'application/json',
+          },
+          body: JSON.stringify({
+            snapshot,
+          }),
+        },
+      );
+
+      const payload =
+        await response.json().catch(
+          () => ({}),
+        ) as {
+          ok?: boolean;
+          id?: string;
+          error?: string;
+        };
+
+      if (
+        !response.ok ||
+        !payload.ok
+      ) {
+        throw new Error(
+          payload.error ||
+            'Prediction could not be saved.',
+        );
+      }
+
+      setPredictionSaveState({
+        status: 'saved',
+        message:
+          'Prediction frozen and saved. Future reality measurements will be compared against this exact snapshot.',
+      });
+    } catch (error) {
+      setPredictionSaveState({
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Prediction could not be saved.',
+      });
+    }
+  }
+
   const twoNodeThermalSummary =
     twoNodeThermalResult ? (
       <div className="il-thermal-two-node">
@@ -1781,6 +1978,20 @@ export default function InteractiveLeaksSimulator() {
           <button
             type="button"
             className="secondary"
+            disabled={
+              !result ||
+              predictionSaveState.status === 'saving'
+            }
+            onClick={savePrediction}
+          >
+            {predictionSaveState.status === 'saving'
+              ? 'Saving…'
+              : 'Save prediction'}
+          </button>
+
+          <button
+            type="button"
+            className="secondary"
             onClick={loadExample}
           >
             Load example
@@ -1795,6 +2006,19 @@ export default function InteractiveLeaksSimulator() {
           </button>
         </div>
       </div>
+
+      {predictionSaveState.status !== 'idle' ? (
+        <div
+          className="il-help"
+          role={
+            predictionSaveState.status === 'error'
+              ? 'alert'
+              : 'status'
+          }
+        >
+          {predictionSaveState.message}
+        </div>
+      ) : null}
 
       {workspaceMode === 'simple' ? (
         <SimpleModePanel onRun={runSimpleMode} />
