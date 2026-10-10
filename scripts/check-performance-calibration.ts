@@ -19,7 +19,7 @@ if (result.worstMisses.length) {
 
   for (const row of result.worstMisses) {
     console.log(
-      `  ${row.deviceVariantId} · actual ${row.actualPercent.toFixed(1)}% · predicted ${row.predictedPercent.toFixed(1)}% · error ${row.absoluteErrorPoints.toFixed(1)} pts · ${row.referenceCount} refs · same-vendor ${row.sameSocVendorReferences} · similarity ${(row.averageSimilarity * 100).toFixed(0)}% · coverage ${(row.averageCoverage * 100).toFixed(0)}%`,
+      `  ${row.deviceVariantId} · actual ${row.actualPercent.toFixed(1)}% · predicted ${row.predictedPercent.toFixed(1)}% · error ${row.absoluteErrorPoints.toFixed(1)} pts · ${row.referenceCount} used · scope ${row.evidenceScope} · same-family ${row.sameSocFamilyReferences} · same-vendor ${row.sameSocVendorReferences} · similarity ${(row.averageSimilarity * 100).toFixed(0)}% · coverage ${(row.averageCoverage * 100).toFixed(0)}%`,
     );
   }
 }
