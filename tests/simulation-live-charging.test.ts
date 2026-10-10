@@ -10,7 +10,7 @@ describe('live charging simulator', () => {
     });
 
     expect(result.simulatorVersion).toBe('live-charging-simulator-0.1.0');
-    expect(result.corpusVersion).toBe('calibration-registry-0.2.0');
+    expect(result.corpusVersion).toBe('calibration-registry-0.3.0');
     expect(['resolved', 'unresolved']).toContain(result.status);
   });
 });
