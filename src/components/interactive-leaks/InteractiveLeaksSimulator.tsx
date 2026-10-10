@@ -5466,6 +5466,32 @@ export default function InteractiveLeaksSimulator() {
                                   </span>
                                 ) : null}
 
+                                {scenario.deltaSubjectMotionBlurPercent !== undefined ? (
+                                  <span>
+                                    Δ subject blur{' '}
+                                    {scenario.deltaSubjectMotionBlurPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaSubjectMotionBlurPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaCameraShakeBlurPercent !== undefined ? (
+                                  <span>
+                                    Δ camera shake blur{' '}
+                                    {scenario.deltaCameraShakeBlurPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaCameraShakeBlurPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
                                 {scenario.deltaPixelPitchPercent !== undefined ? (
                                   <span>
                                     Δ pixel pitch{' '}
