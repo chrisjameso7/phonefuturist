@@ -101,6 +101,7 @@ export function backtestGpuStability(
   const candidates = corpus.measurements.filter(
     (measurement) =>
       measurement.workload === 'benchmark' &&
+      measurement.evidenceKind === 'measured' &&
       measurement.metric === 'gpu_stability_percent' &&
       measurement.unit.toLowerCase() === 'percent' &&
       Number.isFinite(measurement.value),
