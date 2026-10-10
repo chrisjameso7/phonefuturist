@@ -107,7 +107,9 @@ type FormState = {
   aspectWidth: string;
   aspectHeight: string;
   refreshRateHz: string;
+  operatingRefreshRateHz: string;
   brightnessNits: string;
+  averagePictureLevelPercent: string;
   panelTechnology: string;
 
   bezelTopMm: string;
@@ -186,7 +188,9 @@ const initialForm: FormState = {
   aspectWidth: '',
   aspectHeight: '',
   refreshRateHz: '',
+  operatingRefreshRateHz: '',
   brightnessNits: '',
+  averagePictureLevelPercent: '',
   panelTechnology: '',
 
   bezelTopMm: '',
@@ -255,7 +259,9 @@ const flagshipExample: FormState = {
   aspectWidth: '9',
   aspectHeight: '20',
   refreshRateHz: '120',
+  operatingRefreshRateHz: '120',
   brightnessNits: '1000',
+  averagePictureLevelPercent: '50',
   panelTechnology: 'LTPO OLED',
 
   bezelTopMm: '1.5',
@@ -1024,7 +1030,11 @@ export default function InteractiveLeaksSimulator() {
           aspectHeight:
             simulationInput.displays.primary.aspectHeight,
           refreshRateHz: numeric(form.refreshRateHz),
+          operatingRefreshRateHz:
+            numeric(form.operatingRefreshRateHz),
           brightnessNits: numeric(form.brightnessNits),
+          averagePictureLevelPercent:
+            numeric(form.averagePictureLevelPercent),
           panelTechnology:
             form.panelTechnology.trim() || undefined,
         })
@@ -1769,6 +1779,48 @@ export default function InteractiveLeaksSimulator() {
                 />
               </label>
             </div>
+
+            <details className="il-advanced">
+              <summary>Display workload conditions</summary>
+
+              <p className="il-help">
+                These describe the current content/workload, not the panel's
+                maximum specification. APL is the average picture level:
+                0% is black, 100% is full-white-equivalent content.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Operating refresh"
+                  suffix="Hz"
+                  value={form.operatingRefreshRateHz}
+                  placeholder="60"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'operatingRefreshRateHz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Average picture level"
+                  suffix="%"
+                  value={
+                    form.averagePictureLevelPercent
+                  }
+                  placeholder="50"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'averagePictureLevelPercent',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
 
             <details className="il-advanced">
               <summary>Advanced bezel geometry</summary>
@@ -2945,7 +2997,116 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>Panel technology</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.operatingRefreshRateHz !==
+                          undefined
+                            ? `${format(
+                                displayExperience.load
+                                  .operatingRefreshRateHz,
+                                0,
+                              )} Hz`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Operating refresh</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.aplFraction !== undefined
+                            ? `${format(
+                                displayExperience.load.aplFraction *
+                                  100,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Average picture level</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.emissiveContentLoadIndex !==
+                          undefined
+                            ? format(
+                                displayExperience.load
+                                  .emissiveContentLoadIndex,
+                                0,
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>OLED emissive content load index</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.refreshDutyVsMaximum !==
+                          undefined
+                            ? `${format(
+                                displayExperience.load
+                                  .refreshDutyVsMaximum *
+                                  100,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Refresh duty vs maximum</span>
+                      </div>
                     </div>
+
+                    {displayExperience.load.scenarios.length ? (
+                      <div className="il-display-sensitivity">
+                        <span className="il-result-label">
+                          Content-aware display load
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {displayExperience.load.scenarios.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+
+                                {scenario.deltaEmissionLoadPercent !==
+                                undefined ? (
+                                  <span>
+                                    Δ emissive load{' '}
+                                    {scenario.deltaEmissionLoadPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaEmissionLoadPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPixelScanPercent !==
+                                undefined ? (
+                                  <span>
+                                    Δ pixel scan{' '}
+                                    {scenario.deltaPixelScanPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPixelScanPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                        <p className="il-help">
+                          {displayExperience.load.note}
+                        </p>
+                      </div>
+                    ) : null}
 
                     {displayRuntimeSensitivity &&
                     displayRuntimeSensitivity.status !==
