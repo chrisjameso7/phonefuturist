@@ -35,8 +35,13 @@ describe('Simple Mode engine', () => {
     expect(result.battery.capacityMah).toBe(5700);
     expect(result.cameras).toHaveLength(1);
     expect(
-      result.cameras[0].physics.resolutionMp,
-    ).toBeUndefined();
+      result.cameras[0].physics
+        .approximatePixelPitchMicrons,
+    ).toBeGreaterThan(0);
+    expect(
+      result.cameras[0].physics
+        .geometricLightCaptureIndex,
+    ).toBeGreaterThan(0);
 
     expect(result.thermal.status).toBe(
       'advanced-only',
