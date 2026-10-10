@@ -45,7 +45,7 @@ function normalize(value: string) {
 }
 
 
-function normalizeSocName(value: string) {
+export function normalizeSocFamily(value: string) {
   return normalize(value)
     .replace(/\bfor galaxy\b/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
@@ -96,10 +96,10 @@ export function findComparableDevices(
 
       if (device.variant.soc?.name) {
         const same =
-          normalizeSocName(
+          normalizeSocFamily(
             device.variant.soc.name,
           ) ===
-          normalizeSocName(query.socName);
+          normalizeSocFamily(query.socName);
 
         weighted += (same ? 1 : 0) * 4;
         coveredWeight += 4;
