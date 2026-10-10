@@ -282,7 +282,10 @@ export function resolveCorpusRuntimeBand(
         ? sameVendor
         : protocolValues;
 
-  const evidenceScope =
+  const evidenceScope:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort' =
     values === sameFamily
       ? 'same-soc-family'
       : values === sameVendor
