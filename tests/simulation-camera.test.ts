@@ -155,6 +155,51 @@ describe('camera simulation module', () => {
     ).toBe('infinity');
   });
 
+  it('checks the minimum optical footprint against explicit module dimensions', () => {
+    const plausible = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.6,
+      moduleWidthMm: 20,
+      moduleHeightMm: 20,
+      moduleDepthMm: 6,
+    });
+
+    expect(
+      plausible.result.minimumOpticalFootprintWidthMm,
+    ).toBeGreaterThan(0);
+    expect(
+      plausible.result.minimumOpticalFootprintHeightMm,
+    ).toBeGreaterThan(0);
+    expect(
+      plausible.result.opticalFootprintFitsModule,
+    ).toBe(true);
+
+    const impossible = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.0,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.4,
+      moduleWidthMm: 6,
+      moduleHeightMm: 6,
+      moduleDepthMm: 6,
+    });
+
+    expect(
+      impossible.result.opticalFootprintFitsModule,
+    ).toBe(false);
+    expect(
+      impossible.warnings.some(
+        (warning) =>
+          warning.code ===
+          'CAMERA_OPTICAL_FOOTPRINT_EXCEEDS_MODULE',
+      ),
+    ).toBe(true);
+  });
+
   it('calculates camera module volume only from explicit module dimensions', () => {
     const calculation = calculateCamera({
       type: 'periscope',
