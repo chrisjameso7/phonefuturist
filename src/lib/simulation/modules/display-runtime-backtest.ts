@@ -170,6 +170,27 @@ export function backtestDisplayAwareRuntime(
         continue;
       }
 
+      const measurementSource =
+        corpus.sources.find(
+          (source) =>
+            source.id === measurement.sourceId,
+        );
+
+      const protocolSelector = {
+        ...(measurementSource?.protocol
+          ? {
+              protocol:
+                measurementSource.protocol,
+            }
+          : {}),
+        ...(measurementSource?.protocolVersion
+          ? {
+              protocolVersion:
+                measurementSource.protocolVersion,
+            }
+          : {}),
+      };
+
       const holdout: DeviceCorpus = {
         version:
           `${corpus.version}-display-holdout-${device.variant.id}`,
@@ -187,11 +208,13 @@ export function backtestDisplayAwareRuntime(
         holdout,
         buildInput(device, capacityMah, false),
         workload,
+        protocolSelector,
       );
       const aware = resolveCorpusRuntimeBand(
         holdout,
         buildInput(device, capacityMah, true),
         workload,
+        protocolSelector,
       );
 
       if (
