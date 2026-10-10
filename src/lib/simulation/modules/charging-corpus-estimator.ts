@@ -598,16 +598,28 @@ export function estimateChargingFromCorpus(
     };
   }
 
-  const useWhNormalization =
-    query.batteryEnergyWh !== undefined &&
-    Number.isFinite(query.batteryEnergyWh) &&
-    query.batteryEnergyWh > 0 &&
-    comparable.references.every(
+  const energyCapableReferences =
+    comparable.references.filter(
       (reference) =>
         reference.batteryEnergyWh !== undefined &&
         Number.isFinite(reference.batteryEnergyWh) &&
         reference.batteryEnergyWh > 0,
     );
+
+  const useWhNormalization =
+    query.batteryEnergyWh !== undefined &&
+    Number.isFinite(query.batteryEnergyWh) &&
+    query.batteryEnergyWh > 0 &&
+    energyCapableReferences.length >= 2;
+
+  // Never mix Wh-normalized and mAh-normalized rows in one estimate. When
+  // the target has known energy and at least two comparable references also
+  // have accepted energy evidence, use that energy-capable cohort only.
+  // Otherwise fall back to the complete mAh-capable comparable cohort.
+  const estimationReferences =
+    useWhNormalization
+      ? energyCapableReferences
+      : comparable.references;
 
   const powerResponse = resolveChargingPowerResponse(corpus, {
     manufacturer: query.manufacturer,
@@ -616,7 +628,7 @@ export function estimateChargingFromCorpus(
     targetWatts: query.wiredChargingWatts,
   });
 
-  const weights = comparable.references.map((reference) => {
+  const weights = estimationReferences.map((reference) => {
     const capacityScale =
       reference.batteryMah !== undefined && reference.batteryMah > 0
         ? query.batteryMah / reference.batteryMah
@@ -770,11 +782,18 @@ export function estimateChargingFromCorpus(
   }
 
   const confidence =
-    comparable.references.reduce((sum, ref) => sum + ref.score, 0) /
-    comparable.references.length;
+    estimationReferences.reduce(
+      (sum, ref) =>
+        sum + ref.score,
+      0,
+    ) /
+    estimationReferences.length;
 
   const neighborIds = new Set(
-    comparable.references.map((reference) => reference.deviceVariantId),
+    estimationReferences.map(
+      (reference) =>
+        reference.deviceVariantId,
+    ),
   );
 
   const thermalContext = resolveChargingThermalContext(
@@ -854,12 +873,12 @@ export function estimateChargingFromCorpus(
     basis: 'weighted-comparable-corpus',
     referenceCount: neighborIds.size,
     referenceModeCount:
-      comparable.references.length,
+      estimationReferences.length,
     normalizationBasis:
       useWhNormalization ? 'wh' : 'mah',
     sourceRecordCount:
       new Set(
-        comparable.references
+        estimationReferences
           .map(
             (reference) =>
               reference.sourceId,
@@ -872,7 +891,7 @@ export function estimateChargingFromCorpus(
       ).size,
     publisherCount:
       new Set(
-        comparable.references
+        estimationReferences
           .map(
             (reference) =>
               reference.sourcePublisher,
@@ -917,8 +936,8 @@ export function estimateChargingFromCorpus(
     },
     note:
       powerResponse.status === 'resolved'
-        ? `Estimate is weighted toward the closest released-device charging references. Full-charge time and early-charge percentage use separate same-device multi-watt response evidence when available, then normalize for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.`
-        : `Estimate is weighted toward the closest released-device charging references and normalized for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}. No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.`,
+        ? `Estimate is weighted toward the closest released-device charging references. Full-charge time and early-charge percentage use separate same-device multi-watt response evidence when available, then normalize for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}.${useWhNormalization && energyCapableReferences.length < comparable.references.length ? ` The active cohort was narrowed from ${comparable.references.length} comparable modes to ${energyCapableReferences.length} modes with accepted battery-energy evidence so Wh and mAh normalization are never mixed.` : ''} Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.`
+        : `Estimate is weighted toward the closest released-device charging references and normalized for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}.${useWhNormalization && energyCapableReferences.length < comparable.references.length ? ` The active cohort was narrowed from ${comparable.references.length} comparable modes to ${energyCapableReferences.length} modes with accepted battery-energy evidence so Wh and mAh normalization are never mixed.` : ''} No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.`,
   };
 
   if (p30Values.length && expectedP30 !== undefined) {
