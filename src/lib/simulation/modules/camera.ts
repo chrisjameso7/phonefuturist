@@ -15,6 +15,14 @@ export interface CameraInput {
    */
   sensorFormatDenominator?: number;
 
+  /**
+   * Exact active sensor dimensions when known. When both are valid they
+   * override optical-format-derived geometry for area, pixel pitch, FOV and
+   * light-capture calculations.
+   */
+  sensorWidthMm?: number;
+  sensorHeightMm?: number;
+
   resolutionMp?: number;
 
   /** 35 mm equivalent focal length. */
@@ -114,6 +122,16 @@ export interface CalculatedCamera {
   approximateSensorWidthMm?: number;
   approximateSensorHeightMm?: number;
   approximateSensorAreaMm2?: number;
+
+  /** Active sensor geometry actually used by deterministic calculations. */
+  activeSensorDiagonalMm?: number;
+  activeSensorWidthMm?: number;
+  activeSensorHeightMm?: number;
+  activeSensorAreaMm2?: number;
+  sensorGeometrySource?:
+    | 'exact-dimensions'
+    | 'optical-format-approximation';
+  activeSensorCropFactor?: number;
 
   /**
    * Optical-format-derived crop factor against a 35 mm full-frame diagonal.
@@ -367,6 +385,75 @@ export function calculateCamera(
     }
   }
 
+  const hasExactSensorDimensions =
+    input.sensorWidthMm !== undefined ||
+    input.sensorHeightMm !== undefined;
+
+  if (hasExactSensorDimensions) {
+    if (
+      input.sensorWidthMm !== undefined &&
+      input.sensorHeightMm !== undefined &&
+      isPositiveFinite(input.sensorWidthMm) &&
+      isPositiveFinite(input.sensorHeightMm)
+    ) {
+      result.activeSensorWidthMm =
+        input.sensorWidthMm;
+      result.activeSensorHeightMm =
+        input.sensorHeightMm;
+      result.activeSensorDiagonalMm =
+        Math.hypot(
+          input.sensorWidthMm,
+          input.sensorHeightMm,
+        );
+      result.activeSensorAreaMm2 =
+        input.sensorWidthMm *
+        input.sensorHeightMm;
+      result.activeSensorCropFactor =
+        FULL_FRAME_DIAGONAL_MM /
+        result.activeSensorDiagonalMm;
+      result.sensorGeometrySource =
+        'exact-dimensions';
+    } else {
+      warnings.push({
+        code: 'INVALID_EXACT_SENSOR_DIMENSIONS',
+        message:
+          'Exact sensor width and height must both be positive finite values.',
+      });
+    }
+  }
+
+  if (
+    result.sensorGeometrySource === undefined &&
+    result.approximateSensorWidthMm !== undefined &&
+    result.approximateSensorHeightMm !== undefined &&
+    result.approximateSensorDiagonalMm !== undefined &&
+    sensorArea !== undefined
+  ) {
+    result.activeSensorWidthMm =
+      result.approximateSensorWidthMm;
+    result.activeSensorHeightMm =
+      result.approximateSensorHeightMm;
+    result.activeSensorDiagonalMm =
+      result.approximateSensorDiagonalMm;
+    result.activeSensorAreaMm2 =
+      result.approximateSensorAreaMm2;
+    result.activeSensorCropFactor =
+      result.approximateCropFactor;
+    result.sensorGeometrySource =
+      'optical-format-approximation';
+  }
+
+  const sensorWidth =
+    result.activeSensorWidthMm;
+  const sensorHeight =
+    result.activeSensorHeightMm;
+  const sensorDiagonal =
+    result.activeSensorDiagonalMm;
+  const sensorArea =
+    result.activeSensorAreaMm2;
+  const sensorCrop =
+    result.activeSensorCropFactor;
+
   const hasEquivalentFocalLength =
     input.equivalentFocalLengthMm !== undefined;
 
@@ -406,11 +493,11 @@ export function calculateCamera(
   } else if (
     input.equivalentFocalLengthMm !== undefined &&
     isPositiveFinite(input.equivalentFocalLengthMm) &&
-    result.approximateCropFactor !== undefined
+    sensorCrop !== undefined
   ) {
     physicalFocalLength =
       input.equivalentFocalLengthMm /
-      result.approximateCropFactor;
+      sensorCrop;
 
     result.effectivePhysicalFocalLengthMm =
       physicalFocalLength;
@@ -644,14 +731,14 @@ export function calculateCamera(
         );
     }
 
-    if (result.approximateSensorAreaMm2 !== undefined) {
+    if (sensorArea !== undefined) {
       result.geometricLightCaptureIndex =
-        result.approximateSensorAreaMm2 /
+        sensorArea /
         (n * n);
 
       if (result.exposureThroughput !== undefined) {
         result.exposureLightCaptureIndex =
-          result.approximateSensorAreaMm2 *
+          sensorArea *
           result.exposureThroughput;
 
         if (
@@ -669,7 +756,7 @@ export function calculateCamera(
 
     const crop =
       result.cropFactor ??
-      result.approximateCropFactor;
+      sensorCrop;
 
     if (crop !== undefined) {
       result.equivalentApertureFNumber = n * crop;
@@ -701,11 +788,12 @@ export function calculateCamera(
   if (
     input.resolutionMp !== undefined &&
     isPositiveFinite(input.resolutionMp) &&
-    result.approximateSensorAreaMm2 !== undefined
+    sensorArea !== undefined
   ) {
     // mm² / MP is numerically equal to µm² per pixel.
+    // Exact active dimensions win over optical-format approximation.
     const pixelAreaMicrons2 =
-      result.approximateSensorAreaMm2 /
+      sensorArea /
       input.resolutionMp;
 
     result.approximatePixelPitchMicrons =
@@ -904,10 +992,10 @@ export function calculateCamera(
       }
 
       if (
-        result.approximateSensorAreaMm2 !== undefined
+        sensorArea !== undefined
       ) {
         result.croppedSensorAreaMm2 =
-          result.approximateSensorAreaMm2 *
+          sensorArea *
           retainedAreaFraction;
       }
 
@@ -1014,11 +1102,11 @@ export function calculateCamera(
       }
 
       if (
-        result.approximateSensorAreaMm2 !== undefined &&
+        sensorArea !== undefined &&
         result.croppedSensorAreaMm2 === undefined
       ) {
         result.croppedSensorAreaMm2 =
-          result.approximateSensorAreaMm2 *
+          sensorArea *
           retainedAreaFraction;
       }
 
@@ -1077,7 +1165,7 @@ export function calculateCamera(
   ) {
     const crop =
       result.cropFactor ??
-      result.approximateCropFactor;
+      sensorCrop;
 
     if (
       crop !== undefined &&
@@ -1208,39 +1296,39 @@ export function calculateCamera(
 
   if (
     physicalFocalLength !== undefined &&
-    result.approximateSensorWidthMm !== undefined &&
-    result.approximateSensorHeightMm !== undefined &&
-    result.approximateSensorDiagonalMm !== undefined
+    sensorWidth !== undefined &&
+    sensorHeight !== undefined &&
+    sensorDiagonal !== undefined
   ) {
     result.horizontalFieldOfViewDeg = fieldOfViewDeg(
-      result.approximateSensorWidthMm,
+      sensorWidth,
       physicalFocalLength,
     );
 
     result.verticalFieldOfViewDeg = fieldOfViewDeg(
-      result.approximateSensorHeightMm,
+      sensorHeight,
       physicalFocalLength,
     );
 
     result.diagonalFieldOfViewDeg = fieldOfViewDeg(
-      result.approximateSensorDiagonalMm,
+      sensorDiagonal,
       physicalFocalLength,
     );
   }
 
 
   if (
-    result.approximateSensorWidthMm !== undefined ||
-    result.approximateSensorHeightMm !== undefined ||
+    sensorWidth !== undefined ||
+    sensorHeight !== undefined ||
     result.entrancePupilDiameterMm !== undefined
   ) {
     const requiredWidth = Math.max(
-      result.approximateSensorWidthMm ?? 0,
+      sensorWidth ?? 0,
       result.entrancePupilDiameterMm ?? 0,
     );
 
     const requiredHeight = Math.max(
-      result.approximateSensorHeightMm ?? 0,
+      sensorHeight ?? 0,
       result.entrancePupilDiameterMm ?? 0,
     );
 
