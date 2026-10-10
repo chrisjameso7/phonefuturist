@@ -12,6 +12,21 @@ export type BetaFeedbackSimulatorMode =
   | 'simple'
   | 'advanced';
 
+export type BetaFeedbackStatus =
+  | 'new'
+  | 'reviewing'
+  | 'planned'
+  | 'fixed'
+  | 'wont_fix';
+
+export interface BetaFeedbackAccessState {
+  active?: boolean;
+  verified?: boolean;
+  roles?: unknown;
+  mfa_required?: boolean;
+  aal?: string;
+}
+
 export interface BetaFeedbackVersions {
   simulatorVersion?: string;
   engineVersion?: string;
@@ -216,4 +231,59 @@ export function createBetaFeedbackReference(
     id,
     reference: `PF-BETA-${compact}`,
   };
+}
+
+
+const STATUSES = new Set<BetaFeedbackStatus>([
+  'new',
+  'reviewing',
+  'planned',
+  'fixed',
+  'wont_fix',
+]);
+
+export function isBetaFeedbackStatus(
+  value: unknown,
+): value is BetaFeedbackStatus {
+  return (
+    typeof value === 'string' &&
+    STATUSES.has(value as BetaFeedbackStatus)
+  );
+}
+
+export function canTriageBetaFeedback(
+  access: BetaFeedbackAccessState | null | undefined,
+) {
+  if (
+    !access?.active ||
+    !access.verified ||
+    !Array.isArray(access.roles)
+  ) {
+    return false;
+  }
+
+  const roles = new Set(
+    access.roles.filter(
+      (role): role is string =>
+        typeof role === 'string',
+    ),
+  );
+
+  const isStaff =
+    roles.has('admin') ||
+    roles.has('publisher') ||
+    roles.has('editor');
+
+  if (!isStaff) {
+    return false;
+  }
+
+  if (
+    access.mfa_required &&
+    access.aal !== 'aal2'
+  ) {
+    return false;
+  }
+
+  return true;
 }
