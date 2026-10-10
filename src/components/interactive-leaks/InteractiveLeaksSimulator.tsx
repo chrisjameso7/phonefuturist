@@ -74,6 +74,10 @@ type CameraDraft = {
   equivalentFocalLengthMm: string;
   physicalFocalLengthMm: string;
   apertureFNumber: string;
+  exposureTimeSeconds?: string;
+  lensTransmissionFraction?: string;
+  quantumEfficiencyFraction?: string;
+  binningLinearFactor?: string;
   focusDistanceM: string;
   moduleWidthMm: string;
   moduleHeightMm: string;
@@ -452,6 +456,10 @@ function emptyCamera(id: number): CameraDraft {
     equivalentFocalLengthMm: '',
     physicalFocalLengthMm: '',
     apertureFNumber: '',
+    exposureTimeSeconds: '',
+    lensTransmissionFraction: '',
+    quantumEfficiencyFraction: '',
+    binningLinearFactor: '',
     focusDistanceM: '',
     moduleWidthMm: '',
     moduleHeightMm: '',
@@ -481,6 +489,22 @@ function cameraInput(
 
     apertureFNumber: numeric(
       camera.apertureFNumber,
+    ),
+
+    exposureTimeSeconds: numeric(
+      camera.exposureTimeSeconds ?? '',
+    ),
+
+    lensTransmissionFraction: numeric(
+      camera.lensTransmissionFraction ?? '',
+    ),
+
+    quantumEfficiencyFraction: numeric(
+      camera.quantumEfficiencyFraction ?? '',
+    ),
+
+    binningLinearFactor: numeric(
+      camera.binningLinearFactor ?? '',
     ),
 
     focusDistanceM: numeric(
@@ -2405,6 +2429,65 @@ export default function InteractiveLeaksSimulator() {
                         />
 
                         <NumericField
+                          label="Exposure time"
+                          suffix="s"
+                          value={
+                            camera.exposureTimeSeconds ?? ''
+                          }
+                          placeholder="0.0333"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              exposureTimeSeconds: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Lens transmission"
+                          suffix="0–1"
+                          value={
+                            camera.lensTransmissionFraction ?? ''
+                          }
+                          placeholder="0.8"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              lensTransmissionFraction: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Quantum efficiency"
+                          suffix="0–1"
+                          value={
+                            camera.quantumEfficiencyFraction ?? ''
+                          }
+                          placeholder="0.65"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              quantumEfficiencyFraction: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Pixel binning"
+                          suffix="linear"
+                          value={
+                            camera.binningLinearFactor ?? ''
+                          }
+                          placeholder="2"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              binningLinearFactor: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
                           label="Module width"
                           suffix="mm"
                           value={camera.moduleWidthMm}
@@ -3785,6 +3868,44 @@ export default function InteractiveLeaksSimulator() {
                           )}
                         </strong>
                         <span>Per-pixel light proxy</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.exposureLightCaptureIndex,
+                            4,
+                          )}
+                        </strong>
+                        <span>Exposure-aware total light</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.photoelectronCaptureIndex,
+                            4,
+                          )}
+                        </strong>
+                        <span>QE-aware capture proxy</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.effectiveBinnedResolutionMp !== undefined
+                            ? `${format(camera.effectiveBinnedResolutionMp, 1)} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Binned output resolution</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.effectiveBinnedPixelPitchMicrons !== undefined
+                            ? `${format(camera.effectiveBinnedPixelPitchMicrons, 2)} µm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Effective binned pixel pitch</span>
                       </div>
 
                       <div>
