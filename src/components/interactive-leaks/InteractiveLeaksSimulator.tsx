@@ -2967,6 +2967,16 @@ export default function InteractiveLeaksSimulator() {
                                   {runtime.sameSocVendorReferences ?? 0} same-vendor
                                 </small>
                               ) : null}
+                              <small>
+                                {runtime.independentSourceCount ?? 0} source
+                                {(runtime.independentSourceCount ?? 0) === 1
+                                  ? ''
+                                  : 's'} ·{' '}
+                                {runtime.protocolFamilyCount ?? 0} protocol family
+                                {(runtime.protocolFamilyCount ?? 0) === 1
+                                  ? ''
+                                  : 'ies'}
+                              </small>
                             </div>
                           ))}
                       </div>
@@ -3074,6 +3084,13 @@ export default function InteractiveLeaksSimulator() {
                           {chargingResult.estimate.referenceModeCount}
                         </strong>
                         <span>Charging modes used</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.independentSourceCount}
+                        </strong>
+                        <span>Independent sources</span>
                       </div>
 
                       {chargingResult.estimate.measurementCount !== undefined ? (
