@@ -129,6 +129,16 @@ function weightedPrediction(
               targetSocVendor,
           ).length
         : 0,
+    sameSocFamilyReferences:
+      targetSocName
+        ? usable.filter(
+            (reference) =>
+              reference.socName &&
+              normalizeSocFamily(reference.socName) ===
+                normalizeSocFamily(targetSocName),
+          ).length
+        : 0,
+    evidenceScope,
   };
 }
 
