@@ -1226,6 +1226,89 @@ export default function InteractiveLeaksSimulator() {
         )
       : [];
 
+  const feedbackSnapshot = {
+    mode: workspaceMode,
+    form,
+    cameras,
+    simulationInput,
+    deterministic: result,
+    display: displayExperience,
+    battery: batteryExperience,
+    thermal: thermalResult
+      ? {
+          status: thermalResult.status,
+          evidenceMode:
+            thermalResult.evidenceMode,
+          peakTemperatureC:
+            thermalResult.peakTemperatureC,
+          endTemperatureC:
+            thermalResult.endTemperatureC,
+          sustainedPerformancePercent:
+            thermalResult
+              .sustainedPerformancePercent,
+          sustainedPowerW:
+            thermalResult.sustainedPowerW,
+          throttleStartSecond:
+            thermalResult.throttleStartSecond,
+          referenceCount:
+            thermalResult.referenceCount,
+          confidence:
+            thermalResult.confidence,
+          evidenceScope:
+            thermalResult.evidenceScope,
+          sameSocFamilyReferences:
+            thermalResult
+              .sameSocFamilyReferences,
+          sameSocVendorReferences:
+            thermalResult
+              .sameSocVendorReferences,
+          protocolKey:
+            thermalResult.protocolKey,
+          warnings:
+            thermalResult.warnings,
+        }
+      : null,
+    twoNodeThermal: twoNodeThermalResult
+      ? {
+          modelVersion:
+            twoNodeThermalResult.modelVersion,
+          peakSocPackageTemperatureC:
+            twoNodeThermalResult
+              .peakSocPackageTemperatureC,
+          peakChassisSurfaceTemperatureC:
+            twoNodeThermalResult
+              .peakChassisSurfaceTemperatureC,
+          endSocPackageTemperatureC:
+            twoNodeThermalResult
+              .endSocPackageTemperatureC,
+          endChassisSurfaceTemperatureC:
+            twoNodeThermalResult
+              .endChassisSurfaceTemperatureC,
+          throttleStartSecond:
+            twoNodeThermalResult
+              .throttleStartSecond,
+          surfaceComfortCrossSecond:
+            twoNodeThermalResult
+              .surfaceComfortCrossSecond,
+          sustainedPerformancePercent:
+            twoNodeThermalResult
+              .sustainedPerformancePercent,
+          sustainedPowerW:
+            twoNodeThermalResult
+              .sustainedPowerW,
+        }
+      : null,
+    sustainedPerformance:
+      sustainedPerformanceEstimate,
+    camera: cameraExperiences.map(
+      (experience) => ({
+        physics: experience.physics,
+        outcomes: experience.outcomes,
+        warnings: experience.warnings,
+      }),
+    ),
+  };
+
   const twoNodeThermalSummary =
     twoNodeThermalResult ? (
       <div className="il-thermal-two-node">
@@ -1336,19 +1419,7 @@ export default function InteractiveLeaksSimulator() {
               corpusVersion:
                 batteryExperience?.corpusVersion,
             }}
-            snapshot={{
-              mode: workspaceMode,
-              form,
-              cameras,
-              simulationInput,
-              result,
-              displayExperience,
-              batteryExperience,
-              thermalResult,
-              twoNodeThermalResult,
-              sustainedPerformanceEstimate,
-              cameraExperiences,
-            }}
+            snapshot={feedbackSnapshot}
           />
 
           <button
@@ -2976,10 +3047,10 @@ export default function InteractiveLeaksSimulator() {
                                 {(runtime.publisherCount ?? 0) === 1
                                   ? ''
                                   : 's'} ·{' '}
-                                {runtime.protocolFamilyCount ?? 0} protocol family
+                                {runtime.protocolFamilyCount ?? 0}{' '}
                                 {(runtime.protocolFamilyCount ?? 0) === 1
-                                  ? ''
-                                  : 'ies'}
+                                  ? 'protocol family'
+                                  : 'protocol families'}
                               </small>
                             </div>
                           ))}
