@@ -24,7 +24,8 @@ export interface ChargingCurveEstimate {
     referenceCount: number;
     referenceModeCount: number;
     measurementCount?: number;
-    independentSourceCount: number;
+    sourceRecordCount: number;
+    publisherCount: number;
     confidence: number;
     confidenceGrade: ChargingConfidenceGrade;
     evidenceMode:
@@ -246,6 +247,14 @@ function exactMeasuredChargingMatch(
     measurementIds: measurements.map(
       (measurement) => measurement.id,
     ),
+    sourceIds: [
+      ...new Set(
+        measurements.map(
+          (measurement) =>
+            measurement.sourceId,
+        ),
+      ),
+    ],
   };
 }
 
@@ -302,7 +311,24 @@ export function estimateChargingFromCorpus(
       referenceModeCount: 1,
       measurementCount:
         exact.measurementIds.length,
-      independentSourceCount: 1,
+      sourceRecordCount:
+        exact.sourceIds.length,
+      publisherCount:
+        new Set(
+          exact.sourceIds
+            .map(
+              (sourceId) =>
+                corpus.sources.find(
+                  (source) =>
+                    source.id === sourceId,
+                )?.publisher,
+            )
+            .filter(
+              (publisher):
+                publisher is string =>
+                  Boolean(publisher),
+            ),
+        ).size,
       confidence: 1,
       confidenceGrade: 'high',
       evidenceMode: 'measured-match',
@@ -587,7 +613,7 @@ export function estimateChargingFromCorpus(
     referenceCount: neighborIds.size,
     referenceModeCount:
       comparable.references.length,
-    independentSourceCount:
+    sourceRecordCount:
       new Set(
         comparable.references
           .map(
@@ -598,6 +624,19 @@ export function estimateChargingFromCorpus(
             (sourceId):
               sourceId is string =>
                 Boolean(sourceId),
+          ),
+      ).size,
+    publisherCount:
+      new Set(
+        comparable.references
+          .map(
+            (reference) =>
+              reference.sourcePublisher,
+          )
+          .filter(
+            (publisher):
+              publisher is string =>
+                Boolean(publisher),
           ),
       ).size,
     confidence: clamp(adjustedConfidence, 0, 1),
