@@ -65,6 +65,7 @@ type CameraDraft = {
   equivalentFocalLengthMm: string;
   physicalFocalLengthMm: string;
   apertureFNumber: string;
+  focusDistanceM: string;
   moduleWidthMm: string;
   moduleHeightMm: string;
   moduleDepthMm: string;
@@ -287,6 +288,7 @@ const flagshipCameras: CameraDraft[] = [
     equivalentFocalLengthMm: '24',
     physicalFocalLengthMm: '6.5',
     apertureFNumber: '1.6',
+    focusDistanceM: '',
     moduleWidthMm: '20',
     moduleHeightMm: '20',
     moduleDepthMm: '6',
@@ -299,6 +301,7 @@ const flagshipCameras: CameraDraft[] = [
     equivalentFocalLengthMm: '120',
     physicalFocalLengthMm: '20',
     apertureFNumber: '2.8',
+    focusDistanceM: '',
     moduleWidthMm: '20',
     moduleHeightMm: '15',
     moduleDepthMm: '6',
@@ -437,6 +440,7 @@ function emptyCamera(id: number): CameraDraft {
     equivalentFocalLengthMm: '',
     physicalFocalLengthMm: '',
     apertureFNumber: '',
+    focusDistanceM: '',
     moduleWidthMm: '',
     moduleHeightMm: '',
     moduleDepthMm: '',
@@ -465,6 +469,10 @@ function cameraInput(
 
     apertureFNumber: numeric(
       camera.apertureFNumber,
+    ),
+
+    focusDistanceM: numeric(
+      camera.focusDistanceM,
     ),
 
     moduleWidthMm: numeric(camera.moduleWidthMm),
@@ -898,6 +906,7 @@ export default function InteractiveLeaksSimulator() {
                       mainCamera.apertureFNumber,
                     )
                   : '',
+              focusDistanceM: '',
               moduleWidthMm: '',
               moduleHeightMm: '',
               moduleDepthMm: '',
@@ -2105,6 +2114,20 @@ export default function InteractiveLeaksSimulator() {
                             updateCamera(camera.id, {
                               physicalFocalLengthMm:
                                 value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Focus distance"
+                          suffix="m"
+                          value={
+                            camera.focusDistanceM
+                          }
+                          placeholder="2"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              focusDistanceM: value,
                             })
                           }
                         />
@@ -3433,6 +3456,70 @@ export default function InteractiveLeaksSimulator() {
                           )}
                         </strong>
                         <span>Diffraction / pixel pitch ratio</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.diffractionTwoPixelFNumber !== undefined
+                            ? `f/${format(
+                                camera.diffractionTwoPixelFNumber,
+                                1,
+                              )}`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Two-pixel diffraction reference</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.hyperfocalDistanceM !== undefined
+                            ? `${format(
+                                camera.hyperfocalDistanceM,
+                                2,
+                              )} m`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Approx. hyperfocal distance</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.focusNearLimitM !== undefined
+                            ? `${format(
+                                camera.focusNearLimitM,
+                                2,
+                              )} m`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Focus near limit</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.focusFarLimitM === 'infinity'
+                            ? '∞'
+                            : camera.focusFarLimitM !== undefined
+                              ? `${format(
+                                  camera.focusFarLimitM,
+                                  2,
+                                )} m`
+                              : 'Unknown'}
+                        </strong>
+                        <span>Focus far limit</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.totalDepthOfFieldM === 'infinity'
+                            ? '∞'
+                            : camera.totalDepthOfFieldM !== undefined
+                              ? `${format(
+                                  camera.totalDepthOfFieldM,
+                                  2,
+                                )} m`
+                              : 'Unknown'}
+                        </strong>
+                        <span>Total depth of field</span>
                       </div>
                     </div>
 
