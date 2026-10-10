@@ -257,7 +257,7 @@ function exactMeasuredChargingMatch(
     }
   }
 
-  const measurements = corpus.measurements.filter(
+  let measurements = corpus.measurements.filter(
     (measurement) =>
       measurement.deviceVariantId === query.deviceVariantId &&
       measurement.workload === 'charging' &&
@@ -274,6 +274,46 @@ function exactMeasuredChargingMatch(
   );
 
   if (!measurements.length) return undefined;
+
+  if (
+    query.ambientTemperatureC !== undefined &&
+    Number.isFinite(query.ambientTemperatureC)
+  ) {
+    const withAmbient = measurements.filter(
+      (measurement) =>
+        measurement.ambientTemperatureC !== undefined &&
+        Number.isFinite(
+          measurement.ambientTemperatureC,
+        ),
+    );
+
+    if (withAmbient.length) {
+      const closestDistance = Math.min(
+        ...withAmbient.map(
+          (measurement) =>
+            Math.abs(
+              measurement.ambientTemperatureC! -
+              query.ambientTemperatureC!,
+            ),
+        ),
+      );
+
+      // Once the exact measured mode carries ambient metadata, a materially
+      // different target ambient is no longer the exact measured condition.
+      // Fall through to comparable + thermal-response modelling instead.
+      if (closestDistance > 2) {
+        return undefined;
+      }
+
+      measurements = withAmbient.filter(
+        (measurement) =>
+          Math.abs(
+            measurement.ambientTemperatureC! -
+            query.ambientTemperatureC!,
+          ) <= 2,
+      );
+    }
+  }
 
   const metric = (names: string[]) => {
     const set = new Set(names.map((name) => name.toLowerCase()));
