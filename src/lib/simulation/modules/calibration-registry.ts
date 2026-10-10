@@ -1,5 +1,6 @@
 import type { DeviceCorpus } from './device-corpus';
 import { buildLegacyWorkloadCorpus } from './legacy-workload-corpus';
+import { buildLegacyChargingCorpus } from './legacy-charging-corpus';
 import { buildBrandExpansionCorpus } from './brand-expansion-corpus';
 import { buildCurrentGenerationCorpus } from './current-generation-corpus';
 import { mergeDeviceCorpora } from './corpus-merge';
@@ -9,7 +10,7 @@ import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
 import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
 import { enrichCorpusWithBatteryEnergyEvidence } from './battery-energy-evidence';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.2.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.3.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -19,6 +20,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
   const merged = mergeDeviceCorpora(
     [
       buildLegacyWorkloadCorpus(),
+      buildLegacyChargingCorpus(),
       buildBrandExpansionCorpus(),
       buildCurrentGenerationCorpus(),
       buildChargingModeCorpus(),
