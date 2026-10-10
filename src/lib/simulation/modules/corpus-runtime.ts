@@ -221,7 +221,9 @@ export function resolveCorpusRuntimeBand(
         protocol: source?.protocol,
         protocolVersion: source?.protocolVersion,
         protocolKey,
-        publisher: source.publisher,
+        publisher:
+          source?.publisher ??
+          measurement.sourceId,
         socVendor:
           match.device.variant.soc?.vendor,
         socName:
