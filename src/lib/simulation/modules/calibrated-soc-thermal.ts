@@ -6,7 +6,7 @@ import {
   type ThermalCalibrationQuery,
 } from './thermal-calibration';
 
-export const CALIBRATED_SOC_THERMAL_VERSION = 'calibrated-soc-thermal-0.2.0';
+export const CALIBRATED_SOC_THERMAL_VERSION = 'calibrated-soc-thermal-0.3.0';
 
 export interface CalibratedSocThermalInput
   extends Omit<ThermalCalibrationQuery, 'domain'> {
@@ -53,6 +53,9 @@ export interface CalibratedSocThermalResult {
     peakTemperatureC: number;
     endTemperatureC: number;
     throttleStartSecond?: number;
+    evidencePriorPercent: number;
+    rawPhysicsSustainedPercent: number;
+    thermalAdjustmentMultiplier: number;
     sustainedPerformancePercent: number;
     sustainedPowerW: number;
     points: CalibratedSocThermalPoint[];
@@ -193,6 +196,132 @@ function weightedTarget(
   };
 }
 
+function simulateRawPhysics(
+  input: CalibratedSocThermalInput,
+) {
+  const duration = Math.max(
+    1,
+    Math.round(input.durationSeconds ?? 1800),
+  );
+  const dt = input.stepSeconds ?? 1;
+
+  if (
+    !Number.isFinite(dt) ||
+    dt <= 0 ||
+    dt > 10
+  ) {
+    return undefined;
+  }
+
+  const steps = Math.ceil(duration / dt);
+  const floorPower =
+    input.targetPowerW * 0.2;
+  let temperatureC =
+    input.ambientTemperatureC;
+  let powerW = input.targetPowerW;
+  let throttling = false;
+  let sustainedPerformanceSum = 0;
+  let sustainedSamples = 0;
+
+  for (
+    let step = 1;
+    step <= steps;
+    step += 1
+  ) {
+    const second = Math.min(
+      duration,
+      q(step * dt),
+    );
+
+    if (
+      !throttling &&
+      temperatureC >=
+        input.throttleTemperatureC
+    ) {
+      throttling = true;
+    } else if (
+      throttling &&
+      temperatureC <=
+        input.throttleTemperatureC - 2
+    ) {
+      throttling = false;
+    }
+
+    if (throttling) {
+      const over = Math.max(
+        0,
+        temperatureC -
+          input.throttleTemperatureC,
+      );
+      const reduction = Math.min(
+        0.8,
+        0.18 + over * 0.045,
+      );
+      powerW = Math.max(
+        floorPower,
+        input.targetPowerW *
+          (1 - reduction),
+      );
+    } else {
+      powerW = Math.min(
+        input.targetPowerW,
+        powerW +
+          input.targetPowerW * 0.025,
+      );
+    }
+
+    const coolingW =
+      (
+        temperatureC -
+        input.ambientTemperatureC
+      ) /
+      input.thermalResistanceCPerW;
+
+    temperatureC = q(
+      Math.max(
+        input.ambientTemperatureC,
+        temperatureC +
+          (
+            (
+              powerW -
+              coolingW
+            ) /
+            input.thermalMassJPerC
+          ) *
+            dt,
+      ),
+    );
+
+    if (
+      second >
+      duration -
+        Math.min(300, duration)
+    ) {
+      sustainedPerformanceSum +=
+        Math.min(
+          100,
+          Math.max(
+            0,
+            (
+              powerW /
+              input.targetPowerW
+            ) *
+              100,
+          ),
+        );
+      sustainedSamples += 1;
+    }
+  }
+
+  return {
+    sustainedPerformancePercent:
+      sustainedSamples
+        ? sustainedPerformanceSum /
+          sustainedSamples
+        : 100,
+  };
+}
+
 export function simulateCalibratedSocThermals(
   corpus: DeviceCorpus,
   input: CalibratedSocThermalInput,
@@ -232,10 +361,50 @@ export function simulateCalibratedSocThermals(
   }
 
   const targetSustainedRatio = calibrated.percent / 100;
-  const calibratedFloorPower = input.targetPowerW * targetSustainedRatio;
+
+  // Run a raw physics trace first. The evidence prior is not a hard power
+  // floor. It is the measured sustained-performance baseline for comparable
+  // hardware, while deterministic thermal physics is used as a relative
+  // adjustment around that baseline.
+  const rawPhysics = simulateRawPhysics(input);
+
+  if (!rawPhysics) {
+    return {
+      version: CALIBRATED_SOC_THERMAL_VERSION,
+      status: 'unresolved',
+      unresolvedReason:
+        'Raw thermal physics could not be resolved for calibrated performance.',
+    };
+  }
+
+  const physicsRatio =
+    rawPhysics.sustainedPerformancePercent / 100;
+
+  // Physics can reduce the measured prior directly. Better-than-baseline
+  // thermal conditions may recover some headroom, but cannot jump straight
+  // to 100% without evidence. The recovery ceiling is deliberately modest.
+  const thermalAdjustmentMultiplier =
+    physicsRatio < 1
+      ? physicsRatio
+      : 1;
+
+  const calibratedTargetRatio =
+    Math.min(
+      1,
+      Math.max(
+        0.01,
+        targetSustainedRatio *
+          thermalAdjustmentMultiplier,
+      ),
+    );
+
+  const calibratedTargetPower =
+    input.targetPowerW *
+    calibratedTargetRatio;
+
   const steps = Math.ceil(duration / dt);
   let temperatureC = input.ambientTemperatureC;
-  let powerW = input.targetPowerW;
+  let powerW = calibratedTargetPower;
   let throttling = false;
   let throttleStartSecond: number | undefined;
   let peakTemperatureC = temperatureC;
@@ -263,13 +432,22 @@ export function simulateCalibratedSocThermals(
         0,
         temperatureC - input.throttleTemperatureC,
       );
-      const dynamicReduction = Math.min(0.35, 0.10 + over * 0.03);
-      const dynamicPower = input.targetPowerW * (1 - dynamicReduction);
-      powerW = Math.max(calibratedFloorPower, dynamicPower);
+      const dynamicReduction = Math.min(
+        0.45,
+        0.08 + over * 0.035,
+      );
+      const dynamicPower =
+        calibratedTargetPower *
+        (1 - dynamicReduction);
+      powerW = Math.max(
+        input.targetPowerW * 0.2,
+        dynamicPower,
+      );
     } else {
       powerW = Math.min(
-        input.targetPowerW,
-        powerW + input.targetPowerW * 0.025,
+        calibratedTargetPower,
+        powerW +
+          calibratedTargetPower * 0.025,
       );
     }
 
@@ -343,16 +521,28 @@ export function simulateCalibratedSocThermals(
       ...(throttleStartSecond !== undefined
         ? { throttleStartSecond }
         : {}),
+      evidencePriorPercent: q(
+        calibrated.percent,
+        10,
+      ),
+      rawPhysicsSustainedPercent: q(
+        rawPhysics.sustainedPerformancePercent,
+        10,
+      ),
+      thermalAdjustmentMultiplier: q(
+        thermalAdjustmentMultiplier,
+        1000,
+      ),
       sustainedPerformancePercent: q(
         sustainedSamples
           ? sustainedPerformanceSum / sustainedSamples
-          : 100,
+          : calibrated.percent,
         10,
       ),
       sustainedPowerW: q(
         sustainedSamples
           ? sustainedPowerSum / sustainedSamples
-          : input.targetPowerW,
+          : calibratedTargetPower,
         100,
       ),
       points,
