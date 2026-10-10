@@ -5,6 +5,7 @@ export interface ComparableDeviceQuery {
   batteryChemistry?: string;
   manufacturer?: string;
   socVendor?: string;
+  socName?: string;
   region?: string;
   displayDiagonalInches?: number;
   resolutionWidthPx?: number;
@@ -43,6 +44,15 @@ function normalize(value: string) {
   return value.trim().toLowerCase();
 }
 
+
+function normalizeSocName(value: string) {
+  return normalize(value)
+    .replace(/\bfor galaxy\b/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function findComparableDevices(
   corpus: DeviceCorpus,
   query: ComparableDeviceQuery,
@@ -78,6 +88,25 @@ export function findComparableDevices(
         weighted += (same ? 1 : 0) * 2.5;
         coveredWeight += 2.5;
         if (same) reasons.push('same battery chemistry');
+      }
+    }
+
+    if (query.socName) {
+      possibleWeight += 4;
+
+      if (device.variant.soc?.name) {
+        const same =
+          normalizeSocName(
+            device.variant.soc.name,
+          ) ===
+          normalizeSocName(query.socName);
+
+        weighted += (same ? 1 : 0) * 4;
+        coveredWeight += 4;
+
+        if (same) {
+          reasons.push('same SoC family');
+        }
       }
     }
 
