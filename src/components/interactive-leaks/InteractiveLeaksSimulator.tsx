@@ -4105,6 +4105,32 @@ export default function InteractiveLeaksSimulator() {
                                   </span>
                                 ) : null}
 
+                                {scenario.deltaExposureLightPercent !== undefined ? (
+                                  <span>
+                                    Δ exposure light{' '}
+                                    {scenario.deltaExposureLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaExposureLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaBinnedOutputPixelLightPercent !== undefined ? (
+                                  <span>
+                                    Δ output-sample light{' '}
+                                    {scenario.deltaBinnedOutputPixelLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaBinnedOutputPixelLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
                                 {scenario.deltaPixelPitchPercent !== undefined ? (
                                   <span>
                                     Δ pixel pitch{' '}
