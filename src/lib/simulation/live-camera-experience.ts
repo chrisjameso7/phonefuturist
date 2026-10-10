@@ -30,6 +30,8 @@ export interface LiveCameraOutcome {
   averageSimilarity?: number;
   averageCoverage?: number;
   protocolKey?: string;
+  sourceRecordCount?: number;
+  publisherCount?: number;
   referenceCount: number;
   neighborIds: string[];
   unresolvedReason?: string;
@@ -229,6 +231,10 @@ export function simulateCameraExperience(
       averageCoverage:
         calibrated.expected.averageCoverage,
       protocolKey: calibrated.expected.protocolKey,
+      sourceRecordCount:
+        calibrated.expected.sourceRecordCount,
+      publisherCount:
+        calibrated.expected.publisherCount,
       referenceCount: calibrated.references.length,
       neighborIds: [
         ...new Set(
