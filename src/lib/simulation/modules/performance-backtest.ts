@@ -12,6 +12,7 @@ export interface PerformanceBacktestRow {
   referenceCount: number;
   averageSimilarity: number;
   averageCoverage: number;
+  sameSocVendorReferences: number;
 }
 
 export interface PerformanceBacktestSummary {
@@ -41,6 +42,7 @@ function weightedPrediction(
   references: ReturnType<
     typeof selectThermalCalibrationReferences
   >['references'],
+  targetSocVendor?: string,
 ) {
   const usable = references.filter(
     (reference) =>
@@ -82,6 +84,14 @@ function weightedPrediction(
           sum + reference.coverageScore,
         0,
       ) / usable.length,
+    sameSocVendorReferences:
+      targetSocVendor
+        ? usable.filter(
+            (reference) =>
+              reference.socVendor ===
+              targetSocVendor,
+          ).length
+        : 0,
   };
 }
 
@@ -155,6 +165,7 @@ export function backtestGpuStability(
 
     const prediction = weightedPrediction(
       result.references,
+      device.variant.soc?.vendor,
     );
 
     if (!prediction) {
@@ -177,6 +188,8 @@ export function backtestGpuStability(
         prediction.averageSimilarity,
       averageCoverage:
         prediction.averageCoverage,
+      sameSocVendorReferences:
+        prediction.sameSocVendorReferences,
     });
   }
 
