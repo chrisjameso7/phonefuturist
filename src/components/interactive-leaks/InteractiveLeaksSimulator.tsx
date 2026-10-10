@@ -1262,6 +1262,10 @@ export default function InteractiveLeaksSimulator() {
           sameSocVendorReferences:
             thermalResult
               .sameSocVendorReferences,
+          sourceRecordCount:
+            thermalResult.sourceRecordCount,
+          publisherCount:
+            thermalResult.publisherCount,
           protocolKey:
             thermalResult.protocolKey,
           warnings:
@@ -3386,6 +3390,16 @@ export default function InteractiveLeaksSimulator() {
                         </div>
                       ) : null}
 
+                      {thermalResult.sourceRecordCount !== undefined ? (
+                        <div>
+                          <strong>
+                            {thermalResult.sourceRecordCount} /{' '}
+                            {thermalResult.publisherCount ?? 0}
+                          </strong>
+                          <span>Source pages / publishers</span>
+                        </div>
+                      ) : null}
+
                       <div>
                         <strong>
                           {thermalResult.confidence !== undefined
@@ -3615,6 +3629,14 @@ export default function InteractiveLeaksSimulator() {
                           {sustainedPerformanceEstimate.referenceCount}
                         </strong>
                         <span>Measured references used</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.sourceRecordCount} /{' '}
+                          {sustainedPerformanceEstimate.publisherCount}
+                        </strong>
+                        <span>Source pages / publishers</span>
                       </div>
 
                       <div>
