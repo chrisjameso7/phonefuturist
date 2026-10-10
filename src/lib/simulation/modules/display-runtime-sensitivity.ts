@@ -14,8 +14,11 @@ export interface DisplayRuntimeSensitivityScenario {
   scenario: '60hz' | '1080-class';
   label: string;
   workload: RuntimeWorkload;
-  baselineMahPerHour: number;
-  scenarioMahPerHour: number;
+  energyBasis: 'wh' | 'mah';
+  baselineMahPerHour?: number;
+  scenarioMahPerHour?: number;
+  baselineWhPerHour?: number;
+  scenarioWhPerHour?: number;
   deltaDrainPercent: number;
   baselineRuntimeHours: number;
   scenarioRuntimeHours: number;
@@ -62,6 +65,30 @@ function batteryCapacityMah(input: SimulationInput) {
     0,
   );
 }
+function batteryEnergyWh(input: SimulationInput) {
+  const cells = input.battery?.cells ?? [];
+
+  if (
+    !cells.length ||
+    !cells.every(
+      (cell) =>
+        positive(cell.capacityMah) &&
+        positive(cell.nominalVoltageV),
+    )
+  ) {
+    return undefined;
+  }
+
+  return cells.reduce(
+    (sum, cell) =>
+      sum +
+      (cell.capacityMah! *
+        cell.nominalVoltageV!) /
+        1000,
+    0,
+  );
+}
+
 
 function withDisplayScenario(
   input: SimulationInput,
@@ -134,6 +161,7 @@ export function resolveDisplayRuntimeSensitivity(
   context: RuntimeComparableContext = {},
 ): DisplayRuntimeSensitivityResult {
   const capacityMah = batteryCapacityMah(input);
+  const energyWh = batteryEnergyWh(input);
 
   if (!capacityMah) {
     return {
@@ -193,15 +221,27 @@ export function resolveDisplayRuntimeSensitivity(
         continue;
       }
 
-      const baselineDrain =
-        baseline.estimate!.expectedMahPerHour;
-      const shiftedDrain =
-        shifted.estimate!.expectedMahPerHour;
+      const useWh =
+        energyWh !== undefined &&
+        baseline.estimate!.energyBasis === 'wh' &&
+        shifted.estimate!.energyBasis === 'wh' &&
+        baseline.estimate!.expectedWhPerHour !== undefined &&
+        shifted.estimate!.expectedWhPerHour !== undefined;
+
+      const baselineDrain = useWh
+        ? baseline.estimate!.expectedWhPerHour!
+        : baseline.estimate!.expectedMahPerHour;
+      const shiftedDrain = useWh
+        ? shifted.estimate!.expectedWhPerHour!
+        : shifted.estimate!.expectedMahPerHour;
+      const availableEnergy = useWh
+        ? energyWh!
+        : capacityMah;
 
       const baselineRuntime =
-        capacityMah / baselineDrain;
+        availableEnergy / baselineDrain;
       const shiftedRuntime =
-        capacityMah / shiftedDrain;
+        availableEnergy / shiftedDrain;
 
       scenarios.push({
         scenario,
@@ -210,8 +250,20 @@ export function resolveDisplayRuntimeSensitivity(
             ? 'Refresh rate → 60 Hz'
             : 'Resolution → 1080-class',
         workload,
-        baselineMahPerHour: baselineDrain,
-        scenarioMahPerHour: shiftedDrain,
+        energyBasis: useWh ? 'wh' : 'mah',
+        ...(useWh
+          ? {
+              baselineWhPerHour:
+                baselineDrain,
+              scenarioWhPerHour:
+                shiftedDrain,
+            }
+          : {
+              baselineMahPerHour:
+                baselineDrain,
+              scenarioMahPerHour:
+                shiftedDrain,
+            }),
         deltaDrainPercent:
           ((shiftedDrain / baselineDrain) - 1) * 100,
         baselineRuntimeHours: baselineRuntime,
@@ -248,7 +300,7 @@ export function resolveDisplayRuntimeSensitivity(
     scenarios,
     unresolvedReasons,
     note:
-      'These deltas come from shifts in protocol-compatible measured runtime comparables after changing display resolution or refresh rate. They are evidence-derived scenario estimates, not direct electrical panel-power measurements.',
+      'These deltas come from shifts in protocol-compatible measured runtime comparables after changing display resolution or refresh rate. Wh/h is used when both target and comparison bands have accepted energy evidence; otherwise the model falls back to mAh/h. They are evidence-derived scenario estimates, not direct electrical panel-power measurements.',
   };
 }
 
