@@ -139,6 +139,7 @@ type FormState = {
   socThermalMassJPerC: string;
   chassisThermalMassJPerC: string;
   surfaceComfortTemperatureC: string;
+  socPackageThrottleTemperatureC: string;
 
   batteryWidthMm: string;
   batteryHeightMm: string;
@@ -205,6 +206,7 @@ const initialForm: FormState = {
   socThermalMassJPerC: '',
   chassisThermalMassJPerC: '',
   surfaceComfortTemperatureC: '',
+  socPackageThrottleTemperatureC: '',
 
   batteryWidthMm: '',
   batteryHeightMm: '',
@@ -271,6 +273,7 @@ const flagshipExample: FormState = {
   socThermalMassJPerC: '',
   chassisThermalMassJPerC: '',
   surfaceComfortTemperatureC: '',
+  socPackageThrottleTemperatureC: '',
 
   batteryWidthMm: '60',
   batteryHeightMm: '80',
@@ -872,6 +875,7 @@ export default function InteractiveLeaksSimulator() {
       socThermalMassJPerC: '',
       chassisThermalMassJPerC: '',
       surfaceComfortTemperatureC: '',
+      socPackageThrottleTemperatureC: '',
     }));
 
     setCameras(
@@ -1057,6 +1061,11 @@ export default function InteractiveLeaksSimulator() {
       form.surfaceComfortTemperatureC,
     );
 
+  const socPackageThrottleTemperatureC =
+    numeric(
+      form.socPackageThrottleTemperatureC,
+    );
+
   const twoNodeRawFields = [
     form.socToChassisResistanceCPerW,
     form.chassisToAmbientResistanceCPerW,
@@ -1076,8 +1085,14 @@ export default function InteractiveLeaksSimulator() {
     chassisThermalMassJPerC !== undefined;
 
   const incompleteTwoNodeInput =
-    hasAnyTwoNodeInput &&
-    !hasCompleteTwoNodeInput;
+    (
+      hasAnyTwoNodeInput ||
+      form.socPackageThrottleTemperatureC.trim() !== ''
+    ) &&
+    (
+      !hasCompleteTwoNodeInput ||
+      socPackageThrottleTemperatureC === undefined
+    );
 
   const thermalResult =
     simulationInput &&
@@ -1109,7 +1124,8 @@ export default function InteractiveLeaksSimulator() {
           throttleTemperatureC,
           durationSeconds:
             numeric(form.thermalDurationSeconds) ?? 600,
-          ...(hasCompleteTwoNodeInput
+          ...(hasCompleteTwoNodeInput &&
+          socPackageThrottleTemperatureC !== undefined
             ? {
                 twoNode: {
                   socToChassisResistanceCPerW,
@@ -1891,7 +1907,7 @@ export default function InteractiveLeaksSimulator() {
               />
 
               <NumericField
-                label="Thermal throttle ceiling"
+                label="Lumped-model thermal ceiling"
                 suffix="°C"
                 value={form.throttleTemperatureC}
                 placeholder="42"
@@ -1991,6 +2007,21 @@ export default function InteractiveLeaksSimulator() {
                 />
 
                 <NumericField
+                  label="SoC/package throttle ceiling"
+                  suffix="°C"
+                  value={
+                    form.socPackageThrottleTemperatureC
+                  }
+                  placeholder="85"
+                  onChange={(value) =>
+                    update(
+                      'socPackageThrottleTemperatureC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
                   label="Surface comfort threshold"
                   suffix="°C"
                   value={
@@ -2020,8 +2051,9 @@ export default function InteractiveLeaksSimulator() {
                 <p className="il-simple-error" role="alert">
                   Two-node thermal physics needs all four physical parameters:
                   SoC-to-chassis resistance, chassis-to-ambient resistance,
-                  SoC/package thermal mass and chassis thermal mass. The
-                  two-node trace is disabled until all four are supplied.
+                  SoC/package thermal mass, chassis thermal mass and an
+                  SoC/package throttle ceiling. The two-node trace is disabled
+                  until all five required values are supplied.
                 </p>
               ) : null}
             </details>
