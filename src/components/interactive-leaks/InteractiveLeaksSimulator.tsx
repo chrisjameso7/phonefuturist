@@ -3182,12 +3182,22 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {format(
-                            batteryExperience.mixedUse.expectedDrainMahPerDay,
-                            0,
-                          )}
+                          {batteryExperience.mixedUse.energyBasis === 'wh'
+                            ? `${format(
+                                batteryExperience.mixedUse.expectedDrainWhPerDay,
+                                2,
+                              )} Wh/day`
+                            : `${format(
+                                batteryExperience.mixedUse.expectedDrainMahPerDay,
+                                0,
+                              )} mAh/day`}
                         </strong>
-                        <span>Expected active drain mAh/day</span>
+                        <span>
+                          Expected active drain ·{' '}
+                          {batteryExperience.mixedUse.energyBasis === 'wh'
+                            ? 'energy-normalized'
+                            : 'capacity-normalized'}
+                        </span>
                       </div>
                     </div>
 
@@ -3200,10 +3210,15 @@ export default function InteractiveLeaksSimulator() {
                             </strong>
                             <span>
                               {format(workload.hoursPerDay, 1)} h/day ·{' '}
-                              {format(
-                                workload.expectedDrainMahPerHour,
-                                0,
-                              )} mAh/h
+                              {workload.energyBasis === 'wh'
+                                ? `${format(
+                                    workload.expectedDrainWhPerHour,
+                                    2,
+                                  )} Wh/h`
+                                : `${format(
+                                    workload.expectedDrainMahPerHour,
+                                    0,
+                                  )} mAh/h`}
                             </span>
                           </div>
                         ),
@@ -3266,6 +3281,18 @@ export default function InteractiveLeaksSimulator() {
                                 {runtime.evidenceScope
                                   ? ` · ${runtime.evidenceScope.replaceAll('-', ' ')}`
                                   : ''}
+                              </small>
+
+                              <small>
+                                {runtime.energyBasis === 'wh'
+                                  ? `${format(
+                                      runtime.expectedDrainWhPerHour,
+                                      2,
+                                    )} Wh/h · energy-normalized`
+                                  : `${format(
+                                      runtime.expectedDrainMahPerHour,
+                                      0,
+                                    )} mAh/h · capacity-normalized`}
                               </small>
                               {runtime.sameSocFamilyReferences !== undefined ||
                               runtime.sameSocVendorReferences !== undefined ? (
