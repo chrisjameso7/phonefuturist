@@ -16,9 +16,27 @@ describe('exact wired charging mode precedence', () => {
 
     expect(result.status).toBe('resolved');
     expect(result.estimate?.evidenceMode).toBe('measured-match');
+    expect(result.estimate?.basis).toBe('exact-measured-mode');
     expect(result.estimate?.timeTo100Minutes?.expected).toBe(67);
     expect(result.estimate?.charge30mPercent?.expected).toBe(54);
     expect(result.estimate?.confidence).toBe(1);
+  });
+
+  it('does not reuse exact measured time after the physical battery capacity changes', () => {
+    const corpus = buildChargingModeCorpus();
+
+    const result = estimateChargingFromCorpus(corpus, {
+      deviceVariantId: 'oppo-find-x9-pro-global-7500',
+      batteryMah: 8000,
+      wiredChargingWatts: 80,
+      manufacturer: 'Oppo',
+      chargingStandard: 'SuperVOOC',
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceMode).not.toBe('measured-match');
+    expect(result.estimate?.basis).toBe('weighted-comparable-corpus');
+    expect(result.estimate?.timeTo100Minutes?.expected).not.toBe(67);
   });
 
   it('does not claim measured evidence without explicit device identity', () => {
