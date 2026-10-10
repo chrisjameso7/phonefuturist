@@ -189,13 +189,14 @@ export function estimatePeakPerformance(
             publisher:
               source?.publisher ??
               measurement.sourceId,
+            // The canonical measurement metric carries the benchmark
+            // family/version identity. Do not split compatible Geekbench or
+            // 3DMark rows merely because review pages describe their full
+            // benchmark suites differently.
             protocolKey: [
-              source?.publisher ??
-                measurement.sourceId,
-              source?.protocolVersion ??
-                source?.protocol ??
-                'unspecified',
               measurement.metric,
+              source?.protocolVersion ??
+                'canonical-metric-version',
               normalizeUnit(
                 measurement.unit,
               ),
