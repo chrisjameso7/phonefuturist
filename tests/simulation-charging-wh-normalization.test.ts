@@ -145,7 +145,7 @@ describe('charging Wh normalization', () => {
     const result = estimateChargingFromCorpus(
       corpus(false),
       {
-        batteryMah: 5500,
+        batteryMah: 5000,
         batteryEnergyWh: 22,
         wiredChargingWatts: 50,
         chargingStandard: 'USB PD/PPS',
@@ -160,6 +160,6 @@ describe('charging Wh normalization', () => {
 
     expect(
       result.estimate?.timeTo100Minutes?.expected,
-    ).toBeCloseTo(44, 8);
+    ).toBeCloseTo(40, 8);
   });
 });
