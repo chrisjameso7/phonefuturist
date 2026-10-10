@@ -370,16 +370,57 @@ export function selectChargingComparables(
         )
       : ranked;
 
+  const limit =
+    query.limit ?? 5;
+
+  const limitedReferences =
+    query.chargingStandard
+      ? selected.slice(0, limit)
+      : (() => {
+          // Without an explicitly requested charging standard, the limit is
+          // a physical-device limit, not a charger-mode limit. Select the
+          // highest-ranked unique devices first, then retain every measured
+          // wired mode for those devices so SuperVOOC / USB PD / PPS modes
+          // cannot disappear simply because another phone ranked between
+          // them.
+          const selectedDeviceIds: string[] = [];
+
+          for (const reference of selected) {
+            if (
+              !selectedDeviceIds.includes(
+                reference.deviceVariantId,
+              )
+            ) {
+              selectedDeviceIds.push(
+                reference.deviceVariantId,
+              );
+            }
+
+            if (
+              selectedDeviceIds.length >=
+              limit
+            ) {
+              break;
+            }
+          }
+
+          const allowed =
+            new Set(selectedDeviceIds);
+
+          return selected.filter(
+            (reference) =>
+              allowed.has(
+                reference.deviceVariantId,
+              ),
+          );
+        })();
+
   return {
     version: CHARGING_COMPARABLE_MODEL_VERSION,
     status: 'resolved',
-    // Without an explicitly requested charging standard, keep materially
-    // different measured modes from the same physical phone. Once a standard
-    // is requested, collapse to the best matching mode per phone so one
-    // device cannot dominate a standard-specific estimate.
-    references: selected.slice(
-      0,
-      query.limit ?? 5,
-    ),
+    // With an explicit charging standard, one best mode per device is enough.
+    // Without one, preserve all measured modes for the selected physical
+    // devices because they are distinct real charging behaviours.
+    references: limitedReferences,
   };
 }
