@@ -1,5 +1,6 @@
 import type { DeviceCorpus } from './device-corpus';
 import { selectThermalCalibrationReferences } from './thermal-calibration';
+import { normalizeSocFamily } from './comparable-devices';
 
 export const PERFORMANCE_BACKTEST_VERSION =
   'performance-backtest-0.1.0';
@@ -13,6 +14,11 @@ export interface PerformanceBacktestRow {
   averageSimilarity: number;
   averageCoverage: number;
   sameSocVendorReferences: number;
+  sameSocFamilyReferences: number;
+  evidenceScope:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort';
 }
 
 export interface PerformanceBacktestSummary {
@@ -43,6 +49,7 @@ function weightedPrediction(
     typeof selectThermalCalibrationReferences
   >['references'],
   targetSocVendor?: string,
+  targetSocName?: string,
 ) {
   const usable = references.filter(
     (reference) =>
@@ -56,7 +63,37 @@ function weightedPrediction(
 
   if (!usable.length) return undefined;
 
-  const totalWeight = usable.reduce(
+  const sameFamily = targetSocName
+    ? usable.filter(
+        (reference) =>
+          reference.socName &&
+          normalizeSocFamily(reference.socName) ===
+            normalizeSocFamily(targetSocName),
+      )
+    : [];
+
+  const sameVendor = targetSocVendor
+    ? usable.filter(
+        (reference) =>
+          reference.socVendor === targetSocVendor,
+      )
+    : [];
+
+  const selected =
+    sameFamily.length >= 2
+      ? sameFamily
+      : sameVendor.length >= 2
+        ? sameVendor
+        : usable;
+
+  const evidenceScope =
+    selected === sameFamily
+      ? 'same-soc-family'
+      : selected === sameVendor
+        ? 'same-soc-vendor'
+        : 'protocol-cohort';
+
+  const totalWeight = selected.reduce(
     (sum, reference) =>
       sum + Math.max(reference.score, 0.05) ** 2,
     0,
@@ -64,26 +101,26 @@ function weightedPrediction(
 
   return {
     predictedPercent:
-      usable.reduce(
+      selected.reduce(
         (sum, reference) =>
           sum +
           reference.value *
             Math.max(reference.score, 0.05) ** 2,
         0,
       ) / Math.max(totalWeight, Number.EPSILON),
-    referenceCount: usable.length,
+    referenceCount: selected.length,
     averageSimilarity:
-      usable.reduce(
+      selected.reduce(
         (sum, reference) =>
           sum + reference.similarityScore,
         0,
-      ) / usable.length,
+      ) / selected.length,
     averageCoverage:
-      usable.reduce(
+      selected.reduce(
         (sum, reference) =>
           sum + reference.coverageScore,
         0,
-      ) / usable.length,
+      ) / selected.length,
     sameSocVendorReferences:
       targetSocVendor
         ? usable.filter(
@@ -168,6 +205,7 @@ export function backtestGpuStability(
     const prediction = weightedPrediction(
       result.references,
       device.variant.soc?.vendor,
+      device.variant.soc?.name,
     );
 
     if (!prediction) {
@@ -192,6 +230,10 @@ export function backtestGpuStability(
         prediction.averageCoverage,
       sameSocVendorReferences:
         prediction.sameSocVendorReferences,
+      sameSocFamilyReferences:
+        prediction.sameSocFamilyReferences,
+      evidenceScope:
+        prediction.evidenceScope,
     });
   }
 
