@@ -91,6 +91,11 @@ type CameraDraft = {
   physicalFocalLengthMm: string;
   apertureFNumber: string;
   exposureTimeSeconds?: string;
+  sensorReadoutTimeSeconds?: string;
+  videoFrameRateFps?: string;
+  subjectAngularSpeedDegPerSecond?: string;
+  cameraAngularShakeDegPerSecond?: string;
+  oisAngularCompensationFraction?: string;
   lensTransmissionFraction?: string;
   quantumEfficiencyFraction?: string;
   binningLinearFactor?: string;
@@ -535,6 +540,11 @@ function emptyCamera(id: number): CameraDraft {
     physicalFocalLengthMm: '',
     apertureFNumber: '',
     exposureTimeSeconds: '',
+    sensorReadoutTimeSeconds: '',
+    videoFrameRateFps: '',
+    subjectAngularSpeedDegPerSecond: '',
+    cameraAngularShakeDegPerSecond: '',
+    oisAngularCompensationFraction: '',
     lensTransmissionFraction: '',
     quantumEfficiencyFraction: '',
     binningLinearFactor: '',
@@ -573,6 +583,26 @@ function cameraInput(
 
     exposureTimeSeconds: numeric(
       camera.exposureTimeSeconds ?? '',
+    ),
+
+    sensorReadoutTimeSeconds: numeric(
+      camera.sensorReadoutTimeSeconds ?? '',
+    ),
+
+    videoFrameRateFps: numeric(
+      camera.videoFrameRateFps ?? '',
+    ),
+
+    subjectAngularSpeedDegPerSecond: numeric(
+      camera.subjectAngularSpeedDegPerSecond ?? '',
+    ),
+
+    cameraAngularShakeDegPerSecond: numeric(
+      camera.cameraAngularShakeDegPerSecond ?? '',
+    ),
+
+    oisAngularCompensationFraction: numeric(
+      camera.oisAngularCompensationFraction ?? '',
     ),
 
     lensTransmissionFraction: numeric(
@@ -1034,6 +1064,11 @@ export default function InteractiveLeaksSimulator() {
                     )
                   : '',
               exposureTimeSeconds: '',
+              sensorReadoutTimeSeconds: '',
+              videoFrameRateFps: '',
+              subjectAngularSpeedDegPerSecond: '',
+              cameraAngularShakeDegPerSecond: '',
+              oisAngularCompensationFraction: '',
               lensTransmissionFraction: '',
               quantumEfficiencyFraction: '',
               binningLinearFactor: '',
@@ -3037,6 +3072,80 @@ export default function InteractiveLeaksSimulator() {
                           onChange={(value) =>
                             updateCamera(camera.id, {
                               exposureTimeSeconds: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Sensor readout"
+                          suffix="s"
+                          value={
+                            camera.sensorReadoutTimeSeconds ?? ''
+                          }
+                          placeholder="0.0167"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              sensorReadoutTimeSeconds: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video frame rate"
+                          suffix="fps"
+                          value={
+                            camera.videoFrameRateFps ?? ''
+                          }
+                          placeholder="60"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoFrameRateFps: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Subject angular speed"
+                          suffix="°/s"
+                          value={
+                            camera.subjectAngularSpeedDegPerSecond ?? ''
+                          }
+                          placeholder="2"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              subjectAngularSpeedDegPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Camera angular shake"
+                          suffix="°/s"
+                          value={
+                            camera.cameraAngularShakeDegPerSecond ?? ''
+                          }
+                          placeholder="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              cameraAngularShakeDegPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="OIS shake compensation"
+                          suffix="0–1"
+                          value={
+                            camera.oisAngularCompensationFraction ?? ''
+                          }
+                          placeholder="0.75"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              oisAngularCompensationFraction:
+                                value,
                             })
                           }
                         />
@@ -5071,6 +5180,67 @@ export default function InteractiveLeaksSimulator() {
                             : 'Unknown'}
                         </strong>
                         <span>Total retained-light loss from crop</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.subjectMotionBlurPixels !== undefined
+                            ? `${format(
+                                camera.subjectMotionBlurPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Subject motion blur</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.cameraShakeBlurPixelsAfterOis !== undefined
+                            ? `${format(
+                                camera.cameraShakeBlurPixelsAfterOis,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Camera shake after OIS</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.rollingShutterCameraSkewPixels !== undefined
+                            ? `${format(
+                                camera.rollingShutterCameraSkewPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Rolling-shutter camera skew</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.rollingShutterSubjectSkewPixels !== undefined
+                            ? `${format(
+                                camera.rollingShutterSubjectSkewPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Rolling-shutter subject skew</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.readoutFractionOfFrame !== undefined
+                            ? `${format(
+                                camera.readoutFractionOfFrame *
+                                  100,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Readout fraction of video frame</span>
                       </div>
 
                       <div>
