@@ -10,6 +10,7 @@ export interface BatteryExperienceInput {
   simulation: SimulationInput;
   manufacturer?: string;
   socVendor?: string;
+  socName?: string;
   region?: string;
   batteryChemistry?: string;
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
@@ -120,6 +121,15 @@ export function simulateBatteryExperience(
       corpus,
       input.simulation,
       workload,
+      {},
+      {
+        manufacturer: input.manufacturer,
+        socVendor: input.socVendor,
+        socName: input.socName,
+        batteryChemistry:
+          input.batteryChemistry,
+        coolingClass: input.coolingClass,
+      },
     );
 
     if (band.status !== 'resolved' || !band.estimate) {
@@ -171,6 +181,15 @@ export function simulateBatteryExperience(
         corpus,
         input.simulation,
         runtime.workload,
+        {},
+        {
+        manufacturer: input.manufacturer,
+        socVendor: input.socVendor,
+        socName: input.socName,
+        batteryChemistry:
+          input.batteryChemistry,
+        coolingClass: input.coolingClass,
+      },
       );
 
       if (sourceBand.status !== 'resolved' || !sourceBand.estimate) {
