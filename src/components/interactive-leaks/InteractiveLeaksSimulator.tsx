@@ -2482,29 +2482,26 @@ export default function InteractiveLeaksSimulator() {
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.minDaysPerCharge *
-                              batteryExperience.mixedUse.activeHoursPerDay,
+                            batteryExperience.mixedUse.minActiveUseHoursPerCharge,
                             1,
                           )}
                           –
                           {format(
-                            batteryExperience.mixedUse.maxDaysPerCharge *
-                              batteryExperience.mixedUse.activeHoursPerDay,
+                            batteryExperience.mixedUse.maxActiveUseHoursPerCharge,
                             1,
                           )} h
                         </strong>
-                        <span>Total active-use hours per charge</span>
+                        <span>Active-use-only range per charge</span>
                       </div>
 
                       <div>
                         <strong>
                           {format(
-                            batteryExperience.mixedUse.expectedDaysPerCharge *
-                              batteryExperience.mixedUse.activeHoursPerDay,
+                            batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,
                             1,
                           )} h
                         </strong>
-                        <span>Expected total active-use hours</span>
+                        <span>Expected active-use-only hours</span>
                       </div>
 
                       <div>
