@@ -31,6 +31,11 @@ describe('exact wired charging mode precedence', () => {
     expect(
       result.estimate?.timeTo80Minutes?.provenance,
     ).toBe('derived');
+    expect(result.estimate?.referenceCount).toBe(1);
+    expect(result.estimate?.referenceModeCount).toBe(1);
+    expect(
+      result.estimate?.measurementCount,
+    ).toBeGreaterThan(1);
     expect(result.estimate?.confidence).toBe(1);
   });
 
