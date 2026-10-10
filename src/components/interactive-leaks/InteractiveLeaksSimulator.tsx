@@ -78,6 +78,8 @@ type CameraDraft = {
   lensTransmissionFraction?: string;
   quantumEfficiencyFraction?: string;
   binningLinearFactor?: string;
+  cropZoomRatio?: string;
+  targetOutputResolutionMp?: string;
   focusDistanceM: string;
   moduleWidthMm: string;
   moduleHeightMm: string;
@@ -460,6 +462,8 @@ function emptyCamera(id: number): CameraDraft {
     lensTransmissionFraction: '',
     quantumEfficiencyFraction: '',
     binningLinearFactor: '',
+    cropZoomRatio: '',
+    targetOutputResolutionMp: '',
     focusDistanceM: '',
     moduleWidthMm: '',
     moduleHeightMm: '',
@@ -505,6 +509,14 @@ function cameraInput(
 
     binningLinearFactor: numeric(
       camera.binningLinearFactor ?? '',
+    ),
+
+    cropZoomRatio: numeric(
+      camera.cropZoomRatio ?? '',
+    ),
+
+    targetOutputResolutionMp: numeric(
+      camera.targetOutputResolutionMp ?? '',
     ),
 
     focusDistanceM: numeric(
@@ -943,6 +955,12 @@ export default function InteractiveLeaksSimulator() {
                       mainCamera.apertureFNumber,
                     )
                   : '',
+              exposureTimeSeconds: '',
+              lensTransmissionFraction: '',
+              quantumEfficiencyFraction: '',
+              binningLinearFactor: '',
+              cropZoomRatio: '',
+              targetOutputResolutionMp: '',
               focusDistanceM: '',
               moduleWidthMm: '',
               moduleHeightMm: '',
@@ -2488,6 +2506,36 @@ export default function InteractiveLeaksSimulator() {
                         />
 
                         <NumericField
+                          label="Crop zoom"
+                          suffix="×"
+                          value={
+                            camera.cropZoomRatio ?? ''
+                          }
+                          placeholder="2"
+                          step="0.1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              cropZoomRatio: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Target output"
+                          suffix="MP"
+                          value={
+                            camera.targetOutputResolutionMp ?? ''
+                          }
+                          placeholder="12"
+                          step="0.1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              targetOutputResolutionMp: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
                           label="Module width"
                           suffix="mm"
                           value={camera.moduleWidthMm}
@@ -3906,6 +3954,42 @@ export default function InteractiveLeaksSimulator() {
                             : 'Unknown'}
                         </strong>
                         <span>Effective binned pixel pitch</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.croppedEquivalentFocalLengthMm !== undefined
+                            ? `${format(camera.croppedEquivalentFocalLengthMm, 1)} mm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Crop-equivalent focal length</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.croppedResolutionMp !== undefined
+                            ? `${format(camera.croppedResolutionMp, 1)} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Resolution after crop</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.maxNativeCropZoomForTargetResolution !== undefined
+                            ? `${format(camera.maxNativeCropZoomForTargetResolution, 2)}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Max native crop zoom at target MP</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.cropTotalLightLossStops !== undefined
+                            ? `${format(camera.cropTotalLightLossStops, 2)} stops`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Total retained-light loss from crop</span>
                       </div>
 
                       <div>
