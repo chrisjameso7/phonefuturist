@@ -1110,7 +1110,9 @@ export default function InteractiveLeaksSimulator() {
         <SimpleModePanel onRun={runSimpleMode} />
       ) : null}
 
-      <div className="il-workspace">
+      <div
+        className={`il-workspace ${workspaceMode === 'simple' ? 'il-workspace-simple' : ''}`}
+      >
         <section
           className={`il-builder ${workspaceMode === 'simple' ? 'il-builder-hidden' : ''}`}
           aria-label="Simulation inputs"
