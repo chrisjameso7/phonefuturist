@@ -3546,6 +3546,33 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>Total depth of field</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {camera.minimumOpticalFootprintWidthMm !== undefined &&
+                          camera.minimumOpticalFootprintHeightMm !== undefined
+                            ? `${format(
+                                camera.minimumOpticalFootprintWidthMm,
+                                1,
+                              )} × ${format(
+                                camera.minimumOpticalFootprintHeightMm,
+                                1,
+                              )} mm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Minimum optical footprint</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.opticalFootprintFitsModule === undefined
+                            ? 'Unresolved'
+                            : camera.opticalFootprintFitsModule
+                              ? 'Fits entered footprint'
+                              : 'Does not fit'}
+                        </strong>
+                        <span>Optical footprint check</span>
+                      </div>
                     </div>
 
                     {cameraExperiences[index]?.warnings.length ? (
