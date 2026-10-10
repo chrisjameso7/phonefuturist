@@ -44,12 +44,19 @@ export interface LiveCameraExperienceResult {
   warnings: CameraWarning[];
   outcomes: LiveCameraOutcome[];
   sensitivity: Array<{
-    scenario: 'larger-sensor' | 'faster-aperture' | 'higher-resolution';
+    scenario:
+      | 'larger-sensor'
+      | 'faster-aperture'
+      | 'higher-resolution'
+      | 'longer-exposure'
+      | 'pixel-binning';
     label: string;
     physics: CalculatedCamera;
     deltaSensorAreaPercent?: number;
     deltaTotalLightPercent?: number;
     deltaPerPixelLightPercent?: number;
+    deltaExposureLightPercent?: number;
+    deltaBinnedOutputPixelLightPercent?: number;
     deltaPixelPitchPercent?: number;
     deltaEquivalentAperturePercent?: number;
     sensorFootprintPressurePercent?: number;
@@ -129,6 +136,31 @@ function cameraSensitivityScenarios(
         resolutionMp: input.resolutionMp * 2,
       },
     });
+
+    scenarios.push({
+      scenario: 'pixel-binning',
+      label: '2×2 pixel binning',
+      input: {
+        ...input,
+        binningLinearFactor: 2,
+      },
+    });
+  }
+
+  if (
+    input.exposureTimeSeconds !== undefined &&
+    Number.isFinite(input.exposureTimeSeconds) &&
+    input.exposureTimeSeconds > 0
+  ) {
+    scenarios.push({
+      scenario: 'longer-exposure',
+      label: 'Exposure time ×4',
+      input: {
+        ...input,
+        exposureTimeSeconds:
+          input.exposureTimeSeconds * 4,
+      },
+    });
   }
 
   return scenarios.map((entry) => {
@@ -151,6 +183,17 @@ function cameraSensitivityScenarios(
         percentDelta(
           physics.perPixelLightCaptureIndex,
           baseline.perPixelLightCaptureIndex,
+        ),
+      deltaExposureLightPercent:
+        percentDelta(
+          physics.exposureLightCaptureIndex,
+          baseline.exposureLightCaptureIndex,
+        ),
+      deltaBinnedOutputPixelLightPercent:
+        percentDelta(
+          physics.binnedOutputPixelExposureIndex,
+          baseline.binnedOutputPixelExposureIndex ??
+            baseline.nativePixelExposureIndex,
         ),
       deltaPixelPitchPercent:
         percentDelta(
@@ -257,7 +300,7 @@ export function simulateCameraExperience(
       calculation.result,
     ),
     note:
-      'Optical geometry is calculated directly from supplied camera specifications. Observed camera outcomes are estimated only when comparable measured evidence exists; unsupported outcomes remain unresolved.',
+      'Optical geometry and exposure-aware light proxies are calculated directly from supplied camera specifications. ISO/gain is not treated as photon capture. Pixel binning changes the light represented by an output sample but does not increase total sensor light. Observed camera outcomes are estimated only when comparable measured evidence exists; unsupported outcomes remain unresolved.',
   };
 }
 
