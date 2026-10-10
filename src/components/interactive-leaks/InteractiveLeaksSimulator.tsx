@@ -128,6 +128,12 @@ type FormState = {
   throttleTemperatureC: string;
   thermalDurationSeconds: string;
 
+  socToChassisResistanceCPerW: string;
+  chassisToAmbientResistanceCPerW: string;
+  socThermalMassJPerC: string;
+  chassisThermalMassJPerC: string;
+  surfaceComfortTemperatureC: string;
+
   batteryWidthMm: string;
   batteryHeightMm: string;
   batteryThicknessMm: string;
@@ -188,6 +194,12 @@ const initialForm: FormState = {
   throttleTemperatureC: '',
   thermalDurationSeconds: '',
 
+  socToChassisResistanceCPerW: '',
+  chassisToAmbientResistanceCPerW: '',
+  socThermalMassJPerC: '',
+  chassisThermalMassJPerC: '',
+  surfaceComfortTemperatureC: '',
+
   batteryWidthMm: '',
   batteryHeightMm: '',
   batteryThicknessMm: '',
@@ -247,6 +259,12 @@ const flagshipExample: FormState = {
   thermalMassJPerC: '45',
   throttleTemperatureC: '42',
   thermalDurationSeconds: '600',
+
+  socToChassisResistanceCPerW: '',
+  chassisToAmbientResistanceCPerW: '',
+  socThermalMassJPerC: '',
+  chassisThermalMassJPerC: '',
+  surfaceComfortTemperatureC: '',
 
   batteryWidthMm: '60',
   batteryHeightMm: '80',
@@ -836,6 +854,11 @@ export default function InteractiveLeaksSimulator() {
       thermalMassJPerC: '',
       throttleTemperatureC: '',
       thermalDurationSeconds: '',
+      socToChassisResistanceCPerW: '',
+      chassisToAmbientResistanceCPerW: '',
+      socThermalMassJPerC: '',
+      chassisThermalMassJPerC: '',
+      surfaceComfortTemperatureC: '',
     }));
 
     setCameras(
@@ -1001,6 +1024,31 @@ export default function InteractiveLeaksSimulator() {
     form.throttleTemperatureC,
   );
 
+  const socToChassisResistanceCPerW =
+    numeric(
+      form.socToChassisResistanceCPerW,
+    );
+  const chassisToAmbientResistanceCPerW =
+    numeric(
+      form.chassisToAmbientResistanceCPerW,
+    );
+  const socThermalMassJPerC = numeric(
+    form.socThermalMassJPerC,
+  );
+  const chassisThermalMassJPerC = numeric(
+    form.chassisThermalMassJPerC,
+  );
+  const surfaceComfortTemperatureC =
+    numeric(
+      form.surfaceComfortTemperatureC,
+    );
+
+  const hasCompleteTwoNodeInput =
+    socToChassisResistanceCPerW !== undefined &&
+    chassisToAmbientResistanceCPerW !== undefined &&
+    socThermalMassJPerC !== undefined &&
+    chassisThermalMassJPerC !== undefined;
+
   const thermalResult =
     simulationInput &&
     result &&
@@ -1031,6 +1079,22 @@ export default function InteractiveLeaksSimulator() {
           throttleTemperatureC,
           durationSeconds:
             numeric(form.thermalDurationSeconds) ?? 600,
+          ...(hasCompleteTwoNodeInput
+            ? {
+                twoNode: {
+                  socToChassisResistanceCPerW,
+                  chassisToAmbientResistanceCPerW,
+                  socThermalMassJPerC,
+                  chassisThermalMassJPerC,
+                  ...(surfaceComfortTemperatureC !==
+                  undefined
+                    ? {
+                        surfaceComfortTemperatureC,
+                      }
+                    : {}),
+                },
+              }
+            : {}),
         })
       : undefined;
 
@@ -1765,8 +1829,10 @@ export default function InteractiveLeaksSimulator() {
               <summary>Advanced thermal model</summary>
 
               <p className="il-help">
-                Thermal resistance and thermal mass are physical model inputs.
-                Leave them blank rather than guessing if they are unknown.
+                The lumped resistance/mass fields drive the legacy thermal trace.
+                The optional two-node fields separately model the SoC/package and
+                chassis/surface. Supply all four two-node physical parameters or
+                leave them blank. Do not guess them.
               </p>
 
               <div className="il-grid">
@@ -1787,6 +1853,79 @@ export default function InteractiveLeaksSimulator() {
                   placeholder="45"
                   onChange={(value) =>
                     update('thermalMassJPerC', value)
+                  }
+                />
+
+                <NumericField
+                  label="SoC → chassis resistance"
+                  suffix="°C/W"
+                  value={
+                    form.socToChassisResistanceCPerW
+                  }
+                  placeholder="2.5"
+                  onChange={(value) =>
+                    update(
+                      'socToChassisResistanceCPerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Chassis → ambient resistance"
+                  suffix="°C/W"
+                  value={
+                    form.chassisToAmbientResistanceCPerW
+                  }
+                  placeholder="3.5"
+                  onChange={(value) =>
+                    update(
+                      'chassisToAmbientResistanceCPerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="SoC/package thermal mass"
+                  suffix="J/°C"
+                  value={form.socThermalMassJPerC}
+                  placeholder="12"
+                  onChange={(value) =>
+                    update(
+                      'socThermalMassJPerC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Chassis thermal mass"
+                  suffix="J/°C"
+                  value={
+                    form.chassisThermalMassJPerC
+                  }
+                  placeholder="55"
+                  onChange={(value) =>
+                    update(
+                      'chassisThermalMassJPerC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Surface comfort threshold"
+                  suffix="°C"
+                  value={
+                    form.surfaceComfortTemperatureC
+                  }
+                  placeholder="42"
+                  onChange={(value) =>
+                    update(
+                      'surfaceComfortTemperatureC',
+                      value,
+                    )
                   }
                 />
 
