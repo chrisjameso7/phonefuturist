@@ -8,12 +8,24 @@ import {
   simulateSocThermals,
   type SocThermalInput,
 } from './modules/soc-thermal';
+import {
+  simulateTwoNodeThermals,
+  type TwoNodeThermalResult,
+} from './modules/two-node-thermal';
 
 export const LIVE_THERMAL_EXPERIENCE_VERSION =
   'live-thermal-experience-0.1.0';
 
 export interface LiveThermalExperienceInput
-  extends CalibratedSocThermalInput {}
+  extends CalibratedSocThermalInput {
+  twoNode?: {
+    socToChassisResistanceCPerW: number;
+    chassisToAmbientResistanceCPerW: number;
+    socThermalMassJPerC: number;
+    chassisThermalMassJPerC: number;
+    surfaceComfortTemperatureC?: number;
+  };
+}
 
 export interface LiveThermalExperienceResult {
   version: string;
@@ -36,6 +48,7 @@ export interface LiveThermalExperienceResult {
     powerW: number;
     performancePercent: number;
   }>;
+  twoNode?: TwoNodeThermalResult;
   warnings?: Array<{
     code: string;
     message: string;
@@ -56,6 +69,42 @@ export interface LiveThermalExperienceResult {
 }
 
 
+
+
+function optionalTwoNodeResult(
+  input: LiveThermalExperienceInput,
+) {
+  if (!input.twoNode) {
+    return undefined;
+  }
+
+  return simulateTwoNodeThermals({
+    targetPowerW: input.targetPowerW,
+    ambientTemperatureC:
+      input.ambientTemperatureC,
+    socToChassisResistanceCPerW:
+      input.twoNode
+        .socToChassisResistanceCPerW,
+    chassisToAmbientResistanceCPerW:
+      input.twoNode
+        .chassisToAmbientResistanceCPerW,
+    socThermalMassJPerC:
+      input.twoNode.socThermalMassJPerC,
+    chassisThermalMassJPerC:
+      input.twoNode
+        .chassisThermalMassJPerC,
+    socThrottleTemperatureC:
+      input.throttleTemperatureC,
+    surfaceComfortTemperatureC:
+      input.twoNode
+        .surfaceComfortTemperatureC,
+    durationSeconds: input.durationSeconds,
+    stepSeconds:
+      input.stepSeconds !== undefined
+        ? Math.min(input.stepSeconds, 2)
+        : undefined,
+  });
+}
 
 function thermalSensitivityScenarios(
   corpus: DeviceCorpus,
@@ -311,6 +360,12 @@ export function simulateThermalExperience(
       sustainedPowerW:
         calibrated.simulation.sustainedPowerW,
       points: calibrated.simulation.points,
+      ...(optionalTwoNodeResult(input)
+        ? {
+            twoNode:
+              optionalTwoNodeResult(input)!,
+          }
+        : {}),
       warnings,
       sensitivity: thermalSensitivityScenarios(
         corpus,
@@ -326,7 +381,7 @@ export function simulateThermalExperience(
         },
       ),
       note:
-        'Sustained performance is calibrated from comparable measured thermal evidence. What-if sensitivity keeps that measured baseline, then applies deterministic physics-derived deltas for changed ambient temperature, cooling resistance or SoC power.',
+        'Sustained performance is calibrated from comparable measured thermal evidence. What-if sensitivity keeps that measured baseline, then applies deterministic physics-derived deltas for changed ambient temperature, cooling resistance or SoC power. When explicit two-node parameters are supplied, package and chassis temperatures are also simulated separately without replacing the calibrated baseline.'
     };
   }
 
@@ -371,6 +426,12 @@ export function simulateThermalExperience(
       fallback.sustainedPerformancePercent,
     sustainedPowerW: fallback.sustainedPowerW,
     points: fallback.points,
+    ...(optionalTwoNodeResult(input)
+      ? {
+          twoNode:
+            optionalTwoNodeResult(input)!,
+        }
+      : {}),
     warnings,
     sensitivity: thermalSensitivityScenarios(
       corpus,
@@ -384,7 +445,7 @@ export function simulateThermalExperience(
       },
     ),
     note:
-      'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence.',
+      'No compatible measured sustained-performance evidence was available. Result uses the deterministic first-order thermal model only and should be treated as lower confidence. Explicit two-node parameters, when supplied, are returned as a separate package/surface physics trace.'
   };
 }
 
