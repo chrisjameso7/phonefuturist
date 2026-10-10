@@ -4,7 +4,7 @@ import { resolveCorpusRuntimeBand } from './corpus-runtime';
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
 import { estimateWirelessChargingFromCorpus } from './wireless-charging-estimator';
 
-export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.2.0';
+export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.3.0';
 
 export interface BatteryExperienceInput {
   simulation: SimulationInput;
@@ -36,7 +36,9 @@ export interface BatteryRuntimeExperience {
   expectedHours?: number;
   minHours?: number;
   maxHours?: number;
+  energyBasis?: 'wh' | 'mah';
   expectedDrainMahPerHour?: number;
+  expectedDrainWhPerHour?: number;
   confidence?: number;
   averageSimilarity?: number;
   averageCoverage?: number;
@@ -56,10 +58,14 @@ export interface BatteryRuntimeExperience {
 
 export interface MixedUseBatteryEstimate {
   interpretation: 'active-use-only';
+  energyBasis: 'wh' | 'mah';
   activeHoursPerDay: number;
-  expectedDrainMahPerDay: number;
-  minDrainMahPerDay: number;
-  maxDrainMahPerDay: number;
+  expectedDrainMahPerDay?: number;
+  minDrainMahPerDay?: number;
+  maxDrainMahPerDay?: number;
+  expectedDrainWhPerDay?: number;
+  minDrainWhPerDay?: number;
+  maxDrainWhPerDay?: number;
   expectedActiveUseHoursPerCharge: number;
   minActiveUseHoursPerCharge: number;
   maxActiveUseHoursPerCharge: number;
@@ -74,7 +80,9 @@ export interface MixedUseBatteryEstimate {
   workloads: Array<{
     workload: 'web_browsing' | 'video_playback' | 'gaming';
     hoursPerDay: number;
-    expectedDrainMahPerHour: number;
+    expectedDrainMahPerHour?: number;
+    expectedDrainWhPerHour?: number;
+    energyBasis: 'wh' | 'mah';
   }>;
 }
 
@@ -82,6 +90,7 @@ export interface BatteryExperienceResult {
   version: string;
   status: 'resolved' | 'partial' | 'unresolved';
   capacityMah?: number;
+  energyWh?: number;
   runtimes: BatteryRuntimeExperience[];
   mixedUse?: MixedUseBatteryEstimate;
   charging?: ReturnType<typeof estimateChargingFromCorpus>;
@@ -97,6 +106,32 @@ function capacityMah(input: SimulationInput) {
 
   return cells.reduce((sum, cell) => sum + (cell.capacityMah ?? 0), 0);
 }
+function energyWh(input: SimulationInput) {
+  const cells = input.battery?.cells ?? [];
+
+  if (
+    !cells.length ||
+    cells.some(
+      (cell) =>
+        !Number.isFinite(cell.capacityMah) ||
+        !Number.isFinite(cell.nominalVoltageV) ||
+        (cell.capacityMah ?? 0) <= 0 ||
+        (cell.nominalVoltageV ?? 0) <= 0,
+    )
+  ) {
+    return undefined;
+  }
+
+  return cells.reduce(
+    (sum, cell) =>
+      sum +
+      ((cell.capacityMah ?? 0) *
+        (cell.nominalVoltageV ?? 0)) /
+        1000,
+    0,
+  );
+}
+
 
 function runtimeFromDrain(
   capacity: number,
@@ -116,6 +151,7 @@ export function simulateBatteryExperience(
   input: BatteryExperienceInput,
 ): BatteryExperienceResult {
   const capacity = capacityMah(input.simulation);
+  const packEnergyWh = energyWh(input.simulation);
   const warnings: string[] = [];
 
   if (!capacity) {
@@ -157,18 +193,41 @@ export function simulateBatteryExperience(
       };
     }
 
-    const runtime = runtimeFromDrain(
-      capacity,
-      band.estimate.minMahPerHour,
-      band.estimate.expectedMahPerHour,
-      band.estimate.maxMahPerHour,
-    );
+    const useWh =
+      band.estimate.energyBasis === 'wh' &&
+      packEnergyWh !== undefined &&
+      band.estimate.minWhPerHour !== undefined &&
+      band.estimate.expectedWhPerHour !== undefined &&
+      band.estimate.maxWhPerHour !== undefined;
+
+    const runtime = useWh
+      ? runtimeFromDrain(
+          packEnergyWh,
+          band.estimate.minWhPerHour!,
+          band.estimate.expectedWhPerHour!,
+          band.estimate.maxWhPerHour!,
+        )
+      : runtimeFromDrain(
+          capacity,
+          band.estimate.minMahPerHour,
+          band.estimate.expectedMahPerHour,
+          band.estimate.maxMahPerHour,
+        );
 
     return {
       workload,
       status: 'resolved',
       ...runtime,
-      expectedDrainMahPerHour: band.estimate.expectedMahPerHour,
+      energyBasis: useWh ? 'wh' : 'mah',
+      ...(useWh
+        ? {
+            expectedDrainWhPerHour:
+              band.estimate.expectedWhPerHour,
+          }
+        : {
+            expectedDrainMahPerHour:
+              band.estimate.expectedMahPerHour,
+          }),
       confidence: band.estimate.confidence,
       averageSimilarity:
         band.estimate.averageSimilarity,
@@ -200,8 +259,7 @@ export function simulateBatteryExperience(
 
       if (
         hours <= 0 ||
-        runtime.status !== 'resolved' ||
-        runtime.expectedDrainMahPerHour === undefined
+        runtime.status !== 'resolved'
       ) {
         return [];
       }
@@ -225,13 +283,35 @@ export function simulateBatteryExperience(
         return [];
       }
 
+      const useWh =
+        sourceBand.estimate.energyBasis === 'wh' &&
+        packEnergyWh !== undefined &&
+        sourceBand.estimate.minWhPerHour !== undefined &&
+        sourceBand.estimate.expectedWhPerHour !== undefined &&
+        sourceBand.estimate.maxWhPerHour !== undefined;
+
       return [{
         workload: runtime.workload,
         hoursPerDay: hours,
+        energyBasis: useWh ? 'wh' as const : 'mah' as const,
         expectedDrainMahPerHour:
           sourceBand.estimate.expectedMahPerHour,
-        minDrainMahPerHour: sourceBand.estimate.minMahPerHour,
-        maxDrainMahPerHour: sourceBand.estimate.maxMahPerHour,
+        minDrainMahPerHour:
+          sourceBand.estimate.minMahPerHour,
+        maxDrainMahPerHour:
+          sourceBand.estimate.maxMahPerHour,
+        expectedDrainWhPerHour:
+          useWh
+            ? sourceBand.estimate.expectedWhPerHour
+            : undefined,
+        minDrainWhPerHour:
+          useWh
+            ? sourceBand.estimate.minWhPerHour
+            : undefined,
+        maxDrainWhPerHour:
+          useWh
+            ? sourceBand.estimate.maxWhPerHour
+            : undefined,
         confidence: sourceBand.estimate.confidence,
       }];
     });
@@ -242,21 +322,71 @@ export function simulateBatteryExperience(
     );
 
     if (activeHoursPerDay > 0 && selected.length > 0) {
-      const expectedDrainMahPerDay = selected.reduce(
-        (sum, row) =>
-          sum + row.hoursPerDay * row.expectedDrainMahPerHour,
-        0,
-      );
-      const minDrainMahPerDay = selected.reduce(
-        (sum, row) =>
-          sum + row.hoursPerDay * row.minDrainMahPerHour,
-        0,
-      );
-      const maxDrainMahPerDay = selected.reduce(
-        (sum, row) =>
-          sum + row.hoursPerDay * row.maxDrainMahPerHour,
-        0,
-      );
+      const useWh =
+        packEnergyWh !== undefined &&
+        selected.every(
+          (row) =>
+            row.energyBasis === 'wh' &&
+            row.expectedDrainWhPerHour !== undefined &&
+            row.minDrainWhPerHour !== undefined &&
+            row.maxDrainWhPerHour !== undefined,
+        );
+
+      const expectedDrainMahPerDay = useWh
+        ? undefined
+        : selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.expectedDrainMahPerHour,
+            0,
+          );
+      const minDrainMahPerDay = useWh
+        ? undefined
+        : selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.minDrainMahPerHour,
+            0,
+          );
+      const maxDrainMahPerDay = useWh
+        ? undefined
+        : selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.maxDrainMahPerHour,
+            0,
+          );
+
+      const expectedDrainWhPerDay = useWh
+        ? selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.expectedDrainWhPerHour!,
+            0,
+          )
+        : undefined;
+      const minDrainWhPerDay = useWh
+        ? selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.minDrainWhPerHour!,
+            0,
+          )
+        : undefined;
+      const maxDrainWhPerDay = useWh
+        ? selected.reduce(
+            (sum, row) =>
+              sum +
+              row.hoursPerDay *
+                row.maxDrainWhPerHour!,
+            0,
+          )
+        : undefined;
 
       const confidence =
         selected.reduce(
@@ -264,31 +394,54 @@ export function simulateBatteryExperience(
           0,
         ) / activeHoursPerDay;
 
+      const availableEnergy =
+        useWh
+          ? packEnergyWh!
+          : capacity;
+
       const expectedProfileRepeats =
-        capacity /
+        availableEnergy /
         Math.max(
-          expectedDrainMahPerDay,
+          useWh
+            ? expectedDrainWhPerDay!
+            : expectedDrainMahPerDay!,
           Number.EPSILON,
         );
       const minProfileRepeats =
-        capacity /
+        availableEnergy /
         Math.max(
-          maxDrainMahPerDay,
+          useWh
+            ? maxDrainWhPerDay!
+            : maxDrainMahPerDay!,
           Number.EPSILON,
         );
       const maxProfileRepeats =
-        capacity /
+        availableEnergy /
         Math.max(
-          minDrainMahPerDay,
+          useWh
+            ? minDrainWhPerDay!
+            : minDrainMahPerDay!,
           Number.EPSILON,
         );
 
       mixedUse = {
         interpretation: 'active-use-only',
+        energyBasis: useWh ? 'wh' : 'mah',
         activeHoursPerDay,
-        expectedDrainMahPerDay,
-        minDrainMahPerDay,
-        maxDrainMahPerDay,
+        ...(expectedDrainMahPerDay !== undefined
+          ? {
+              expectedDrainMahPerDay,
+              minDrainMahPerDay,
+              maxDrainMahPerDay,
+            }
+          : {}),
+        ...(expectedDrainWhPerDay !== undefined
+          ? {
+              expectedDrainWhPerDay,
+              minDrainWhPerDay,
+              maxDrainWhPerDay,
+            }
+          : {}),
         expectedActiveUseHoursPerCharge:
           expectedProfileRepeats *
           activeHoursPerDay,
@@ -308,7 +461,16 @@ export function simulateBatteryExperience(
         workloads: selected.map((row) => ({
           workload: row.workload,
           hoursPerDay: row.hoursPerDay,
-          expectedDrainMahPerHour: row.expectedDrainMahPerHour,
+          energyBasis: useWh ? 'wh' as const : 'mah' as const,
+          ...(useWh
+            ? {
+                expectedDrainWhPerHour:
+                  row.expectedDrainWhPerHour,
+              }
+            : {
+                expectedDrainMahPerHour:
+                  row.expectedDrainMahPerHour,
+              }),
         })),
       };
       warnings.push(
@@ -392,6 +554,9 @@ export function simulateBatteryExperience(
     version: BATTERY_EXPERIENCE_ENGINE_VERSION,
     status,
     capacityMah: capacity,
+    ...(packEnergyWh !== undefined
+      ? { energyWh: packEnergyWh }
+      : {}),
     runtimes,
     ...(mixedUse ? { mixedUse } : {}),
     ...(charging ? { charging } : {}),
