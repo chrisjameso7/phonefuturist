@@ -33,6 +33,36 @@ export interface CameraInput {
   exposureTimeSeconds?: number;
 
   /**
+   * Full-frame sensor readout time in seconds. This drives rolling-shutter
+   * skew and is deliberately separate from exposure time.
+   */
+  sensorReadoutTimeSeconds?: number;
+
+  /**
+   * Optional video frame rate. Used only to compare exposure/readout against
+   * the frame interval. It does not imply a shutter time.
+   */
+  videoFrameRateFps?: number;
+
+  /**
+   * Apparent subject angular motion across the camera view in degrees/second.
+   * Used for deterministic subject-motion blur during the exposure window.
+   */
+  subjectAngularSpeedDegPerSecond?: number;
+
+  /**
+   * Camera angular motion in degrees/second during capture.
+   * Used separately from subject motion.
+   */
+  cameraAngularShakeDegPerSecond?: number;
+
+  /**
+   * Fraction of camera angular shake compensated by OIS, from 0 to 1.
+   * This never reduces subject-motion blur.
+   */
+  oisAngularCompensationFraction?: number;
+
+  /**
    * Fraction of incident light transmitted through the complete lens stack.
    * 1.0 means 100% transmission. Leave unknown rather than guessing.
    */
@@ -138,6 +168,27 @@ export interface CalculatedCamera {
    * is explicitly supplied.
    */
   photoelectronCaptureIndex?: number;
+
+  /** Video frame interval = 1 / FPS when FPS is explicitly supplied. */
+  videoFrameIntervalSeconds?: number;
+
+  /** Sensor readout as a fraction of one video frame interval. */
+  readoutFractionOfFrame?: number;
+
+  /** Subject-motion image displacement during exposure, in native pixels. */
+  subjectMotionBlurPixels?: number;
+
+  /** Camera-shake image displacement during exposure before OIS, in pixels. */
+  cameraShakeBlurPixelsBeforeOis?: number;
+
+  /** Camera-shake image displacement after explicit OIS compensation. */
+  cameraShakeBlurPixelsAfterOis?: number;
+
+  /** Rolling-shutter image skew from camera angular motion, in native pixels. */
+  rollingShutterCameraSkewPixels?: number;
+
+  /** Rolling-shutter image skew from subject angular motion, in native pixels. */
+  rollingShutterSubjectSkewPixels?: number;
 
   /**
    * Estimated pixel pitch from approximate sensor area and resolution.
@@ -390,6 +441,69 @@ export function calculateCamera(
   }
 
   if (
+    input.sensorReadoutTimeSeconds !== undefined &&
+    !isPositiveFinite(input.sensorReadoutTimeSeconds)
+  ) {
+    warnings.push({
+      code: 'INVALID_SENSOR_READOUT_TIME',
+      message:
+        'Sensor readout time must be a positive finite value in seconds.',
+    });
+  }
+
+  if (
+    input.videoFrameRateFps !== undefined &&
+    !isPositiveFinite(input.videoFrameRateFps)
+  ) {
+    warnings.push({
+      code: 'INVALID_VIDEO_FRAME_RATE',
+      message:
+        'Video frame rate must be a positive finite value in frames per second.',
+    });
+  }
+
+  for (const [value, code, label] of [
+    [
+      input.subjectAngularSpeedDegPerSecond,
+      'INVALID_SUBJECT_ANGULAR_SPEED',
+      'Subject angular speed',
+    ],
+    [
+      input.cameraAngularShakeDegPerSecond,
+      'INVALID_CAMERA_ANGULAR_SHAKE',
+      'Camera angular shake',
+    ],
+  ] as const) {
+    if (
+      value !== undefined &&
+      (!Number.isFinite(value) || value < 0)
+    ) {
+      warnings.push({
+        code,
+        message:
+          `${label} must be a finite value greater than or equal to 0 degrees/second.`,
+      });
+    }
+  }
+
+  if (
+    input.oisAngularCompensationFraction !== undefined &&
+    (
+      !Number.isFinite(
+        input.oisAngularCompensationFraction,
+      ) ||
+      input.oisAngularCompensationFraction < 0 ||
+      input.oisAngularCompensationFraction > 1
+    )
+  ) {
+    warnings.push({
+      code: 'INVALID_OIS_COMPENSATION',
+      message:
+        'OIS angular compensation fraction must be between 0 and 1.',
+    });
+  }
+
+  if (
     input.lensTransmissionFraction !== undefined &&
     (!Number.isFinite(input.lensTransmissionFraction) ||
       input.lensTransmissionFraction <= 0 ||
@@ -449,6 +563,44 @@ export function calculateCamera(
       message:
         'Target output resolution must be a positive finite megapixel value.',
     });
+  }
+
+  if (
+    input.videoFrameRateFps !== undefined &&
+    isPositiveFinite(input.videoFrameRateFps)
+  ) {
+    result.videoFrameIntervalSeconds =
+      1 / input.videoFrameRateFps;
+
+    if (
+      input.sensorReadoutTimeSeconds !== undefined &&
+      isPositiveFinite(input.sensorReadoutTimeSeconds)
+    ) {
+      result.readoutFractionOfFrame =
+        input.sensorReadoutTimeSeconds /
+        result.videoFrameIntervalSeconds;
+
+      if (result.readoutFractionOfFrame > 1) {
+        warnings.push({
+          code: 'READOUT_EXCEEDS_FRAME_INTERVAL',
+          message:
+            'Full-frame sensor readout is longer than the supplied video frame interval.',
+        });
+      }
+    }
+
+    if (
+      input.exposureTimeSeconds !== undefined &&
+      isPositiveFinite(input.exposureTimeSeconds) &&
+      input.exposureTimeSeconds >
+        result.videoFrameIntervalSeconds
+    ) {
+      warnings.push({
+        code: 'EXPOSURE_EXCEEDS_FRAME_INTERVAL',
+        message:
+          'Exposure time is longer than the supplied video frame interval.',
+      });
+    }
   }
 
   if (
@@ -582,6 +734,112 @@ export function calculateCamera(
             result.nativePixelExposureIndex *
             input.quantumEfficiencyFraction;
         }
+      }
+    }
+
+    const nativePixelPitchMm =
+      result.approximatePixelPitchMicrons /
+      1000;
+
+    const angularDisplacementPixels = (
+      angularSpeedDegPerSecond: number,
+      durationSeconds: number,
+    ) => {
+      if (
+        physicalFocalLength === undefined ||
+        nativePixelPitchMm <= 0
+      ) {
+        return undefined;
+      }
+
+      const angleRad =
+        (
+          angularSpeedDegPerSecond *
+          durationSeconds
+        ) *
+        (Math.PI / 180);
+
+      return (
+        Math.abs(
+          physicalFocalLength *
+          Math.tan(angleRad),
+        ) /
+        nativePixelPitchMm
+      );
+    };
+
+    if (
+      input.exposureTimeSeconds !== undefined &&
+      isPositiveFinite(input.exposureTimeSeconds)
+    ) {
+      if (
+        input.subjectAngularSpeedDegPerSecond !== undefined &&
+        Number.isFinite(input.subjectAngularSpeedDegPerSecond) &&
+        input.subjectAngularSpeedDegPerSecond >= 0
+      ) {
+        result.subjectMotionBlurPixels =
+          angularDisplacementPixels(
+            input.subjectAngularSpeedDegPerSecond,
+            input.exposureTimeSeconds,
+          );
+      }
+
+      if (
+        input.cameraAngularShakeDegPerSecond !== undefined &&
+        Number.isFinite(input.cameraAngularShakeDegPerSecond) &&
+        input.cameraAngularShakeDegPerSecond >= 0
+      ) {
+        const raw =
+          angularDisplacementPixels(
+            input.cameraAngularShakeDegPerSecond,
+            input.exposureTimeSeconds,
+          );
+
+        if (raw !== undefined) {
+          result.cameraShakeBlurPixelsBeforeOis =
+            raw;
+
+          const compensation =
+            input.oisAngularCompensationFraction !== undefined &&
+            Number.isFinite(input.oisAngularCompensationFraction) &&
+            input.oisAngularCompensationFraction >= 0 &&
+            input.oisAngularCompensationFraction <= 1
+              ? input.oisAngularCompensationFraction
+              : 0;
+
+          result.cameraShakeBlurPixelsAfterOis =
+            raw *
+            (1 - compensation);
+        }
+      }
+    }
+
+    if (
+      input.sensorReadoutTimeSeconds !== undefined &&
+      isPositiveFinite(input.sensorReadoutTimeSeconds)
+    ) {
+      if (
+        input.cameraAngularShakeDegPerSecond !== undefined &&
+        Number.isFinite(input.cameraAngularShakeDegPerSecond) &&
+        input.cameraAngularShakeDegPerSecond >= 0
+      ) {
+        result.rollingShutterCameraSkewPixels =
+          angularDisplacementPixels(
+            input.cameraAngularShakeDegPerSecond,
+            input.sensorReadoutTimeSeconds,
+          );
+      }
+
+      if (
+        input.subjectAngularSpeedDegPerSecond !== undefined &&
+        Number.isFinite(input.subjectAngularSpeedDegPerSecond) &&
+        input.subjectAngularSpeedDegPerSecond >= 0
+      ) {
+        result.rollingShutterSubjectSkewPixels =
+          angularDisplacementPixels(
+            input.subjectAngularSpeedDegPerSecond,
+            input.sensorReadoutTimeSeconds,
+          );
       }
     }
 
