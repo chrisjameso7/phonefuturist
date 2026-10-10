@@ -43,6 +43,7 @@ export interface ChargingComparableEvidence {
   testChargerWatts?: number;
   chargingStandard?: string;
   measuredPeakWatts?: number;
+  ambientTemperatureC?: number;
 }
 
 export interface ChargingComparableResult {
@@ -301,6 +302,13 @@ export function selectChargingComparables(
           : {}),
         ...(first.measuredPeakWatts !== undefined
           ? { measuredPeakWatts: first.measuredPeakWatts }
+          : {}),
+        ...(first.ambientTemperatureC !== undefined &&
+        Number.isFinite(first.ambientTemperatureC)
+          ? {
+              ambientTemperatureC:
+                first.ambientTemperatureC,
+            }
           : {}),
         ...(fullChargeMinutes !== undefined ? { fullChargeMinutes } : {}),
         ...(thirtyMinutePercent !== undefined
