@@ -12,6 +12,9 @@ import {
   expandSimpleMode,
   type SimpleModeInput,
 } from './simple-mode';
+import {
+  estimateLiveSustainedPerformance,
+} from './modules/sustained-performance-estimator';
 
 export const SIMPLE_MODE_ENGINE_VERSION =
   'simple-mode-engine-0.1.0';
@@ -33,6 +36,9 @@ export interface SimpleModeResult {
   >;
   cameras: Array<
     ReturnType<typeof simulateLiveCameraExperience>
+  >;
+  sustainedPerformance: ReturnType<
+    typeof estimateLiveSustainedPerformance
   >;
   thermal: {
     status: 'advanced-only';
@@ -98,6 +104,31 @@ export function simulateSimpleMode(
     }),
   );
 
+  const sustainedPerformance =
+    estimateLiveSustainedPerformance({
+      domain: 'gpu_sustained',
+      manufacturer:
+        expansion.advanced.manufacturer,
+      batteryMah:
+        expansion.advanced.batteryMah,
+      socVendor:
+        expansion.advanced.socVendor,
+      socName:
+        expansion.advanced.socName,
+      displayDiagonalInches:
+        simulation.displays.primary
+          .diagonalInches,
+      refreshRateHz:
+        simulation.displays.primary
+          .refreshRateHz,
+      thicknessMm:
+        simulation.dimensions?.thicknessMm,
+      weightG:
+        simulation.dimensions?.weightG,
+      coolingClass:
+        expansion.advanced.coolingClass,
+    });
+
   return {
     version: SIMPLE_MODE_ENGINE_VERSION,
     access: {
@@ -110,10 +141,11 @@ export function simulateSimpleMode(
     display,
     battery,
     cameras,
+    sustainedPerformance,
     thermal: {
       status: 'advanced-only',
       reason:
-        'Simple Mode does not invent thermal resistance, thermal mass or a throttle ceiling. Thermal analysis becomes available when those values are supplied or when a future calibrated Simple Mode thermal prior is evidence-backed.',
+        'Simple Mode does not invent thermal resistance, thermal mass or a throttle ceiling. Sustained performance may still resolve from measured comparable evidence, but package and surface temperatures remain unavailable until explicit physical thermal parameters are supplied.',
     },
   };
 }
