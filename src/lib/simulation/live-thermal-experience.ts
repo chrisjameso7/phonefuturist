@@ -14,7 +14,7 @@ import {
 } from './modules/two-node-thermal';
 
 export const LIVE_THERMAL_EXPERIENCE_VERSION =
-  'live-thermal-experience-0.1.0';
+  'live-thermal-experience-0.2.0';
 
 export interface LiveThermalExperienceInput
   extends CalibratedSocThermalInput {
