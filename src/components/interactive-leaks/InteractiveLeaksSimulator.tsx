@@ -2968,8 +2968,12 @@ export default function InteractiveLeaksSimulator() {
                                 </small>
                               ) : null}
                               <small>
-                                {runtime.independentSourceCount ?? 0} source
-                                {(runtime.independentSourceCount ?? 0) === 1
+                                {runtime.sourceRecordCount ?? 0} source page
+                                {(runtime.sourceRecordCount ?? 0) === 1
+                                  ? ''
+                                  : 's'} ·{' '}
+                                {runtime.publisherCount ?? 0} publisher
+                                {(runtime.publisherCount ?? 0) === 1
                                   ? ''
                                   : 's'} ·{' '}
                                 {runtime.protocolFamilyCount ?? 0} protocol family
@@ -3088,9 +3092,16 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {chargingResult.estimate.independentSourceCount}
+                          {chargingResult.estimate.sourceRecordCount}
                         </strong>
-                        <span>Independent sources</span>
+                        <span>Source pages</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.publisherCount}
+                        </strong>
+                        <span>Distinct publishers</span>
                       </div>
 
                       {chargingResult.estimate.measurementCount !== undefined ? (
