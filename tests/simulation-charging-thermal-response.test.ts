@@ -216,6 +216,29 @@ describe('charging thermal response', () => {
     ).toBeGreaterThan(0);
   });
 
+  it('does not label an ambient-mismatched exact device mode as measured-match', () => {
+    const result = estimateChargingFromCorpus(
+      corpus,
+      {
+        deviceVariantId: 'phone-a',
+        batteryMah: 5000,
+        batteryEnergyWh: 20,
+        wiredChargingWatts: 50,
+        chargingStandard: 'USB PD/PPS',
+        ambientTemperatureC: 30,
+        limit: 5,
+      },
+    );
+
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceMode).not.toBe(
+      'measured-match',
+    );
+    expect(result.estimate?.basis).toBe(
+      'weighted-comparable-corpus',
+    );
+  });
+
   it('stays neutral when no multi-temperature pair exists', () => {
     const noPair: DeviceCorpus = {
       ...corpus,
