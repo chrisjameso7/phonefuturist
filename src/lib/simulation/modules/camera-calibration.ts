@@ -145,6 +145,7 @@ export function calibrateCameraOutcome(
         (measurement) =>
           measurement.deviceVariantId === match.deviceVariantId &&
           measurement.workload === 'camera' &&
+          measurement.evidenceKind === 'measured' &&
           (!measurement.cameraRole ||
             measurement.cameraRole.trim().toLowerCase() ===
               match.role.trim().toLowerCase()) &&
