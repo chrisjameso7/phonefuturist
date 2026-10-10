@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canTriageBetaFeedback,
   createBetaFeedbackReference,
+  isBetaFeedbackStatus,
   validateBetaFeedbackSubmission,
 } from '../src/lib/simulation/beta-feedback';
 
@@ -109,5 +111,61 @@ describe('beta feedback payload validation', () => {
       id: '12345678-1234-1234-1234-123456789abc',
       reference: 'PF-BETA-12345678',
     });
+  });
+});
+
+
+describe('beta feedback triage helpers', () => {
+  it('recognizes only supported report statuses', () => {
+    expect(isBetaFeedbackStatus('new')).toBe(true);
+    expect(isBetaFeedbackStatus('reviewing')).toBe(true);
+    expect(isBetaFeedbackStatus('planned')).toBe(true);
+    expect(isBetaFeedbackStatus('fixed')).toBe(true);
+    expect(isBetaFeedbackStatus('wont_fix')).toBe(true);
+    expect(isBetaFeedbackStatus('deleted')).toBe(false);
+  });
+
+  it('allows verified editorial staff and denies ordinary accounts', () => {
+    expect(
+      canTriageBetaFeedback({
+        active: true,
+        verified: true,
+        roles: ['editor'],
+        mfa_required: false,
+        aal: 'aal1',
+      }),
+    ).toBe(true);
+
+    expect(
+      canTriageBetaFeedback({
+        active: true,
+        verified: true,
+        roles: [],
+        mfa_required: false,
+        aal: 'aal1',
+      }),
+    ).toBe(false);
+  });
+
+  it('requires aal2 whenever the access state says MFA is required', () => {
+    expect(
+      canTriageBetaFeedback({
+        active: true,
+        verified: true,
+        roles: ['admin'],
+        mfa_required: true,
+        aal: 'aal1',
+      }),
+    ).toBe(false);
+
+    expect(
+      canTriageBetaFeedback({
+        active: true,
+        verified: true,
+        roles: ['admin'],
+        mfa_required: true,
+        aal: 'aal2',
+      }),
+    ).toBe(true);
   });
 });
