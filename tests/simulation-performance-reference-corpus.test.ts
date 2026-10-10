@@ -25,5 +25,34 @@ describe('sustained GPU performance corpus', () => {
           measurement.unit === 'percent',
       ),
     ).toBe(true);
+
+    expect(
+      rows.some(
+        (measurement) =>
+          measurement.deviceVariantId ===
+          'oneplus-15-global-7300',
+      ),
+    ).toBe(true);
+
+    expect(
+      rows.some(
+        (measurement) =>
+          measurement.deviceVariantId ===
+          'honor-magic8-pro-eu-6270',
+      ),
+    ).toBe(true);
+
+    const snapdragonGen5 =
+      registry.devices.filter(
+        (device) =>
+          device.variant.soc?.name
+            .toLowerCase()
+            .replace(' for galaxy', '') ===
+          'snapdragon 8 elite gen 5',
+      );
+
+    expect(
+      snapdragonGen5.length,
+    ).toBeGreaterThanOrEqual(3);
   });
 });
