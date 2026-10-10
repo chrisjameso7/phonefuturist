@@ -144,8 +144,20 @@ if (cameraDevices.length < 5 || cameraModules < 12) {
   photoTextureBacktest.health === 'borderline'
 ) {
   console.warn('');
+  const borderlineDomains = [
+    backtest.health === 'borderline'
+      ? 'Sharpness & Timing'
+      : undefined,
+    stabilizationBacktest.health === 'borderline'
+      ? 'Video Stabilization'
+      : undefined,
+    photoTextureBacktest.health === 'borderline'
+      ? 'Photo Texture'
+      : undefined,
+  ].filter(Boolean);
+
   console.warn(
-    'WARN: Camera Sharpness & Timing backtest is borderline. Verification will continue, but the predictor should be reviewed.',
+    `WARN: Camera backtest is borderline for: ${borderlineDomains.join(', ')}. Verification will continue, but those predictors should be reviewed.`,
   );
 } else if (
   backtest.health === 'insufficient' ||
