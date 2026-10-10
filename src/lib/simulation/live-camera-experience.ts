@@ -90,11 +90,11 @@ function cameraSensitivityScenarios(
   ) {
     scenarios.push({
       scenario: 'larger-sensor',
-      label: 'Sensor format +15% linear',
+      label: 'Sensor linear size +15%',
       input: {
         ...input,
         sensorFormatDenominator:
-          input.sensorFormatDenominator * 0.85,
+          input.sensorFormatDenominator / 1.15,
       },
     });
   }
