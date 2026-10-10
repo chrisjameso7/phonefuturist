@@ -2,6 +2,32 @@ import { describe, expect, it } from 'vitest';
 import { simulateChargingFromLiveCorpus } from '../src/lib/simulation/live-charging';
 
 describe('live charging simulator', () => {
+  it('uses measured 60 W Samsung-class peers for a 5700 mAh future flagship concept', () => {
+    const result = simulateChargingFromLiveCorpus({
+      batteryMah: 5700,
+      wiredChargingWatts: 60,
+      manufacturer: 'Samsung',
+      limit: 5,
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(
+      result.estimate?.neighborIds,
+    ).toContain(
+      'legacy-charging-samsung-galaxy-s26-ultra',
+    );
+    expect(
+      result.estimate?.timeTo100Minutes?.expected,
+    ).toBeGreaterThan(35);
+    expect(
+      result.estimate?.timeTo100Minutes?.expected,
+    ).toBeLessThan(100);
+    expect(
+      result.estimate?.referenceCount,
+    ).toBeGreaterThanOrEqual(2);
+  });
+
+
   it('uses the unified calibration registry without caller-side corpus assembly', () => {
     const result = simulateChargingFromLiveCorpus({
       batteryMah: 6000,
