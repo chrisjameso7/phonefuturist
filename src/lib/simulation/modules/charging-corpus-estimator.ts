@@ -22,6 +22,8 @@ export interface ChargingCurveEstimate {
       | 'exact-measured-mode'
       | 'weighted-comparable-corpus';
     referenceCount: number;
+    referenceModeCount: number;
+    measurementCount?: number;
     confidence: number;
     confidenceGrade: ChargingConfidenceGrade;
     evidenceMode:
@@ -184,6 +186,7 @@ function exactMeasuredChargingMatch(
     (measurement) =>
       measurement.deviceVariantId === query.deviceVariantId &&
       measurement.workload === 'charging' &&
+      measurement.evidenceKind === 'measured' &&
       measurement.testChargerWatts !== undefined &&
       Math.abs(
         measurement.testChargerWatts -
@@ -294,7 +297,10 @@ export function estimateChargingFromCorpus(
   if (exact) {
     const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
       basis: 'exact-measured-mode',
-      referenceCount: exact.measurementIds.length,
+      referenceCount: 1,
+      referenceModeCount: 1,
+      measurementCount:
+        exact.measurementIds.length,
       confidence: 1,
       confidenceGrade: 'high',
       evidenceMode: 'measured-match',
@@ -576,7 +582,9 @@ export function estimateChargingFromCorpus(
 
   const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
     basis: 'weighted-comparable-corpus',
-    referenceCount: comparable.references.length,
+    referenceCount: neighborIds.size,
+    referenceModeCount:
+      comparable.references.length,
     confidence: clamp(adjustedConfidence, 0, 1),
     confidenceGrade,
     evidenceMode:
@@ -587,7 +595,7 @@ export function estimateChargingFromCorpus(
           : powerResponse.targetPosition === 'near-extrapolation'
             ? 'near-extrapolated'
             : 'far-extrapolated',
-    neighborIds: comparable.references.map((reference) => reference.deviceVariantId),
+    neighborIds: [...neighborIds],
     thermalContext: {
       status: thermalContext.status,
       confidenceMultiplier: thermalContext.confidenceMultiplier,
