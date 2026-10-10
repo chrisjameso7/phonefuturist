@@ -28,6 +28,39 @@ describe('live camera experience', () => {
     )).toBe(true);
   });
 
+  it('exposes shutter-time and binning sensitivity without inflating total sensor light', () => {
+    const corpus: DeviceCorpus = {
+      version: 'empty',
+      sources: [],
+      devices: [],
+      measurements: [],
+    };
+
+    const result = simulateCameraExperience(corpus, {
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 200,
+      apertureFNumber: 1.7,
+      exposureTimeSeconds: 1 / 120,
+    });
+
+    const exposure = result.sensitivity.find(
+      (scenario) => scenario.scenario === 'longer-exposure',
+    );
+    const binning = result.sensitivity.find(
+      (scenario) => scenario.scenario === 'pixel-binning',
+    );
+
+    expect(exposure?.deltaExposureLightPercent).toBeCloseTo(300, 8);
+    expect(binning?.deltaTotalLightPercent ?? 0).toBeCloseTo(0, 8);
+    expect(
+      binning?.deltaBinnedOutputPixelLightPercent,
+    ).toBeCloseTo(300, 8);
+    expect(
+      binning?.physics.effectiveBinnedResolutionMp,
+    ).toBeCloseTo(50, 8);
+  });
+
   it('resolves observed camera outcomes only from matching measured evidence', () => {
     const corpus: DeviceCorpus = {
       version: 'test',
