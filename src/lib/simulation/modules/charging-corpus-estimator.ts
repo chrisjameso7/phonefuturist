@@ -24,6 +24,7 @@ export interface ChargingCurveEstimate {
     referenceCount: number;
     referenceModeCount: number;
     measurementCount?: number;
+    independentSourceCount: number;
     confidence: number;
     confidenceGrade: ChargingConfidenceGrade;
     evidenceMode:
@@ -301,6 +302,7 @@ export function estimateChargingFromCorpus(
       referenceModeCount: 1,
       measurementCount:
         exact.measurementIds.length,
+      independentSourceCount: 1,
       confidence: 1,
       confidenceGrade: 'high',
       evidenceMode: 'measured-match',
@@ -585,6 +587,19 @@ export function estimateChargingFromCorpus(
     referenceCount: neighborIds.size,
     referenceModeCount:
       comparable.references.length,
+    independentSourceCount:
+      new Set(
+        comparable.references
+          .map(
+            (reference) =>
+              reference.sourceId,
+          )
+          .filter(
+            (sourceId):
+              sourceId is string =>
+                Boolean(sourceId),
+          ),
+      ).size,
     confidence: clamp(adjustedConfidence, 0, 1),
     confidenceGrade,
     evidenceMode:
