@@ -1,7 +1,7 @@
 import type { DeviceCorpus } from './device-corpus';
 
 export const PERFORMANCE_REFERENCE_CORPUS_VERSION =
-  'performance-reference-corpus-0.1.0';
+  'performance-reference-corpus-0.2.0';
 
 export function buildPerformanceReferenceCorpus(): DeviceCorpus {
   return {
