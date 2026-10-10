@@ -164,6 +164,45 @@ function sameChargingStandard(
   );
 }
 
+function batteryEnergyWhForDevice(
+  device: DeviceCorpus['devices'][number] | undefined,
+) {
+  const battery = device?.variant.battery;
+  if (!battery) return undefined;
+
+  const explicit =
+    battery.typicalEnergyWh ??
+    battery.ratedEnergyWh;
+
+  if (
+    explicit !== undefined &&
+    Number.isFinite(explicit) &&
+    explicit > 0
+  ) {
+    return explicit;
+  }
+
+  const capacity =
+    battery.capacityMah ??
+    battery.typicalCapacityMah;
+
+  if (
+    capacity !== undefined &&
+    Number.isFinite(capacity) &&
+    capacity > 0 &&
+    battery.nominalVoltageV !== undefined &&
+    Number.isFinite(battery.nominalVoltageV) &&
+    battery.nominalVoltageV > 0
+  ) {
+    return (
+      capacity *
+      battery.nominalVoltageV
+    ) / 1000;
+  }
+
+  return undefined;
+}
+
 function exactMeasuredChargingMatch(
   corpus: DeviceCorpus,
   query: ChargingComparableQuery,
@@ -186,6 +225,27 @@ function exactMeasuredChargingMatch(
     ) > 1
   ) {
     return undefined;
+  }
+
+  const measuredEnergyWh =
+    batteryEnergyWhForDevice(device);
+
+  if (
+    query.batteryEnergyWh !== undefined &&
+    Number.isFinite(query.batteryEnergyWh) &&
+    query.batteryEnergyWh > 0 &&
+    measuredEnergyWh !== undefined
+  ) {
+    const relativeEnergyDifference =
+      Math.abs(
+        measuredEnergyWh -
+        query.batteryEnergyWh,
+      ) /
+      Math.max(measuredEnergyWh, 0.001);
+
+    if (relativeEnergyDifference > 0.01) {
+      return undefined;
+    }
   }
 
   const measurements = corpus.measurements.filter(
