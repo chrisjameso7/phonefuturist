@@ -3,6 +3,10 @@ import {
   calculateDisplayLoad,
   type DisplayLoadResult,
 } from './modules/display-load';
+import {
+  calibrateLiveDisplayPower,
+  type DisplayPowerCalibrationResult,
+} from './modules/display-power-calibration';
 
 export const LIVE_DISPLAY_EXPERIENCE_VERSION =
   'live-display-experience-0.1.0';
@@ -30,6 +34,7 @@ export interface LiveDisplayExperienceResult {
   luminanceAreaNitCm2?: number;
   panelTechnology?: string;
   load: DisplayLoadResult;
+  electricalPower: DisplayPowerCalibrationResult;
   scenarios: Array<{
     scenario: '60hz' | '1080-class';
     label: string;
@@ -83,6 +88,25 @@ export function simulateLiveDisplayExperience(
     panelTechnology:
       input.panelTechnology,
   });
+
+  const electricalPower =
+    calibrateLiveDisplayPower({
+      panelTechnology:
+        input.panelTechnology,
+      diagonalInches:
+        input.diagonalInches,
+      resolutionWidthPx:
+        input.resolutionWidthPx,
+      resolutionHeightPx:
+        input.resolutionHeightPx,
+      brightnessNits:
+        input.brightnessNits,
+      averagePictureLevelPercent:
+        input.averagePictureLevelPercent,
+      operatingRefreshRateHz:
+        input.operatingRefreshRateHz ??
+        input.refreshRateHz,
+    });
 
   let megapixelsPerFrame: number | undefined;
   let pixelThroughputMpxPerSecond: number | undefined;
@@ -219,12 +243,15 @@ export function simulateLiveDisplayExperience(
     panelTechnology:
       input.panelTechnology?.trim() || undefined,
     load,
+    electricalPower,
     scenarios,
     warnings: [
       ...warnings,
       ...load.warnings,
     ],
     note:
-      'Pixel throughput and content-aware display load are deterministic workload proxies, not direct electrical power estimates. OLED/AMOLED average-picture-level scaling is only applied when panel technology and APL are explicitly supplied.',
+      electricalPower.status === 'resolved'
+        ? 'Pixel throughput and content-aware load remain deterministic proxies. Electrical panel watts are shown separately and come only from isolated measured panel-power references at similar operating conditions.'
+        : 'Pixel throughput and content-aware display load are deterministic workload proxies. Electrical panel watts remain unresolved because the calibration corpus does not contain sufficiently similar isolated panel-power measurements.',
   };
 }
