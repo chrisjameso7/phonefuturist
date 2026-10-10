@@ -6,6 +6,7 @@ export const CHARGING_COMPARABLE_MODEL_VERSION = 'charging-comparable-0.1.0';
 export interface ChargingComparableQuery {
   deviceVariantId?: string;
   batteryMah: number;
+  batteryEnergyWh?: number;
   batteryChemistry?: string;
   wiredChargingWatts: number;
   wirelessChargingWatts?: number;
@@ -36,6 +37,7 @@ export interface ChargingComparableEvidence {
   timeTo80Minutes?: number;
   advertisedWiredWatts?: number;
   batteryMah?: number;
+  batteryEnergyWh?: number;
   sourceId?: string;
   sourcePublisher?: string;
   testChargerWatts?: number;
@@ -48,6 +50,45 @@ export interface ChargingComparableResult {
   status: 'resolved' | 'unresolved';
   references: ChargingComparableEvidence[];
   unresolvedReason?: string;
+}
+
+function deviceBatteryEnergyWh(
+  device: DeviceCorpusRecord,
+) {
+  const battery = device.variant.battery;
+  if (!battery) return undefined;
+
+  const explicit =
+    battery.typicalEnergyWh ??
+    battery.ratedEnergyWh;
+
+  if (
+    explicit !== undefined &&
+    Number.isFinite(explicit) &&
+    explicit > 0
+  ) {
+    return explicit;
+  }
+
+  const capacity =
+    battery.capacityMah ??
+    battery.typicalCapacityMah;
+
+  if (
+    capacity !== undefined &&
+    Number.isFinite(capacity) &&
+    capacity > 0 &&
+    battery.nominalVoltageV !== undefined &&
+    Number.isFinite(battery.nominalVoltageV) &&
+    battery.nominalVoltageV > 0
+  ) {
+    return (
+      capacity *
+      battery.nominalVoltageV
+    ) / 1000;
+  }
+
+  return undefined;
 }
 
 function groupedChargingEvidence(
@@ -283,6 +324,12 @@ export function selectChargingComparables(
               batteryMah:
                 device.variant.battery?.capacityMah ??
                 device.variant.battery?.typicalCapacityMah,
+            }
+          : {}),
+        ...(deviceBatteryEnergyWh(device) !== undefined
+          ? {
+              batteryEnergyWh:
+                deviceBatteryEnergyWh(device),
             }
           : {}),
       }];
