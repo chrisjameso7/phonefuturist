@@ -65,7 +65,7 @@ export interface PeakPerformanceEstimate {
   unresolvedReason?: string;
 }
 
-const metricByDomain: Record<
+export const PEAK_METRIC_BY_DOMAIN: Record<
   PeakBenchmarkDomain,
   string
 > = {
@@ -87,7 +87,7 @@ export function estimatePeakPerformance(
   corpus: DeviceCorpus,
   query: PeakPerformanceQuery,
 ): PeakPerformanceEstimate {
-  const metric = metricByDomain[query.domain];
+  const metric = PEAK_METRIC_BY_DOMAIN[query.domain];
 
   const sourceById = new Map(
     corpus.sources.map((source) => [
