@@ -76,6 +76,7 @@ export function resolveCorpusRuntimeBand(
       .filter((measurement) => {
         if (
           measurement.workload !== workload ||
+          measurement.evidenceKind !== 'measured' ||
           measurement.unit.toLowerCase() !== 'hours' ||
           !positive(measurement.value)
         ) {
@@ -139,6 +140,7 @@ export function resolveCorpusRuntimeBand(
       (measurement) =>
         measurement.deviceVariantId === match.device.variant.id &&
         measurement.workload === workload &&
+        measurement.evidenceKind === 'measured' &&
         measurement.unit.toLowerCase() === 'hours' &&
         positive(measurement.value),
     );
@@ -257,7 +259,7 @@ export function resolveCorpusRuntimeBand(
       protocolVersion: values[0]?.protocolVersion,
       sourceIds: [...new Set(values.map((item) => item.sourceId))],
       note:
-        'Runtime drain is capacity-normalized from comparable released devices. Only one protocol group is used per estimate; incompatible test protocols are never averaged together.',
+        'Runtime drain is capacity-normalized from measured comparable released devices. Only one protocol group is used per estimate; reported or inferred rows and incompatible test protocols are never averaged into the calibration.',
     },
   };
 }
