@@ -6,7 +6,7 @@ import {
   type ThermalCalibrationQuery,
 } from './thermal-calibration';
 
-export const CALIBRATED_SOC_THERMAL_VERSION = 'calibrated-soc-thermal-0.1.0';
+export const CALIBRATED_SOC_THERMAL_VERSION = 'calibrated-soc-thermal-0.2.0';
 
 export interface CalibratedSocThermalInput
   extends Omit<ThermalCalibrationQuery, 'domain'> {
