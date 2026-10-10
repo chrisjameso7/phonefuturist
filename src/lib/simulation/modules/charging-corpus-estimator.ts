@@ -18,7 +18,9 @@ export interface ChargingCurveEstimate {
   status: 'resolved' | 'unresolved';
   unresolvedReason?: string;
   estimate?: {
-    basis: 'weighted-comparable-corpus';
+    basis:
+      | 'exact-measured-mode'
+      | 'weighted-comparable-corpus';
     referenceCount: number;
     confidence: number;
     confidenceGrade: ChargingConfidenceGrade;
@@ -128,6 +130,24 @@ function exactMeasuredChargingMatch(
   query: ChargingComparableQuery,
 ) {
   if (!query.deviceVariantId) return undefined;
+
+  const device = corpus.devices.find(
+    (candidate) =>
+      candidate.variant.id === query.deviceVariantId,
+  );
+
+  const measuredCapacityMah =
+    device?.variant.battery?.capacityMah ??
+    device?.variant.battery?.typicalCapacityMah;
+
+  if (
+    measuredCapacityMah === undefined ||
+    Math.abs(
+      measuredCapacityMah - query.batteryMah,
+    ) > 1
+  ) {
+    return undefined;
+  }
 
   const measurements = corpus.measurements.filter(
     (measurement) =>
@@ -242,7 +262,7 @@ export function estimateChargingFromCorpus(
 
   if (exact) {
     const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
-      basis: 'weighted-comparable-corpus',
+      basis: 'exact-measured-mode',
       referenceCount: exact.measurementIds.length,
       confidence: 1,
       confidenceGrade: 'high',
