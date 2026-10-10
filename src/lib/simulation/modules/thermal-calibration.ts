@@ -14,6 +14,7 @@ export interface ThermalCalibrationQuery {
   batteryMah?: number;
   manufacturer?: string;
   socVendor?: string;
+  socName?: string;
   displayDiagonalInches?: number;
   refreshRateHz?: number;
   thicknessMm?: number;
@@ -102,6 +103,7 @@ export function selectThermalCalibrationReferences(
       batteryMah: query.batteryMah,
       manufacturer: query.manufacturer,
       socVendor: query.socVendor,
+      socName: query.socName,
       displayDiagonalInches:
         query.displayDiagonalInches,
       refreshRateHz: query.refreshRateHz,
