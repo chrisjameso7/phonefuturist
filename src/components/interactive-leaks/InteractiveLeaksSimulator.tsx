@@ -2596,8 +2596,18 @@ export default function InteractiveLeaksSimulator() {
 
                               <small>
                                 {runtime.referenceCount ?? 0}{' '}
-                                measured refs
+                                measured devices
+                                {runtime.evidenceScope
+                                  ? ` · ${runtime.evidenceScope.replaceAll('-', ' ')}`
+                                  : ''}
                               </small>
+                              {runtime.sameSocFamilyReferences !== undefined ||
+                              runtime.sameSocVendorReferences !== undefined ? (
+                                <small>
+                                  {runtime.sameSocFamilyReferences ?? 0} same-family ·{' '}
+                                  {runtime.sameSocVendorReferences ?? 0} same-vendor
+                                </small>
+                              ) : null}
                             </div>
                           ))}
                       </div>
@@ -2692,6 +2702,29 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>Evidence mode</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.referenceCount}
+                        </strong>
+                        <span>Independent devices</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.referenceModeCount}
+                        </strong>
+                        <span>Charging modes used</span>
+                      </div>
+
+                      {chargingResult.estimate.measurementCount !== undefined ? (
+                        <div>
+                          <strong>
+                            {chargingResult.estimate.measurementCount}
+                          </strong>
+                          <span>Measured milestone rows</span>
+                        </div>
+                      ) : null}
 
                       <div>
                         <strong>
@@ -2872,8 +2905,28 @@ export default function InteractiveLeaksSimulator() {
                         <strong>
                           {thermalResult.referenceCount ?? 'None'}
                         </strong>
-                        <span>Measured references</span>
+                        <span>Measured references used</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.evidenceScope
+                            ? thermalResult.evidenceScope.replaceAll('-', ' ')
+                            : 'Unknown'}
+                        </strong>
+                        <span>Calibration scope</span>
+                      </div>
+
+                      {thermalResult.sameSocFamilyReferences !== undefined ||
+                      thermalResult.sameSocVendorReferences !== undefined ? (
+                        <div>
+                          <strong>
+                            {thermalResult.sameSocFamilyReferences ?? 0} /{' '}
+                            {thermalResult.sameSocVendorReferences ?? 0}
+                          </strong>
+                          <span>Same family / same vendor refs</span>
+                        </div>
+                      ) : null}
 
                       <div>
                         <strong>
@@ -2911,6 +2964,52 @@ export default function InteractiveLeaksSimulator() {
                         <span>Spec coverage</span>
                       </div>
                     </div>
+
+                    {thermalResult.twoNode ? (
+                      <div className="il-thermal-two-node">
+                        <span className="il-result-label">
+                          Package / surface physics
+                        </span>
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {format(
+                                thermalResult.twoNode
+                                  .peakSocPackageTemperatureC,
+                                1,
+                              )} °C
+                            </strong>
+                            <span>Peak SoC/package</span>
+                          </div>
+                          <div>
+                            <strong>
+                              {format(
+                                thermalResult.twoNode
+                                  .peakChassisSurfaceTemperatureC,
+                                1,
+                              )} °C
+                            </strong>
+                            <span>Peak chassis/surface</span>
+                          </div>
+                          <div>
+                            <strong>
+                              {thermalResult.twoNode
+                                .surfaceComfortCrossSecond !== undefined
+                                ? formatDurationSeconds(
+                                    thermalResult.twoNode
+                                      .surfaceComfortCrossSecond,
+                                  )
+                                : 'Not crossed'}
+                            </strong>
+                            <span>Surface comfort threshold</span>
+                          </div>
+                        </div>
+                        <p className="il-help">
+                          Two-node values appear only when explicit package-to-chassis
+                          and chassis-to-ambient physical parameters are supplied.
+                        </p>
+                      </div>
+                    ) : null}
 
                     {thermalResult.protocolKey ? (
                       <p className="il-help">
