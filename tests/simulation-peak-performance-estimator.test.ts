@@ -150,7 +150,7 @@ describe('peak performance estimator', () => {
     ]);
   });
 
-  it('uses same-vendor evidence for a future SoC and applies uplift only when explicitly supplied', () => {
+  it('fails closed for a future SoC unless a generation uplift is explicitly supplied', () => {
     const baseline = estimatePeakPerformance(
       corpus,
       {
@@ -170,29 +170,30 @@ describe('peak performance estimator', () => {
       },
     );
 
-    expect(baseline.status).toBe('resolved');
-    expect(baseline.evidenceScope).toBe(
-      'same-soc-vendor',
-    );
+    expect(baseline.status).toBe('unresolved');
     expect(baseline.assumptionApplied).toBe(
       false,
     );
+    expect(
+      baseline.sameSocVendorReferences,
+    ).toBe(2);
+    expect(
+      baseline.baselineExpected,
+    ).toBeUndefined();
 
+    expect(uplifted.status).toBe('resolved');
+    expect(uplifted.evidenceScope).toBe(
+      'same-soc-vendor',
+    );
     expect(uplifted.assumptionApplied).toBe(
       true,
     );
     expect(
-      uplifted.adjustedExpected,
-    ).toBeCloseTo(
-      baseline.baselineExpected! * 1.15,
-      8,
-    );
-    expect(
       uplifted.baselineExpected,
-    ).toBeCloseTo(
-      baseline.baselineExpected!,
-      8,
-    );
+    ).toBeCloseTo(7000, 8);
+    expect(
+      uplifted.adjustedExpected,
+    ).toBeCloseTo(8050, 8);
   });
 
   it('keeps Geekbench and 3DMark completely separate', () => {
@@ -210,7 +211,7 @@ describe('peak performance estimator', () => {
     );
   });
 
-  it('resolves a future Snapdragon peak prior from same-vendor measured references', () => {
+  it('does not fabricate a future Snapdragon peak score from same-vendor references', () => {
     const result =
       estimateLivePeakPerformance({
         domain: 'geekbench6_single',
@@ -218,22 +219,16 @@ describe('peak performance estimator', () => {
         socName: 'Snapdragon Future',
       });
 
-    expect(result.status).toBe('resolved');
-    expect(result.evidenceScope).toBe(
-      'same-soc-vendor',
-    );
+    expect(result.status).toBe('unresolved');
     expect(
       result.sameSocVendorReferences,
     ).toBeGreaterThanOrEqual(2);
-    expect(result.baselineExpected).toBeGreaterThan(
-      3400,
-    );
-    expect(result.baselineExpected).toBeLessThan(
-      3900,
-    );
+    expect(
+      result.baselineExpected,
+    ).toBeUndefined();
   });
 
-  it('resolves a future Dimensity peak prior from same-vendor measured references', () => {
+  it('does not fabricate a future Dimensity peak score from same-vendor references', () => {
     const result =
       estimateLivePeakPerformance({
         domain: '3dmark_wle',
@@ -241,22 +236,16 @@ describe('peak performance estimator', () => {
         socName: 'Dimensity Future',
       });
 
-    expect(result.status).toBe('resolved');
-    expect(result.evidenceScope).toBe(
-      'same-soc-vendor',
-    );
+    expect(result.status).toBe('unresolved');
     expect(
       result.sameSocVendorReferences,
     ).toBeGreaterThanOrEqual(2);
-    expect(result.baselineExpected).toBeGreaterThan(
-      7000,
-    );
-    expect(result.baselineExpected).toBeLessThan(
-      7800,
-    );
+    expect(
+      result.baselineExpected,
+    ).toBeUndefined();
   });
 
-  it('resolves a live Exynos 2700 peak prior from measured Exynos 2600 references', () => {
+  it('keeps Exynos 2700 peak performance unresolved without target-family evidence', () => {
     const result =
       estimateLivePeakPerformance({
         domain: 'geekbench6_multi',
@@ -265,18 +254,15 @@ describe('peak performance estimator', () => {
         socName: 'Exynos 2700',
       });
 
-    expect(result.status).toBe('resolved');
-    expect(result.evidenceScope).toBe(
-      'same-soc-vendor',
-    );
+    expect(result.status).toBe('unresolved');
     expect(
       result.sameSocVendorReferences,
     ).toBeGreaterThanOrEqual(2);
-    expect(result.baselineExpected).toBeGreaterThan(
-      10000,
-    );
-    expect(result.baselineExpected).toBeLessThan(
-      11500,
+    expect(
+      result.baselineExpected,
+    ).toBeUndefined();
+    expect(result.note).toContain(
+      'no synthetic score',
     );
   });
 });
