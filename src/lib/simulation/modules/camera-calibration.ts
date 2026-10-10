@@ -23,6 +23,8 @@ export interface CameraOutcomeReference {
   cameraSensorName?: string;
   cameraCaptureMode?: string;
   protocolKey: string;
+  sourceId: string;
+  publisher: string;
   score: number;
   similarityScore: number;
   coverageScore: number;
@@ -46,6 +48,8 @@ export interface CameraOutcomeCalibration {
     averageSimilarity: number;
     averageCoverage: number;
     protocolKey: string;
+    sourceRecordCount: number;
+    publisherCount: number;
   };
   unresolvedReason?: string;
 }
@@ -171,6 +175,11 @@ export function calibrateCameraOutcome(
             .trim()
             .toLowerCase();
         })(),
+        sourceId: measurement.sourceId,
+        publisher:
+          sourceById.get(measurement.sourceId)
+            ?.publisher ??
+          measurement.sourceId,
         score: match.score,
         similarityScore: match.similarityScore,
         coverageScore: match.coverageScore,
@@ -267,6 +276,18 @@ export function calibrateCameraOutcome(
         Math.max(0, averageCoverage),
       ),
       protocolKey: compatible[0].protocolKey,
+      sourceRecordCount:
+        new Set(
+          compatible.map(
+            (reference) => reference.sourceId,
+          ),
+        ).size,
+      publisherCount:
+        new Set(
+          compatible.map(
+            (reference) => reference.publisher,
+          ),
+        ).size,
     },
   };
 }
