@@ -81,8 +81,19 @@ describe('mixed-use battery experience', () => {
     // gaming 1000 mAh/h * 1 = 1000
     // total = 2500 mAh/day, so 2 active-use equivalent days.
     expect(result.mixedUse?.expectedDrainMahPerDay).toBeCloseTo(2500);
+    expect(result.mixedUse?.interpretation).toBe(
+      'active-use-only',
+    );
+    expect(
+      result.mixedUse?.expectedActiveUseHoursPerCharge,
+    ).toBeCloseTo(10);
     expect(result.mixedUse?.expectedDaysPerCharge).toBeCloseTo(2);
     expect(result.mixedUse?.activeHoursPerDay).toBeCloseTo(5);
+    expect(
+      result.warnings.some((warning) =>
+        warning.includes('Standby'),
+      ),
+    ).toBe(true);
   });
 
   it('does not fabricate mixed-use runtime when no supported workload hours are entered', () => {
