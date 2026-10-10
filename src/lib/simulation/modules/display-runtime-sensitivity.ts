@@ -4,6 +4,7 @@ import type { SimulationInput } from '../types';
 import {
   resolveCorpusRuntimeBand,
   type RuntimeWorkload,
+  type RuntimeComparableContext,
 } from './corpus-runtime';
 
 export const DISPLAY_RUNTIME_SENSITIVITY_VERSION =
@@ -130,6 +131,7 @@ function evidenceStrongEnough(
 export function resolveDisplayRuntimeSensitivity(
   corpus: DeviceCorpus,
   input: SimulationInput,
+  context: RuntimeComparableContext = {},
 ): DisplayRuntimeSensitivityResult {
   const capacityMah = batteryCapacityMah(input);
 
@@ -154,6 +156,8 @@ export function resolveDisplayRuntimeSensitivity(
       corpus,
       input,
       workload,
+      {},
+      context,
     );
 
     if (!evidenceStrongEnough(baseline)) {
@@ -178,6 +182,8 @@ export function resolveDisplayRuntimeSensitivity(
         corpus,
         scenarioInput,
         workload,
+        {},
+        context,
       );
 
       if (!evidenceStrongEnough(shifted)) {
@@ -249,9 +255,11 @@ export function resolveDisplayRuntimeSensitivity(
 
 export function resolveLiveDisplayRuntimeSensitivity(
   input: SimulationInput,
+  context: RuntimeComparableContext = {},
 ): DisplayRuntimeSensitivityResult {
   return resolveDisplayRuntimeSensitivity(
     buildCalibrationRegistry(),
     input,
+    context,
   );
 }
