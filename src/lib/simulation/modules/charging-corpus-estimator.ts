@@ -9,7 +9,7 @@ import {
 } from './charging-power-response';
 import { resolveChargingThermalContext } from './charging-thermal-context';
 
-export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.2.0';
+export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.3.0';
 
 export type ChargingConfidenceGrade = 'high' | 'moderate' | 'low';
 
@@ -23,6 +23,7 @@ export interface ChargingCurveEstimate {
       | 'weighted-comparable-corpus';
     referenceCount: number;
     referenceModeCount: number;
+    normalizationBasis: 'wh' | 'mah';
     measurementCount?: number;
     sourceRecordCount: number;
     publisherCount: number;
@@ -81,6 +82,9 @@ export interface ChargingCurveEstimate {
       expectedMinutesPer1000Mah?: number;
       effectiveFullChargeCPerHour?: number;
       expectedMahAddedIn30Minutes?: number;
+      expectedFullChargeWhPerMinute?: number;
+      expectedMinutesPerWh?: number;
+      expectedWhAddedIn30Minutes?: number;
     };
     note: string;
   };
@@ -309,6 +313,12 @@ export function estimateChargingFromCorpus(
       basis: 'exact-measured-mode',
       referenceCount: 1,
       referenceModeCount: 1,
+      normalizationBasis:
+        query.batteryEnergyWh !== undefined &&
+        Number.isFinite(query.batteryEnergyWh) &&
+        query.batteryEnergyWh > 0
+          ? 'wh'
+          : 'mah',
       measurementCount:
         exact.measurementIds.length,
       sourceRecordCount:
@@ -426,6 +436,18 @@ export function estimateChargingFromCorpus(
           fullMinutes / (query.batteryMah / 1000),
         effectiveFullChargeCPerHour:
           60 / fullMinutes,
+        ...(query.batteryEnergyWh !== undefined &&
+        Number.isFinite(query.batteryEnergyWh) &&
+        query.batteryEnergyWh > 0
+          ? {
+              expectedFullChargeWhPerMinute:
+                query.batteryEnergyWh /
+                fullMinutes,
+              expectedMinutesPerWh:
+                fullMinutes /
+                query.batteryEnergyWh,
+            }
+          : {}),
       };
     }
 
@@ -435,6 +457,16 @@ export function estimateChargingFromCorpus(
         expectedMahAddedIn30Minutes:
           query.batteryMah *
           (estimate.charge30mPercent.expected / 100),
+        ...(query.batteryEnergyWh !== undefined &&
+        Number.isFinite(query.batteryEnergyWh) &&
+        query.batteryEnergyWh > 0
+          ? {
+              expectedWhAddedIn30Minutes:
+                query.batteryEnergyWh *
+                (estimate.charge30mPercent.expected /
+                  100),
+            }
+          : {}),
       };
     }
 
@@ -457,6 +489,17 @@ export function estimateChargingFromCorpus(
     };
   }
 
+  const useWhNormalization =
+    query.batteryEnergyWh !== undefined &&
+    Number.isFinite(query.batteryEnergyWh) &&
+    query.batteryEnergyWh > 0 &&
+    comparable.references.every(
+      (reference) =>
+        reference.batteryEnergyWh !== undefined &&
+        Number.isFinite(reference.batteryEnergyWh) &&
+        reference.batteryEnergyWh > 0,
+    );
+
   const powerResponse = resolveChargingPowerResponse(corpus, {
     manufacturer: query.manufacturer,
     batteryChemistry: query.batteryChemistry,
@@ -469,6 +512,17 @@ export function estimateChargingFromCorpus(
       reference.batteryMah !== undefined && reference.batteryMah > 0
         ? query.batteryMah / reference.batteryMah
         : 1;
+
+    const energyScale =
+      useWhNormalization &&
+      reference.batteryEnergyWh !== undefined
+        ? query.batteryEnergyWh! /
+          reference.batteryEnergyWh
+        : undefined;
+
+    const normalizationScale =
+      energyScale ??
+      capacityScale;
 
     const referenceWatts =
       reference.testChargerWatts ??
@@ -500,12 +554,12 @@ export function estimateChargingFromCorpus(
   });
 
   const fullValues = weights.flatMap(
-    ({ reference, weight, capacityScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale }) =>
       reference.fullChargeMinutes !== undefined
         ? [{
             value:
               reference.fullChargeMinutes *
-              capacityScale *
+              normalizationScale *
               powerScale,
             weight,
           }]
@@ -516,7 +570,7 @@ export function estimateChargingFromCorpus(
     ({
       reference,
       weight,
-      capacityScale,
+      normalizationScale,
       earlyPowerScale,
     }) =>
       reference.thirtyMinutePercent !== undefined
@@ -524,7 +578,7 @@ export function estimateChargingFromCorpus(
             value: clamp(
               reference.thirtyMinutePercent *
                 earlyPowerScale /
-                capacityScale,
+                normalizationScale,
               0,
               100,
             ),
@@ -534,12 +588,12 @@ export function estimateChargingFromCorpus(
   );
 
   const t50Values = weights.flatMap(
-    ({ reference, weight, capacityScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale }) =>
       reference.timeTo50Minutes !== undefined
         ? [{
             value:
               reference.timeTo50Minutes *
-              capacityScale *
+              normalizationScale *
               powerScale,
             weight,
           }]
@@ -547,12 +601,12 @@ export function estimateChargingFromCorpus(
   );
 
   const t80Values = weights.flatMap(
-    ({ reference, weight, capacityScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale }) =>
       reference.timeTo80Minutes !== undefined
         ? [{
             value:
               reference.timeTo80Minutes *
-              capacityScale *
+              normalizationScale *
               powerScale,
             weight,
           }]
@@ -613,6 +667,8 @@ export function estimateChargingFromCorpus(
     referenceCount: neighborIds.size,
     referenceModeCount:
       comparable.references.length,
+    normalizationBasis:
+      useWhNormalization ? 'wh' : 'mah',
     sourceRecordCount:
       new Set(
         comparable.references
@@ -672,8 +728,8 @@ export function estimateChargingFromCorpus(
     },
     note:
       powerResponse.status === 'resolved'
-        ? 'Estimate is weighted toward the closest released-device charging references. Full-charge time and early-charge percentage use separate same-device multi-watt response evidence when available, then normalize for battery capacity. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.'
-        : 'Estimate is weighted toward the closest released-device charging references and normalized for battery capacity. No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.',
+        ? `Estimate is weighted toward the closest released-device charging references. Full-charge time and early-charge percentage use separate same-device multi-watt response evidence when available, then normalize for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}. Directly measured 50% and 80% milestones take precedence over interpolation. Advertised wattage is never assumed to be sustained.`
+        : `Estimate is weighted toward the closest released-device charging references and normalized for battery ${useWhNormalization ? 'energy (Wh)' : 'capacity (mAh)'}. No reliable same-device multi-watt response curve was available, so wattage extrapolation was not applied. Directly measured 50% and 80% milestones take precedence over interpolation.`,
   };
 
   if (p30Values.length && expectedP30 !== undefined) {
@@ -711,7 +767,7 @@ export function estimateChargingFromCorpus(
     const perReference50 = weights.flatMap(
       ({
         reference,
-        capacityScale,
+        normalizationScale,
         powerScale,
         earlyPowerScale,
       }) =>
@@ -723,12 +779,12 @@ export function estimateChargingFromCorpus(
                 clamp(
                   reference.thirtyMinutePercent *
                     earlyPowerScale /
-                    capacityScale,
+                    normalizationScale,
                   0,
                   100,
                 ),
                 reference.fullChargeMinutes *
-                  capacityScale *
+                  normalizationScale *
                   powerScale,
               ),
             ]
@@ -759,7 +815,7 @@ export function estimateChargingFromCorpus(
     const perReference80 = weights.flatMap(
       ({
         reference,
-        capacityScale,
+        normalizationScale,
         powerScale,
         earlyPowerScale,
       }) =>
@@ -771,12 +827,12 @@ export function estimateChargingFromCorpus(
                 clamp(
                   reference.thirtyMinutePercent *
                     earlyPowerScale /
-                    capacityScale,
+                    normalizationScale,
                   0,
                   100,
                 ),
                 reference.fullChargeMinutes *
-                  capacityScale *
+                  normalizationScale *
                   powerScale,
               ),
             ]
@@ -806,6 +862,18 @@ export function estimateChargingFromCorpus(
         fullMinutes / (query.batteryMah / 1000),
       effectiveFullChargeCPerHour:
         60 / fullMinutes,
+      ...(query.batteryEnergyWh !== undefined &&
+      Number.isFinite(query.batteryEnergyWh) &&
+      query.batteryEnergyWh > 0
+        ? {
+            expectedFullChargeWhPerMinute:
+              query.batteryEnergyWh /
+              fullMinutes,
+            expectedMinutesPerWh:
+              fullMinutes /
+              query.batteryEnergyWh,
+          }
+        : {}),
     };
   }
 
@@ -815,6 +883,16 @@ export function estimateChargingFromCorpus(
       expectedMahAddedIn30Minutes:
         query.batteryMah *
         (estimate.charge30mPercent.expected / 100),
+      ...(query.batteryEnergyWh !== undefined &&
+      Number.isFinite(query.batteryEnergyWh) &&
+      query.batteryEnergyWh > 0
+        ? {
+            expectedWhAddedIn30Minutes:
+              query.batteryEnergyWh *
+              (estimate.charge30mPercent.expected /
+                100),
+          }
+        : {}),
     };
   }
 
