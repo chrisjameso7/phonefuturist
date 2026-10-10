@@ -121,6 +121,15 @@ export interface CalculatedCamera {
   focusFarLimitM?: number | 'infinity';
   totalDepthOfFieldM?: number | 'infinity';
 
+  /**
+   * Minimum front-face envelope implied by the approximate sensor
+   * dimensions and entrance pupil. This is only a footprint sanity
+   * check and does not model lens barrels, OIS travel or board routing.
+   */
+  minimumOpticalFootprintWidthMm?: number;
+  minimumOpticalFootprintHeightMm?: number;
+  opticalFootprintFitsModule?: boolean;
+
   moduleVolumeMm3?: number;
   moduleVolumeCm3?: number;
 }
@@ -501,6 +510,54 @@ export function calculateCamera(
       result.approximateSensorDiagonalMm,
       physicalFocalLength,
     );
+  }
+
+
+  if (
+    result.approximateSensorWidthMm !== undefined ||
+    result.approximateSensorHeightMm !== undefined ||
+    result.entrancePupilDiameterMm !== undefined
+  ) {
+    const requiredWidth = Math.max(
+      result.approximateSensorWidthMm ?? 0,
+      result.entrancePupilDiameterMm ?? 0,
+    );
+
+    const requiredHeight = Math.max(
+      result.approximateSensorHeightMm ?? 0,
+      result.entrancePupilDiameterMm ?? 0,
+    );
+
+    if (requiredWidth > 0) {
+      result.minimumOpticalFootprintWidthMm =
+        requiredWidth;
+    }
+
+    if (requiredHeight > 0) {
+      result.minimumOpticalFootprintHeightMm =
+        requiredHeight;
+    }
+
+    if (
+      input.moduleWidthMm !== undefined &&
+      input.moduleHeightMm !== undefined &&
+      isPositiveFinite(input.moduleWidthMm) &&
+      isPositiveFinite(input.moduleHeightMm) &&
+      requiredWidth > 0 &&
+      requiredHeight > 0
+    ) {
+      result.opticalFootprintFitsModule =
+        input.moduleWidthMm >= requiredWidth &&
+        input.moduleHeightMm >= requiredHeight;
+
+      if (!result.opticalFootprintFitsModule) {
+        warnings.push({
+          code: 'CAMERA_OPTICAL_FOOTPRINT_EXCEEDS_MODULE',
+          message:
+            'The entered module width/height is smaller than the minimum front-face footprint implied by the approximate sensor dimensions or entrance pupil. The optical package is not physically plausible as entered.',
+        });
+      }
+    }
   }
 
   const hasAnyModuleDimension =
