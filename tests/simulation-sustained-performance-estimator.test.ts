@@ -4,6 +4,7 @@ import {
   estimateSustainedPerformance,
 } from '../src/lib/simulation/modules/sustained-performance-estimator';
 import type { DeviceCorpus } from '../src/lib/simulation/modules/device-corpus';
+import type { SocVendor } from '../src/lib/simulation/modules/device-variant';
 
 const source = {
   id: 'lab',
@@ -14,7 +15,7 @@ const source = {
 
 function device(
   id: string,
-  vendor: string,
+  vendor: SocVendor,
   name: string,
 ) {
   return {
