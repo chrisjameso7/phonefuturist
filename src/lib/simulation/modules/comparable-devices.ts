@@ -207,9 +207,13 @@ export function findComparableDevices(
 
     if (query.wiredChargingWatts) {
       possibleWeight += 1.5;
-      if (device.charging?.advertisedWiredWatts) {
+      const referenceWiredWatts =
+        device.charging?.advertisedWiredWatts ??
+        device.charging?.referenceWiredWatts;
+
+      if (referenceWiredWatts) {
         const s = closeness(
-          device.charging.advertisedWiredWatts,
+          referenceWiredWatts,
           query.wiredChargingWatts,
           0.55,
         );
