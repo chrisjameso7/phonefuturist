@@ -68,6 +68,11 @@ import {
   simulateTwoNodeThermals,
 } from '../../lib/simulation/modules/two-node-thermal';
 
+import {
+  SOC_ARCHITECTURE_MODEL_VERSION,
+  calculateSocArchitecture,
+} from '../../lib/simulation/modules/soc-architecture';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -140,6 +145,20 @@ type FormState = {
 
   socVendor: string;
   socName: string;
+  socFabricationNodeNm: string;
+  socMemoryBandwidthGbps: string;
+  socCluster1Cores: string;
+  socCluster1ClockGhz: string;
+  socCluster1RelativeIpc: string;
+  socCluster2Cores: string;
+  socCluster2ClockGhz: string;
+  socCluster2RelativeIpc: string;
+  socCluster3Cores: string;
+  socCluster3ClockGhz: string;
+  socCluster3RelativeIpc: string;
+  socCluster4Cores: string;
+  socCluster4ClockGhz: string;
+  socCluster4RelativeIpc: string;
   coolingClass:
     | 'unknown'
     | 'passive-graphite'
@@ -223,6 +242,20 @@ const initialForm: FormState = {
 
   socVendor: '',
   socName: '',
+  socFabricationNodeNm: '',
+  socMemoryBandwidthGbps: '',
+  socCluster1Cores: '',
+  socCluster1ClockGhz: '',
+  socCluster1RelativeIpc: '',
+  socCluster2Cores: '',
+  socCluster2ClockGhz: '',
+  socCluster2RelativeIpc: '',
+  socCluster3Cores: '',
+  socCluster3ClockGhz: '',
+  socCluster3RelativeIpc: '',
+  socCluster4Cores: '',
+  socCluster4ClockGhz: '',
+  socCluster4RelativeIpc: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -296,6 +329,20 @@ const flagshipExample: FormState = {
 
   socVendor: 'Qualcomm',
   socName: 'Snapdragon 8 Elite Gen 5',
+  socFabricationNodeNm: '',
+  socMemoryBandwidthGbps: '',
+  socCluster1Cores: '',
+  socCluster1ClockGhz: '',
+  socCluster1RelativeIpc: '',
+  socCluster2Cores: '',
+  socCluster2ClockGhz: '',
+  socCluster2RelativeIpc: '',
+  socCluster3Cores: '',
+  socCluster3ClockGhz: '',
+  socCluster3RelativeIpc: '',
+  socCluster4Cores: '',
+  socCluster4ClockGhz: '',
+  socCluster4RelativeIpc: '',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -1324,6 +1371,96 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const socArchitectureClusters = [
+    {
+      cores: numeric(form.socCluster1Cores),
+      maxClockGhz: numeric(
+        form.socCluster1ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster1RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster2Cores),
+      maxClockGhz: numeric(
+        form.socCluster2ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster2RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster3Cores),
+      maxClockGhz: numeric(
+        form.socCluster3ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster3RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster4Cores),
+      maxClockGhz: numeric(
+        form.socCluster4ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster4RelativeIpc,
+      ),
+    },
+  ].flatMap((cluster, index) =>
+    cluster.cores !== undefined &&
+    cluster.maxClockGhz !== undefined
+      ? [{
+          label: `cluster-${index + 1}`,
+          cores: cluster.cores,
+          maxClockGhz:
+            cluster.maxClockGhz,
+          ...(cluster.relativeIpc !==
+          undefined
+            ? {
+                relativeIpc:
+                  cluster.relativeIpc,
+              }
+            : {}),
+        }]
+      : [],
+  );
+
+  const socArchitecture =
+    socArchitectureClusters.length
+      ? calculateSocArchitecture({
+          cpuClusters:
+            socArchitectureClusters,
+          ...(targetSocPowerW !== undefined
+            ? {
+                peakSocPowerW:
+                  targetSocPowerW,
+              }
+            : {}),
+          ...(numeric(
+            form.socMemoryBandwidthGbps,
+          ) !== undefined
+            ? {
+                memoryBandwidthGbps:
+                  numeric(
+                    form.socMemoryBandwidthGbps,
+                  ),
+              }
+            : {}),
+          ...(numeric(
+            form.socFabricationNodeNm,
+          ) !== undefined
+            ? {
+                fabricationNodeNm:
+                  numeric(
+                    form.socFabricationNodeNm,
+                  ),
+              }
+            : {}),
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -1464,6 +1601,7 @@ export default function InteractiveLeaksSimulator() {
       sustainedPerformanceEstimate,
     peakPerformance:
       peakPerformanceEstimate,
+    socArchitecture,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -2325,6 +2463,197 @@ export default function InteractiveLeaksSimulator() {
                 }
               />
             </div>
+
+            <details className="il-advanced">
+              <summary>SoC architecture assumptions</summary>
+
+              <p className="il-help">
+                Enter up to four CPU clusters. Relative IPC is optional and
+                normalized to your chosen reference, where 1.0 means equal IPC.
+                Node size is metadata only and never creates an automatic
+                performance uplift.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Fabrication node"
+                  suffix="nm"
+                  value={form.socFabricationNodeNm}
+                  placeholder="2"
+                  onChange={(value) =>
+                    update(
+                      'socFabricationNodeNm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Memory bandwidth"
+                  suffix="GB/s"
+                  value={form.socMemoryBandwidthGbps}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socMemoryBandwidthGbps',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 cores"
+                  value={form.socCluster1Cores}
+                  placeholder="1"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 max clock"
+                  suffix="GHz"
+                  value={form.socCluster1ClockGhz}
+                  placeholder="3.8"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 relative IPC"
+                  value={form.socCluster1RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 cores"
+                  value={form.socCluster2Cores}
+                  placeholder="3"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 max clock"
+                  suffix="GHz"
+                  value={form.socCluster2ClockGhz}
+                  placeholder="3.3"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 relative IPC"
+                  value={form.socCluster2RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 cores"
+                  value={form.socCluster3Cores}
+                  placeholder="6"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 max clock"
+                  suffix="GHz"
+                  value={form.socCluster3ClockGhz}
+                  placeholder="2.8"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 relative IPC"
+                  value={form.socCluster3RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 cores"
+                  value={form.socCluster4Cores}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 max clock"
+                  suffix="GHz"
+                  value={form.socCluster4ClockGhz}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 relative IPC"
+                  value={form.socCluster4RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
 
             <details className="il-advanced">
               <summary>Advanced thermal model</summary>
@@ -3832,6 +4161,114 @@ export default function InteractiveLeaksSimulator() {
                       ? 'Add wireless charging wattage to estimate wireless charging.'
                       : wirelessChargingResult?.unresolvedReason ??
                         'No measured wireless charging evidence is available for a reliable estimate yet.'}
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  SoC architecture · {SOC_ARCHITECTURE_MODEL_VERSION}
+                </span>
+
+                {socArchitecture ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {socArchitecture.totalCpuCores ??
+                            'Unknown'}
+                        </strong>
+                        <span>Total CPU cores</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {socArchitecture.maximumCpuClockGhz !==
+                          undefined
+                            ? `${format(
+                                socArchitecture.maximumCpuClockGhz,
+                                2,
+                              )} GHz`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Maximum CPU clock</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            socArchitecture.clockCapacityIndex,
+                            2,
+                          )}
+                        </strong>
+                        <span>Clock/core capacity index</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            socArchitecture.ipcAdjustedSingleThreadIndex,
+                            2,
+                          )}
+                        </strong>
+                        <span>IPC-adjusted single-thread index</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            socArchitecture.ipcAdjustedAggregateIndex,
+                            2,
+                          )}
+                        </strong>
+                        <span>IPC-adjusted aggregate index</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            socArchitecture.ipcAdjustedAggregatePerWIndex,
+                            3,
+                          )}
+                        </strong>
+                        <span>IPC-adjusted aggregate / W</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {socArchitecture.memoryBandwidthPerCoreGbps !==
+                          undefined
+                            ? `${format(
+                                socArchitecture.memoryBandwidthPerCoreGbps,
+                                1,
+                              )} GB/s`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Memory bandwidth per core</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {socArchitecture.fabricationNodeNm !==
+                          undefined
+                            ? `${format(
+                                socArchitecture.fabricationNodeNm,
+                                1,
+                              )} nm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Fabrication node metadata</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      {socArchitecture.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Add at least one CPU cluster with core count and max clock
+                    to calculate architecture indices.
                   </div>
                 )}
               </div>
