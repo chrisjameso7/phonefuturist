@@ -53,6 +53,19 @@ export interface CameraInput {
   binningLinearFactor?: number;
 
   /**
+   * Centre-crop zoom ratio applied after capture. 1 means no crop, 2 means
+   * the linear sensor dimensions are halved and the retained sensor area is
+   * one quarter. This is deterministic crop geometry, not AI upscaling.
+   */
+  cropZoomRatio?: number;
+
+  /**
+   * Optional output-resolution floor used to judge whether a sensor crop can
+   * still meet the requested output resolution without upscaling.
+   */
+  targetOutputResolutionMp?: number;
+
+  /**
    * Subject focus distance in metres. Used only for deterministic
    * depth-of-field geometry when focal length and aperture are known.
    */
@@ -158,6 +171,35 @@ export interface CalculatedCamera {
 
   /** QE-aware binned output sample photoelectron proxy. */
   binnedOutputPixelPhotoelectronIndex?: number;
+
+  /** Source resolution available to crop after optional binning. */
+  cropSourceResolutionMp?: number;
+
+  /** Effective equivalent focal length after deterministic centre crop. */
+  croppedEquivalentFocalLengthMm?: number;
+
+  /** Resolution remaining after deterministic centre crop. */
+  croppedResolutionMp?: number;
+
+  /** Approximate physical sensor area retained after crop. */
+  croppedSensorAreaMm2?: number;
+
+  /**
+   * Exposure-aware total-light proxy for only the retained crop region.
+   * Per-pixel exposure is unchanged by cropping; total retained image-area
+   * light falls with crop area.
+   */
+  croppedExposureLightCaptureIndex?: number;
+
+  /** Total retained-light loss from cropping, expressed in stops. */
+  cropTotalLightLossStops?: number;
+
+  /**
+   * Maximum deterministic crop zoom that still meets targetOutputResolutionMp
+   * without upscaling, when both source and target resolution are known.
+   */
+  maxNativeCropZoomForTargetResolution?: number;
+  cropMeetsTargetResolution?: boolean;
 
   /** 35 mm depth-of-field equivalence, approximately N × crop factor. */
   equivalentApertureFNumber?: number;
@@ -387,6 +429,29 @@ export function calculateCamera(
   }
 
   if (
+    input.cropZoomRatio !== undefined &&
+    (!Number.isFinite(input.cropZoomRatio) ||
+      input.cropZoomRatio < 1)
+  ) {
+    warnings.push({
+      code: 'INVALID_CROP_ZOOM',
+      message:
+        'Crop zoom ratio must be a finite value greater than or equal to 1.',
+    });
+  }
+
+  if (
+    input.targetOutputResolutionMp !== undefined &&
+    !isPositiveFinite(input.targetOutputResolutionMp)
+  ) {
+    warnings.push({
+      code: 'INVALID_TARGET_OUTPUT_RESOLUTION',
+      message:
+        'Target output resolution must be a positive finite megapixel value.',
+    });
+  }
+
+  if (
     input.apertureFNumber !== undefined &&
     isPositiveFinite(input.apertureFNumber)
   ) {
@@ -546,6 +611,83 @@ export function calculateCamera(
       }
     }
 
+    const cropSourceResolutionMp =
+      result.effectiveBinnedResolutionMp ??
+      input.resolutionMp;
+
+    if (
+      cropSourceResolutionMp !== undefined &&
+      isPositiveFinite(cropSourceResolutionMp)
+    ) {
+      result.cropSourceResolutionMp =
+        cropSourceResolutionMp;
+    }
+
+    if (
+      input.cropZoomRatio !== undefined &&
+      Number.isFinite(input.cropZoomRatio) &&
+      input.cropZoomRatio >= 1 &&
+      cropSourceResolutionMp !== undefined &&
+      isPositiveFinite(cropSourceResolutionMp)
+    ) {
+      const zoom = input.cropZoomRatio;
+      const retainedAreaFraction = 1 / (zoom * zoom);
+
+      result.croppedResolutionMp =
+        cropSourceResolutionMp *
+        retainedAreaFraction;
+
+      if (
+        input.equivalentFocalLengthMm !== undefined &&
+        isPositiveFinite(input.equivalentFocalLengthMm)
+      ) {
+        result.croppedEquivalentFocalLengthMm =
+          input.equivalentFocalLengthMm * zoom;
+      }
+
+      if (
+        result.approximateSensorAreaMm2 !== undefined
+      ) {
+        result.croppedSensorAreaMm2 =
+          result.approximateSensorAreaMm2 *
+          retainedAreaFraction;
+      }
+
+      if (
+        result.exposureLightCaptureIndex !== undefined
+      ) {
+        result.croppedExposureLightCaptureIndex =
+          result.exposureLightCaptureIndex *
+          retainedAreaFraction;
+      }
+
+      result.cropTotalLightLossStops =
+        2 * Math.log2(zoom);
+
+      if (
+        input.targetOutputResolutionMp !== undefined &&
+        isPositiveFinite(input.targetOutputResolutionMp)
+      ) {
+        result.maxNativeCropZoomForTargetResolution =
+          Math.sqrt(
+            cropSourceResolutionMp /
+            input.targetOutputResolutionMp,
+          );
+
+        result.cropMeetsTargetResolution =
+          result.croppedResolutionMp >=
+          input.targetOutputResolutionMp;
+
+        if (!result.cropMeetsTargetResolution) {
+          warnings.push({
+            code: 'CROP_REQUIRES_UPSCALING_FOR_TARGET_RESOLUTION',
+            message:
+              'The requested crop zoom leaves fewer native pixels than the requested output resolution. Reaching that output size would require upscaling or multi-frame reconstruction.',
+          });
+        }
+      }
+    }
+
     if (
       result.airyDiskDiameterMicrons !== undefined &&
       result.approximatePixelPitchMicrons > 0
@@ -634,6 +776,22 @@ export function calculateCamera(
           );
       }
     }
+  }
+
+  if (
+    input.cropZoomRatio !== undefined &&
+    Number.isFinite(input.cropZoomRatio) &&
+    input.cropZoomRatio > 1 &&
+    (
+      input.resolutionMp === undefined ||
+      !isPositiveFinite(input.resolutionMp)
+    )
+  ) {
+    warnings.push({
+      code: 'CROP_ZOOM_WITHOUT_RESOLUTION',
+      message:
+        'Crop zoom was supplied without a valid sensor resolution, so retained crop resolution cannot be calculated.',
+    });
   }
 
   if (
