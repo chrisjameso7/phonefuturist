@@ -5,7 +5,7 @@ import {
 } from './comparable-devices';
 import type { SimulationInput } from '../types';
 
-export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.2.0';
+export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.3.0';
 
 export type RuntimeWorkload = 'web_browsing' | 'video_playback' | 'gaming';
 
@@ -36,6 +36,12 @@ export interface CorpusRuntimeBand {
     minMahPerHour: number;
     expectedMahPerHour: number;
     maxMahPerHour: number;
+    energyBasis: 'wh' | 'mah';
+    targetEnergyWh?: number;
+    minWhPerHour?: number;
+    expectedWhPerHour?: number;
+    maxWhPerHour?: number;
+    energyReferenceCount: number;
     referenceCount: number;
     confidence: number;
     averageSimilarity: number;
@@ -74,6 +80,59 @@ function weightedMean(values: Array<{ value: number; weight: number }>) {
   return values.reduce((sum, item) => sum + item.value * item.weight, 0) /
     Math.max(total, Number.EPSILON);
 }
+function inputEnergyWh(input: SimulationInput) {
+  const cells = input.battery?.cells ?? [];
+  if (
+    !cells.length ||
+    !cells.every(
+      (cell) =>
+        positive(cell.capacityMah) &&
+        positive(cell.nominalVoltageV),
+    )
+  ) {
+    return undefined;
+  }
+
+  return cells.reduce(
+    (sum, cell) =>
+      sum +
+      (cell.capacityMah! * cell.nominalVoltageV!) /
+        1000,
+    0,
+  );
+}
+
+function referenceEnergyWh(
+  device: DeviceCorpus['devices'][number],
+) {
+  const battery = device.variant.battery;
+  if (!battery) return undefined;
+
+  if (positive(battery.typicalEnergyWh)) {
+    return battery.typicalEnergyWh;
+  }
+
+  if (positive(battery.ratedEnergyWh)) {
+    return battery.ratedEnergyWh;
+  }
+
+  const capacity =
+    battery.capacityMah ??
+    battery.typicalCapacityMah;
+
+  if (
+    positive(capacity) &&
+    positive(battery.nominalVoltageV)
+  ) {
+    return (
+      capacity *
+      battery.nominalVoltageV
+    ) / 1000;
+  }
+
+  return undefined;
+}
+
 
 export function resolveCorpusRuntimeBand(
   corpus: DeviceCorpus,
@@ -83,6 +142,7 @@ export function resolveCorpusRuntimeBand(
   context: RuntimeComparableContext = {},
 ): CorpusRuntimeBand {
   const capacityMah = inputCapacityMah(input);
+  const targetEnergyWh = inputEnergyWh(input);
 
   if (!capacityMah) {
     return {
@@ -210,8 +270,15 @@ export function resolveCorpusRuntimeBand(
           ].join('|')
         : `source:${measurement.sourceId}`;
 
+      const refEnergyWh =
+        referenceEnergyWh(match.device);
+
       return [{
         value: refCapacity / measurement.value,
+        valueWh:
+          refEnergyWh !== undefined
+            ? refEnergyWh / measurement.value
+            : undefined,
         weight: Math.max(match.score, 0.05) ** 2,
         deviceVariantId: match.device.variant.id,
         score: match.score,
@@ -316,6 +383,22 @@ export function resolveCorpusRuntimeBand(
         : 'protocol-cohort';
 
   const drains = values.map((item) => item.value);
+  const whValues = values.filter(
+    (
+      item,
+    ): item is typeof item & { valueWh: number } =>
+      positive(item.valueWh),
+  );
+
+  const useWh =
+    targetEnergyWh !== undefined &&
+    whValues.length === values.length &&
+    values.length > 0;
+
+  const whDrains = whValues.map(
+    (item) => item.valueWh,
+  );
+
   const confidence =
     values.reduce((sum, item) => sum + item.score, 0) / values.length;
   const averageSimilarity =
@@ -339,6 +422,21 @@ export function resolveCorpusRuntimeBand(
         values.map((item) => ({ value: item.value, weight: item.weight })),
       ),
       maxMahPerHour: Math.max(...drains),
+      energyBasis: useWh ? 'wh' : 'mah',
+      ...(useWh
+        ? {
+            targetEnergyWh,
+            minWhPerHour: Math.min(...whDrains),
+            expectedWhPerHour: weightedMean(
+              whValues.map((item) => ({
+                value: item.valueWh,
+                weight: item.weight,
+              })),
+            ),
+            maxWhPerHour: Math.max(...whDrains),
+          }
+        : {}),
+      energyReferenceCount: whValues.length,
       referenceCount: values.length,
       confidence: Math.min(1, Math.max(0, confidence)),
       averageSimilarity: Math.min(
@@ -375,7 +473,9 @@ export function resolveCorpusRuntimeBand(
       sameSocFamilyReferences: sameFamily.length,
       sameSocVendorReferences: sameVendor.length,
       note:
-        `Runtime drain is capacity-normalized from measured comparable released devices using ${evidenceScope.replaceAll('-', ' ')} evidence. Only one protocol group is used per estimate; reported or inferred rows and incompatible test protocols are never averaged into the calibration.`,
+        useWh
+          ? `Runtime drain is energy-normalized in Wh/h from measured comparable released devices using ${evidenceScope.replaceAll('-', ' ')} evidence. Every selected reference and the target have evidence-backed battery energy or nominal voltage. Only one protocol group is used per estimate.`
+          : `Runtime drain is capacity-normalized in mAh/h from measured comparable released devices using ${evidenceScope.replaceAll('-', ' ')} evidence. Wh normalization was not used because the target or at least one selected reference lacks accepted energy/voltage evidence. Only one protocol group is used per estimate.`,
     },
   };
 }
