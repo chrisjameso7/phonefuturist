@@ -72,6 +72,11 @@ export interface DeviceCorpusRecord {
   }>;
   charging?: {
     advertisedWiredWatts?: number;
+    /**
+     * Measured/tested wired charger class when the source does not establish
+     * that the value is the manufacturer's advertised maximum.
+     */
+    referenceWiredWatts?: number;
     advertisedWirelessWatts?: number;
     cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
   };
