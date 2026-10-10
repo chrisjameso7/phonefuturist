@@ -6,7 +6,7 @@ import {
 import type { DeviceCorpus } from './device-corpus';
 
 export const PEAK_PERFORMANCE_ESTIMATOR_VERSION =
-  'peak-performance-estimator-0.1.0';
+  'peak-performance-estimator-0.2.0';
 
 export type PeakBenchmarkDomain =
   | 'geekbench6_single'
@@ -301,12 +301,24 @@ export function estimatePeakPerformance(
         )
       : [];
 
+  const uplift =
+    query.assumedGenerationUpliftPercent;
+
+  const validUplift =
+    uplift !== undefined &&
+    Number.isFinite(uplift);
+
+  // Exact-family measured evidence may resolve a peak benchmark directly.
+  // Cross-generation evidence is context only unless the caller explicitly
+  // asks for an assumption scenario. This prevents a future chip from
+  // silently inheriting a precise score from its vendor predecessor.
   const selected =
-    sameFamily.length >= 2
+    sameFamily.length > 0
       ? sameFamily
-      : sameVendor.length >= 2
+      : validUplift &&
+          sameVendor.length > 0
         ? sameVendor
-        : compatible;
+        : [];
 
   if (!selected.length) {
     return {
@@ -314,6 +326,9 @@ export function estimatePeakPerformance(
         PEAK_PERFORMANCE_ESTIMATOR_VERSION,
       status: 'unresolved',
       domain: query.domain,
+      metric,
+      unit:
+        compatible[0]?.unit,
       assumptionApplied: false,
       referenceCount: 0,
       neighborIds: [],
@@ -324,7 +339,13 @@ export function estimatePeakPerformance(
       sourceRecordCount: 0,
       publisherCount: 0,
       unresolvedReason:
-        'No compatible measured peak benchmark references remained after protocol isolation.',
+        sameVendor.length > 0
+          ? 'No measured peak benchmark evidence exists for this exact SoC family. Same-vendor measurements are available only as context unless an explicit generation-uplift assumption is supplied.'
+          : 'No compatible measured peak benchmark evidence exists for this exact SoC family.',
+      note:
+        sameVendor.length > 0
+          ? `Same-vendor context spans ${Math.min(...sameVendor.map((ref) => ref.value))}–${Math.max(...sameVendor.map((ref) => ref.value))} ${compatible[0]?.unit ?? 'points'}, but no synthetic score is emitted for a different SoC generation.`
+          : 'Peak benchmark prediction fails closed without exact-family measured evidence.',
     };
   }
 
@@ -332,11 +353,9 @@ export function estimatePeakPerformance(
     | 'same-soc-family'
     | 'same-soc-vendor'
     | 'protocol-cohort' =
-    selected === sameFamily
+    sameFamily.length > 0
       ? 'same-soc-family'
-      : selected === sameVendor
-        ? 'same-soc-vendor'
-        : 'protocol-cohort';
+      : 'same-soc-vendor';
 
   const weighted = selected.map(
     (ref) => ({
@@ -382,13 +401,6 @@ export function estimatePeakPerformance(
         (ref) => ref.value,
       ),
     );
-
-  const uplift =
-    query.assumedGenerationUpliftPercent;
-
-  const validUplift =
-    uplift !== undefined &&
-    Number.isFinite(uplift);
 
   const multiplier =
     validUplift
@@ -460,9 +472,11 @@ export function estimatePeakPerformance(
     protocolKey:
       selected[0].protocolKey,
     note:
-      validUplift
-        ? 'Peak benchmark baseline comes only from measured, protocol-compatible references. The final adjusted score applies the user-supplied generation uplift as an explicit assumption, not as measured evidence.'
-        : 'Peak benchmark result is a measured evidence baseline only. No hidden architecture, node or generational uplift is applied.',
+      validUplift && evidenceScope === 'same-soc-vendor'
+        ? 'Scenario only: the baseline comes from measured same-vendor predecessor/reference chips, then the caller-supplied generation uplift is applied explicitly. This is not measured evidence for the target SoC.'
+        : validUplift
+          ? 'Peak benchmark baseline comes from measured exact-family references. The final adjusted score applies the caller-supplied uplift as an explicit what-if assumption.'
+          : 'Peak benchmark result is resolved only from measured exact-family evidence. No hidden architecture, node or generational uplift is applied.',
   };
 }
 
