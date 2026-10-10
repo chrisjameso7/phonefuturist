@@ -56,6 +56,22 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         accessedDate: '2026-10-10',
       },
       {
+        id: 'notebookcheck-samsung-s26-performance',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
+        protocol:
+          '3DMark Wild Life Extreme Stress Test stability',
+        accessedDate: '2026-10-10',
+      },
+      {
+        id: 'notebookcheck-samsung-s26-plus-performance',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Will-the-Exynos-2600-save-the-unwanted-flagship-Samsung-Galaxy-S26-review.1272005.0.html',
+        protocol:
+          '3DMark Wild Life Extreme Stress Test stability',
+        accessedDate: '2026-10-10',
+      },
+      {
         id: 'xiaomi-17-ultra-official-performance',
         publisher: 'Xiaomi',
         url: 'https://www.mi.com/global/product/xiaomi-17-ultra/',
@@ -158,6 +174,78 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         },
         sourceIds: [
           'notebookcheck-oppo-find-x9-performance',
+        ],
+      },
+      {
+        variant: {
+          id: 'samsung-galaxy-s26-exynos-performance',
+          identity: {
+            manufacturer: 'Samsung',
+            family: 'Galaxy S26',
+            modelName: 'Galaxy S26',
+            region: 'Europe',
+          },
+          battery: {
+            capacityMah: 4300,
+            chemistry: 'lithium-ion',
+          },
+          soc: {
+            vendor: 'Samsung',
+            name: 'Exynos 2600',
+          },
+        },
+        releaseDate: '2026-02-25',
+        display: {
+          diagonalInches: 6.3,
+          resolutionWidthPx: 1080,
+          resolutionHeightPx: 2340,
+          refreshRateHz: 120,
+          panelTechnology: 'Dynamic AMOLED 2X LTPO',
+        },
+        dimensions: {
+          widthMm: 71.7,
+          heightMm: 149.6,
+          thicknessMm: 7.2,
+          weightG: 167,
+        },
+        sourceIds: [
+          'notebookcheck-samsung-s26-performance',
+        ],
+      },
+      {
+        variant: {
+          id: 'samsung-galaxy-s26-plus-exynos-performance',
+          identity: {
+            manufacturer: 'Samsung',
+            family: 'Galaxy S26',
+            modelName: 'Galaxy S26+',
+            region: 'Europe',
+          },
+          battery: {
+            capacityMah: 4900,
+            chemistry: 'lithium-ion',
+          },
+          soc: {
+            vendor: 'Samsung',
+            name: 'Exynos 2600',
+          },
+        },
+        releaseDate: '2026-02-25',
+        display: {
+          diagonalInches: 6.7,
+          resolutionWidthPx: 1440,
+          resolutionHeightPx: 3120,
+          refreshRateHz: 120,
+          panelTechnology: 'LTPO AMOLED',
+        },
+        dimensions: {
+          widthMm: 75.8,
+          heightMm: 158.4,
+          thicknessMm: 7.3,
+          weightG: 190,
+        },
+        sourceIds: [
+          'notebookcheck-samsung-s26-plus-performance',
         ],
       },
       {
@@ -289,6 +377,26 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         value: 50.7,
         unit: 'percent',
         sourceId: 'notebookcheck-honor-magic8-pro-performance',
+        evidenceKind: 'measured',
+      },
+      {
+        id: 'samsung-s26-exynos-wle-stability',
+        deviceVariantId: 'samsung-galaxy-s26-exynos-performance',
+        workload: 'benchmark',
+        metric: 'gpu_stability_percent',
+        value: 48.8,
+        unit: 'percent',
+        sourceId: 'notebookcheck-samsung-s26-performance',
+        evidenceKind: 'measured',
+      },
+      {
+        id: 'samsung-s26-plus-exynos-wle-stability',
+        deviceVariantId: 'samsung-galaxy-s26-plus-exynos-performance',
+        workload: 'benchmark',
+        metric: 'gpu_stability_percent',
+        value: 59.6,
+        unit: 'percent',
+        sourceId: 'notebookcheck-samsung-s26-plus-performance',
         evidenceKind: 'measured',
       },
     ],
