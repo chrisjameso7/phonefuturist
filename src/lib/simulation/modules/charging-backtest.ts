@@ -1,7 +1,16 @@
 import type { DeviceCorpus } from './device-corpus';
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
 
-export const CHARGING_BACKTEST_VERSION = 'charging-backtest-0.1.0';
+export const CHARGING_BACKTEST_VERSION = 'charging-backtest-0.2.0';
+
+export type ChargingBacktestHoldout =
+  | 'measurement'
+  | 'mode'
+  | 'device';
+
+export interface ChargingBacktestOptions {
+  holdout?: ChargingBacktestHoldout;
+}
 
 export interface ChargingBacktestRow {
   deviceVariantId: string;
@@ -10,6 +19,7 @@ export interface ChargingBacktestRow {
   testChargerWatts: number;
   wattageBand: '<=45W' | '46-80W' | '81-120W' | '>120W';
   chargingStandard?: string;
+  holdout: ChargingBacktestHoldout;
   actualFullChargeMinutes: number;
   predictedFullChargeMinutes: number;
   absoluteErrorMinutes: number;
@@ -102,9 +112,49 @@ function capacityOf(
   );
 }
 
+function normalizedStandard(value: string | undefined) {
+  return value
+    ?.trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+function sameChargingMode(
+  heldOut: DeviceCorpus['measurements'][number],
+  candidate: DeviceCorpus['measurements'][number],
+) {
+  if (
+    candidate.deviceVariantId !== heldOut.deviceVariantId ||
+    candidate.workload !== 'charging'
+  ) {
+    return false;
+  }
+
+  if (
+    heldOut.testChargerWatts !== undefined &&
+    candidate.testChargerWatts !==
+      heldOut.testChargerWatts
+  ) {
+    return false;
+  }
+
+  const heldStandard =
+    normalizedStandard(heldOut.chargingStandard);
+  const candidateStandard =
+    normalizedStandard(candidate.chargingStandard);
+
+  if (heldStandard) {
+    return heldStandard === candidateStandard;
+  }
+
+  return true;
+}
+
 export function backtestChargingCorpus(
   corpus: DeviceCorpus,
+  options: ChargingBacktestOptions = {},
 ): ChargingBacktestSummary {
+  const holdout = options.holdout ?? 'mode';
   const candidates = corpus.measurements.filter(
     (measurement) =>
       measurement.workload === 'charging' &&
@@ -136,8 +186,23 @@ export function backtestChargingCorpus(
     const reducedCorpus: DeviceCorpus = {
       ...corpus,
       measurements: corpus.measurements.filter(
-        (measurement) =>
-          measurement.id !== heldOut.id,
+        (measurement) => {
+          if (holdout === 'measurement') {
+            return measurement.id !== heldOut.id;
+          }
+
+          if (holdout === 'device') {
+            return (
+              measurement.deviceVariantId !==
+              heldOut.deviceVariantId
+            );
+          }
+
+          return !sameChargingMode(
+            heldOut,
+            measurement,
+          );
+        },
       ),
     };
 
@@ -181,6 +246,7 @@ export function backtestChargingCorpus(
       testChargerWatts: heldOut.testChargerWatts,
       wattageBand: wattageBand(heldOut.testChargerWatts),
       chargingStandard: heldOut.chargingStandard,
+      holdout,
       actualFullChargeMinutes: heldOut.value,
       predictedFullChargeMinutes: predicted,
       absoluteErrorMinutes,
