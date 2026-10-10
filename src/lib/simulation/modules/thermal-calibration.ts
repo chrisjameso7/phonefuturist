@@ -1,7 +1,7 @@
 import type { DeviceCorpus } from './device-corpus';
 import { findComparableDevices } from './comparable-devices';
 
-export const THERMAL_CALIBRATION_VERSION = 'thermal-calibration-0.1.0';
+export const THERMAL_CALIBRATION_VERSION = 'thermal-calibration-0.2.0';
 
 export type ThermalDomain =
   | 'cpu_sustained'
