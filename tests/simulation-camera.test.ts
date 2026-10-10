@@ -46,6 +46,105 @@ describe('camera simulation module', () => {
     expect(calculation.warnings).toEqual([]);
   });
 
+  it('prefers exact active sensor dimensions over optical-format approximation', () => {
+    const exact = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      sensorWidthMm: 10,
+      sensorHeightMm: 7.5,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+    });
+
+    expect(
+      exact.result.sensorGeometrySource,
+    ).toBe('exact-dimensions');
+
+    expect(
+      exact.result.activeSensorAreaMm2,
+    ).toBeCloseTo(75, 10);
+
+    expect(
+      exact.result.approximateSensorAreaMm2,
+    ).toBeDefined();
+
+    expect(
+      exact.result.activeSensorAreaMm2,
+    ).not.toBeCloseTo(
+      exact.result.approximateSensorAreaMm2!,
+      4,
+    );
+
+    expect(
+      exact.result.approximatePixelPitchMicrons,
+    ).toBeCloseTo(
+      Math.sqrt(75 / 50),
+      10,
+    );
+
+    expect(
+      exact.result.geometricLightCaptureIndex,
+    ).toBeCloseTo(
+      75 / (1.8 * 1.8),
+      10,
+    );
+  });
+
+  it('uses exact active dimensions for FOV and derived focal geometry', () => {
+    const exact = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      sensorWidthMm: 10,
+      sensorHeightMm: 7.5,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+    });
+
+    const expectedCrop =
+      Math.hypot(36, 24) /
+      Math.hypot(10, 7.5);
+
+    expect(
+      exact.result.activeSensorCropFactor,
+    ).toBeCloseTo(expectedCrop, 10);
+
+    expect(
+      exact.result.effectivePhysicalFocalLengthMm,
+    ).toBeCloseTo(
+      24 / expectedCrop,
+      10,
+    );
+
+    expect(
+      exact.result.horizontalFieldOfViewDeg,
+    ).toBeGreaterThan(0);
+    expect(
+      exact.result.verticalFieldOfViewDeg,
+    ).toBeGreaterThan(0);
+  });
+
+  it('falls back to optical-format geometry when exact dimensions are absent', () => {
+    const result = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+    });
+
+    expect(
+      result.result.sensorGeometrySource,
+    ).toBe(
+      'optical-format-approximation',
+    );
+    expect(
+      result.result.activeSensorAreaMm2,
+    ).toBeCloseTo(
+      result.result.approximateSensorAreaMm2!,
+      10,
+    );
+  });
+
   it('compares total-light capture from sensor size and aperture', () => {
     const largeFast = calculateCamera({
       type: 'wide',
