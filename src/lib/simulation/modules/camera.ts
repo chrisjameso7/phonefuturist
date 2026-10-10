@@ -26,6 +26,33 @@ export interface CameraInput {
   apertureFNumber?: number;
 
   /**
+   * Actual exposure time for a single captured frame in seconds.
+   * This affects photons collected, unlike ISO/gain which only amplifies
+   * the captured signal.
+   */
+  exposureTimeSeconds?: number;
+
+  /**
+   * Fraction of incident light transmitted through the complete lens stack.
+   * 1.0 means 100% transmission. Leave unknown rather than guessing.
+   */
+  lensTransmissionFraction?: number;
+
+  /**
+   * Approximate sensor quantum efficiency as a 0-1 fraction when measured or
+   * credibly reported. This converts an optical exposure proxy into a
+   * photoelectron-capture proxy. It is never inferred from brand or sensor name.
+   */
+  quantumEfficiencyFraction?: number;
+
+  /**
+   * Linear pixel-binning factor. 2 means 2x2 binning, 4 means 4x4.
+   * Total sensor light is unchanged, while light represented by one output
+   * sample rises with the square of the factor under idealized binning.
+   */
+  binningLinearFactor?: number;
+
+  /**
    * Subject focus distance in metres. Used only for deterministic
    * depth-of-field geometry when focal length and aperture are known.
    */
@@ -73,11 +100,31 @@ export interface CalculatedCamera {
   apertureThroughput?: number;
 
   /**
+   * Exposure-aware aperture throughput = (1 / N²) × shutter time × lens
+   * transmission, when those values are supplied. This remains a relative
+   * optical exposure proxy because scene illuminance is not known.
+   */
+  exposureThroughput?: number;
+
+  /**
    * Geometric total-light proxy = approximate sensor area / N².
    * This is useful for relative comparison only. It excludes shutter time,
    * transmission losses, quantum efficiency, CFA, stabilization and processing.
    */
   geometricLightCaptureIndex?: number;
+
+  /**
+   * Exposure-aware total sensor light proxy. This multiplies the geometric
+   * light-capture index by exposure time and lens transmission when available.
+   * It does not assume ISO changes photon capture.
+   */
+  exposureLightCaptureIndex?: number;
+
+  /**
+   * Exposure-aware photoelectron proxy. Only emitted when quantum efficiency
+   * is explicitly supplied.
+   */
+  photoelectronCaptureIndex?: number;
 
   /**
    * Estimated pixel pitch from approximate sensor area and resolution.
@@ -90,6 +137,27 @@ export interface CalculatedCamera {
    * This is not a noise or image-quality score.
    */
   perPixelLightCaptureIndex?: number;
+
+  /** Exposure-aware native-pixel optical capture proxy. */
+  nativePixelExposureIndex?: number;
+
+  /** Exposure/QE-aware native-pixel photoelectron proxy. */
+  nativePixelPhotoelectronIndex?: number;
+
+  /** Effective output-pixel pitch after idealized square binning. */
+  effectiveBinnedPixelPitchMicrons?: number;
+
+  /** Effective output resolution after idealized square binning. */
+  effectiveBinnedResolutionMp?: number;
+
+  /**
+   * Exposure-aware light represented by one binned output sample. Under the
+   * idealized model this is nativePixelExposureIndex × binningFactor².
+   */
+  binnedOutputPixelExposureIndex?: number;
+
+  /** QE-aware binned output sample photoelectron proxy. */
+  binnedOutputPixelPhotoelectronIndex?: number;
 
   /** 35 mm depth-of-field equivalence, approximately N × crop factor. */
   equivalentApertureFNumber?: number;
@@ -269,12 +337,81 @@ export function calculateCamera(
   }
 
   if (
+    input.exposureTimeSeconds !== undefined &&
+    !isPositiveFinite(input.exposureTimeSeconds)
+  ) {
+    warnings.push({
+      code: 'INVALID_EXPOSURE_TIME',
+      message:
+        'Exposure time must be a positive finite value in seconds.',
+    });
+  }
+
+  if (
+    input.lensTransmissionFraction !== undefined &&
+    (!Number.isFinite(input.lensTransmissionFraction) ||
+      input.lensTransmissionFraction <= 0 ||
+      input.lensTransmissionFraction > 1)
+  ) {
+    warnings.push({
+      code: 'INVALID_LENS_TRANSMISSION',
+      message:
+        'Lens transmission fraction must be greater than 0 and at most 1.',
+    });
+  }
+
+  if (
+    input.quantumEfficiencyFraction !== undefined &&
+    (!Number.isFinite(input.quantumEfficiencyFraction) ||
+      input.quantumEfficiencyFraction <= 0 ||
+      input.quantumEfficiencyFraction > 1)
+  ) {
+    warnings.push({
+      code: 'INVALID_QUANTUM_EFFICIENCY',
+      message:
+        'Quantum efficiency fraction must be greater than 0 and at most 1.',
+    });
+  }
+
+  if (
+    input.binningLinearFactor !== undefined &&
+    (!Number.isFinite(input.binningLinearFactor) ||
+      input.binningLinearFactor < 1 ||
+      !Number.isInteger(input.binningLinearFactor))
+  ) {
+    warnings.push({
+      code: 'INVALID_BINNING_FACTOR',
+      message:
+        'Binning linear factor must be an integer greater than or equal to 1.',
+    });
+  }
+
+  if (
     input.apertureFNumber !== undefined &&
     isPositiveFinite(input.apertureFNumber)
   ) {
     const n = input.apertureFNumber;
 
     result.apertureThroughput = 1 / (n * n);
+
+    if (
+      input.exposureTimeSeconds !== undefined &&
+      isPositiveFinite(input.exposureTimeSeconds)
+    ) {
+      const transmission =
+        input.lensTransmissionFraction !== undefined &&
+        Number.isFinite(input.lensTransmissionFraction) &&
+        input.lensTransmissionFraction > 0 &&
+        input.lensTransmissionFraction <= 1
+          ? input.lensTransmissionFraction
+          : 1;
+
+      result.exposureThroughput =
+        result.apertureThroughput *
+        input.exposureTimeSeconds *
+        transmission;
+    }
+
     result.airyDiskDiameterMicrons =
       2.44 * REFERENCE_WAVELENGTH_MM * n * 1000;
 
@@ -294,6 +431,23 @@ export function calculateCamera(
       result.geometricLightCaptureIndex =
         result.approximateSensorAreaMm2 /
         (n * n);
+
+      if (result.exposureThroughput !== undefined) {
+        result.exposureLightCaptureIndex =
+          result.approximateSensorAreaMm2 *
+          result.exposureThroughput;
+
+        if (
+          input.quantumEfficiencyFraction !== undefined &&
+          Number.isFinite(input.quantumEfficiencyFraction) &&
+          input.quantumEfficiencyFraction > 0 &&
+          input.quantumEfficiencyFraction <= 1
+        ) {
+          result.photoelectronCaptureIndex =
+            result.exposureLightCaptureIndex *
+            input.quantumEfficiencyFraction;
+        }
+      }
     }
 
     const crop =
@@ -347,6 +501,49 @@ export function calculateCamera(
       result.perPixelLightCaptureIndex =
         pixelAreaMicrons2 /
         Math.pow(input.apertureFNumber, 2);
+
+      if (result.exposureThroughput !== undefined) {
+        result.nativePixelExposureIndex =
+          pixelAreaMicrons2 *
+          result.exposureThroughput;
+
+        if (
+          input.quantumEfficiencyFraction !== undefined &&
+          Number.isFinite(input.quantumEfficiencyFraction) &&
+          input.quantumEfficiencyFraction > 0 &&
+          input.quantumEfficiencyFraction <= 1
+        ) {
+          result.nativePixelPhotoelectronIndex =
+            result.nativePixelExposureIndex *
+            input.quantumEfficiencyFraction;
+        }
+      }
+    }
+
+    if (
+      input.binningLinearFactor !== undefined &&
+      Number.isInteger(input.binningLinearFactor) &&
+      input.binningLinearFactor >= 1
+    ) {
+      const factor = input.binningLinearFactor;
+      const samplesPerOutputPixel = factor * factor;
+
+      result.effectiveBinnedPixelPitchMicrons =
+        result.approximatePixelPitchMicrons * factor;
+      result.effectiveBinnedResolutionMp =
+        input.resolutionMp / samplesPerOutputPixel;
+
+      if (result.nativePixelExposureIndex !== undefined) {
+        result.binnedOutputPixelExposureIndex =
+          result.nativePixelExposureIndex *
+          samplesPerOutputPixel;
+      }
+
+      if (result.nativePixelPhotoelectronIndex !== undefined) {
+        result.binnedOutputPixelPhotoelectronIndex =
+          result.nativePixelPhotoelectronIndex *
+          samplesPerOutputPixel;
+      }
     }
 
     if (
