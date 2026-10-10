@@ -42,7 +42,8 @@ export interface BatteryRuntimeExperience {
   averageCoverage?: number;
   referenceCount?: number;
   neighborIds?: string[];
-  independentSourceCount?: number;
+  sourceRecordCount?: number;
+  publisherCount?: number;
   protocolFamilyCount?: number;
   evidenceScope?:
     | 'same-soc-family'
@@ -175,8 +176,10 @@ export function simulateBatteryExperience(
         band.estimate.averageCoverage,
       referenceCount: band.estimate.referenceCount,
       neighborIds: band.estimate.neighborIds,
-      independentSourceCount:
-        band.estimate.independentSourceCount,
+      sourceRecordCount:
+        band.estimate.sourceRecordCount,
+      publisherCount:
+        band.estimate.publisherCount,
       protocolFamilyCount:
         band.estimate.protocolFamilyCount,
       evidenceScope:
