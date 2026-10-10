@@ -116,7 +116,6 @@ function optionalTwoNodeResult(
 }
 
 function thermalSensitivityScenarios(
-  corpus: DeviceCorpus,
   input: LiveThermalExperienceInput,
   evidenceMode: 'calibrated' | 'physics-fallback',
   baseline: {
@@ -384,7 +383,6 @@ export function simulateThermalExperience(
       ...(twoNode ? { twoNode } : {}),
       warnings,
       sensitivity: thermalSensitivityScenarios(
-        corpus,
         input,
         'calibrated',
         {
@@ -445,7 +443,6 @@ export function simulateThermalExperience(
     ...(twoNode ? { twoNode } : {}),
     warnings,
     sensitivity: thermalSensitivityScenarios(
-      corpus,
       input,
       'physics-fallback',
       {
