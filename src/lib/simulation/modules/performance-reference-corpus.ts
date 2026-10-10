@@ -72,6 +72,32 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         accessedDate: '2026-10-10',
       },
       {
+        id: 'notebookcheck-samsung-s26-wifi-runtime',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
+        protocol:
+          'Notebookcheck WiFi Websurfing v1.3',
+        protocolVersion: 'Chrome 146',
+        accessedDate: '2026-10-10',
+      },
+      {
+        id: 'notebookcheck-samsung-s26-plus-wifi-runtime',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Will-the-Exynos-2600-save-the-unwanted-flagship-Samsung-Galaxy-S26-review.1272005.0.html',
+        protocol:
+          'Notebookcheck WiFi Websurfing v1.3',
+        protocolVersion: 'Chrome 146',
+        accessedDate: '2026-10-10',
+      },
+      {
+        id: 'notebookcheck-samsung-s26-h264-runtime',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
+        protocol:
+          'Notebookcheck Big Buck Bunny H.264 1080p',
+        accessedDate: '2026-10-10',
+      },
+      {
         id: 'xiaomi-17-ultra-official-performance',
         publisher: 'Xiaomi',
         url: 'https://www.mi.com/global/product/xiaomi-17-ultra/',
@@ -398,6 +424,48 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         unit: 'percent',
         sourceId: 'notebookcheck-samsung-s26-plus-performance',
         evidenceKind: 'measured',
+      },
+      {
+        id: 'samsung-s26-exynos-wifi-runtime',
+        deviceVariantId: 'samsung-galaxy-s26-exynos-performance',
+        workload: 'web_browsing',
+        metric: 'wifiWebsurfingHours',
+        value: 17.7333333333,
+        unit: 'hours',
+        sourceId: 'notebookcheck-samsung-s26-wifi-runtime',
+        evidenceKind: 'measured',
+        softwareBuild: 'Chrome 146',
+        notes: [
+          'Notebookcheck WiFi v1.3 runtime. The review page reports 17 h 44 min.',
+        ],
+      },
+      {
+        id: 'samsung-s26-plus-exynos-wifi-runtime',
+        deviceVariantId: 'samsung-galaxy-s26-plus-exynos-performance',
+        workload: 'web_browsing',
+        metric: 'wifiWebsurfingHours',
+        value: 17.75,
+        unit: 'hours',
+        sourceId: 'notebookcheck-samsung-s26-plus-wifi-runtime',
+        evidenceKind: 'measured',
+        softwareBuild: 'Chrome 146',
+        displayBrightnessNits: 150,
+        notes: [
+          'Notebookcheck states its practical battery tests for this review were run at adjusted 150 cd/m² display brightness.',
+        ],
+      },
+      {
+        id: 'samsung-s26-exynos-h264-runtime',
+        deviceVariantId: 'samsung-galaxy-s26-exynos-performance',
+        workload: 'video_playback',
+        metric: 'h264PlaybackHours',
+        value: 28.6666666667,
+        unit: 'hours',
+        sourceId: 'notebookcheck-samsung-s26-h264-runtime',
+        evidenceKind: 'measured',
+        notes: [
+          'Notebookcheck Big Buck Bunny H.264 1080p runtime. The review page reports 28 h 40 min.',
+        ],
       },
     ],
   };
