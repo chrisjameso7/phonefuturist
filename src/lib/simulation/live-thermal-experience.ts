@@ -318,6 +318,8 @@ export function simulateThermalExperience(
   corpus: DeviceCorpus,
   input: LiveThermalExperienceInput,
 ): LiveThermalExperienceResult {
+  const twoNode = optionalTwoNodeResult(input);
+
   const calibrated = simulateCalibratedSocThermals(
     corpus,
     input,
@@ -360,12 +362,7 @@ export function simulateThermalExperience(
       sustainedPowerW:
         calibrated.simulation.sustainedPowerW,
       points: calibrated.simulation.points,
-      ...(optionalTwoNodeResult(input)
-        ? {
-            twoNode:
-              optionalTwoNodeResult(input)!,
-          }
-        : {}),
+      ...(twoNode ? { twoNode } : {}),
       warnings,
       sensitivity: thermalSensitivityScenarios(
         corpus,
@@ -426,12 +423,7 @@ export function simulateThermalExperience(
       fallback.sustainedPerformancePercent,
     sustainedPowerW: fallback.sustainedPowerW,
     points: fallback.points,
-    ...(optionalTwoNodeResult(input)
-      ? {
-          twoNode:
-            optionalTwoNodeResult(input)!,
-        }
-      : {}),
+    ...(twoNode ? { twoNode } : {}),
     warnings,
     sensitivity: thermalSensitivityScenarios(
       corpus,
