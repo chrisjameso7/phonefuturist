@@ -82,6 +82,110 @@ describe('camera simulation module', () => {
     );
   });
 
+  it('makes total light exposure depend on shutter time and lens transmission, not ISO-like gain', () => {
+    const fastExposure = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 30,
+      lensTransmissionFraction: 0.8,
+      quantumEfficiencyFraction: 0.65,
+    });
+
+    const shortExposure = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 120,
+      lensTransmissionFraction: 0.8,
+      quantumEfficiencyFraction: 0.65,
+    });
+
+    expect(
+      fastExposure.result.exposureLightCaptureIndex!,
+    ).toBeCloseTo(
+      shortExposure.result.exposureLightCaptureIndex! * 4,
+      10,
+    );
+
+    expect(
+      fastExposure.result.photoelectronCaptureIndex!,
+    ).toBeCloseTo(
+      fastExposure.result.exposureLightCaptureIndex! * 0.65,
+      10,
+    );
+  });
+
+  it('models idealized pixel binning without pretending it increases total sensor light', () => {
+    const native = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 200,
+      apertureFNumber: 1.7,
+      exposureTimeSeconds: 1 / 60,
+      binningLinearFactor: 1,
+    });
+
+    const binned = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 200,
+      apertureFNumber: 1.7,
+      exposureTimeSeconds: 1 / 60,
+      binningLinearFactor: 2,
+    });
+
+    expect(
+      binned.result.exposureLightCaptureIndex,
+    ).toBeCloseTo(
+      native.result.exposureLightCaptureIndex!,
+      12,
+    );
+
+    expect(
+      binned.result.effectiveBinnedResolutionMp,
+    ).toBeCloseTo(50, 10);
+
+    expect(
+      binned.result.effectiveBinnedPixelPitchMicrons!,
+    ).toBeCloseTo(
+      native.result.approximatePixelPitchMicrons! * 2,
+      10,
+    );
+
+    expect(
+      binned.result.binnedOutputPixelExposureIndex!,
+    ).toBeCloseTo(
+      binned.result.nativePixelExposureIndex! * 4,
+      12,
+    );
+  });
+
+  it('rejects invalid exposure, transmission, quantum-efficiency and binning inputs', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      exposureTimeSeconds: 0,
+      lensTransmissionFraction: 1.2,
+      quantumEfficiencyFraction: -0.1,
+      binningLinearFactor: 1.5,
+    });
+
+    expect(
+      calculation.warnings.map((warning) => warning.code),
+    ).toEqual(
+      expect.arrayContaining([
+        'INVALID_EXPOSURE_TIME',
+        'INVALID_LENS_TRANSMISSION',
+        'INVALID_QUANTUM_EFFICIENCY',
+        'INVALID_BINNING_FACTOR',
+      ]),
+    );
+  });
+
   it('derives field of view and diffraction indicators when geometry is available', () => {
     const calculation = calculateCamera({
       type: 'wide',
