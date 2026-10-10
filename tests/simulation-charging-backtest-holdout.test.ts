@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { backtestChargingCorpus } from '../src/lib/simulation/modules/charging-backtest';
+import {
+  backtestChargingCorpus,
+  buildChargingBacktestHoldoutCorpus,
+} from '../src/lib/simulation/modules/charging-backtest';
 import type { DeviceCorpus } from '../src/lib/simulation/modules/device-corpus';
 
 const corpus: DeviceCorpus = {
@@ -99,6 +102,33 @@ const corpus: DeviceCorpus = {
 };
 
 describe('charging backtest mode holdout', () => {
+  it('removes every same-mode measurement while keeping other charger modes', () => {
+    const heldOut = corpus.measurements.find(
+      (measurement) =>
+        measurement.id === 'target-full-100w',
+    );
+
+    expect(heldOut).toBeDefined();
+
+    const reduced =
+      buildChargingBacktestHoldoutCorpus(
+        corpus,
+        heldOut!,
+        'mode',
+      );
+
+    const ids = reduced.measurements.map(
+      (measurement) => measurement.id,
+    );
+
+    expect(ids).not.toContain('target-full-100w');
+    expect(ids).not.toContain('target-p30-100w');
+    expect(ids).not.toContain('target-peak-100w');
+
+    expect(ids).toContain('target-full-65w');
+    expect(ids).toContain('peer-full-100w');
+  });
+
   it('uses mode holdout by default', () => {
     const result = backtestChargingCorpus(corpus);
 
