@@ -247,7 +247,43 @@ export function resolveCorpusRuntimeBand(
     return b.length - a.length;
   });
 
-  const protocolValues = rankedGroups[0] ?? [];
+  const sameFamilyRows = (group: typeof rawValues) =>
+    context.socName
+      ? group.filter(
+          (item) =>
+            item.socName &&
+            normalizeSocFamily(item.socName) ===
+              normalizeSocFamily(context.socName!),
+        )
+      : [];
+
+  const sameVendorRows = (group: typeof rawValues) =>
+    context.socVendor
+      ? group.filter(
+          (item) =>
+            item.socVendor === context.socVendor,
+        )
+      : [];
+
+  // Keep protocol isolation, but do not let a larger generic protocol cohort
+  // erase a materially better SoC prior. For future chips, prefer a protocol
+  // group that contains at least two same-family references, then at least
+  // two same-vendor references, and only then fall back to the strongest
+  // generic protocol cohort.
+  const familyProtocolGroup = rankedGroups.find(
+    (group) => sameFamilyRows(group).length >= 2,
+  );
+  const vendorProtocolGroup = familyProtocolGroup
+    ? undefined
+    : rankedGroups.find(
+        (group) => sameVendorRows(group).length >= 2,
+      );
+
+  const protocolValues =
+    familyProtocolGroup ??
+    vendorProtocolGroup ??
+    rankedGroups[0] ??
+    [];
 
   if (!protocolValues.length) {
     return {
@@ -259,21 +295,8 @@ export function resolveCorpusRuntimeBand(
     };
   }
 
-  const sameFamily = context.socName
-    ? protocolValues.filter(
-        (item) =>
-          item.socName &&
-          normalizeSocFamily(item.socName) ===
-            normalizeSocFamily(context.socName!),
-      )
-    : [];
-
-  const sameVendor = context.socVendor
-    ? protocolValues.filter(
-        (item) =>
-          item.socVendor === context.socVendor,
-      )
-    : [];
+  const sameFamily = sameFamilyRows(protocolValues);
+  const sameVendor = sameVendorRows(protocolValues);
 
   const values =
     sameFamily.length >= 2
