@@ -1646,3 +1646,16 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     }
   }
 </style>
+
+<style is:global>
+  .interactive-simulator-shell .il-workspace.il-workspace-simple{
+    grid-template-columns:minmax(0,1fr);
+  }
+  .interactive-simulator-shell .il-workspace.il-workspace-simple .il-results{
+    grid-column:1;
+    position:static;
+    top:auto;
+    width:100%;
+    border-left:0;
+  }
+</style>
