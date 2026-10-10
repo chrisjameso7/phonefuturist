@@ -21,7 +21,7 @@ export interface CorpusSource {
 export interface CorpusMeasurement {
   id: string;
   deviceVariantId: string;
-  workload: SystemEfficiencyWorkload | 'charging' | 'thermal' | 'benchmark' | 'camera';
+  workload: SystemEfficiencyWorkload | 'charging' | 'thermal' | 'benchmark' | 'camera' | 'display';
   metric: string;
   value: number;
   unit: string;
@@ -30,7 +30,13 @@ export interface CorpusMeasurement {
   softwareBuild?: string;
   ambientTemperatureC?: number;
   displayBrightnessNits?: number;
+  averagePictureLevelPercent?: number;
   refreshRateHz?: number;
+  componentScope?:
+    | 'display-panel'
+    | 'whole-device'
+    | 'display-plus-network'
+    | 'other';
   testChargerWatts?: number;
   chargingStandard?: string;
   measuredPeakWatts?: number;
