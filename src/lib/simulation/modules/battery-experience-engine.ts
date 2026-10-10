@@ -52,10 +52,18 @@ export interface BatteryRuntimeExperience {
 }
 
 export interface MixedUseBatteryEstimate {
+  interpretation: 'active-use-only';
   activeHoursPerDay: number;
   expectedDrainMahPerDay: number;
   minDrainMahPerDay: number;
   maxDrainMahPerDay: number;
+  expectedActiveUseHoursPerCharge: number;
+  minActiveUseHoursPerCharge: number;
+  maxActiveUseHoursPerCharge: number;
+  /**
+   * Compatibility aliases. These are active-use profile repeats,
+   * not literal calendar-day battery-life predictions.
+   */
   expectedDaysPerCharge: number;
   minDaysPerCharge: number;
   maxDaysPerCharge: number;
@@ -247,17 +255,46 @@ export function simulateBatteryExperience(
           0,
         ) / activeHoursPerDay;
 
+      const expectedProfileRepeats =
+        capacity /
+        Math.max(
+          expectedDrainMahPerDay,
+          Number.EPSILON,
+        );
+      const minProfileRepeats =
+        capacity /
+        Math.max(
+          maxDrainMahPerDay,
+          Number.EPSILON,
+        );
+      const maxProfileRepeats =
+        capacity /
+        Math.max(
+          minDrainMahPerDay,
+          Number.EPSILON,
+        );
+
       mixedUse = {
+        interpretation: 'active-use-only',
         activeHoursPerDay,
         expectedDrainMahPerDay,
         minDrainMahPerDay,
         maxDrainMahPerDay,
+        expectedActiveUseHoursPerCharge:
+          expectedProfileRepeats *
+          activeHoursPerDay,
+        minActiveUseHoursPerCharge:
+          minProfileRepeats *
+          activeHoursPerDay,
+        maxActiveUseHoursPerCharge:
+          maxProfileRepeats *
+          activeHoursPerDay,
         expectedDaysPerCharge:
-          capacity / Math.max(expectedDrainMahPerDay, Number.EPSILON),
+          expectedProfileRepeats,
         minDaysPerCharge:
-          capacity / Math.max(maxDrainMahPerDay, Number.EPSILON),
+          minProfileRepeats,
         maxDaysPerCharge:
-          capacity / Math.max(minDrainMahPerDay, Number.EPSILON),
+          maxProfileRepeats,
         confidence,
         workloads: selected.map((row) => ({
           workload: row.workload,
@@ -265,6 +302,9 @@ export function simulateBatteryExperience(
           expectedDrainMahPerHour: row.expectedDrainMahPerHour,
         })),
       };
+      warnings.push(
+        'Mixed-use battery life is an active-use-only estimate. Standby, modem idle, background sync and screen-off drain are not yet modeled, so it must not be interpreted as literal calendar days per charge.',
+      );
     }
   }
 
