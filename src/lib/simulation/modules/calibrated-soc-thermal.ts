@@ -46,6 +46,8 @@ export interface CalibratedSocThermalResult {
       | 'protocol-cohort';
     sameSocFamilyReferences: number;
     sameSocVendorReferences: number;
+    sourceRecordCount: number;
+    publisherCount: number;
   };
   simulation?: {
     peakTemperatureC: number;
@@ -98,6 +100,8 @@ function weightedTarget(
       protocolKey: reference.protocolKey,
       socVendor: reference.socVendor,
       socName: reference.socName,
+      sourceId: reference.sourceId,
+      publisher: reference.publisher,
       id: reference.deviceVariantId,
     }];
   });
@@ -171,6 +175,18 @@ function weightedTarget(
               item.socVendor === targetSocVendor,
           ).length
         : 0,
+    sourceRecordCount:
+      new Set(
+        selected.map(
+          (item) => item.sourceId,
+        ),
+      ).size,
+    publisherCount:
+      new Set(
+        selected.map(
+          (item) => item.publisher,
+        ),
+      ).size,
   };
 }
 
@@ -313,6 +329,10 @@ export function simulateCalibratedSocThermals(
         calibrated.sameSocFamilyReferences,
       sameSocVendorReferences:
         calibrated.sameSocVendorReferences,
+      sourceRecordCount:
+        calibrated.sourceRecordCount,
+      publisherCount:
+        calibrated.publisherCount,
     },
     simulation: {
       peakTemperatureC: q(peakTemperatureC, 100),
