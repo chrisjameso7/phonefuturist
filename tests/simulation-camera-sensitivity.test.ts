@@ -25,10 +25,21 @@ describe('camera optical sensitivity scenarios', () => {
     );
 
     expect(larger).toBeDefined();
-    expect(larger!.deltaSensorAreaPercent).toBeGreaterThan(0);
-    expect(larger!.deltaTotalLightPercent).toBeGreaterThan(0);
-    expect(larger!.deltaPerPixelLightPercent).toBeGreaterThan(0);
-    expect(larger!.sensorFootprintPressurePercent).toBeGreaterThan(0);
+    expect(larger!.label).toBe(
+      'Sensor linear size +15%',
+    );
+    expect(
+      larger!.sensorFootprintPressurePercent,
+    ).toBeCloseTo(15, 6);
+    expect(
+      larger!.deltaSensorAreaPercent,
+    ).toBeCloseTo(32.25, 6);
+    expect(
+      larger!.deltaTotalLightPercent,
+    ).toBeCloseTo(32.25, 6);
+    expect(
+      larger!.deltaPerPixelLightPercent,
+    ).toBeCloseTo(32.25, 6);
   });
 
   it('shows faster aperture gains without changing sensor area', () => {
