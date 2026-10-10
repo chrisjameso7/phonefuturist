@@ -150,6 +150,35 @@ function sameChargingMode(
   return true;
 }
 
+export function buildChargingBacktestHoldoutCorpus(
+  corpus: DeviceCorpus,
+  heldOut: DeviceCorpus['measurements'][number],
+  holdout: ChargingBacktestHoldout,
+): DeviceCorpus {
+  return {
+    ...corpus,
+    measurements: corpus.measurements.filter(
+      (measurement) => {
+        if (holdout === 'measurement') {
+          return measurement.id !== heldOut.id;
+        }
+
+        if (holdout === 'device') {
+          return (
+            measurement.deviceVariantId !==
+            heldOut.deviceVariantId
+          );
+        }
+
+        return !sameChargingMode(
+          heldOut,
+          measurement,
+        );
+      },
+    ),
+  };
+}
+
 export function backtestChargingCorpus(
   corpus: DeviceCorpus,
   options: ChargingBacktestOptions = {},
@@ -183,28 +212,12 @@ export function backtestChargingCorpus(
         candidate.variant.id === heldOut.deviceVariantId,
     );
 
-    const reducedCorpus: DeviceCorpus = {
-      ...corpus,
-      measurements: corpus.measurements.filter(
-        (measurement) => {
-          if (holdout === 'measurement') {
-            return measurement.id !== heldOut.id;
-          }
-
-          if (holdout === 'device') {
-            return (
-              measurement.deviceVariantId !==
-              heldOut.deviceVariantId
-            );
-          }
-
-          return !sameChargingMode(
-            heldOut,
-            measurement,
-          );
-        },
-      ),
-    };
+    const reducedCorpus =
+      buildChargingBacktestHoldoutCorpus(
+        corpus,
+        heldOut,
+        holdout,
+      );
 
     const estimate = estimateChargingFromCorpus(
       reducedCorpus,
