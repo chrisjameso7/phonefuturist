@@ -43,6 +43,12 @@ describe('Simple Mode engine', () => {
         .geometricLightCaptureIndex,
     ).toBeGreaterThan(0);
 
+    expect(
+      ['resolved', 'unresolved'],
+    ).toContain(
+      result.sustainedPerformance.status,
+    );
+
     expect(result.thermal.status).toBe(
       'advanced-only',
     );
