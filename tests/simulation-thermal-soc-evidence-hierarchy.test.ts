@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { simulateCalibratedSocThermals } from '../src/lib/simulation/modules/calibrated-soc-thermal';
 import type { DeviceCorpus } from '../src/lib/simulation/modules/device-corpus';
+import type { SocVendor } from '../src/lib/simulation/modules/device-variant';
 
 function device(
   id: string,
-  vendor: string,
+  vendor: SocVendor,
   socName: string,
 ) {
   return {
