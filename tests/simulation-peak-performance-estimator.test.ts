@@ -210,6 +210,52 @@ describe('peak performance estimator', () => {
     );
   });
 
+  it('resolves a future Snapdragon peak prior from same-vendor measured references', () => {
+    const result =
+      estimateLivePeakPerformance({
+        domain: 'geekbench6_single',
+        socVendor: 'Qualcomm',
+        socName: 'Snapdragon Future',
+      });
+
+    expect(result.status).toBe('resolved');
+    expect(result.evidenceScope).toBe(
+      'same-soc-vendor',
+    );
+    expect(
+      result.sameSocVendorReferences,
+    ).toBeGreaterThanOrEqual(2);
+    expect(result.baselineExpected).toBeGreaterThan(
+      3400,
+    );
+    expect(result.baselineExpected).toBeLessThan(
+      3900,
+    );
+  });
+
+  it('resolves a future Dimensity peak prior from same-vendor measured references', () => {
+    const result =
+      estimateLivePeakPerformance({
+        domain: '3dmark_wle',
+        socVendor: 'MediaTek',
+        socName: 'Dimensity Future',
+      });
+
+    expect(result.status).toBe('resolved');
+    expect(result.evidenceScope).toBe(
+      'same-soc-vendor',
+    );
+    expect(
+      result.sameSocVendorReferences,
+    ).toBeGreaterThanOrEqual(2);
+    expect(result.baselineExpected).toBeGreaterThan(
+      7000,
+    );
+    expect(result.baselineExpected).toBeLessThan(
+      7800,
+    );
+  });
+
   it('resolves a live Exynos 2700 peak prior from measured Exynos 2600 references', () => {
     const result =
       estimateLivePeakPerformance({
