@@ -1,4 +1,5 @@
 import type { DeviceCorpus } from './device-corpus';
+import { normalizeSocFamily } from './comparable-devices';
 import {
   selectThermalCalibrationReferences,
   type ThermalDomain,
@@ -39,6 +40,12 @@ export interface CalibratedSocThermalResult {
     averageCoverage: number;
     protocolKey: string;
     neighborIds: string[];
+    evidenceScope:
+      | 'same-soc-family'
+      | 'same-soc-vendor'
+      | 'protocol-cohort';
+    sameSocFamilyReferences: number;
+    sameSocVendorReferences: number;
   };
   simulation?: {
     peakTemperatureC: number;
@@ -76,6 +83,8 @@ function normalizedPerformanceValue(value: number, unit: string) {
 
 function weightedTarget(
   refs: ReturnType<typeof selectThermalCalibrationReferences>['references'],
+  targetSocVendor?: string,
+  targetSocName?: string,
 ) {
   const usable = refs.flatMap((reference) => {
     const value = normalizedPerformanceValue(reference.value, reference.unit);
@@ -87,32 +96,81 @@ function weightedTarget(
       similarityScore: reference.similarityScore,
       coverageScore: reference.coverageScore,
       protocolKey: reference.protocolKey,
+      socVendor: reference.socVendor,
+      socName: reference.socName,
       id: reference.deviceVariantId,
     }];
   });
 
   if (!usable.length) return undefined;
 
-  const weight = usable.reduce((sum, item) => sum + item.weight, 0);
+  const sameFamily = targetSocName
+    ? usable.filter(
+        (item) =>
+          item.socName &&
+          normalizeSocFamily(item.socName) ===
+            normalizeSocFamily(targetSocName),
+      )
+    : [];
+
+  const sameVendor = targetSocVendor
+    ? usable.filter(
+        (item) =>
+          item.socVendor === targetSocVendor,
+      )
+    : [];
+
+  const selected =
+    sameFamily.length >= 2
+      ? sameFamily
+      : sameVendor.length >= 2
+        ? sameVendor
+        : usable;
+
+  const evidenceScope =
+    selected === sameFamily
+      ? 'same-soc-family'
+      : selected === sameVendor
+        ? 'same-soc-vendor'
+        : 'protocol-cohort';
+
+  const weight = selected.reduce((sum, item) => sum + item.weight, 0);
   return {
     percent:
-      usable.reduce((sum, item) => sum + item.value * item.weight, 0) /
+      selected.reduce((sum, item) => sum + item.value * item.weight, 0) /
       Math.max(weight, Number.EPSILON),
     confidence:
-      usable.reduce((sum, item) => sum + item.score, 0) / usable.length,
+      selected.reduce((sum, item) => sum + item.score, 0) / selected.length,
     averageSimilarity:
-      usable.reduce(
+      selected.reduce(
         (sum, item) => sum + item.similarityScore,
         0,
-      ) / usable.length,
+      ) / selected.length,
     averageCoverage:
-      usable.reduce(
+      selected.reduce(
         (sum, item) => sum + item.coverageScore,
         0,
-      ) / usable.length,
-    protocolKey: usable[0].protocolKey,
-    neighborIds: [...new Set(usable.map((item) => item.id))],
-    count: usable.length,
+      ) / selected.length,
+    protocolKey: selected[0].protocolKey,
+    neighborIds: [...new Set(selected.map((item) => item.id))],
+    count: selected.length,
+    evidenceScope,
+    sameSocFamilyReferences:
+      targetSocName
+        ? usable.filter(
+            (item) =>
+              item.socName &&
+              normalizeSocFamily(item.socName) ===
+                normalizeSocFamily(targetSocName),
+          ).length
+        : 0,
+    sameSocVendorReferences:
+      targetSocVendor
+        ? usable.filter(
+            (item) =>
+              item.socVendor === targetSocVendor,
+          ).length
+        : 0,
   };
 }
 
@@ -129,7 +187,11 @@ export function simulateCalibratedSocThermals(
   }
 
   const refs = selectThermalCalibrationReferences(corpus, input);
-  const calibrated = weightedTarget(refs.references);
+  const calibrated = weightedTarget(
+    refs.references,
+    input.socVendor,
+    input.socName,
+  );
 
   if (!calibrated) {
     return {
@@ -246,6 +308,11 @@ export function simulateCalibratedSocThermals(
       ),
       protocolKey: calibrated.protocolKey,
       neighborIds: calibrated.neighborIds,
+      evidenceScope: calibrated.evidenceScope,
+      sameSocFamilyReferences:
+        calibrated.sameSocFamilyReferences,
+      sameSocVendorReferences:
+        calibrated.sameSocVendorReferences,
     },
     simulation: {
       peakTemperatureC: q(peakTemperatureC, 100),
