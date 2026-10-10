@@ -3769,6 +3769,30 @@ export default function InteractiveLeaksSimulator() {
                         <span>End model-node temperature</span>
                       </div>
 
+                      {thermalResult.evidencePriorPercent !== undefined ? (
+                        <div>
+                          <strong>
+                            {format(
+                              thermalResult.evidencePriorPercent,
+                              1,
+                            )}%
+                          </strong>
+                          <span>Measured sustained prior</span>
+                        </div>
+                      ) : null}
+
+                      {thermalResult.rawPhysicsSustainedPercent !== undefined ? (
+                        <div>
+                          <strong>
+                            {format(
+                              thermalResult.rawPhysicsSustainedPercent,
+                              1,
+                            )}%
+                          </strong>
+                          <span>Raw thermal physics ceiling</span>
+                        </div>
+                      ) : null}
+
                       <div>
                         <strong>
                           {thermalResult.sustainedPerformancePercent !== undefined
@@ -3778,7 +3802,7 @@ export default function InteractiveLeaksSimulator() {
                               )}%`
                             : 'Unknown'}
                         </strong>
-                        <span>Sustained performance</span>
+                        <span>Final sustained performance</span>
                       </div>
 
                       <div>
