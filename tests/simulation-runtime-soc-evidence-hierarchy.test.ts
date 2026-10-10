@@ -104,6 +104,12 @@ describe('runtime SoC evidence hierarchy', () => {
     );
     expect(result.estimate?.referenceCount).toBe(2);
     expect(
+      result.estimate?.independentSourceCount,
+    ).toBe(1);
+    expect(
+      result.estimate?.protocolFamilyCount,
+    ).toBe(1);
+    expect(
       result.estimate?.neighborIds.sort(),
     ).toEqual(['d9500-a', 'd9500-b']);
     expect(
