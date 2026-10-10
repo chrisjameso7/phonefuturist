@@ -25,6 +25,12 @@ export interface CameraInput {
 
   apertureFNumber?: number;
 
+  /**
+   * Subject focus distance in metres. Used only for deterministic
+   * depth-of-field geometry when focal length and aperture are known.
+   */
+  focusDistanceM?: number;
+
   /** Optional measured or reported complete module dimensions. */
   moduleWidthMm?: number;
   moduleHeightMm?: number;
@@ -98,6 +104,22 @@ export interface CalculatedCamera {
    */
   airyDiskDiameterMicrons?: number;
   airyDiskToPixelPitchRatio?: number;
+
+  /**
+   * F-number where the 550 nm Airy disk spans two native pixels.
+   * This is a sampling reference, not a hard image-quality limit.
+   */
+  diffractionTwoPixelFNumber?: number;
+
+  /**
+   * Classical depth-of-field geometry using a full-frame-equivalent
+   * 0.03 mm circle of confusion scaled by crop factor.
+   */
+  approximateCircleOfConfusionMm?: number;
+  hyperfocalDistanceM?: number;
+  focusNearLimitM?: number;
+  focusFarLimitM?: number | 'infinity';
+  totalDepthOfFieldM?: number | 'infinity';
 
   moduleVolumeMm3?: number;
   moduleVolumeCm3?: number;
@@ -275,6 +297,17 @@ export function calculateCamera(
   }
 
   if (
+    input.focusDistanceM !== undefined &&
+    !isPositiveFinite(input.focusDistanceM)
+  ) {
+    warnings.push({
+      code: 'INVALID_FOCUS_DISTANCE',
+      message:
+        'Focus distance must be a positive finite value in metres.',
+    });
+  }
+
+  if (
     input.resolutionMp !== undefined &&
     !isPositiveFinite(input.resolutionMp)
   ) {
@@ -314,9 +347,88 @@ export function calculateCamera(
       result.airyDiskToPixelPitchRatio =
         result.airyDiskDiameterMicrons /
         result.approximatePixelPitchMicrons;
+
+      result.diffractionTwoPixelFNumber =
+        (
+          2 *
+          result.approximatePixelPitchMicrons
+        ) /
+        (2.44 * 0.55);
     }
   }
 
+
+
+  if (
+    input.focusDistanceM !== undefined &&
+    isPositiveFinite(input.focusDistanceM) &&
+    input.apertureFNumber !== undefined &&
+    isPositiveFinite(input.apertureFNumber) &&
+    physicalFocalLength !== undefined
+  ) {
+    const crop =
+      result.cropFactor ??
+      result.approximateCropFactor;
+
+    if (
+      crop !== undefined &&
+      Number.isFinite(crop) &&
+      crop > 0
+    ) {
+      const cocMm = 0.03 / crop;
+      const focalMm = physicalFocalLength;
+      const focusMm = input.focusDistanceM * 1000;
+      const n = input.apertureFNumber;
+
+      const hyperfocalMm =
+        (
+          focalMm * focalMm
+        ) /
+          (n * cocMm) +
+        focalMm;
+
+      const nearMm =
+        (
+          hyperfocalMm *
+          focusMm
+        ) /
+        (
+          hyperfocalMm +
+          (focusMm - focalMm)
+        );
+
+      const farDenominator =
+        hyperfocalMm -
+        (focusMm - focalMm);
+
+      result.approximateCircleOfConfusionMm =
+        cocMm;
+      result.hyperfocalDistanceM =
+        hyperfocalMm / 1000;
+      result.focusNearLimitM =
+        nearMm / 1000;
+
+      if (farDenominator <= 0) {
+        result.focusFarLimitM = 'infinity';
+        result.totalDepthOfFieldM = 'infinity';
+      } else {
+        const farMm =
+          (
+            hyperfocalMm *
+            focusMm
+          ) /
+          farDenominator;
+
+        result.focusFarLimitM =
+          farMm / 1000;
+        result.totalDepthOfFieldM =
+          Math.max(
+            0,
+            (farMm - nearMm) / 1000,
+          );
+      }
+    }
+  }
 
   if (
     input.apertureFNumber !== undefined &&
@@ -330,6 +442,20 @@ export function calculateCamera(
       code: 'AGGRESSIVE_TELEPHOTO_APERTURE',
       message:
         'A telephoto equivalent focal length of 85 mm or longer with an aperture faster than f/1.8 is an aggressive optical/package target. Verify lens diameter, module depth and mechanical feasibility.',
+    });
+  }
+
+  if (
+    result.diffractionTwoPixelFNumber !== undefined &&
+    input.apertureFNumber !== undefined &&
+    isPositiveFinite(input.apertureFNumber) &&
+    input.apertureFNumber >
+      result.diffractionTwoPixelFNumber
+  ) {
+    warnings.push({
+      code: 'DIFFRACTION_BEYOND_TWO_PIXEL_SAMPLING',
+      message:
+        'At the 550 nm reference wavelength, the Airy disk spans more than two estimated native pixels. This is a sampling warning, not a hard resolution cutoff.',
     });
   }
 
