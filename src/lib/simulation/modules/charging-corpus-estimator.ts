@@ -9,7 +9,7 @@ import {
 } from './charging-power-response';
 import { resolveChargingThermalContext } from './charging-thermal-context';
 
-export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.1.0';
+export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.2.0';
 
 export type ChargingConfidenceGrade = 'high' | 'moderate' | 'low';
 
