@@ -1,5 +1,13 @@
 import { useMemo, useState } from 'react';
 
+import BetaFeedbackPanel from './BetaFeedbackPanel';
+import SimpleModePanel from './SimpleModePanel';
+
+import {
+  expandSimpleMode,
+  type SimpleModeInput,
+} from '../../lib/simulation/simple-mode';
+
 import {
   SIMULATION_ENGINE_VERSION,
   simulateDevice,
@@ -601,6 +609,9 @@ export default function InteractiveLeaksSimulator() {
   const [simulationInput, setSimulationInput] =
     useState<SimulationInput | null>(null);
 
+  const [workspaceMode, setWorkspaceMode] =
+    useState<'simple' | 'advanced'>('simple');
+
   const result = useMemo(
     () =>
       simulationInput
@@ -769,6 +780,115 @@ export default function InteractiveLeaksSimulator() {
     };
   }
 
+  function runSimpleMode(input: SimpleModeInput) {
+    const expansion = expandSimpleMode(input);
+    const primary =
+      expansion.simulationInput.displays.primary;
+    const mainCamera = input.mainCamera;
+
+    setForm((current) => ({
+      ...current,
+      name: input.name ?? '',
+      manufacturer:
+        input.manufacturer ?? '',
+      formFactor: 'phone',
+      diagonalInches:
+        String(
+          primary.diagonalInches ??
+            input.displayDiagonalInches,
+        ),
+      resolutionWidthPx:
+        String(primary.resolutionWidthPx ?? ''),
+      resolutionHeightPx:
+        String(primary.resolutionHeightPx ?? ''),
+      aspectWidth:
+        String(primary.aspectWidth ?? 9),
+      aspectHeight:
+        String(primary.aspectHeight ?? 20),
+      refreshRateHz:
+        String(
+          primary.refreshRateHz ??
+            input.refreshRateHz,
+        ),
+      batteryCapacityMah:
+        String(input.batteryMah),
+      wiredChargeW:
+        input.wiredChargingWatts !== undefined
+          ? String(input.wiredChargingWatts)
+          : '',
+      wirelessChargeW:
+        input.wirelessChargingWatts !== undefined
+          ? String(input.wirelessChargingWatts)
+          : '',
+      batteryChemistry:
+        input.batteryChemistry ?? '',
+      chargingStandard:
+        input.chargingStandard ?? '',
+      wirelessChargingStandard:
+        input.wirelessChargingStandard ?? '',
+      socVendor: input.socVendor ?? '',
+      socName: input.socName ?? '',
+      coolingClass:
+        expansion.advanced.coolingClass,
+      targetSocPowerW: '',
+      ambientTemperatureC: '',
+      thermalResistanceCPerW: '',
+      thermalMassJPerC: '',
+      throttleTemperatureC: '',
+      thermalDurationSeconds: '',
+    }));
+
+    setCameras(
+      mainCamera
+        ? [
+            {
+              id: 1,
+              type: 'wide',
+              sensorFormatDenominator:
+                mainCamera.sensorFormatDenominator !==
+                undefined
+                  ? String(
+                      mainCamera
+                        .sensorFormatDenominator,
+                    )
+                  : '',
+              resolutionMp:
+                mainCamera.resolutionMp !== undefined
+                  ? String(
+                      mainCamera.resolutionMp,
+                    )
+                  : '',
+              equivalentFocalLengthMm:
+                mainCamera
+                  .equivalentFocalLengthMm !==
+                undefined
+                  ? String(
+                      mainCamera
+                        .equivalentFocalLengthMm,
+                    )
+                  : '',
+              physicalFocalLengthMm: '',
+              apertureFNumber:
+                mainCamera.apertureFNumber !==
+                undefined
+                  ? String(
+                      mainCamera.apertureFNumber,
+                    )
+                  : '',
+              moduleWidthMm: '',
+              moduleHeightMm: '',
+              moduleDepthMm: '',
+            },
+          ]
+        : [],
+    );
+
+    setSimulationInput(
+      expansion.simulationInput,
+    );
+    setHasSimulated(true);
+  }
+
   function simulate() {
     setSimulationInput(buildInput());
     setHasSimulated(true);
@@ -930,6 +1050,44 @@ export default function InteractiveLeaksSimulator() {
         </div>
 
         <div className="il-toolbar-actions">
+          <div className="il-mode-switch" aria-label="Simulator mode">
+            <button
+              type="button"
+              className={workspaceMode === 'simple' ? 'active' : ''}
+              onClick={() => setWorkspaceMode('simple')}
+            >
+              Simple
+            </button>
+            <button
+              type="button"
+              className={workspaceMode === 'advanced' ? 'active' : ''}
+              onClick={() => setWorkspaceMode('advanced')}
+            >
+              Advanced
+            </button>
+          </div>
+
+          <BetaFeedbackPanel
+            simulatorMode={workspaceMode}
+            versions={{
+              simulatorVersion: 'interactive-leaks-beta',
+              engineVersion: SIMULATION_ENGINE_VERSION,
+              corpusVersion:
+                batteryExperience?.corpusVersion,
+            }}
+            snapshot={{
+              mode: workspaceMode,
+              form,
+              cameras,
+              simulationInput,
+              result,
+              displayExperience,
+              batteryExperience,
+              thermalResult,
+              cameraExperiences,
+            }}
+          />
+
           <button
             type="button"
             className="secondary"
@@ -948,9 +1106,13 @@ export default function InteractiveLeaksSimulator() {
         </div>
       </div>
 
+      {workspaceMode === 'simple' ? (
+        <SimpleModePanel onRun={runSimpleMode} />
+      ) : null}
+
       <div className="il-workspace">
         <section
-          className="il-builder"
+          className={`il-builder ${workspaceMode === 'simple' ? 'il-builder-hidden' : ''}`}
           aria-label="Simulation inputs"
         >
           <div className="il-section">
