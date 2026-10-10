@@ -186,6 +186,134 @@ describe('camera simulation module', () => {
     );
   });
 
+  it('separates subject motion blur from OIS-correctable camera shake', () => {
+    const withoutOis = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 30,
+      subjectAngularSpeedDegPerSecond: 2,
+      cameraAngularShakeDegPerSecond: 2,
+      oisAngularCompensationFraction: 0,
+    });
+
+    const withOis = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 30,
+      subjectAngularSpeedDegPerSecond: 2,
+      cameraAngularShakeDegPerSecond: 2,
+      oisAngularCompensationFraction: 0.75,
+    });
+
+    expect(
+      withOis.result.subjectMotionBlurPixels,
+    ).toBeCloseTo(
+      withoutOis.result.subjectMotionBlurPixels!,
+      10,
+    );
+
+    expect(
+      withOis.result.cameraShakeBlurPixelsAfterOis,
+    ).toBeCloseTo(
+      withoutOis.result.cameraShakeBlurPixelsBeforeOis! *
+        0.25,
+      10,
+    );
+  });
+
+  it('reduces exposure-window motion blur with a faster shutter', () => {
+    const slow = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 30,
+      subjectAngularSpeedDegPerSecond: 3,
+      cameraAngularShakeDegPerSecond: 1,
+    });
+
+    const fast = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 120,
+      subjectAngularSpeedDegPerSecond: 3,
+      cameraAngularShakeDegPerSecond: 1,
+    });
+
+    expect(
+      slow.result.subjectMotionBlurPixels!,
+    ).toBeGreaterThan(
+      fast.result.subjectMotionBlurPixels!,
+    );
+
+    expect(
+      slow.result.cameraShakeBlurPixelsAfterOis!,
+    ).toBeGreaterThan(
+      fast.result.cameraShakeBlurPixelsAfterOis!,
+    );
+  });
+
+  it('uses readout time rather than exposure time for rolling-shutter skew', () => {
+    const result = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      exposureTimeSeconds: 1 / 1000,
+      sensorReadoutTimeSeconds: 1 / 30,
+      videoFrameRateFps: 30,
+      subjectAngularSpeedDegPerSecond: 4,
+      cameraAngularShakeDegPerSecond: 2,
+    });
+
+    expect(
+      result.result.rollingShutterSubjectSkewPixels!,
+    ).toBeGreaterThan(
+      result.result.subjectMotionBlurPixels!,
+    );
+
+    expect(
+      result.result.rollingShutterCameraSkewPixels!,
+    ).toBeGreaterThan(
+      result.result.cameraShakeBlurPixelsAfterOis!,
+    );
+
+    expect(
+      result.result.readoutFractionOfFrame,
+    ).toBeCloseTo(1, 10);
+  });
+
+  it('warns when video exposure or readout exceed the supplied frame interval', () => {
+    const result = calculateCamera({
+      type: 'wide',
+      videoFrameRateFps: 60,
+      exposureTimeSeconds: 1 / 30,
+      sensorReadoutTimeSeconds: 1 / 20,
+    });
+
+    expect(
+      result.warnings.map(
+        (warning) => warning.code,
+      ),
+    ).toEqual(
+      expect.arrayContaining([
+        'EXPOSURE_EXCEEDS_FRAME_INTERVAL',
+        'READOUT_EXCEEDS_FRAME_INTERVAL',
+      ]),
+    );
+  });
+
   it('models deterministic crop zoom from retained sensor area and resolution', () => {
     const calculation = calculateCamera({
       type: 'wide',
