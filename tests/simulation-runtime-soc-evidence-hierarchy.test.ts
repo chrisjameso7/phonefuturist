@@ -104,7 +104,10 @@ describe('runtime SoC evidence hierarchy', () => {
     );
     expect(result.estimate?.referenceCount).toBe(2);
     expect(
-      result.estimate?.independentSourceCount,
+      result.estimate?.sourceRecordCount,
+    ).toBe(1);
+    expect(
+      result.estimate?.publisherCount,
     ).toBe(1);
     expect(
       result.estimate?.protocolFamilyCount,
