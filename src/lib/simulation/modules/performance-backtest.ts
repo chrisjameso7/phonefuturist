@@ -145,6 +145,7 @@ export function backtestGpuStability(
         manufacturer:
           device.variant.identity.manufacturer,
         socVendor: device.variant.soc?.vendor,
+        socName: device.variant.soc?.name,
         displayDiagonalInches:
           device.display?.diagonalInches,
         refreshRateHz:
