@@ -30,10 +30,30 @@ export interface ChargingCurveEstimate {
       | 'near-extrapolated'
       | 'far-extrapolated'
       | 'comparable-only';
-    charge30mPercent?: { min: number; expected: number; max: number };
-    timeTo50Minutes?: { min: number; expected: number; max: number };
-    timeTo80Minutes?: { min: number; expected: number; max: number };
-    timeTo100Minutes?: { min: number; expected: number; max: number };
+    charge30mPercent?: {
+      min: number;
+      expected: number;
+      max: number;
+      provenance?: 'measured' | 'derived' | 'comparable';
+    };
+    timeTo50Minutes?: {
+      min: number;
+      expected: number;
+      max: number;
+      provenance?: 'measured' | 'derived' | 'comparable';
+    };
+    timeTo80Minutes?: {
+      min: number;
+      expected: number;
+      max: number;
+      provenance?: 'measured' | 'derived' | 'comparable';
+    };
+    timeTo100Minutes?: {
+      min: number;
+      expected: number;
+      max: number;
+      provenance?: 'measured' | 'derived' | 'comparable';
+    };
     neighborIds: string[];
     powerResponse?: {
       applied: boolean;
@@ -112,6 +132,17 @@ function capMilestoneAtThirtyMinutes(
 }
 
 
+function normalizeChargingStandard(
+  value: string,
+) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function sameChargingStandard(
   actual: string | undefined,
   requested: string | undefined,
@@ -119,10 +150,10 @@ function sameChargingStandard(
   if (!requested) return true;
   if (!actual) return false;
 
-  const a = actual.toLowerCase();
-  const b = requested.toLowerCase();
-
-  return a.includes(b) || b.includes(a);
+  return (
+    normalizeChargingStandard(actual) ===
+    normalizeChargingStandard(requested)
+  );
 }
 
 function exactMeasuredChargingMatch(
@@ -289,6 +320,7 @@ export function estimateChargingFromCorpus(
         min: exact.thirtyMinutePercent,
         expected: exact.thirtyMinutePercent,
         max: exact.thirtyMinutePercent,
+        provenance: 'measured',
       };
     }
 
@@ -297,6 +329,7 @@ export function estimateChargingFromCorpus(
         min: exact.fullChargeMinutes,
         expected: exact.fullChargeMinutes,
         max: exact.fullChargeMinutes,
+        provenance: 'measured',
       };
     }
 
@@ -305,6 +338,7 @@ export function estimateChargingFromCorpus(
         min: exact.timeTo50Minutes,
         expected: exact.timeTo50Minutes,
         max: exact.timeTo50Minutes,
+        provenance: 'measured',
       };
     } else if (
       exact.fullChargeMinutes !== undefined &&
@@ -319,6 +353,7 @@ export function estimateChargingFromCorpus(
         min: value,
         expected: value,
         max: value,
+        provenance: 'derived',
       };
     }
 
@@ -327,6 +362,7 @@ export function estimateChargingFromCorpus(
         min: exact.timeTo80Minutes,
         expected: exact.timeTo80Minutes,
         max: exact.timeTo80Minutes,
+        provenance: 'measured',
       };
     } else if (
       exact.fullChargeMinutes !== undefined &&
@@ -341,6 +377,7 @@ export function estimateChargingFromCorpus(
         min: value,
         expected: value,
         max: value,
+        provenance: 'derived',
       };
     }
 
@@ -584,6 +621,7 @@ export function estimateChargingFromCorpus(
       min: r.min,
       expected: expectedP30,
       max: r.max,
+      provenance: 'comparable',
     };
   }
 
@@ -594,6 +632,7 @@ export function estimateChargingFromCorpus(
       min: r.min,
       expected: expectedFull,
       max: r.max,
+      provenance: 'comparable',
     };
   }
 
@@ -604,6 +643,7 @@ export function estimateChargingFromCorpus(
       min: r.min,
       expected: weightedMean(t50Values),
       max: r.max,
+      provenance: 'comparable',
     };
   } else if (expectedFull !== undefined && expectedP30 !== undefined) {
     const perReference50 = weights.flatMap(
@@ -639,6 +679,7 @@ export function estimateChargingFromCorpus(
         min: r.min,
         expected: curveTime(50, expectedP30, expectedFull),
         max: r.max,
+        provenance: 'derived',
       };
     }
   }
@@ -650,6 +691,7 @@ export function estimateChargingFromCorpus(
       min: r.min,
       expected: weightedMean(t80Values),
       max: r.max,
+      provenance: 'comparable',
     };
   } else if (expectedFull !== undefined && expectedP30 !== undefined) {
     const perReference80 = weights.flatMap(
@@ -685,6 +727,7 @@ export function estimateChargingFromCorpus(
         min: r.min,
         expected: curveTime(80, expectedP30, expectedFull),
         max: r.max,
+        provenance: 'derived',
       };
     }
   }
