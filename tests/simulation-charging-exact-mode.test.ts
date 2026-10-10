@@ -18,7 +18,19 @@ describe('exact wired charging mode precedence', () => {
     expect(result.estimate?.evidenceMode).toBe('measured-match');
     expect(result.estimate?.basis).toBe('exact-measured-mode');
     expect(result.estimate?.timeTo100Minutes?.expected).toBe(67);
+    expect(
+      result.estimate?.timeTo100Minutes?.provenance,
+    ).toBe('measured');
     expect(result.estimate?.charge30mPercent?.expected).toBe(54);
+    expect(
+      result.estimate?.charge30mPercent?.provenance,
+    ).toBe('measured');
+    expect(
+      result.estimate?.timeTo50Minutes?.provenance,
+    ).toBe('derived');
+    expect(
+      result.estimate?.timeTo80Minutes?.provenance,
+    ).toBe('derived');
     expect(result.estimate?.confidence).toBe(1);
   });
 
@@ -37,6 +49,23 @@ describe('exact wired charging mode precedence', () => {
     expect(result.estimate?.evidenceMode).not.toBe('measured-match');
     expect(result.estimate?.basis).toBe('weighted-comparable-corpus');
     expect(result.estimate?.timeTo100Minutes?.expected).not.toBe(67);
+  });
+
+  it('does not claim exact measured mode when the charging protocol only partially matches', () => {
+    const corpus = buildChargingModeCorpus();
+
+    const result = estimateChargingFromCorpus(corpus, {
+      deviceVariantId: 'oneplus-15-international-7300',
+      batteryMah: 7300,
+      wiredChargingWatts: 55,
+      manufacturer: 'OnePlus',
+      chargingStandard: 'USB PD',
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceMode).not.toBe(
+      'measured-match',
+    );
   });
 
   it('does not claim measured evidence without explicit device identity', () => {
