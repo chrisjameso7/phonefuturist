@@ -205,17 +205,32 @@ export function backtestDisplayAwareRuntime(
         ),
       };
 
+      const runtimeContext = {
+        manufacturer:
+          device.variant.identity.manufacturer,
+        socVendor:
+          device.variant.soc?.vendor,
+        socName:
+          device.variant.soc?.name,
+        batteryChemistry:
+          device.variant.battery?.chemistry,
+        coolingClass:
+          device.cooling?.class,
+      };
+
       const blind = resolveCorpusRuntimeBand(
         holdout,
         buildInput(device, capacityMah, false),
         workload,
         protocolSelector,
+        runtimeContext,
       );
       const aware = resolveCorpusRuntimeBand(
         holdout,
         buildInput(device, capacityMah, true),
         workload,
         protocolSelector,
+        runtimeContext,
       );
 
       if (
