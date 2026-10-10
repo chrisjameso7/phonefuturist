@@ -303,14 +303,26 @@ export function selectChargingComparables(
     (a, b) => b.score - a.score,
   );
 
+  const selected =
+    query.chargingStandard
+      ? ranked.filter(
+          (reference, index, rows) =>
+            rows.findIndex(
+              (candidate) =>
+                candidate.deviceVariantId ===
+                reference.deviceVariantId,
+            ) === index,
+        )
+      : ranked;
+
   return {
     version: CHARGING_COMPARABLE_MODEL_VERSION,
     status: 'resolved',
-    // A physical device may expose materially different measured charger
-    // modes (for example proprietary fast charging vs USB PD/PPS). Keep
-    // those modes distinct so the estimator can learn taper and full-charge
-    // behavior instead of silently collapsing them into one phone row.
-    references: ranked.slice(
+    // Without an explicitly requested charging standard, keep materially
+    // different measured modes from the same physical phone. Once a standard
+    // is requested, collapse to the best matching mode per phone so one
+    // device cannot dominate a standard-specific estimate.
+    references: selected.slice(
       0,
       query.limit ?? 5,
     ),
