@@ -13,8 +13,31 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         url: 'https://www.notebookcheck.net/Vivo-X300-Ultra-Review-Best-2026-camera-smartphone-with-a-surprising-number-of-weaknesses.1293093.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
-        protocolVersion: '1.1.14.3',
         accessedDate: '2026-10-09',
+      },
+      {
+        id: 'notebookcheck-vivo-x300-pro-performance',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/More-than-just-an-unusual-camera-setup-Vivo-X300-Pro-review.1184298.0.html',
+        protocol:
+          '3DMark Wild Life Extreme Stress Test stability',
+        accessedDate: '2026-10-10',
+      },
+      {
+        id: 'notebookcheck-vivo-x300-performance',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Brilliant-Zeiss-camera-in-a-compact-smartphone-Vivo-X300-review.1192262.0.html',
+        protocol:
+          '3DMark Wild Life Extreme Stress Test stability',
+        accessedDate: '2026-10-10',
+      },
+      {
+        id: 'notebookcheck-oppo-find-x9-performance',
+        publisher: 'Notebookcheck',
+        url: 'https://www.notebookcheck.net/Oppo-Find-X9-smartphone-review-High-end-for-under-900-but-with-SoC-problems.1173149.0.html',
+        protocol:
+          '3DMark Wild Life Extreme Stress Test stability',
+        accessedDate: '2026-10-10',
       },
       {
         id: 'xiaomi-17-ultra-official-performance',
@@ -25,6 +48,102 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       },
     ],
     devices: [
+      {
+        variant: {
+          id: 'vivo-x300-pro-eu-performance',
+          identity: {
+            manufacturer: 'vivo',
+            family: 'X300',
+            modelName: 'X300 Pro',
+            region: 'Europe',
+          },
+          battery: {
+            capacityMah: 5440,
+            chemistry: 'silicon-carbon',
+          },
+          soc: {
+            vendor: 'MediaTek',
+            name: 'Dimensity 9500',
+          },
+        },
+        releaseDate: '2025-10-13',
+        dimensions: {
+          widthMm: 75.48,
+          heightMm: 161.98,
+          thicknessMm: 7.99,
+          weightG: 226,
+        },
+        sourceIds: [
+          'notebookcheck-vivo-x300-pro-performance',
+        ],
+      },
+      {
+        variant: {
+          id: 'vivo-x300-eu-performance',
+          identity: {
+            manufacturer: 'vivo',
+            family: 'X300',
+            modelName: 'X300',
+            region: 'Europe',
+          },
+          battery: {
+            capacityMah: 5360,
+          },
+          soc: {
+            vendor: 'MediaTek',
+            name: 'Dimensity 9500',
+          },
+        },
+        releaseDate: '2025',
+        display: {
+          diagonalInches: 6.31,
+          resolutionWidthPx: 1216,
+          resolutionHeightPx: 2640,
+          refreshRateHz: 120,
+          panelTechnology: 'LTPO AMOLED',
+        },
+        dimensions: {
+          widthMm: 71.92,
+          heightMm: 150.57,
+          thicknessMm: 7.95,
+          weightG: 190,
+        },
+        sourceIds: [
+          'notebookcheck-vivo-x300-performance',
+        ],
+      },
+      {
+        variant: {
+          id: 'oppo-find-x9-performance',
+          identity: {
+            manufacturer: 'Oppo',
+            family: 'Find X9',
+            modelName: 'Find X9',
+          },
+          battery: {
+            capacityMah: 7025,
+          },
+          soc: {
+            vendor: 'MediaTek',
+            name: 'Dimensity 9500',
+          },
+        },
+        releaseDate: '2025',
+        display: {
+          diagonalInches: 6.59,
+          resolutionWidthPx: 1256,
+          resolutionHeightPx: 2760,
+          refreshRateHz: 120,
+          panelTechnology: 'AMOLED',
+        },
+        dimensions: {
+          thicknessMm: 8,
+          weightG: 203,
+        },
+        sourceIds: [
+          'notebookcheck-oppo-find-x9-performance',
+        ],
+      },
       {
         variant: {
           id: 'xiaomi-17-ultra-performance',
@@ -104,6 +223,36 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
         value: 38.7,
         unit: 'percent',
         sourceId: 'notebookcheck-vivo-x300-ultra-performance',
+        evidenceKind: 'measured',
+      },
+      {
+        id: 'vivo-x300-pro-eu-wle-stability',
+        deviceVariantId: 'vivo-x300-pro-eu-performance',
+        workload: 'benchmark',
+        metric: 'gpu_stability_percent',
+        value: 50.3,
+        unit: 'percent',
+        sourceId: 'notebookcheck-vivo-x300-pro-performance',
+        evidenceKind: 'measured',
+      },
+      {
+        id: 'vivo-x300-eu-wle-stability',
+        deviceVariantId: 'vivo-x300-eu-performance',
+        workload: 'benchmark',
+        metric: 'gpu_stability_percent',
+        value: 46.7,
+        unit: 'percent',
+        sourceId: 'notebookcheck-vivo-x300-performance',
+        evidenceKind: 'measured',
+      },
+      {
+        id: 'oppo-find-x9-wle-stability',
+        deviceVariantId: 'oppo-find-x9-performance',
+        workload: 'benchmark',
+        metric: 'gpu_stability_percent',
+        value: 74.3,
+        unit: 'percent',
+        sourceId: 'notebookcheck-oppo-find-x9-performance',
         evidenceKind: 'measured',
       },
     ],
