@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { estimateSustainedPerformance } from '../src/lib/simulation/modules/sustained-performance-estimator';
+import {
+  estimateLiveSustainedPerformance,
+  estimateSustainedPerformance,
+} from '../src/lib/simulation/modules/sustained-performance-estimator';
 import type { DeviceCorpus } from '../src/lib/simulation/modules/device-corpus';
 
 const source = {
@@ -119,6 +122,40 @@ describe('evidence-only sustained performance estimator', () => {
       'same-soc-vendor',
     );
     expect(result.referenceCount).toBe(2);
+  });
+
+  it('uses measured Exynos 2600 peers as a same-vendor prior for an Exynos 2700 concept', () => {
+    const result =
+      estimateLiveSustainedPerformance({
+        domain: 'gpu_sustained',
+        manufacturer: 'Samsung',
+        socVendor: 'Samsung',
+        socName: 'Exynos 2700',
+        batteryMah: 5700,
+        displayDiagonalInches: 6.9,
+        refreshRateHz: 120,
+        coolingClass: 'large-vapor-chamber',
+      });
+
+    expect(result.status).toBe('resolved');
+    expect(result.evidenceScope).toBe(
+      'same-soc-vendor',
+    );
+    expect(
+      result.sameSocFamilyReferences,
+    ).toBe(0);
+    expect(
+      result.sameSocVendorReferences,
+    ).toBeGreaterThanOrEqual(2);
+    expect(result.referenceCount).toBeGreaterThanOrEqual(
+      2,
+    );
+    expect(result.expectedPercent).toBeGreaterThan(
+      45,
+    );
+    expect(result.expectedPercent).toBeLessThan(
+      65,
+    );
   });
 
   it('stays unresolved without measured sustained-performance evidence', () => {
