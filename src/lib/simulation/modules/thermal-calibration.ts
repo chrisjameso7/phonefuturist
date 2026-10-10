@@ -30,6 +30,8 @@ export interface ThermalCalibrationReference {
   similarityScore: number;
   coverageScore: number;
   protocolKey: string;
+  socVendor?: string;
+  socName?: string;
   metric: string;
   value: number;
   unit: string;
@@ -138,6 +140,10 @@ export function selectThermalCalibrationReferences(
           similarityScore: match.similarityScore,
           coverageScore: match.coverageScore,
           protocolKey,
+          socVendor:
+            match.device.variant.soc?.vendor,
+          socName:
+            match.device.variant.soc?.name,
           metric: measurement.metric,
           value: measurement.value,
           unit: measurement.unit,
