@@ -5,7 +5,7 @@ import {
 } from './comparable-devices';
 import type { SimulationInput } from '../types';
 
-export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.1.0';
+export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.2.0';
 
 export type RuntimeWorkload = 'web_browsing' | 'video_playback' | 'gaming';
 
