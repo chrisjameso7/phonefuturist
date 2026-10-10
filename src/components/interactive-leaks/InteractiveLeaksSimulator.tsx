@@ -4698,7 +4698,12 @@ export default function InteractiveLeaksSimulator() {
                             0,
                           )}
                         </strong>
-                        <span>Measured evidence baseline</span>
+                        <span>
+                          {peakPerformanceEstimate.evidenceScope ===
+                          'same-soc-vendor'
+                            ? 'Measured predecessor/vendor baseline'
+                            : 'Measured exact-family baseline'}
+                        </span>
                       </div>
 
                       <div>
@@ -4710,8 +4715,8 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>
                           {peakPerformanceEstimate.assumptionApplied
-                            ? 'Adjusted peak estimate'
-                            : 'Peak estimate'}
+                            ? 'Explicit what-if peak scenario'
+                            : 'Measured peak estimate'}
                         </span>
                       </div>
 
@@ -4769,8 +4774,15 @@ export default function InteractiveLeaksSimulator() {
                   </>
                 ) : (
                   <div className="il-empty">
-                    {peakPerformanceEstimate?.unresolvedReason ??
-                      'No compatible measured peak benchmark evidence is available.'}
+                    <p>
+                      {peakPerformanceEstimate?.unresolvedReason ??
+                        'No compatible measured peak benchmark evidence is available.'}
+                    </p>
+                    {peakPerformanceEstimate?.note ? (
+                      <p className="il-help">
+                        {peakPerformanceEstimate.note}
+                      </p>
+                    ) : null}
                   </div>
                 )}
               </div>
