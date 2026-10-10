@@ -1,5 +1,8 @@
 import type { DeviceCorpus } from './device-corpus';
-import { findComparableDevices } from './comparable-devices';
+import {
+  findComparableDevices,
+  normalizeSocFamily,
+} from './comparable-devices';
 import type { SimulationInput } from '../types';
 
 export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.1.0';
@@ -41,6 +44,12 @@ export interface CorpusRuntimeBand {
     protocol?: string;
     protocolVersion?: string;
     sourceIds: string[];
+    evidenceScope:
+      | 'same-soc-family'
+      | 'same-soc-vendor'
+      | 'protocol-cohort';
+    sameSocFamilyReferences: number;
+    sameSocVendorReferences: number;
     note: string;
   };
 }
@@ -209,6 +218,10 @@ export function resolveCorpusRuntimeBand(
         protocol: source?.protocol,
         protocolVersion: source?.protocolVersion,
         protocolKey,
+        socVendor:
+          match.device.variant.soc?.vendor,
+        socName:
+          match.device.variant.soc?.name,
       }];
     });
   });
@@ -228,9 +241,9 @@ export function resolveCorpusRuntimeBand(
     return b.length - a.length;
   });
 
-  const values = rankedGroups[0] ?? [];
+  const protocolValues = rankedGroups[0] ?? [];
 
-  if (!values.length) {
+  if (!protocolValues.length) {
     return {
       version: CORPUS_RUNTIME_MODEL_VERSION,
       status: 'unresolved',
@@ -239,6 +252,36 @@ export function resolveCorpusRuntimeBand(
         'No comparable devices with protocol-compatible runtime evidence were found.',
     };
   }
+
+  const sameFamily = context.socName
+    ? protocolValues.filter(
+        (item) =>
+          item.socName &&
+          normalizeSocFamily(item.socName) ===
+            normalizeSocFamily(context.socName!),
+      )
+    : [];
+
+  const sameVendor = context.socVendor
+    ? protocolValues.filter(
+        (item) =>
+          item.socVendor === context.socVendor,
+      )
+    : [];
+
+  const values =
+    sameFamily.length >= 2
+      ? sameFamily
+      : sameVendor.length >= 2
+        ? sameVendor
+        : protocolValues;
+
+  const evidenceScope =
+    values === sameFamily
+      ? 'same-soc-family'
+      : values === sameVendor
+        ? 'same-soc-vendor'
+        : 'protocol-cohort';
 
   const drains = values.map((item) => item.value);
   const confidence =
@@ -278,8 +321,11 @@ export function resolveCorpusRuntimeBand(
       protocol: values[0]?.protocol,
       protocolVersion: values[0]?.protocolVersion,
       sourceIds: [...new Set(values.map((item) => item.sourceId))],
+      evidenceScope,
+      sameSocFamilyReferences: sameFamily.length,
+      sameSocVendorReferences: sameVendor.length,
       note:
-        'Runtime drain is capacity-normalized from measured comparable released devices. Only one protocol group is used per estimate; reported or inferred rows and incompatible test protocols are never averaged into the calibration.',
+        `Runtime drain is capacity-normalized from measured comparable released devices using ${evidenceScope.replaceAll('-', ' ')} evidence. Only one protocol group is used per estimate; reported or inferred rows and incompatible test protocols are never averaged into the calibration.`,
     },
   };
 }
