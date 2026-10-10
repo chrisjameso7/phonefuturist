@@ -30,6 +30,8 @@ export interface SustainedPerformanceEstimate {
     | 'protocol-cohort';
   sameSocFamilyReferences: number;
   sameSocVendorReferences: number;
+  sourceRecordCount: number;
+  publisherCount: number;
   protocolKey?: string;
   unresolvedReason?: string;
 }
@@ -68,6 +70,8 @@ export function estimateSustainedPerformance(
       neighborIds: [],
       sameSocFamilyReferences: 0,
       sameSocVendorReferences: 0,
+      sourceRecordCount: 0,
+      publisherCount: 0,
       unresolvedReason:
         'Surface temperature is not a sustained-performance domain.',
     };
@@ -114,6 +118,8 @@ export function estimateSustainedPerformance(
       neighborIds: [],
       sameSocFamilyReferences: 0,
       sameSocVendorReferences: 0,
+      sourceRecordCount: 0,
+      publisherCount: 0,
       unresolvedReason:
         selected.unresolvedReason ??
         'No compatible measured sustained-performance evidence is available.',
@@ -235,6 +241,20 @@ export function estimateSustainedPerformance(
       sameFamily.length,
     sameSocVendorReferences:
       sameVendor.length,
+    sourceRecordCount:
+      new Set(
+        references.map(
+          (reference) =>
+            reference.sourceId,
+        ),
+      ).size,
+    publisherCount:
+      new Set(
+        references.map(
+          (reference) =>
+            reference.publisher,
+        ),
+      ).size,
     protocolKey:
       references[0]?.protocolKey,
   };
