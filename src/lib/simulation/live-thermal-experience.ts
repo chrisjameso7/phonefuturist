@@ -23,6 +23,7 @@ export interface LiveThermalExperienceInput
     chassisToAmbientResistanceCPerW: number;
     socThermalMassJPerC: number;
     chassisThermalMassJPerC: number;
+    socThrottleTemperatureC: number;
     surfaceComfortTemperatureC?: number;
   };
 }
@@ -100,7 +101,7 @@ function optionalTwoNodeResult(
       input.twoNode
         .chassisThermalMassJPerC,
     socThrottleTemperatureC:
-      input.throttleTemperatureC,
+      input.twoNode.socThrottleTemperatureC,
     surfaceComfortTemperatureC:
       input.twoNode
         .surfaceComfortTemperatureC,
