@@ -37,6 +37,7 @@ export interface ChargingComparableEvidence {
   advertisedWiredWatts?: number;
   batteryMah?: number;
   sourceId?: string;
+  sourcePublisher?: string;
   testChargerWatts?: number;
   chargingStandard?: string;
   measuredPeakWatts?: number;
@@ -167,6 +168,12 @@ export function selectChargingComparables(
     };
   }
 
+  const sourceById = new Map(
+    corpus.sources.map(
+      (source) => [source.id, source],
+    ),
+  );
+
   const candidates = findComparableDevices(corpus, {
     batteryMah: query.batteryMah,
     batteryChemistry: query.batteryChemistry,
@@ -238,6 +245,13 @@ export function selectChargingComparables(
         score: adjustedScore,
         reasons: candidate.reasons,
         sourceId: first.sourceId,
+        ...(sourceById.get(first.sourceId)?.publisher
+          ? {
+              sourcePublisher:
+                sourceById.get(first.sourceId)!
+                  .publisher,
+            }
+          : {}),
         ...(first.testChargerWatts !== undefined
           ? { testChargerWatts: first.testChargerWatts }
           : {}),
