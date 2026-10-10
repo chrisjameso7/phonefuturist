@@ -1132,6 +1132,8 @@ export default function InteractiveLeaksSimulator() {
                   chassisToAmbientResistanceCPerW,
                   socThermalMassJPerC,
                   chassisThermalMassJPerC,
+                  socThrottleTemperatureC:
+                    socPackageThrottleTemperatureC,
                   ...(surfaceComfortTemperatureC !==
                   undefined
                     ? {
