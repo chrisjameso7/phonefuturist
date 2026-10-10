@@ -186,6 +186,103 @@ describe('camera simulation module', () => {
     );
   });
 
+  it('models deterministic crop zoom from retained sensor area and resolution', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 200,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.7,
+      exposureTimeSeconds: 1 / 60,
+      cropZoomRatio: 2,
+      targetOutputResolutionMp: 50,
+    });
+
+    expect(
+      calculation.result.croppedEquivalentFocalLengthMm,
+    ).toBeCloseTo(48, 10);
+
+    expect(
+      calculation.result.croppedResolutionMp,
+    ).toBeCloseTo(50, 10);
+
+    expect(
+      calculation.result.croppedSensorAreaMm2,
+    ).toBeCloseTo(
+      calculation.result.approximateSensorAreaMm2! / 4,
+      10,
+    );
+
+    expect(
+      calculation.result.croppedExposureLightCaptureIndex,
+    ).toBeCloseTo(
+      calculation.result.exposureLightCaptureIndex! / 4,
+      10,
+    );
+
+    expect(
+      calculation.result.cropTotalLightLossStops,
+    ).toBeCloseTo(2, 10);
+
+    expect(
+      calculation.result.maxNativeCropZoomForTargetResolution,
+    ).toBeCloseTo(2, 10);
+
+    expect(
+      calculation.result.cropMeetsTargetResolution,
+    ).toBe(true);
+  });
+
+  it('accounts for binning before crop-resolution feasibility', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 200,
+      apertureFNumber: 1.7,
+      binningLinearFactor: 2,
+      cropZoomRatio: 2,
+      targetOutputResolutionMp: 12,
+    });
+
+    expect(
+      calculation.result.cropSourceResolutionMp,
+    ).toBeCloseTo(50, 10);
+
+    expect(
+      calculation.result.croppedResolutionMp,
+    ).toBeCloseTo(12.5, 10);
+
+    expect(
+      calculation.result.cropMeetsTargetResolution,
+    ).toBe(true);
+  });
+
+  it('warns when crop zoom would require upscaling to hit the requested output size', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      cropZoomRatio: 3,
+      targetOutputResolutionMp: 12,
+    });
+
+    expect(
+      calculation.result.croppedResolutionMp,
+    ).toBeCloseTo(50 / 9, 10);
+
+    expect(
+      calculation.result.cropMeetsTargetResolution,
+    ).toBe(false);
+
+    expect(
+      calculation.warnings.some(
+        (warning) =>
+          warning.code ===
+          'CROP_REQUIRES_UPSCALING_FOR_TARGET_RESOLUTION',
+      ),
+    ).toBe(true);
+  });
+
   it('derives field of view and diffraction indicators when geometry is available', () => {
     const calculation = calculateCamera({
       type: 'wide',
