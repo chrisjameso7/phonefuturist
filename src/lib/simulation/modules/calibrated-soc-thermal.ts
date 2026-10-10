@@ -131,7 +131,10 @@ function weightedTarget(
         ? sameVendor
         : usable;
 
-  const evidenceScope =
+  const evidenceScope:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort' =
     selected === sameFamily
       ? 'same-soc-family'
       : selected === sameVendor
