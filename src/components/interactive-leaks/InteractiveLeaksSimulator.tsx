@@ -39,6 +39,11 @@ import {
 } from '../../lib/simulation/live-camera-experience';
 
 import {
+  CAMERA_ZOOM_HANDOFF_VERSION,
+  resolveCameraZoomHandoff,
+} from '../../lib/simulation/modules/camera-zoom-handoff';
+
+import {
   LIVE_DISPLAY_EXPERIENCE_VERSION,
   simulateLiveDisplayExperience,
 } from '../../lib/simulation/live-display-experience';
@@ -116,6 +121,8 @@ type FormState = {
   videoHours: string;
   gamingHours: string;
   cameraHours: string;
+  zoomTargetEquivalentFocalLengthMm: string;
+  zoomMinimumOutputResolutionMp: string;
   wiredChargeW: string;
   wirelessChargeW: string;
   batteryChemistry: string;
@@ -193,6 +200,8 @@ const initialForm: FormState = {
   videoHours: '',
   gamingHours: '',
   cameraHours: '',
+  zoomTargetEquivalentFocalLengthMm: '',
+  zoomMinimumOutputResolutionMp: '',
   wiredChargeW: '',
   wirelessChargeW: '',
   batteryChemistry: '',
@@ -260,6 +269,8 @@ const flagshipExample: FormState = {
   videoHours: '2',
   gamingHours: '1',
   cameraHours: '0',
+  zoomTargetEquivalentFocalLengthMm: '120',
+  zoomMinimumOutputResolutionMp: '12',
   wiredChargeW: '60',
   wirelessChargeW: '25',
   batteryChemistry: 'silicon-carbon',
@@ -886,6 +897,8 @@ export default function InteractiveLeaksSimulator() {
         ),
       batteryCapacityMah:
         String(input.batteryMah),
+      zoomTargetEquivalentFocalLengthMm: '',
+      zoomMinimumOutputResolutionMp: '',
       wiredChargeW:
         input.wiredChargingWatts !== undefined
           ? String(input.wiredChargingWatts)
@@ -1268,6 +1281,46 @@ export default function InteractiveLeaksSimulator() {
         )
       : [];
 
+  const zoomTargetEquivalentFocalLengthMm =
+    numeric(
+      form.zoomTargetEquivalentFocalLengthMm,
+    );
+  const zoomMinimumOutputResolutionMp =
+    numeric(
+      form.zoomMinimumOutputResolutionMp,
+    );
+
+  const cameraZoomHandoff =
+    simulationInput &&
+    result &&
+    zoomTargetEquivalentFocalLengthMm !== undefined &&
+    cameras.length > 0
+      ? resolveCameraZoomHandoff({
+          targetEquivalentFocalLengthMm:
+            zoomTargetEquivalentFocalLengthMm,
+          ...(zoomMinimumOutputResolutionMp !==
+          undefined
+            ? {
+                minimumOutputResolutionMp:
+                  zoomMinimumOutputResolutionMp,
+              }
+            : {}),
+          cameras: cameras.map((camera) => ({
+            id: String(camera.id),
+            type: camera.type,
+            resolutionMp: numeric(
+              camera.resolutionMp,
+            ),
+            equivalentFocalLengthMm: numeric(
+              camera.equivalentFocalLengthMm,
+            ),
+            binningLinearFactor: numeric(
+              camera.binningLinearFactor ?? '',
+            ),
+          })),
+        })
+      : undefined;
+
   const feedbackSnapshot = {
     mode: workspaceMode,
     form,
@@ -1353,6 +1406,7 @@ export default function InteractiveLeaksSimulator() {
         warnings: experience.warnings,
       }),
     ),
+    cameraZoomHandoff,
   };
 
   const twoNodeThermalSummary =
@@ -2291,6 +2345,53 @@ export default function InteractiveLeaksSimulator() {
                 + Add camera
               </button>
             </div>
+
+            <details className="il-advanced">
+              <summary>
+                Multi-camera zoom handoff
+              </summary>
+
+              <p className="il-help">
+                Optional. Ask the simulator which supplied camera can reach a
+                target equivalent focal length while retaining a requested
+                native output resolution. Computational fusion and AI
+                reconstruction are not assumed.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Zoom target"
+                  suffix="mm eq."
+                  value={
+                    form.zoomTargetEquivalentFocalLengthMm
+                  }
+                  placeholder="120"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'zoomTargetEquivalentFocalLengthMm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Minimum native output"
+                  suffix="MP"
+                  value={
+                    form.zoomMinimumOutputResolutionMp
+                  }
+                  placeholder="12"
+                  step="0.1"
+                  onChange={(value) =>
+                    update(
+                      'zoomMinimumOutputResolutionMp',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
 
             {cameras.length === 0 ? (
               <div className="il-empty">
@@ -3867,6 +3968,85 @@ export default function InteractiveLeaksSimulator() {
                     <span>Known volume cm³</span>
                   </div>
                 </div>
+
+                {cameraZoomHandoff ? (
+                  <div className="il-camera-evidence">
+                    <span className="il-result-label">
+                      Zoom handoff · {CAMERA_ZOOM_HANDOFF_VERSION}
+                    </span>
+
+                    {cameraZoomHandoff.status === 'resolved' &&
+                    cameraZoomHandoff.selected ? (
+                      <>
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              Camera {cameraZoomHandoff.selectedCameraId}
+                            </strong>
+                            <span>Selected module</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .baseEquivalentFocalLengthMm,
+                                1,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .baseEquivalentFocalLengthMm !==
+                              undefined
+                                ? ' mm'
+                                : ''}
+                            </strong>
+                            <span>Native focal length</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .requiredCropZoom,
+                                2,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .requiredCropZoom !==
+                              undefined
+                                ? '×'
+                                : ''}
+                            </strong>
+                            <span>Required crop</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .retainedResolutionMp,
+                                1,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .retainedResolutionMp !==
+                              undefined
+                                ? ' MP'
+                                : ''}
+                            </strong>
+                            <span>Retained native resolution</span>
+                          </div>
+                        </div>
+
+                        <p className="il-help">
+                          {cameraZoomHandoff.note}
+                        </p>
+                      </>
+                    ) : (
+                      <div className="il-empty">
+                        {cameraZoomHandoff.unresolvedReason ??
+                          'Zoom handoff is unresolved for this camera set.'}
+                      </div>
+                    )}
+                  </div>
+                ) : null}
 
                 {result.cameras?.map((camera, index) => (
                   <div
