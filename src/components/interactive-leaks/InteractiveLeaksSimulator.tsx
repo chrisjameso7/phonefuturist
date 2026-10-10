@@ -100,6 +100,7 @@ type FormState = {
   wirelessChargingStandard: string;
 
   socVendor: string;
+  socName: string;
   coolingClass:
     | 'unknown'
     | 'passive-graphite'
@@ -169,6 +170,7 @@ const initialForm: FormState = {
   wirelessChargingStandard: '',
 
   socVendor: '',
+  socName: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
   targetSocPowerW: '',
@@ -228,6 +230,7 @@ const flagshipExample: FormState = {
   wirelessChargingStandard: 'Qi2',
 
   socVendor: 'Qualcomm',
+  socName: 'Snapdragon 8 Elite Gen 5',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
   targetSocPowerW: '10',
@@ -874,6 +877,7 @@ export default function InteractiveLeaksSimulator() {
             form.manufacturer.trim() || undefined,
           batteryMah: result.battery?.totalCapacityMah,
           socVendor: form.socVendor.trim() || undefined,
+          socName: form.socName.trim() || undefined,
           displayDiagonalInches:
             simulationInput.displays.primary.diagonalInches,
           thicknessMm: simulationInput.dimensions?.thicknessMm,
@@ -1505,6 +1509,21 @@ export default function InteractiveLeaksSimulator() {
                   placeholder="Qualcomm"
                   onChange={(event) =>
                     update('socVendor', event.currentTarget.value)
+                  }
+                />
+              </label>
+
+              <label className="il-field">
+                <span>SoC model</span>
+                <input
+                  type="text"
+                  value={form.socName}
+                  placeholder="Snapdragon 8 Elite Gen 5"
+                  onChange={(event) =>
+                    update(
+                      'socName',
+                      event.currentTarget.value,
+                    )
                   }
                 />
               </label>
