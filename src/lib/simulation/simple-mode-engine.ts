@@ -71,6 +71,8 @@ export function simulateSimpleMode(
         expansion.advanced.manufacturer,
       socVendor:
         expansion.advanced.socVendor,
+      socName:
+        expansion.advanced.socName,
       batteryChemistry:
         expansion.advanced.batteryChemistry,
       wiredWatts:
