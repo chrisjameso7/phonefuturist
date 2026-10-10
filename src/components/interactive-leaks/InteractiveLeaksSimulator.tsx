@@ -86,6 +86,8 @@ type CameraDraft = {
   id: number;
   type: CameraModuleType;
   sensorFormatDenominator: string;
+  sensorWidthMm?: string;
+  sensorHeightMm?: string;
   resolutionMp: string;
   equivalentFocalLengthMm: string;
   physicalFocalLengthMm: string;
@@ -383,6 +385,8 @@ const flagshipCameras: CameraDraft[] = [
     id: 1,
     type: 'wide',
     sensorFormatDenominator: '1.3',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '50',
     equivalentFocalLengthMm: '24',
     physicalFocalLengthMm: '6.5',
@@ -396,6 +400,8 @@ const flagshipCameras: CameraDraft[] = [
     id: 2,
     type: 'periscope',
     sensorFormatDenominator: '2.5',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '50',
     equivalentFocalLengthMm: '120',
     physicalFocalLengthMm: '20',
@@ -535,6 +541,8 @@ function emptyCamera(id: number): CameraDraft {
     id,
     type: 'wide',
     sensorFormatDenominator: '',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '',
     equivalentFocalLengthMm: '',
     physicalFocalLengthMm: '',
@@ -565,6 +573,14 @@ function cameraInput(
 
     sensorFormatDenominator: numeric(
       camera.sensorFormatDenominator,
+    ),
+
+    sensorWidthMm: numeric(
+      camera.sensorWidthMm ?? '',
+    ),
+
+    sensorHeightMm: numeric(
+      camera.sensorHeightMm ?? '',
     ),
 
     resolutionMp: numeric(camera.resolutionMp),
@@ -1040,6 +1056,8 @@ export default function InteractiveLeaksSimulator() {
                         .sensorFormatDenominator,
                     )
                   : '',
+              sensorWidthMm: '',
+              sensorHeightMm: '',
               resolutionMp:
                 mainCamera.resolutionMp !== undefined
                   ? String(
@@ -2981,6 +2999,34 @@ export default function InteractiveLeaksSimulator() {
                           updateCamera(camera.id, {
                             sensorFormatDenominator:
                               value,
+                          })
+                        }
+                      />
+
+                      <NumericField
+                        label="Exact sensor width"
+                        suffix="mm"
+                        value={
+                          camera.sensorWidthMm ?? ''
+                        }
+                        placeholder="Optional"
+                        onChange={(value) =>
+                          updateCamera(camera.id, {
+                            sensorWidthMm: value,
+                          })
+                        }
+                      />
+
+                      <NumericField
+                        label="Exact sensor height"
+                        suffix="mm"
+                        value={
+                          camera.sensorHeightMm ?? ''
+                        }
+                        placeholder="Optional"
+                        onChange={(value) =>
+                          updateCamera(camera.id, {
+                            sensorHeightMm: value,
                           })
                         }
                       />
@@ -5070,9 +5116,25 @@ export default function InteractiveLeaksSimulator() {
                     <div className="il-metrics">
                       <div>
                         <strong>
-                          {format(camera.approximateSensorAreaMm2, 1)}
+                          {format(
+                            camera.activeSensorAreaMm2 ??
+                              camera.approximateSensorAreaMm2,
+                            1,
+                          )}
                         </strong>
-                        <span>Approx. sensor area mm²</span>
+                        <span>Active sensor area mm²</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.sensorGeometrySource
+                            ? camera.sensorGeometrySource.replaceAll(
+                                '-',
+                                ' ',
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>Sensor geometry source</span>
                       </div>
 
                       <div>
