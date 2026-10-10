@@ -3481,7 +3481,38 @@ export default function InteractiveLeaksSimulator() {
                         </strong>
                         <span>Refresh duty vs maximum</span>
                       </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.electricalPower.status ===
+                            'resolved' &&
+                          displayExperience.electricalPower
+                            .expectedPowerW !== undefined
+                            ? `${format(
+                                displayExperience.electricalPower
+                                  .expectedPowerW,
+                                2,
+                              )} W`
+                            : 'Unresolved'}
+                        </strong>
+                        <span>Measured-calibrated panel power</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.electricalPower.referenceCount}
+                        </strong>
+                        <span>Isolated panel-power references</span>
+                      </div>
                     </div>
+
+                    <p className="il-help">
+                      Electrical panel power:{' '}
+                      {displayExperience.electricalPower.status === 'resolved'
+                        ? displayExperience.electricalPower.note
+                        : displayExperience.electricalPower.unresolvedReason ??
+                          displayExperience.electricalPower.note}
+                    </p>
 
                     {displayExperience.load.scenarios.length ? (
                       <div className="il-display-sensitivity">
