@@ -119,6 +119,103 @@ describe('charging comparable selection', () => {
     expect(result.references[0].fullChargeMinutes).toBe(38);
   });
 
+  it('ignores inferred charging rows even when the device is otherwise a perfect match', () => {
+    const inferredOnly: DeviceCorpus = {
+      ...corpus,
+      measurements: corpus.measurements.map(
+        (measurement) => ({
+          ...measurement,
+          evidenceKind: 'inferred' as const,
+        }),
+      ),
+    };
+
+    const result = selectChargingComparables(
+      inferredOnly,
+      {
+        batteryMah: 5800,
+        batteryChemistry: 'silicon-carbon',
+        wiredChargingWatts: 60,
+        manufacturer: 'Example',
+      },
+    );
+
+    expect(result.status).toBe('unresolved');
+    expect(result.references).toHaveLength(0);
+  });
+
+  it('keeps only the best charger mode from each physical device', () => {
+    const multiMode: DeviceCorpus = {
+      ...corpus,
+      measurements: [
+        ...corpus.measurements,
+        {
+          id: 'active-full-45w',
+          deviceVariantId: 'active-60w',
+          workload: 'charging',
+          metric: 'wiredFullChargeMinutes',
+          value: 52,
+          unit: 'minutes',
+          sourceId: 'lab',
+          evidenceKind: 'measured',
+          testChargerWatts: 45,
+          chargingStandard: 'USB PD/PPS',
+        },
+        {
+          id: 'active-full-60w-mode',
+          deviceVariantId: 'active-60w',
+          workload: 'charging',
+          metric: 'wiredFullChargeMinutes',
+          value: 38,
+          unit: 'minutes',
+          sourceId: 'lab',
+          evidenceKind: 'measured',
+          testChargerWatts: 60,
+          chargingStandard: 'USB PD/PPS',
+        },
+        {
+          id: 'thin-full-60w-mode',
+          deviceVariantId: 'thin-60w',
+          workload: 'charging',
+          metric: 'wiredFullChargeMinutes',
+          value: 54,
+          unit: 'minutes',
+          sourceId: 'lab',
+          evidenceKind: 'measured',
+          testChargerWatts: 60,
+          chargingStandard: 'USB PD/PPS',
+        },
+      ],
+    };
+
+    const result = selectChargingComparables(
+      multiMode,
+      {
+        batteryMah: 5800,
+        wiredChargingWatts: 60,
+        chargingStandard: 'USB PD/PPS',
+        limit: 5,
+      },
+    );
+
+    expect(result.status).toBe('resolved');
+    expect(
+      result.references.filter(
+        (reference) =>
+          reference.deviceVariantId ===
+          'active-60w',
+      ),
+    ).toHaveLength(1);
+    expect(
+      new Set(
+        result.references.map(
+          (reference) =>
+            reference.deviceVariantId,
+        ),
+      ).size,
+    ).toBe(result.references.length);
+  });
+
   it('fails closed when comparable phones have no measured charging evidence', () => {
     const empty: DeviceCorpus = {
       ...corpus,
