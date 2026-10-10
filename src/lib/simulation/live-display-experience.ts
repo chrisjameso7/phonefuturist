@@ -1,4 +1,8 @@
 import { calculateDisplay } from './modules/display';
+import {
+  calculateDisplayLoad,
+  type DisplayLoadResult,
+} from './modules/display-load';
 
 export const LIVE_DISPLAY_EXPERIENCE_VERSION =
   'live-display-experience-0.1.0';
@@ -12,6 +16,8 @@ export interface LiveDisplayExperienceInput {
   refreshRateHz?: number;
   brightnessNits?: number;
   panelTechnology?: string;
+  averagePictureLevelPercent?: number;
+  operatingRefreshRateHz?: number;
 }
 
 export interface LiveDisplayExperienceResult {
@@ -23,6 +29,7 @@ export interface LiveDisplayExperienceResult {
   rasterLoadIndex?: number;
   luminanceAreaNitCm2?: number;
   panelTechnology?: string;
+  load: DisplayLoadResult;
   scenarios: Array<{
     scenario: '60hz' | '1080-class';
     label: string;
@@ -58,6 +65,24 @@ export function simulateLiveDisplayExperience(
   const width = input.resolutionWidthPx;
   const height = input.resolutionHeightPx;
   const refresh = input.refreshRateHz;
+
+  const load = calculateDisplayLoad({
+    areaMm2: display.areaMm2,
+    resolutionWidthPx:
+      input.resolutionWidthPx,
+    resolutionHeightPx:
+      input.resolutionHeightPx,
+    maximumRefreshRateHz:
+      input.refreshRateHz,
+    operatingRefreshRateHz:
+      input.operatingRefreshRateHz,
+    brightnessNits:
+      input.brightnessNits,
+    averagePictureLevelPercent:
+      input.averagePictureLevelPercent,
+    panelTechnology:
+      input.panelTechnology,
+  });
 
   let megapixelsPerFrame: number | undefined;
   let pixelThroughputMpxPerSecond: number | undefined;
@@ -193,9 +218,13 @@ export function simulateLiveDisplayExperience(
     luminanceAreaNitCm2,
     panelTechnology:
       input.panelTechnology?.trim() || undefined,
+    load,
     scenarios,
-    warnings,
+    warnings: [
+      ...warnings,
+      ...load.warnings,
+    ],
     note:
-      'Pixel throughput is a deterministic workload proxy, not a direct power estimate. Luminance-area demand is physical screen area multiplied by supplied brightness and likewise does not claim electrical panel power.',
+      'Pixel throughput and content-aware display load are deterministic workload proxies, not direct electrical power estimates. OLED/AMOLED average-picture-level scaling is only applied when panel technology and APL are explicitly supplied.',
   };
 }
