@@ -48,6 +48,11 @@ import {
   resolveLiveDisplayRuntimeSensitivity,
 } from '../../lib/simulation/modules/display-runtime-sensitivity';
 
+import {
+  SUSTAINED_PERFORMANCE_ESTIMATOR_VERSION,
+  estimateLiveSustainedPerformance,
+} from '../../lib/simulation/modules/sustained-performance-estimator';
+
 type NumericFieldProps = {
   label: string;
   value: string;
@@ -1123,6 +1128,51 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const performanceDomain =
+    workspaceMode === 'simple'
+      ? 'gpu_sustained'
+      : form.thermalDomain;
+
+  const bodyVolumeMm3 =
+    simulationInput?.dimensions?.widthMm !== undefined &&
+    simulationInput.dimensions.heightMm !== undefined &&
+    simulationInput.dimensions.thicknessMm !== undefined
+      ? simulationInput.dimensions.widthMm *
+        simulationInput.dimensions.heightMm *
+        simulationInput.dimensions.thicknessMm
+      : undefined;
+
+  const sustainedPerformanceEstimate =
+    simulationInput && result
+      ? estimateLiveSustainedPerformance({
+          domain: performanceDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          batteryMah:
+            result.battery?.totalCapacityMah,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
+          displayDiagonalInches:
+            simulationInput.displays.primary
+              .diagonalInches,
+          refreshRateHz:
+            simulationInput.displays.primary
+              .refreshRateHz,
+          thicknessMm:
+            simulationInput.dimensions
+              ?.thicknessMm,
+          weightG:
+            simulationInput.dimensions?.weightG,
+          bodyVolumeMm3,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -1191,6 +1241,7 @@ export default function InteractiveLeaksSimulator() {
               displayExperience,
               batteryExperience,
               thermalResult,
+              sustainedPerformanceEstimate,
               cameraExperiences,
             }}
           />
@@ -3348,10 +3399,89 @@ export default function InteractiveLeaksSimulator() {
                       {thermalResult.note}
                     </p>
                   </>
+                ) : sustainedPerformanceEstimate?.status ===
+                  'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.expectedPercent !==
+                          undefined
+                            ? `${format(
+                                sustainedPerformanceEstimate.expectedPercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Estimated sustained GPU performance</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.minPercent !==
+                            undefined &&
+                          sustainedPerformanceEstimate.maxPercent !==
+                            undefined
+                            ? `${format(
+                                sustainedPerformanceEstimate.minPercent,
+                                1,
+                              )}–${format(
+                                sustainedPerformanceEstimate.maxPercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Measured peer range</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.referenceCount}
+                        </strong>
+                        <span>Measured references used</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.evidenceScope
+                            ? sustainedPerformanceEstimate.evidenceScope.replaceAll(
+                                '-',
+                                ' ',
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>Evidence scope</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.confidence !==
+                          undefined
+                            ? `${format(
+                                sustainedPerformanceEstimate.confidence *
+                                  100,
+                                0,
+                              )}%`
+                            : 'Unrated'}
+                        </strong>
+                        <span>Evidence confidence</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      Evidence-only estimate ·{' '}
+                      {SUSTAINED_PERFORMANCE_ESTIMATOR_VERSION}. This
+                      predicts sustained performance from protocol-compatible
+                      measured peers without inventing package or surface
+                      temperatures. Add explicit thermal physics in Advanced
+                      Mode to simulate temperatures.
+                    </p>
+                  </>
                 ) : (
                   <div className="il-empty">
                     {thermalResult?.unresolvedReason ??
-                      'Add target SoC power, ambient temperature, throttle ceiling, thermal resistance and thermal mass to simulate sustained performance.'}
+                      sustainedPerformanceEstimate?.unresolvedReason ??
+                      'Add target SoC power, ambient temperature, throttle ceiling, thermal resistance and thermal mass to simulate thermal behavior.'}
                   </div>
                 )}
               </div>
