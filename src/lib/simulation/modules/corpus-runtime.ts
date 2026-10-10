@@ -11,6 +11,19 @@ export interface RuntimeProtocolSelector {
   protocolVersion?: string;
 }
 
+export interface RuntimeComparableContext {
+  manufacturer?: string;
+  socVendor?: string;
+  socName?: string;
+  batteryChemistry?: string;
+  coolingClass?:
+    | 'passive-graphite'
+    | 'vapor-chamber'
+    | 'large-vapor-chamber'
+    | 'active-fan'
+    | 'other';
+}
+
 export interface CorpusRuntimeBand {
   version: string;
   status: 'resolved' | 'unresolved';
@@ -55,6 +68,7 @@ export function resolveCorpusRuntimeBand(
   input: SimulationInput,
   workload: RuntimeWorkload,
   protocolSelector: RuntimeProtocolSelector = {},
+  context: RuntimeComparableContext = {},
 ): CorpusRuntimeBand {
   const capacityMah = inputCapacityMah(input);
 
@@ -121,6 +135,12 @@ export function resolveCorpusRuntimeBand(
     evidenceCorpus,
     {
       batteryMah: capacityMah,
+      manufacturer: context.manufacturer,
+      socVendor: context.socVendor,
+      socName: context.socName,
+      batteryChemistry:
+        context.batteryChemistry,
+      coolingClass: context.coolingClass,
       displayDiagonalInches:
         input.displays.primary.diagonalInches,
       resolutionWidthPx:
