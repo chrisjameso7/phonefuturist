@@ -949,6 +949,10 @@ export default function InteractiveLeaksSimulator() {
           simulation: simulationInput,
           manufacturer:
             form.manufacturer.trim() || undefined,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
           batteryChemistry:
             form.batteryChemistry.trim() || undefined,
           cellArchitecture:
