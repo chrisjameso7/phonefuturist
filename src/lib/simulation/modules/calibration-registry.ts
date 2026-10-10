@@ -7,6 +7,7 @@ import { buildChargingModeCorpus } from './charging-mode-corpus';
 import { buildCameraReferenceCorpus } from './camera-reference-corpus';
 import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
 import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
+import { enrichCorpusWithBatteryEnergyEvidence } from './battery-energy-evidence';
 
 export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.2.0';
 
@@ -28,7 +29,10 @@ export function buildCalibrationRegistry(): DeviceCorpus {
     CALIBRATION_REGISTRY_VERSION,
   );
 
-  cached = merged.corpus;
+  cached =
+    enrichCorpusWithBatteryEnergyEvidence(
+      merged.corpus,
+    ).corpus;
   return cached;
 }
 
