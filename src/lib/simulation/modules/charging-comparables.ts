@@ -29,6 +29,7 @@ export interface ChargingComparableQuery {
 
 export interface ChargingComparableEvidence {
   deviceVariantId: string;
+  physicalDeviceKey: string;
   score: number;
   reasons: string[];
   fullChargeMinutes?: number;
@@ -51,6 +52,43 @@ export interface ChargingComparableResult {
   status: 'resolved' | 'unresolved';
   references: ChargingComparableEvidence[];
   unresolvedReason?: string;
+}
+
+function normalizeIdentity(value?: string) {
+  return value
+    ?.trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function physicalDeviceKey(
+  device: DeviceCorpusRecord,
+) {
+  const identity =
+    device.variant.identity;
+
+  const batteryMah =
+    device.variant.battery?.capacityMah ??
+    device.variant.battery?.typicalCapacityMah;
+
+  return [
+    normalizeIdentity(
+      identity.manufacturer,
+    ),
+    normalizeIdentity(
+      identity.modelName ??
+        identity.family,
+    ),
+    normalizeIdentity(
+      identity.region,
+    ) ?? 'any-region',
+    batteryMah !== undefined &&
+    Number.isFinite(batteryMah)
+      ? Math.round(batteryMah)
+      : 'unknown-battery',
+  ].join('|');
 }
 
 function deviceBatteryEnergyWh(
@@ -284,6 +322,8 @@ export function selectChargingComparables(
 
       return [{
         deviceVariantId: device.variant.id,
+        physicalDeviceKey:
+          physicalDeviceKey(device),
         score: adjustedScore,
         reasons: candidate.reasons,
         sourceId: first.sourceId,
@@ -358,17 +398,61 @@ export function selectChargingComparables(
     (a, b) => b.score - a.score,
   );
 
+  // Collapse duplicate corpus records of the same physical phone and charger
+  // mode. This prevents a device imported from multiple calibration files
+  // from receiving multiple votes. Distinct measured modes remain separate.
+  const dedupedByPhysicalMode =
+    ranked.filter(
+      (reference, index, rows) => {
+        const signature = [
+          reference.physicalDeviceKey,
+          reference.testChargerWatts ??
+            'unknown-w',
+          reference.chargingStandard
+            ?.trim()
+            .toLowerCase() ??
+            'unknown-standard',
+          reference.sourcePublisher
+            ?.trim()
+            .toLowerCase() ??
+            reference.sourceId ??
+            'unknown-source',
+        ].join('|');
+
+        return (
+          rows.findIndex(
+            (candidate) =>
+              [
+                candidate.physicalDeviceKey,
+                candidate.testChargerWatts ??
+                  'unknown-w',
+                candidate.chargingStandard
+                  ?.trim()
+                  .toLowerCase() ??
+                  'unknown-standard',
+                candidate.sourcePublisher
+                  ?.trim()
+                  .toLowerCase() ??
+                  candidate.sourceId ??
+                  'unknown-source',
+              ].join('|') ===
+              signature,
+          ) === index
+        );
+      },
+    );
+
   const selected =
     query.chargingStandard
-      ? ranked.filter(
+      ? dedupedByPhysicalMode.filter(
           (reference, index, rows) =>
             rows.findIndex(
               (candidate) =>
-                candidate.deviceVariantId ===
-                reference.deviceVariantId,
+                candidate.physicalDeviceKey ===
+                reference.physicalDeviceKey,
             ) === index,
         )
-      : ranked;
+      : dedupedByPhysicalMode;
 
   const limit =
     query.limit ?? 5;
@@ -383,21 +467,21 @@ export function selectChargingComparables(
           // wired mode for those devices so SuperVOOC / USB PD / PPS modes
           // cannot disappear simply because another phone ranked between
           // them.
-          const selectedDeviceIds: string[] = [];
+          const selectedPhysicalKeys: string[] = [];
 
           for (const reference of selected) {
             if (
-              !selectedDeviceIds.includes(
-                reference.deviceVariantId,
+              !selectedPhysicalKeys.includes(
+                reference.physicalDeviceKey,
               )
             ) {
-              selectedDeviceIds.push(
-                reference.deviceVariantId,
+              selectedPhysicalKeys.push(
+                reference.physicalDeviceKey,
               );
             }
 
             if (
-              selectedDeviceIds.length >=
+              selectedPhysicalKeys.length >=
               limit
             ) {
               break;
@@ -405,12 +489,14 @@ export function selectChargingComparables(
           }
 
           const allowed =
-            new Set(selectedDeviceIds);
+            new Set(
+              selectedPhysicalKeys,
+            );
 
           return selected.filter(
             (reference) =>
               allowed.has(
-                reference.deviceVariantId,
+                reference.physicalDeviceKey,
               ),
           );
         })();
