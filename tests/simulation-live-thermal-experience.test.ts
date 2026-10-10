@@ -81,6 +81,56 @@ describe('live thermal experience', () => {
     expect(result.sustainedPerformancePercent).toBeGreaterThan(0);
   });
 
+  it('returns a separate package/surface trace when explicit two-node physics is supplied', () => {
+    const corpus: DeviceCorpus = {
+      version: 'empty-two-node',
+      sources: [],
+      devices: [],
+      measurements: [],
+    };
+
+    const result = simulateThermalExperience(
+      corpus,
+      {
+        ...baseInput,
+        twoNode: {
+          socToChassisResistanceCPerW: 2.2,
+          chassisToAmbientResistanceCPerW: 3.4,
+          socThermalMassJPerC: 12,
+          chassisThermalMassJPerC: 55,
+          surfaceComfortTemperatureC: 40,
+        },
+      },
+    );
+
+    expect(result.status).toBe('resolved');
+    expect(result.twoNode).toBeDefined();
+    expect(
+      result.twoNode!.peakSocPackageTemperatureC,
+    ).toBeGreaterThan(
+      result.twoNode!.peakChassisSurfaceTemperatureC,
+    );
+    expect(
+      result.twoNode!.points.length,
+    ).toBeGreaterThan(1);
+  });
+
+  it('does not invent a two-node trace when the extra physical parameters are absent', () => {
+    const corpus: DeviceCorpus = {
+      version: 'empty-no-two-node',
+      sources: [],
+      devices: [],
+      measurements: [],
+    };
+
+    const result = simulateThermalExperience(
+      corpus,
+      baseInput,
+    );
+
+    expect(result.twoNode).toBeUndefined();
+  });
+
   it('falls back to deterministic thermal physics when no calibration evidence exists', () => {
     const corpus: DeviceCorpus = {
       version: 'empty',
