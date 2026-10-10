@@ -3449,18 +3449,48 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {chargingResult.estimate.normalized
-                            ?.expectedMinutesPer1000Mah !== undefined
-                            ? `${format(
-                                chargingResult.estimate.normalized
-                                  .expectedMinutesPer1000Mah,
-                                1,
-                              )} min`
-                            : 'Unknown'}
+                          {chargingResult.estimate.normalizationBasis === 'wh'
+                            ? chargingResult.estimate.normalized
+                                ?.expectedMinutesPerWh !== undefined
+                              ? `${format(
+                                  chargingResult.estimate.normalized
+                                    .expectedMinutesPerWh,
+                                  2,
+                                )} min/Wh`
+                              : 'Unknown'
+                            : chargingResult.estimate.normalized
+                                ?.expectedMinutesPer1000Mah !== undefined
+                              ? `${format(
+                                  chargingResult.estimate.normalized
+                                    .expectedMinutesPer1000Mah,
+                                  1,
+                                )} min/1,000 mAh`
+                              : 'Unknown'}
                         </strong>
-                        <span>Per 1,000 mAh</span>
+                        <span>
+                          {chargingResult.estimate.normalizationBasis === 'wh'
+                            ? 'Energy normalization'
+                            : 'Capacity normalization'}
+                        </span>
                       </div>
                     </div>
+
+                    {chargingResult.estimate.thermalResponse ? (
+                      <p className="il-help">
+                        Thermal speed adjustment:{' '}
+                        {chargingResult.estimate.thermalResponse.applied
+                          ? `${format(
+                              (chargingResult.estimate.thermalResponse
+                                .averageTimeScale -
+                                1) *
+                                100,
+                              1,
+                            )}% slower across ${chargingResult.estimate.thermalResponse.adjustedReferenceModes} measured mode${chargingResult.estimate.thermalResponse.adjustedReferenceModes === 1 ? '' : 's'}`
+                          : 'not applied'}
+                        {' · '}
+                        {chargingResult.estimate.thermalResponse.note}
+                      </p>
+                    ) : null}
 
                     {chargingResult.estimate.powerResponse
                       ?.targetPosition ? (
