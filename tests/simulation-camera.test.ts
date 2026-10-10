@@ -97,9 +97,62 @@ describe('camera simulation module', () => {
     );
     expect(calculation.result.airyDiskDiameterMicrons).toBeGreaterThan(0);
     expect(calculation.result.airyDiskToPixelPitchRatio).toBeGreaterThan(0);
+    expect(
+      calculation.result.diffractionTwoPixelFNumber,
+    ).toBeGreaterThan(0);
     expect(calculation.result.equivalentApertureFNumber).toBeGreaterThan(
       1.6,
     );
+  });
+
+  it('calculates classical depth of field when focus distance is supplied', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      focusDistanceM: 2,
+    });
+
+    expect(
+      calculation.result.hyperfocalDistanceM,
+    ).toBeGreaterThan(0);
+
+    expect(
+      calculation.result.focusNearLimitM,
+    ).toBeLessThan(2);
+
+    expect(
+      calculation.result.focusFarLimitM,
+    ).not.toBe('infinity');
+
+    expect(
+      calculation.result.focusFarLimitM as number,
+    ).toBeGreaterThan(2);
+
+    expect(
+      calculation.result.totalDepthOfFieldM,
+    ).toBeGreaterThan(0);
+  });
+
+  it('reports infinite far depth of field when focus reaches beyond the hyperfocal geometry', () => {
+    const calculation = calculateCamera({
+      type: 'wide',
+      sensorFormatDenominator: 1.3,
+      resolutionMp: 50,
+      equivalentFocalLengthMm: 24,
+      apertureFNumber: 1.8,
+      focusDistanceM: 10,
+    });
+
+    expect(
+      calculation.result.focusFarLimitM,
+    ).toBe('infinity');
+
+    expect(
+      calculation.result.totalDepthOfFieldM,
+    ).toBe('infinity');
   });
 
   it('calculates camera module volume only from explicit module dimensions', () => {
@@ -192,6 +245,7 @@ describe('camera simulation module', () => {
       equivalentFocalLengthMm: 24,
       physicalFocalLengthMm: -6,
       apertureFNumber: 0,
+      focusDistanceM: -2,
 
       moduleWidthMm: 20,
       moduleHeightMm: 15,
@@ -220,6 +274,12 @@ describe('camera simulation module', () => {
       code: 'INVALID_CAMERA_MODULE_DIMENSIONS',
       message:
         'Camera module dimensions must be positive finite values.',
+    });
+
+    expect(calculation.warnings).toContainEqual({
+      code: 'INVALID_FOCUS_DISTANCE',
+      message:
+        'Focus distance must be a positive finite value in metres.',
     });
 
     expect(calculation.warnings).toContainEqual({
