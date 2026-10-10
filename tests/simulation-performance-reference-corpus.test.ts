@@ -11,14 +11,14 @@ describe('sustained GPU performance corpus', () => {
         measurement.metric === 'gpu_stability_percent',
     );
 
-    expect(rows).toHaveLength(9);
+    expect(rows).toHaveLength(11);
     expect(
       new Set(
         rows.map(
           (measurement) => measurement.deviceVariantId,
         ),
       ).size,
-    ).toBe(9);
+    ).toBe(11);
     expect(
       rows.every(
         (measurement) =>
@@ -54,5 +54,18 @@ describe('sustained GPU performance corpus', () => {
     expect(
       snapdragonGen5.length,
     ).toBeGreaterThanOrEqual(3);
+
+    const exynos2600 =
+      registry.devices.filter(
+        (device) =>
+          device.variant.soc?.vendor ===
+            'Samsung' &&
+          device.variant.soc?.name ===
+            'Exynos 2600',
+      );
+
+    expect(
+      exynos2600.length,
+    ).toBeGreaterThanOrEqual(2);
   });
 });
