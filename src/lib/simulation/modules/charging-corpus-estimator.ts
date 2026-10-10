@@ -548,6 +548,7 @@ export function estimateChargingFromCorpus(
       reference,
       weight: Math.max(reference.score, 0.05) ** 2,
       capacityScale,
+      normalizationScale,
       powerScale,
       earlyPowerScale,
     };
