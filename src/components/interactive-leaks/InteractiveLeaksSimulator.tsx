@@ -59,6 +59,12 @@ import {
 } from '../../lib/simulation/modules/sustained-performance-estimator';
 
 import {
+  PEAK_PERFORMANCE_ESTIMATOR_VERSION,
+  estimateLivePeakPerformance,
+  type PeakBenchmarkDomain,
+} from '../../lib/simulation/modules/peak-performance-estimator';
+
+import {
   simulateTwoNodeThermals,
 } from '../../lib/simulation/modules/two-node-thermal';
 
@@ -146,6 +152,8 @@ type FormState = {
     | 'gpu_sustained'
     | 'gaming_sustained'
     | 'ray_tracing';
+  peakBenchmarkDomain: PeakBenchmarkDomain;
+  assumedGenerationUpliftPercent: string;
   targetSocPowerW: string;
   ambientTemperatureC: string;
   thermalResistanceCPerW: string;
@@ -217,6 +225,8 @@ const initialForm: FormState = {
   socName: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
+  peakBenchmarkDomain: 'geekbench6_multi',
+  assumedGenerationUpliftPercent: '',
   targetSocPowerW: '',
   ambientTemperatureC: '',
   thermalResistanceCPerW: '',
@@ -288,6 +298,8 @@ const flagshipExample: FormState = {
   socName: 'Snapdragon 8 Elite Gen 5',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
+  peakBenchmarkDomain: 'geekbench6_multi',
+  assumedGenerationUpliftPercent: '',
   targetSocPowerW: '10',
   ambientTemperatureC: '25',
   thermalResistanceCPerW: '3',
@@ -1271,6 +1283,47 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const peakPerformanceEstimate =
+    simulationInput && result
+      ? estimateLivePeakPerformance({
+          domain: form.peakBenchmarkDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
+          batteryMah:
+            result.battery?.totalCapacityMah,
+          displayDiagonalInches:
+            simulationInput.displays.primary
+              .diagonalInches,
+          refreshRateHz:
+            simulationInput.displays.primary
+              .refreshRateHz,
+          thicknessMm:
+            simulationInput.dimensions
+              ?.thicknessMm,
+          weightG:
+            simulationInput.dimensions?.weightG,
+          bodyVolumeMm3,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+          ...(numeric(
+            form.assumedGenerationUpliftPercent,
+          ) !== undefined
+            ? {
+                assumedGenerationUpliftPercent:
+                  numeric(
+                    form.assumedGenerationUpliftPercent,
+                  ),
+              }
+            : {}),
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -1409,6 +1462,8 @@ export default function InteractiveLeaksSimulator() {
       : null,
     sustainedPerformance:
       sustainedPerformanceEstimate,
+    peakPerformance:
+      peakPerformanceEstimate,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -2152,6 +2207,48 @@ export default function InteractiveLeaksSimulator() {
               </label>
 
               <label className="il-field">
+                <span>Peak benchmark</span>
+                <select
+                  value={form.peakBenchmarkDomain}
+                  onChange={(event) =>
+                    update(
+                      'peakBenchmarkDomain',
+                      event.currentTarget
+                        .value as PeakBenchmarkDomain,
+                    )
+                  }
+                >
+                  <option value="geekbench6_single">
+                    Geekbench 6 single-core
+                  </option>
+                  <option value="geekbench6_multi">
+                    Geekbench 6 multi-core
+                  </option>
+                  <option value="3dmark_wle">
+                    3DMark Wild Life Extreme
+                  </option>
+                  <option value="3dmark_solar_bay">
+                    3DMark Solar Bay
+                  </option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Assumed generation uplift"
+                suffix="%"
+                value={
+                  form.assumedGenerationUpliftPercent
+                }
+                placeholder="Optional"
+                onChange={(value) =>
+                  update(
+                    'assumedGenerationUpliftPercent',
+                    value,
+                  )
+                }
+              />
+
+              <label className="il-field">
                 <span>SoC vendor</span>
                 <input
                   type="text"
@@ -2371,9 +2468,11 @@ export default function InteractiveLeaksSimulator() {
             </details>
 
             <p className="il-help">
-              Comparable measured sustained-performance evidence is used when
-              available. Otherwise the simulator falls back to the deterministic
-              first-order thermal model and labels that result accordingly.
+              Peak benchmark evidence and sustained-performance evidence are
+              intentionally separate. Peak scores use protocol-compatible
+              measured benchmarks. Any future-generation uplift is an explicit
+              assumption. Sustained performance remains evidence-calibrated
+              thermal behavior.
             </p>
           </div>
 
@@ -3733,6 +3832,98 @@ export default function InteractiveLeaksSimulator() {
                       ? 'Add wireless charging wattage to estimate wireless charging.'
                       : wirelessChargingResult?.unresolvedReason ??
                         'No measured wireless charging evidence is available for a reliable estimate yet.'}
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Peak performance · {PEAK_PERFORMANCE_ESTIMATOR_VERSION}
+                </span>
+
+                {peakPerformanceEstimate?.status === 'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(
+                            peakPerformanceEstimate.baselineExpected,
+                            0,
+                          )}
+                        </strong>
+                        <span>Measured evidence baseline</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            peakPerformanceEstimate.adjustedExpected,
+                            0,
+                          )}
+                        </strong>
+                        <span>
+                          {peakPerformanceEstimate.assumptionApplied
+                            ? 'Adjusted peak estimate'
+                            : 'Peak estimate'}
+                        </span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {peakPerformanceEstimate.baselineMin !== undefined &&
+                          peakPerformanceEstimate.baselineMax !== undefined
+                            ? `${format(
+                                peakPerformanceEstimate.baselineMin,
+                                0,
+                              )}–${format(
+                                peakPerformanceEstimate.baselineMax,
+                                0,
+                              )}`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Measured peer range</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {peakPerformanceEstimate.referenceCount}
+                        </strong>
+                        <span>Measured references</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {peakPerformanceEstimate.evidenceScope
+                            ? peakPerformanceEstimate.evidenceScope.replaceAll(
+                                '-',
+                                ' ',
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>Evidence scope</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {peakPerformanceEstimate.assumptionApplied
+                            ? `+${format(
+                                peakPerformanceEstimate.assumedGenerationUpliftPercent,
+                                1,
+                              )}%`
+                            : 'None'}
+                        </strong>
+                        <span>Generation uplift assumption</span>
+                      </div>
+                    </div>
+
+                    <p className="il-help">
+                      {peakPerformanceEstimate.note}
+                    </p>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    {peakPerformanceEstimate?.unresolvedReason ??
+                      'No compatible measured peak benchmark evidence is available.'}
                   </div>
                 )}
               </div>
