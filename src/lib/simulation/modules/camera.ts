@@ -705,6 +705,109 @@ export function calculateCamera(
     }
   }
 
+  // Resolution-only zoom math does not require physical sensor dimensions.
+  // Keep it outside the sensor-area branch so a known 50 MP camera can still
+  // produce deterministic crop resolution even when the exact sensor format
+  // is unavailable.
+  if (
+    input.resolutionMp !== undefined &&
+    isPositiveFinite(input.resolutionMp)
+  ) {
+    if (
+      result.effectiveBinnedResolutionMp === undefined &&
+      input.binningLinearFactor !== undefined &&
+      Number.isInteger(input.binningLinearFactor) &&
+      input.binningLinearFactor >= 1
+    ) {
+      const factor = input.binningLinearFactor;
+      result.effectiveBinnedResolutionMp =
+        input.resolutionMp / (factor * factor);
+    }
+
+    const cropSourceResolutionMp =
+      result.effectiveBinnedResolutionMp ??
+      input.resolutionMp;
+
+    if (result.cropSourceResolutionMp === undefined) {
+      result.cropSourceResolutionMp =
+        cropSourceResolutionMp;
+    }
+
+    if (
+      result.croppedResolutionMp === undefined &&
+      input.cropZoomRatio !== undefined &&
+      Number.isFinite(input.cropZoomRatio) &&
+      input.cropZoomRatio >= 1
+    ) {
+      const zoom = input.cropZoomRatio;
+      const retainedAreaFraction =
+        1 / (zoom * zoom);
+
+      result.croppedResolutionMp =
+        cropSourceResolutionMp *
+        retainedAreaFraction;
+
+      if (
+        input.equivalentFocalLengthMm !== undefined &&
+        isPositiveFinite(input.equivalentFocalLengthMm)
+      ) {
+        result.croppedEquivalentFocalLengthMm =
+          input.equivalentFocalLengthMm * zoom;
+      }
+
+      if (
+        result.approximateSensorAreaMm2 !== undefined &&
+        result.croppedSensorAreaMm2 === undefined
+      ) {
+        result.croppedSensorAreaMm2 =
+          result.approximateSensorAreaMm2 *
+          retainedAreaFraction;
+      }
+
+      if (
+        result.exposureLightCaptureIndex !== undefined &&
+        result.croppedExposureLightCaptureIndex === undefined
+      ) {
+        result.croppedExposureLightCaptureIndex =
+          result.exposureLightCaptureIndex *
+          retainedAreaFraction;
+      }
+
+      result.cropTotalLightLossStops ??=
+        2 * Math.log2(zoom);
+
+      if (
+        input.targetOutputResolutionMp !== undefined &&
+        isPositiveFinite(input.targetOutputResolutionMp)
+      ) {
+        result.maxNativeCropZoomForTargetResolution ??=
+          Math.sqrt(
+            cropSourceResolutionMp /
+            input.targetOutputResolutionMp,
+          );
+
+        result.cropMeetsTargetResolution ??=
+          result.croppedResolutionMp >=
+          input.targetOutputResolutionMp;
+
+        if (
+          !result.cropMeetsTargetResolution &&
+          !warnings.some(
+            (warning) =>
+              warning.code ===
+              'CROP_REQUIRES_UPSCALING_FOR_TARGET_RESOLUTION',
+          )
+        ) {
+          warnings.push({
+            code: 'CROP_REQUIRES_UPSCALING_FOR_TARGET_RESOLUTION',
+            message:
+              'The requested crop zoom leaves fewer native pixels than the requested output resolution. Reaching that output size would require upscaling or multi-frame reconstruction.',
+          });
+        }
+      }
+    }
+  }
+
 
 
   if (
