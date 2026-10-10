@@ -8,6 +8,7 @@ import {
   resolveChargingPowerResponse,
 } from './charging-power-response';
 import { resolveChargingThermalContext } from './charging-thermal-context';
+import { resolveChargingThermalResponse } from './charging-thermal-response';
 
 export const CHARGING_CORPUS_ESTIMATOR_VERSION = 'charging-corpus-estimator-0.3.0';
 
@@ -75,6 +76,14 @@ export interface ChargingCurveEstimate {
       status: 'resolved' | 'unresolved';
       confidenceMultiplier: number;
       matchedMeasurementIds: string[];
+      note: string;
+    };
+    thermalResponse?: {
+      applied: boolean;
+      adjustedReferenceModes: number;
+      evidenceCount: number;
+      averageTimeScale: number;
+      averageConfidence: number;
       note: string;
     };
     normalized?: {
@@ -604,6 +613,24 @@ export function estimateChargingFromCorpus(
           ) ** powerResponse.earlyChargeElasticity
         : 1;
 
+    const thermalResponse =
+      query.ambientTemperatureC !== undefined &&
+      Number.isFinite(query.ambientTemperatureC) &&
+      reference.ambientTemperatureC !== undefined &&
+      Number.isFinite(reference.ambientTemperatureC)
+        ? resolveChargingThermalResponse(corpus, {
+            targetAmbientTemperatureC:
+              query.ambientTemperatureC,
+            referenceAmbientTemperatureC:
+              reference.ambientTemperatureC,
+            manufacturer: query.manufacturer,
+            batteryChemistry:
+              query.batteryChemistry,
+            cellArchitecture:
+              query.cellArchitecture,
+          })
+        : undefined;
+
     return {
       reference,
       weight: Math.max(reference.score, 0.05) ** 2,
@@ -611,17 +638,23 @@ export function estimateChargingFromCorpus(
       normalizationScale,
       powerScale,
       earlyPowerScale,
+      thermalTimeScale:
+        thermalResponse?.status === 'resolved'
+          ? thermalResponse.timeScale
+          : 1,
+      thermalResponse,
     };
   });
 
   const fullValues = weights.flatMap(
-    ({ reference, weight, normalizationScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale, thermalTimeScale }) =>
       reference.fullChargeMinutes !== undefined
         ? [{
             value:
               reference.fullChargeMinutes *
               normalizationScale *
-              powerScale,
+              powerScale *
+              thermalTimeScale,
             weight,
           }]
         : [],
@@ -649,26 +682,28 @@ export function estimateChargingFromCorpus(
   );
 
   const t50Values = weights.flatMap(
-    ({ reference, weight, normalizationScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale, thermalTimeScale }) =>
       reference.timeTo50Minutes !== undefined
         ? [{
             value:
               reference.timeTo50Minutes *
               normalizationScale *
-              powerScale,
+              powerScale *
+              thermalTimeScale,
             weight,
           }]
         : [],
   );
 
   const t80Values = weights.flatMap(
-    ({ reference, weight, normalizationScale, powerScale }) =>
+    ({ reference, weight, normalizationScale, powerScale, thermalTimeScale }) =>
       reference.timeTo80Minutes !== undefined
         ? [{
             value:
               reference.timeTo80Minutes *
               normalizationScale *
-              powerScale,
+              powerScale *
+              thermalTimeScale,
             weight,
           }]
         : [],
@@ -723,6 +758,58 @@ export function estimateChargingFromCorpus(
         ? 'moderate'
         : 'low';
 
+  const appliedThermalResponses =
+    weights.filter(
+      (row) =>
+        row.thermalResponse?.status ===
+        'resolved',
+    );
+
+  const thermalResponseSummary = {
+    applied:
+      appliedThermalResponses.length > 0,
+    adjustedReferenceModes:
+      appliedThermalResponses.length,
+    evidenceCount:
+      new Set(
+        appliedThermalResponses.flatMap(
+          (row) =>
+            row.thermalResponse?.evidence.map(
+              (item) =>
+                item.measurementIds.join('|'),
+            ) ?? [],
+        ),
+      ).size,
+    averageTimeScale:
+      appliedThermalResponses.length
+        ? weightedMean(
+            appliedThermalResponses.map(
+              (row) => ({
+                value: row.thermalTimeScale,
+                weight: row.weight,
+              }),
+            ),
+          )
+        : 1,
+    averageConfidence:
+      appliedThermalResponses.length
+        ? weightedMean(
+            appliedThermalResponses.map(
+              (row) => ({
+                value:
+                  row.thermalResponse?.confidence ??
+                  0,
+                weight: row.weight,
+              }),
+            ),
+          )
+        : 0,
+    note:
+      appliedThermalResponses.length
+        ? 'Measured same-device ambient-temperature charging pairs were used to slow time-based milestones for warmer target conditions. Early 30-minute percentage is not thermally adjusted without matching early-charge thermal evidence.'
+        : 'No measured same-device ambient-temperature response pair could support a charging-speed adjustment. Thermal context affects confidence only.',
+  };
+
   const estimate: NonNullable<ChargingCurveEstimate['estimate']> = {
     basis: 'weighted-comparable-corpus',
     referenceCount: neighborIds.size,
@@ -773,6 +860,7 @@ export function estimateChargingFromCorpus(
       matchedMeasurementIds: thermalContext.matchedMeasurementIds,
       note: thermalContext.note,
     },
+    thermalResponse: thermalResponseSummary,
     powerResponse: {
       applied: powerResponse.status === 'resolved',
       elasticity: powerResponse.elasticity,
@@ -831,6 +919,7 @@ export function estimateChargingFromCorpus(
         normalizationScale,
         powerScale,
         earlyPowerScale,
+        thermalTimeScale,
       }) =>
         reference.fullChargeMinutes !== undefined &&
         reference.thirtyMinutePercent !== undefined
@@ -846,7 +935,8 @@ export function estimateChargingFromCorpus(
                 ),
                 reference.fullChargeMinutes *
                   normalizationScale *
-                  powerScale,
+                  powerScale *
+                  thermalTimeScale,
               ),
             ]
           : [],
@@ -879,6 +969,7 @@ export function estimateChargingFromCorpus(
         normalizationScale,
         powerScale,
         earlyPowerScale,
+        thermalTimeScale,
       }) =>
         reference.fullChargeMinutes !== undefined &&
         reference.thirtyMinutePercent !== undefined
@@ -894,7 +985,8 @@ export function estimateChargingFromCorpus(
                 ),
                 reference.fullChargeMinutes *
                   normalizationScale *
-                  powerScale,
+                  powerScale *
+                  thermalTimeScale,
               ),
             ]
           : [],
