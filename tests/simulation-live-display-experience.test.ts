@@ -2,6 +2,30 @@ import { describe, expect, it } from 'vitest';
 import { simulateLiveDisplayExperience } from '../src/lib/simulation/live-display-experience';
 
 describe('live display experience', () => {
+  it('keeps electrical panel watts unresolved without isolated live-corpus measurements', () => {
+    const result = simulateLiveDisplayExperience({
+      diagonalInches: 6.8,
+      resolutionWidthPx: 1440,
+      resolutionHeightPx: 3200,
+      refreshRateHz: 120,
+      operatingRefreshRateHz: 120,
+      brightnessNits: 500,
+      averagePictureLevelPercent: 50,
+      panelTechnology: 'LTPO OLED',
+    });
+
+    expect(
+      result.electricalPower.status,
+    ).toBe('unresolved');
+    expect(
+      result.electricalPower.expectedPowerW,
+    ).toBeUndefined();
+    expect(
+      result.electricalPower.referenceCount,
+    ).toBe(0);
+  });
+
+
   it('calculates deterministic pixel throughput and display scenarios', () => {
     const result = simulateLiveDisplayExperience({
       diagonalInches: 6.7,
