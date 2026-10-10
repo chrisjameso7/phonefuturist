@@ -141,6 +141,79 @@ describe('charging Wh normalization', () => {
     ).toBeCloseTo(0.5, 8);
   });
 
+  it('keeps a Wh-only cohort when at least two comparable references have accepted energy evidence', () => {
+    const mixed = corpus(true);
+
+    mixed.devices.push({
+      variant: {
+        id: 'ref-c',
+        identity: {
+          manufacturer: 'Example',
+          family: 'C',
+          modelName: 'C',
+        },
+        battery: {
+          capacityMah: 5000,
+        },
+      },
+      charging: {
+        referenceWiredWatts: 50,
+      },
+    });
+
+    mixed.measurements.push(
+      {
+        id: 'c-full',
+        deviceVariantId: 'ref-c',
+        workload: 'charging',
+        metric: 'wiredFullChargeMinutes',
+        value: 20,
+        unit: 'minutes',
+        sourceId: 'lab',
+        evidenceKind: 'measured',
+        testChargerWatts: 50,
+        chargingStandard: 'USB PD/PPS',
+      },
+      {
+        id: 'c-p30',
+        deviceVariantId: 'ref-c',
+        workload: 'charging',
+        metric: 'charge30mPercent',
+        value: 100,
+        unit: 'percent',
+        sourceId: 'lab',
+        evidenceKind: 'measured',
+        testChargerWatts: 50,
+        chargingStandard: 'USB PD/PPS',
+      },
+    );
+
+    const result = estimateChargingFromCorpus(
+      mixed,
+      {
+        batteryMah: 5000,
+        batteryEnergyWh: 22,
+        wiredChargingWatts: 50,
+        chargingStandard: 'USB PD/PPS',
+        limit: 5,
+      },
+    );
+
+    expect(result.status).toBe('resolved');
+    expect(
+      result.estimate?.normalizationBasis,
+    ).toBe('wh');
+    expect(
+      result.estimate?.referenceModeCount,
+    ).toBe(2);
+    expect(
+      result.estimate?.neighborIds,
+    ).not.toContain('ref-c');
+    expect(
+      result.estimate?.timeTo100Minutes?.expected,
+    ).toBeCloseTo(44, 8);
+  });
+
   it('falls back to mAh scaling when any selected reference lacks accepted energy evidence', () => {
     const result = estimateChargingFromCorpus(
       corpus(false),
