@@ -37,6 +37,12 @@ export interface LiveThermalExperienceResult {
   protocolKey?: string;
   referenceCount?: number;
   neighborIds?: string[];
+  evidenceScope?:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort';
+  sameSocFamilyReferences?: number;
+  sameSocVendorReferences?: number;
   peakTemperatureC?: number;
   endTemperatureC?: number;
   throttleStartSecond?: number;
@@ -351,6 +357,12 @@ export function simulateThermalExperience(
       protocolKey: calibrated.evidence.protocolKey,
       referenceCount: calibrated.evidence.referenceCount,
       neighborIds: calibrated.evidence.neighborIds,
+      evidenceScope:
+        calibrated.evidence.evidenceScope,
+      sameSocFamilyReferences:
+        calibrated.evidence.sameSocFamilyReferences,
+      sameSocVendorReferences:
+        calibrated.evidence.sameSocVendorReferences,
       peakTemperatureC:
         calibrated.simulation.peakTemperatureC,
       endTemperatureC:
