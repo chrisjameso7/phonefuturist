@@ -303,20 +303,14 @@ export function selectChargingComparables(
     (a, b) => b.score - a.score,
   );
 
-  const bestModePerDevice =
-    ranked.filter(
-      (reference, index, rows) =>
-        rows.findIndex(
-          (candidate) =>
-            candidate.deviceVariantId ===
-            reference.deviceVariantId,
-        ) === index,
-    );
-
   return {
     version: CHARGING_COMPARABLE_MODEL_VERSION,
     status: 'resolved',
-    references: bestModePerDevice.slice(
+    // A physical device may expose materially different measured charger
+    // modes (for example proprietary fast charging vs USB PD/PPS). Keep
+    // those modes distinct so the estimator can learn taper and full-charge
+    // behavior instead of silently collapsing them into one phone row.
+    references: ranked.slice(
       0,
       query.limit ?? 5,
     ),
