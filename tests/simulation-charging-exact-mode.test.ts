@@ -62,6 +62,40 @@ describe('exact wired charging mode precedence', () => {
     expect(result.estimate?.timeTo100Minutes?.expected).not.toBe(67);
   });
 
+  it('does not reuse an exact measured mode when known battery energy disagrees', () => {
+    const corpus = buildChargingModeCorpus();
+    const device = corpus.devices.find(
+      (candidate) =>
+        candidate.variant.id ===
+        'oppo-find-x9-pro-global-7500',
+    );
+
+    expect(device).toBeDefined();
+
+    device!.variant.battery = {
+      ...(device!.variant.battery ?? {}),
+      typicalEnergyWh: 30,
+      nominalVoltageV: 4,
+    };
+
+    const result = estimateChargingFromCorpus(corpus, {
+      deviceVariantId: 'oppo-find-x9-pro-global-7500',
+      batteryMah: 7500,
+      batteryEnergyWh: 33,
+      wiredChargingWatts: 80,
+      manufacturer: 'Oppo',
+      chargingStandard: 'SuperVOOC',
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceMode).not.toBe(
+      'measured-match',
+    );
+    expect(result.estimate?.basis).toBe(
+      'weighted-comparable-corpus',
+    );
+  });
+
   it('does not claim exact measured mode when the charging protocol only partially matches', () => {
     const corpus = buildChargingModeCorpus();
 
