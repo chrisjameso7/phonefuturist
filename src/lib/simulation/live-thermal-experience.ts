@@ -96,40 +96,81 @@ function thermalSensitivityScenarios(
     },
   ];
 
+  const rawBaseline =
+    evidenceMode === 'calibrated'
+      ? simulateSocThermals({
+          targetPowerW: input.targetPowerW,
+          ambientTemperatureC:
+            input.ambientTemperatureC,
+          thermalResistanceCPerW:
+            input.thermalResistanceCPerW,
+          thermalMassJPerC:
+            input.thermalMassJPerC,
+          throttleTemperatureC:
+            input.throttleTemperatureC,
+          durationSeconds:
+            input.durationSeconds,
+          stepSeconds: input.stepSeconds,
+        })
+      : undefined;
+
   return scenarios.flatMap((entry) => {
     if (evidenceMode === 'calibrated') {
-      const result = simulateCalibratedSocThermals(
-        corpus,
-        entry.input,
-      );
+      const rawScenario = simulateSocThermals({
+        targetPowerW: entry.input.targetPowerW,
+        ambientTemperatureC:
+          entry.input.ambientTemperatureC,
+        thermalResistanceCPerW:
+          entry.input.thermalResistanceCPerW,
+        thermalMassJPerC:
+          entry.input.thermalMassJPerC,
+        throttleTemperatureC:
+          entry.input.throttleTemperatureC,
+        durationSeconds:
+          entry.input.durationSeconds,
+        stepSeconds: entry.input.stepSeconds,
+      });
 
-      if (
-        result.status !== 'resolved' ||
-        !result.simulation
-      ) {
+      if (!rawBaseline || !rawScenario) {
         return [];
       }
+
+      const deltaPeakTemperatureC =
+        rawScenario.peakTemperatureC -
+        rawBaseline.peakTemperatureC;
+      const deltaSustainedPerformancePercent =
+        rawScenario.sustainedPerformancePercent -
+        rawBaseline.sustainedPerformancePercent;
+      const deltaSustainedPowerW =
+        rawScenario.sustainedPowerW -
+        rawBaseline.sustainedPowerW;
 
       return [{
         scenario: entry.scenario,
         label: entry.label,
-        peakTemperatureC:
-          result.simulation.peakTemperatureC,
-        sustainedPerformancePercent:
-          result.simulation.sustainedPerformancePercent,
-        sustainedPowerW:
-          result.simulation.sustainedPowerW,
+        peakTemperatureC: Math.max(
+          entry.input.ambientTemperatureC,
+          baseline.peakTemperatureC +
+            deltaPeakTemperatureC,
+        ),
+        sustainedPerformancePercent: Math.min(
+          100,
+          Math.max(
+            0,
+            baseline.sustainedPerformancePercent +
+              deltaSustainedPerformancePercent,
+          ),
+        ),
+        sustainedPowerW: Math.max(
+          0,
+          baseline.sustainedPowerW +
+            deltaSustainedPowerW,
+        ),
         throttleStartSecond:
-          result.simulation.throttleStartSecond,
-        deltaPeakTemperatureC:
-          result.simulation.peakTemperatureC -
-          baseline.peakTemperatureC,
-        deltaSustainedPerformancePercent:
-          result.simulation.sustainedPerformancePercent -
-          baseline.sustainedPerformancePercent,
-        deltaSustainedPowerW:
-          result.simulation.sustainedPowerW -
-          baseline.sustainedPowerW,
+          rawScenario.throttleStartSecond,
+        deltaPeakTemperatureC,
+        deltaSustainedPerformancePercent,
+        deltaSustainedPowerW,
       }];
     }
 
@@ -285,7 +326,7 @@ export function simulateThermalExperience(
         },
       ),
       note:
-        'Sustained performance is calibrated from comparable measured thermal evidence, then propagated through the deterministic thermal model.',
+        'Sustained performance is calibrated from comparable measured thermal evidence. What-if sensitivity keeps that measured baseline, then applies deterministic physics-derived deltas for changed ambient temperature, cooling resistance or SoC power.',
     };
   }
 
