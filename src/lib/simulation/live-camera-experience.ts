@@ -57,6 +57,10 @@ export interface LiveCameraExperienceResult {
     deltaPerPixelLightPercent?: number;
     deltaExposureLightPercent?: number;
     deltaBinnedOutputPixelLightPercent?: number;
+    deltaSubjectMotionBlurPercent?: number;
+    deltaCameraShakeBlurPercent?: number;
+    deltaRollingShutterCameraSkewPercent?: number;
+    deltaRollingShutterSubjectSkewPercent?: number;
     deltaPixelPitchPercent?: number;
     deltaEquivalentAperturePercent?: number;
     sensorFootprintPressurePercent?: number;
@@ -195,6 +199,26 @@ function cameraSensitivityScenarios(
           baseline.binnedOutputPixelExposureIndex ??
             baseline.nativePixelExposureIndex,
         ),
+      deltaSubjectMotionBlurPercent:
+        percentDelta(
+          physics.subjectMotionBlurPixels,
+          baseline.subjectMotionBlurPixels,
+        ),
+      deltaCameraShakeBlurPercent:
+        percentDelta(
+          physics.cameraShakeBlurPixelsAfterOis,
+          baseline.cameraShakeBlurPixelsAfterOis,
+        ),
+      deltaRollingShutterCameraSkewPercent:
+        percentDelta(
+          physics.rollingShutterCameraSkewPixels,
+          baseline.rollingShutterCameraSkewPixels,
+        ),
+      deltaRollingShutterSubjectSkewPercent:
+        percentDelta(
+          physics.rollingShutterSubjectSkewPixels,
+          baseline.rollingShutterSubjectSkewPixels,
+        ),
       deltaPixelPitchPercent:
         percentDelta(
           physics.approximatePixelPitchMicrons,
@@ -300,7 +324,7 @@ export function simulateCameraExperience(
       calculation.result,
     ),
     note:
-      'Optical geometry and exposure-aware light proxies are calculated directly from supplied camera specifications. ISO/gain is not treated as photon capture. Pixel binning changes the light represented by an output sample but does not increase total sensor light. Observed camera outcomes are estimated only when comparable measured evidence exists; unsupported outcomes remain unresolved.',
+      'Optical geometry, exposure-aware light, subject-motion blur, camera-shake blur and rolling-shutter skew are calculated directly from supplied camera specifications. ISO/gain is not treated as photon capture. OIS only reduces camera-shake blur, never subject motion. Sensor readout time is separate from exposure time. Observed camera outcomes are estimated only when comparable measured evidence exists; unsupported outcomes remain unresolved.',
   };
 }
 
