@@ -427,7 +427,7 @@ export function calculateCamera(
     result.approximateSensorWidthMm !== undefined &&
     result.approximateSensorHeightMm !== undefined &&
     result.approximateSensorDiagonalMm !== undefined &&
-    sensorArea !== undefined
+    result.approximateSensorAreaMm2 !== undefined
   ) {
     result.activeSensorWidthMm =
       result.approximateSensorWidthMm;
