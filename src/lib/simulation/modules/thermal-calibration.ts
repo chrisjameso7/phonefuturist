@@ -74,6 +74,7 @@ export function selectThermalCalibrationReferences(
     corpus.measurements
       .filter(
         (measurement) =>
+          measurement.evidenceKind === 'measured' &&
           (
             measurement.workload === 'thermal' ||
             measurement.workload === 'benchmark'
@@ -120,6 +121,7 @@ export function selectThermalCalibrationReferences(
       .filter(
         (measurement) =>
           measurement.deviceVariantId === match.device.variant.id &&
+          measurement.evidenceKind === 'measured' &&
           (measurement.workload === 'thermal' || measurement.workload === 'benchmark') &&
           metricMatches(query.domain, measurement.metric) &&
           Number.isFinite(measurement.value),
