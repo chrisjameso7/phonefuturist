@@ -58,7 +58,8 @@ function groupedChargingEvidence(
   const measurements = corpus.measurements.filter((measurement) => {
     if (
       measurement.deviceVariantId !== deviceVariantId ||
-      measurement.workload !== 'charging'
+      measurement.workload !== 'charging' ||
+      measurement.evidenceKind !== 'measured'
     ) {
       return false;
     }
@@ -284,11 +285,26 @@ export function selectChargingComparables(
     };
   }
 
+  const ranked = references.sort(
+    (a, b) => b.score - a.score,
+  );
+
+  const bestModePerDevice =
+    ranked.filter(
+      (reference, index, rows) =>
+        rows.findIndex(
+          (candidate) =>
+            candidate.deviceVariantId ===
+            reference.deviceVariantId,
+        ) === index,
+    );
+
   return {
     version: CHARGING_COMPARABLE_MODEL_VERSION,
     status: 'resolved',
-    references: references
-      .sort((a, b) => b.score - a.score)
-      .slice(0, query.limit ?? 5),
+    references: bestModePerDevice.slice(
+      0,
+      query.limit ?? 5,
+    ),
   };
 }
