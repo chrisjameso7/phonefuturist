@@ -107,6 +107,19 @@ describe('prediction versus reality validation', () => {
       charging?.desirabilityOutcome,
     ).toBe('worse-than-predicted');
 
+    expect(result.mae).toBeUndefined();
+    expect(result.unitSummaries).toHaveLength(2);
+    expect(
+      result.provenanceSummaries.some(
+        (summary) =>
+          summary.provenance ===
+          'assumption-adjusted',
+      ),
+    ).toBe(true);
+    expect(
+      result.meanSignedPercentError,
+    ).toBeDefined();
+
     expect(prediction).toEqual(before);
   });
 
@@ -197,6 +210,66 @@ describe('prediction versus reality validation', () => {
 
     expect(result.status).toBe('unresolved');
     expect(result.evaluatedMetrics).toBe(0);
+  });
+
+  it('emits raw MAE when all validated rows share one unit', () => {
+    const prediction =
+      createPredictionSnapshot({
+        id: 'same-unit',
+        deviceName: 'Phone',
+        metrics: [
+          {
+            key: 'a',
+            label: 'A',
+            value: 100,
+            unit: 'points',
+            provenance:
+              'measured-calibrated',
+          },
+          {
+            key: 'b',
+            label: 'B',
+            value: 200,
+            unit: 'points',
+            provenance:
+              'measured-calibrated',
+          },
+        ],
+      });
+
+    const reality =
+      createRealitySnapshot({
+        id: 'same-unit-reality',
+        predictionId: 'same-unit',
+        metrics: [
+          {
+            key: 'a',
+            value: 90,
+            unit: 'points',
+            measuredAt:
+              '2026-10-01T00:00:00.000Z',
+          },
+          {
+            key: 'b',
+            value: 220,
+            unit: 'points',
+            measuredAt:
+              '2026-10-01T00:00:00.000Z',
+          },
+        ],
+      });
+
+    const result =
+      validatePredictionAgainstReality(
+        prediction,
+        reality,
+      );
+
+    expect(result.mae).toBeCloseTo(15, 8);
+    expect(result.unitSummaries).toHaveLength(1);
+    expect(
+      result.unitSummaries[0].meanSignedError,
+    ).toBeCloseTo(-5, 8);
   });
 
   it('rejects a reality snapshot attached to the wrong historical prediction', () => {
