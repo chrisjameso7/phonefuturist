@@ -83,4 +83,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/calibration/techapi-recent-1000-0.1.json
           git commit -m "data: sync 1000 recent TechAPI phones [techapi-generated]"
+          git pull --rebase origin "${{ github.ref_name }}"
           git push origin "HEAD:${{ github.ref_name }}"
