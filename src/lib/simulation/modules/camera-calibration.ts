@@ -5,7 +5,7 @@ import {
   type CameraComparableProfile,
 } from './camera-comparables';
 
-export const CAMERA_CALIBRATION_VERSION = 'camera-calibration-0.1.0';
+export const CAMERA_CALIBRATION_VERSION = 'camera-calibration-0.2.0';
 
 export type CameraOutcomeDomain =
   | 'low_light_exposure'
@@ -133,7 +133,45 @@ export function calibrateCameraOutcome(
   query: CameraComparableQuery,
   domain: CameraOutcomeDomain,
 ): CameraOutcomeCalibration {
-  const comparables = findComparableCameras(corpus, {
+  const eligibleVariantIds =
+    new Set(
+      corpus.measurements
+        .filter(
+          (measurement) =>
+            measurement.workload ===
+              'camera' &&
+            measurement.evidenceKind ===
+              'measured' &&
+            captureModeMatches(
+              domain,
+              measurement.cameraCaptureMode,
+            ) &&
+            metricMatches(
+              domain,
+              measurement.metric,
+            ) &&
+            Number.isFinite(
+              measurement.value,
+            ),
+        )
+        .map(
+          (measurement) =>
+            measurement.deviceVariantId,
+        ),
+    );
+
+  const evidenceCorpus: DeviceCorpus = {
+    ...corpus,
+    devices:
+      corpus.devices.filter(
+        (device) =>
+          eligibleVariantIds.has(
+            device.variant.id,
+          ),
+      ),
+  };
+
+  const comparables = findComparableCameras(evidenceCorpus, {
     ...query,
     profile: comparableProfileForDomain(domain),
     limit: Math.max(query.limit ?? 8, 8),
