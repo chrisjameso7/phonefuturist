@@ -1,7 +1,7 @@
 import type { DeviceCorpus, DeviceCorpusRecord, CorpusMeasurement } from './device-corpus';
 import { findComparableDevices } from './comparable-devices';
 
-export const CHARGING_COMPARABLE_MODEL_VERSION = 'charging-comparable-0.1.0';
+export const CHARGING_COMPARABLE_MODEL_VERSION = 'charging-comparable-0.2.0';
 
 export interface ChargingComparableQuery {
   deviceVariantId?: string;
@@ -254,7 +254,38 @@ export function selectChargingComparables(
     ),
   );
 
-  const candidates = findComparableDevices(corpus, {
+  // Catalog/spec-only devices must never crowd measured charging
+  // references out of the comparable ranking. Restrict the candidate device
+  // pool to variants that actually have measured charging evidence before
+  // applying similarity limits.
+  const measuredChargingDeviceIds =
+    new Set(
+      corpus.measurements
+        .filter(
+          (measurement) =>
+            measurement.workload ===
+              'charging' &&
+            measurement.evidenceKind ===
+              'measured',
+        )
+        .map(
+          (measurement) =>
+            measurement.deviceVariantId,
+        ),
+    );
+
+  const measuredChargingCorpus: DeviceCorpus = {
+    ...corpus,
+    devices:
+      corpus.devices.filter(
+        (device) =>
+          measuredChargingDeviceIds.has(
+            device.variant.id,
+          ),
+      ),
+  };
+
+  const candidates = findComparableDevices(measuredChargingCorpus, {
     batteryMah: query.batteryMah,
     batteryChemistry: query.batteryChemistry,
     wiredChargingWatts: query.wiredChargingWatts,
