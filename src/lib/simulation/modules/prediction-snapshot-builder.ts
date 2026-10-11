@@ -115,10 +115,7 @@ export function buildPredictionSnapshot(
         experience.wiredFullChargeMinutes,
       unit: 'minutes',
       direction: 'lower-is-better',
-      provenance:
-        experience
-          .displayPanelPowerProvenance ??
-        'measured-calibrated',
+      provenance: 'measured-calibrated',
     });
   }
 
@@ -200,7 +197,10 @@ export function buildPredictionSnapshot(
         experience.displayPanelPowerW,
       unit: 'W',
       direction: 'lower-is-better',
-      provenance: 'measured-calibrated',
+      provenance:
+        experience
+          .displayPanelPowerProvenance ??
+        'measured-calibrated',
     });
   }
 
