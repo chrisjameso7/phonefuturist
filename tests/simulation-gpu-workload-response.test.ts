@@ -54,6 +54,12 @@ describe('GPU workload response interpretation', () => {
     expect(
       result.powerRetentionPercent,
     ).toBeCloseTo(60, 8);
+    expect(
+      result.theoreticalBandwidthBytesPerRenderedPixel,
+    ).toBeGreaterThan(0);
+    expect(
+      result.structuralComputeIndexPerWeightedMegapixelPerSecond,
+    ).toBeGreaterThan(0);
     expect(result.note).toContain(
       'does not estimate FPS',
     );
