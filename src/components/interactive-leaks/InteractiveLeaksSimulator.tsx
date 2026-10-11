@@ -79,6 +79,11 @@ import {
 } from '../../lib/simulation/modules/performance-context';
 
 import {
+  GPU_ARCHITECTURE_MODEL_VERSION,
+  calculateGpuArchitecture,
+} from '../../lib/simulation/modules/gpu-architecture';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -175,6 +180,15 @@ type FormState = {
   socCluster4Cores: string;
   socCluster4ClockGhz: string;
   socCluster4RelativeIpc: string;
+  gpuShaderCores: string;
+  gpuExecutionUnits: string;
+  gpuPeakClockGhz: string;
+  gpuPeakPowerW: string;
+  gpuMemoryBandwidthGbps: string;
+  gpuTextureUnits: string;
+  gpuRenderOutputUnits: string;
+  gpuRayTracingUnits: string;
+  gpuRelativeArchitectureEfficiency: string;
   coolingClass:
     | 'unknown'
     | 'passive-graphite'
@@ -272,6 +286,15 @@ const initialForm: FormState = {
   socCluster4Cores: '',
   socCluster4ClockGhz: '',
   socCluster4RelativeIpc: '',
+  gpuShaderCores: '',
+  gpuExecutionUnits: '',
+  gpuPeakClockGhz: '',
+  gpuPeakPowerW: '',
+  gpuMemoryBandwidthGbps: '',
+  gpuTextureUnits: '',
+  gpuRenderOutputUnits: '',
+  gpuRayTracingUnits: '',
+  gpuRelativeArchitectureEfficiency: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -359,6 +382,15 @@ const flagshipExample: FormState = {
   socCluster4Cores: '',
   socCluster4ClockGhz: '',
   socCluster4RelativeIpc: '',
+  gpuShaderCores: '',
+  gpuExecutionUnits: '',
+  gpuPeakClockGhz: '',
+  gpuPeakPowerW: '',
+  gpuMemoryBandwidthGbps: '',
+  gpuTextureUnits: '',
+  gpuRenderOutputUnits: '',
+  gpuRayTracingUnits: '',
+  gpuRelativeArchitectureEfficiency: '',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -1534,12 +1566,64 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const gpuArchitectureInputsPresent = [
+    form.gpuShaderCores,
+    form.gpuExecutionUnits,
+    form.gpuPeakClockGhz,
+    form.gpuPeakPowerW,
+    form.gpuMemoryBandwidthGbps,
+    form.gpuTextureUnits,
+    form.gpuRenderOutputUnits,
+    form.gpuRayTracingUnits,
+    form.gpuRelativeArchitectureEfficiency,
+  ].some((value) => value.trim() !== '');
+
+  const gpuArchitecture =
+    gpuArchitectureInputsPresent
+      ? calculateGpuArchitecture({
+          shaderCores: numeric(
+            form.gpuShaderCores,
+          ),
+          executionUnits: numeric(
+            form.gpuExecutionUnits,
+          ),
+          peakClockGhz: numeric(
+            form.gpuPeakClockGhz,
+          ),
+          peakGpuPowerW: numeric(
+            form.gpuPeakPowerW,
+          ),
+          memoryBandwidthGbps: numeric(
+            form.gpuMemoryBandwidthGbps,
+          ),
+          textureUnits: numeric(
+            form.gpuTextureUnits,
+          ),
+          renderOutputUnits: numeric(
+            form.gpuRenderOutputUnits,
+          ),
+          rayTracingUnits: numeric(
+            form.gpuRayTracingUnits,
+          ),
+          relativeArchitectureEfficiency:
+            numeric(
+              form.gpuRelativeArchitectureEfficiency,
+            ),
+          fabricationNodeNm: numeric(
+            form.socFabricationNodeNm,
+          ),
+        })
+      : undefined;
+
   const performanceContext =
     peakPerformanceEstimate
       ? buildPerformanceContext({
           peak: peakPerformanceEstimate,
           ...(socArchitecture
             ? { architecture: socArchitecture }
+            : {}),
+          ...(gpuArchitecture
+            ? { gpuArchitecture }
             : {}),
         })
       : undefined;
@@ -1686,6 +1770,7 @@ export default function InteractiveLeaksSimulator() {
       peakPerformanceEstimate,
     performanceContext,
     socArchitecture,
+    gpuArchitecture,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -2941,6 +3026,123 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(value) =>
                     update(
                       'socCluster4RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>GPU architecture assumptions</summary>
+
+              <p className="il-help">
+                Optional GPU structure for raster, gaming and ray-tracing
+                context. Shader cores and execution units are not assumed to
+                be equivalent across vendors. Relative architecture efficiency
+                is only used when you explicitly supply it. Nothing here is
+                automatically converted into a 3DMark score.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="GPU shader cores"
+                  value={form.gpuShaderCores}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuShaderCores', value)
+                  }
+                />
+
+                <NumericField
+                  label="GPU execution units"
+                  value={form.gpuExecutionUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuExecutionUnits', value)
+                  }
+                />
+
+                <NumericField
+                  label="GPU peak clock"
+                  suffix="GHz"
+                  value={form.gpuPeakClockGhz}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update('gpuPeakClockGhz', value)
+                  }
+                />
+
+                <NumericField
+                  label="Peak GPU power"
+                  suffix="W"
+                  value={form.gpuPeakPowerW}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update('gpuPeakPowerW', value)
+                  }
+                />
+
+                <NumericField
+                  label="GPU memory bandwidth"
+                  suffix="GB/s"
+                  value={form.gpuMemoryBandwidthGbps}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuMemoryBandwidthGbps',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Texture units"
+                  value={form.gpuTextureUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuTextureUnits', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render output units"
+                  value={form.gpuRenderOutputUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'gpuRenderOutputUnits',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Ray-tracing units"
+                  value={form.gpuRayTracingUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'gpuRayTracingUnits',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Relative GPU architecture efficiency"
+                  value={
+                    form.gpuRelativeArchitectureEfficiency
+                  }
+                  placeholder="1.0 = reference"
+                  onChange={(value) =>
+                    update(
+                      'gpuRelativeArchitectureEfficiency',
                       value,
                     )
                   }
@@ -4802,6 +5004,91 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {gpuArchitecture ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    GPU architecture · {GPU_ARCHITECTURE_MODEL_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {gpuArchitecture.computeGeometryCount ??
+                          'Unknown'}
+                      </strong>
+                      <span>
+                        {gpuArchitecture.computeGeometrySource
+                          ? gpuArchitecture.computeGeometrySource.replaceAll(
+                              '-',
+                              ' ',
+                            )
+                          : 'Compute geometry'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuArchitecture.rawComputeClockIndex !== undefined
+                          ? format(
+                              gpuArchitecture.rawComputeClockIndex,
+                              2,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>Compute-clock index</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuArchitecture.rawComputePerWIndex !== undefined
+                          ? format(
+                              gpuArchitecture.rawComputePerWIndex,
+                              2,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>Compute-clock / W</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuArchitecture.memoryBandwidthGbps !== undefined
+                          ? `${format(
+                              gpuArchitecture.memoryBandwidthGbps,
+                              1,
+                            )} GB/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>GPU memory bandwidth</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuArchitecture.rayTracingUnits ??
+                          'Unknown'}
+                      </strong>
+                      <span>Ray-tracing units</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuArchitecture.peakGpuPowerW !== undefined
+                          ? `${format(
+                              gpuArchitecture.peakGpuPowerW,
+                              2,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Peak GPU power</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {gpuArchitecture.note}
+                  </p>
+                </div>
+              ) : null}
 
               {performanceContext ? (
                 <div className="il-result-group">
