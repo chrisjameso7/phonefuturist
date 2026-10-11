@@ -68,6 +68,25 @@ describe('GPU workload demand', () => {
     );
   });
 
+  it('converts an explicit bytes-per-pixel traffic assumption into required bandwidth', () => {
+    const result =
+      calculateGpuWorkloadDemand({
+        workload: 'gaming',
+        renderWidthPx: 1920,
+        renderHeightPx: 1080,
+        targetFps: 60,
+        estimatedMemoryTrafficBytesPerPixel:
+          64,
+      });
+
+    expect(
+      result.estimatedRequiredMemoryBandwidthGbps,
+    ).toBeCloseTo(
+      1920 * 1080 / 1_000_000 * 60 * 64 / 1000,
+      8,
+    );
+  });
+
   it('requires rays per pixel before ray demand is resolved', () => {
     const partialRt =
       calculateGpuWorkloadDemand({
