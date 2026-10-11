@@ -126,6 +126,20 @@
       "url": "https://www.gsmarena.com/realme-phones-118.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-samsung-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/samsung-phones-9.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-sony-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/sony-phones-7.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -6600,6 +6614,1176 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/realme_c71-13931.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f08-14988",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F08",
+      "model": "Galaxy F08",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f08-14988.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m08-14987",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M08",
+      "model": "Galaxy M08",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m08-14987.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a18-14941",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A18 4G",
+      "model": "Galaxy A18 4G",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a18-14941.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a08-14938",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A08 4G",
+      "model": "Galaxy A08 4G",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a08-14938.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a07s-14930",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A07s",
+      "model": "Galaxy A07s",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a07s-14930.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s26_fe_5g-14870",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S26 FE",
+      "model": "Galaxy S26 FE",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26_fe_5g-14870.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f70_pro_5g-14856",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F70 Pro",
+      "model": "Galaxy F70 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f70_pro_5g-14856.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_fold8_ultra_5g-14802",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Fold8 Ultra",
+      "model": "Galaxy Z Fold8 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_fold8_ultra_5g-14802.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_fold_wide_5g-14673",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Fold8",
+      "model": "Galaxy Z Fold8",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_fold_wide_5g-14673.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_flip8_5g-14803",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Flip8",
+      "model": "Galaxy Z Flip8",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_flip8_5g-14803.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_watch9-14813",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Watch9",
+      "model": "Galaxy Watch9",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_watch9-14813.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m47_5g-14749",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M47",
+      "model": "Galaxy M47",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m47_5g-14749.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a27_5g-14606",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A27",
+      "model": "Galaxy A27",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a27_5g-14606.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a57_5g-14379",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A57",
+      "model": "Galaxy A57",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a57_5g-14379.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a37_5g-14378",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A37",
+      "model": "Galaxy A37",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a37_5g-14378.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m17e_5g-14534",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M17e",
+      "model": "Galaxy M17e",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m17e_5g-14534.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s26_ultra_5g-14320",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S26 Ultra",
+      "model": "Galaxy S26 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26_ultra_5g-14320.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s26+_5g-14457",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S26+",
+      "model": "Galaxy S26+",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26+_5g-14457.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s26_5g-14456",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S26",
+      "model": "Galaxy S26",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26_5g-14456.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f70e_5g-14459",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F70e",
+      "model": "Galaxy F70e",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f70e_5g-14459.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a07_5g-14409",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A07",
+      "model": "Galaxy A07",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a07_5g-14409.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_trifold_5g-14292",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z TriFold",
+      "model": "Galaxy Z TriFold",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_trifold_5g-14292.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m17_5g-14221",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M17",
+      "model": "Galaxy M17",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m17_5g-14221.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f07-14205",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F07",
+      "model": "Galaxy F07",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f07-14205.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m07-14100",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M07",
+      "model": "Galaxy M07",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m07-14100.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a17-14157",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A17 4G",
+      "model": "Galaxy A17 4G",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a17-14157.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f17_5g-14107",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F17",
+      "model": "Galaxy F17",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f17_5g-14107.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s25_fe_5g-14042",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S25 FE",
+      "model": "Galaxy S25 FE",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s25_fe_5g-14042.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a07-14066",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A07 4G",
+      "model": "Galaxy A07 4G",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a07-14066.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_a17_5g-14041",
+      "manufacturer": "Samsung",
+      "family": "Galaxy A17",
+      "model": "Galaxy A17",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_a17_5g-14041.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f36_5g-14009",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F36",
+      "model": "Galaxy F36",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f36_5g-14009.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_fold7-13826",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Fold7",
+      "model": "Galaxy Z Fold7",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_fold7-13826.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_flip7-13712",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Flip7",
+      "model": "Galaxy Z Flip7",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_flip7-13712.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_z_flip7_fe_5g-13844",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Z Flip7 FE",
+      "model": "Galaxy Z Flip7 FE",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_z_flip7_fe_5g-13844.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_watch8_classic-13998",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Watch8 Classic",
+      "model": "Galaxy Watch8 Classic",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_watch8_classic-13998.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_watch8-13997",
+      "manufacturer": "Samsung",
+      "family": "Galaxy Watch8",
+      "model": "Galaxy Watch8",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_watch8-13997.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m36_5g-13967",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M36",
+      "model": "Galaxy M36",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m36_5g-13967.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_s25_edge-13506",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S25 Edge",
+      "model": "Galaxy S25 Edge",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s25_edge-13506.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_f56_5g-13855",
+      "manufacturer": "Samsung",
+      "family": "Galaxy F56",
+      "model": "Galaxy F56",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_f56_5g-13855.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_m56_5g-13801",
+      "manufacturer": "Samsung",
+      "family": "Galaxy M56",
+      "model": "Galaxy M56",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_m56_5g-13801.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-samsung_galaxy_xcover7_pro-13780",
+      "manufacturer": "Samsung",
+      "family": "Galaxy XCover7 Pro",
+      "model": "Galaxy XCover7 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-samsung-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_xcover7_pro-13780.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_viii_5g-14894",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 VIII",
+      "model": "Xperia 10 VIII",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_viii_5g-14894.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_viii_5g-14660",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 VIII",
+      "model": "Xperia 1 VIII",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_viii_5g-14660.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_vii_5g-14137",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 VII",
+      "model": "Xperia 10 VII",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_vii_5g-14137.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_vii_5g-13843",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 VII",
+      "model": "Xperia 1 VII",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_vii_5g-13843.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_vi-13003",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 VI",
+      "model": "Xperia 1 VI",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_vi-13003.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_vi-13002",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 VI",
+      "model": "Xperia 10 VI",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_vi-13002.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_5_v-12534",
+      "manufacturer": "Sony",
+      "family": "Xperia 5 V",
+      "model": "Xperia 5 V",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_5_v-12534.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_v-12263",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 V",
+      "model": "Xperia 1 V",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_v-12263.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_v-12264",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 V",
+      "model": "Xperia 10 V",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_v-12264.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_5_iv-11838",
+      "manufacturer": "Sony",
+      "family": "Xperia 5 IV",
+      "model": "Xperia 5 IV",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_5_iv-11838.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_iv-11521",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 IV",
+      "model": "Xperia 1 IV",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_iv-11521.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_iv-11522",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 IV",
+      "model": "Xperia 10 IV",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_iv-11522.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_pro_i-11174",
+      "manufacturer": "Sony",
+      "family": "Xperia Pro-I",
+      "model": "Xperia Pro-I",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_pro_i-11174.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_iii_lite-11064",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 III Lite",
+      "model": "Xperia 10 III Lite",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_iii_lite-11064.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_iii-10712",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 III",
+      "model": "Xperia 1 III",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_iii-10712.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_5_iii-10851",
+      "manufacturer": "Sony",
+      "family": "Xperia 5 III",
+      "model": "Xperia 5 III",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_5_iii-10851.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_iii-10698",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 III",
+      "model": "Xperia 10 III",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_iii-10698.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_pro-10707",
+      "manufacturer": "Sony",
+      "family": "Xperia Pro",
+      "model": "Xperia Pro",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_pro-10707.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_5_ii-10396",
+      "manufacturer": "Sony",
+      "family": "Xperia 5 II",
+      "model": "Xperia 5 II",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_5_ii-10396.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1_ii-10096",
+      "manufacturer": "Sony",
+      "family": "Xperia 1 II",
+      "model": "Xperia 1 II",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1_ii-10096.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_ii-10095",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 II",
+      "model": "Xperia 10 II",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_ii-10095.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_l4-10091",
+      "manufacturer": "Sony",
+      "family": "Xperia L4",
+      "model": "Xperia L4",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_l4-10091.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_5-9840",
+      "manufacturer": "Sony",
+      "family": "Xperia 5",
+      "model": "Xperia 5",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_5-9840.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_1-9543",
+      "manufacturer": "Sony",
+      "family": "Xperia 1",
+      "model": "Xperia 1",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_1-9543.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10_plus-9591",
+      "manufacturer": "Sony",
+      "family": "Xperia 10 Plus",
+      "model": "Xperia 10 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10_plus-9591.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_10-9353",
+      "manufacturer": "Sony",
+      "family": "Xperia 10",
+      "model": "Xperia 10",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_10-9353.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_l3-9592",
+      "manufacturer": "Sony",
+      "family": "Xperia L3",
+      "model": "Xperia L3",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_l3-9592.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa2_plus-9268",
+      "manufacturer": "Sony",
+      "family": "Xperia XA2 Plus",
+      "model": "Xperia XA2 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa2_plus-9268.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz3-9232",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ3",
+      "model": "Xperia XZ3",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz3-9232.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz2_premium-9166",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ2 Premium",
+      "model": "Xperia XZ2 Premium",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz2_premium-9166.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz2-9081",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ2",
+      "model": "Xperia XZ2",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz2-9081.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz2_compact-9082",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ2 Compact",
+      "model": "Xperia XZ2 Compact",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz2_compact-9082.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa2_ultra-8985",
+      "manufacturer": "Sony",
+      "family": "Xperia XA2 Ultra",
+      "model": "Xperia XA2 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa2_ultra-8985.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa2-8986",
+      "manufacturer": "Sony",
+      "family": "Xperia XA2",
+      "model": "Xperia XA2",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa2-8986.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_l2-8987",
+      "manufacturer": "Sony",
+      "family": "Xperia L2",
+      "model": "Xperia L2",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_l2-8987.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz1-8804",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ1",
+      "model": "Xperia XZ1",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz1-8804.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa1_plus-8840",
+      "manufacturer": "Sony",
+      "family": "Xperia XA1 Plus",
+      "model": "Xperia XA1 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa1_plus-8840.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz1_compact-8610",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ1 Compact",
+      "model": "Xperia XZ1 Compact",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz1_compact-8610.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_l1-8619",
+      "manufacturer": "Sony",
+      "family": "Xperia L1",
+      "model": "Xperia L1",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_l1-8619.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xzs-8599",
+      "manufacturer": "Sony",
+      "family": "Xperia XZs",
+      "model": "Xperia XZs",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xzs-8599.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz_premium-8593",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ Premium",
+      "model": "Xperia XZ Premium",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz_premium-8593.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa1_ultra-8595",
+      "manufacturer": "Sony",
+      "family": "Xperia XA1 Ultra",
+      "model": "Xperia XA1 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa1_ultra-8595.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa1-8596",
+      "manufacturer": "Sony",
+      "family": "Xperia XA1",
+      "model": "Xperia XA1",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa1-8596.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_x_compact-8292",
+      "manufacturer": "Sony",
+      "family": "Xperia X Compact",
+      "model": "Xperia X Compact",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_x_compact-8292.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xz-8313",
+      "manufacturer": "Sony",
+      "family": "Xperia XZ",
+      "model": "Xperia XZ",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xz-8313.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_e5-8113",
+      "manufacturer": "Sony",
+      "family": "Xperia E5",
+      "model": "Xperia E5",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_e5-8113.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_xa_ultra-8102",
+      "manufacturer": "Sony",
+      "family": "Xperia XA Ultra",
+      "model": "Xperia XA Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_xa_ultra-8102.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_x_performance-7949",
+      "manufacturer": "Sony",
+      "family": "Xperia X Performance",
+      "model": "Xperia X Performance",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_x_performance-7949.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sony_xperia_x-7948",
+      "manufacturer": "Sony",
+      "family": "Xperia X",
+      "model": "Xperia X",
+      "sourceIds": [
+        "gsmarena-catalog-sony-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sony_xperia_x-7948.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
