@@ -47,6 +47,30 @@ describe('GPU sustainable power envelope', () => {
     ).toBe(false);
   });
 
+  it('subtracts an explicit non-GPU package load before calculating GPU headroom', () => {
+    const result =
+      calculateGpuPowerEnvelope({
+        workload: 'gaming_sustained',
+        peakGpuPowerW: 9,
+        sustainableSocPowerW: 10,
+        nonGpuPackagePowerW: 3,
+      });
+
+    expect(result.status).toBe('resolved');
+    expect(
+      result.sustainableGpuPowerCeilingW,
+    ).toBe(7);
+    expect(
+      result.powerRetentionPercent,
+    ).toBeCloseTo(
+      7 / 9 * 100,
+      8,
+    );
+    expect(result.allocationMode).toBe(
+      'non-gpu-reserved',
+    );
+  });
+
   it('stays partial when only one side of the envelope is known', () => {
     const result =
       calculateGpuPowerEnvelope({
