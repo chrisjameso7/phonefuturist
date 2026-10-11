@@ -214,6 +214,7 @@ type FormState = {
   gpuExecutionUnits: string;
   gpuPeakClockGhz: string;
   gpuPeakPowerW: string;
+  gpuNonGpuPackagePowerW: string;
   gpuMemoryBandwidthGbps: string;
   gpuTextureUnits: string;
   gpuRenderOutputUnits: string;
@@ -225,6 +226,7 @@ type FormState = {
   gpuRenderScalePercent: string;
   gpuRelativeWorkloadComplexity: string;
   gpuRaysPerPixel: string;
+  gpuEstimatedMemoryTrafficBytesPerPixel: string;
   gamingSessionMinutes: string;
   coolingClass:
     | 'unknown'
@@ -327,6 +329,7 @@ const initialForm: FormState = {
   gpuExecutionUnits: '',
   gpuPeakClockGhz: '',
   gpuPeakPowerW: '',
+  gpuNonGpuPackagePowerW: '',
   gpuMemoryBandwidthGbps: '',
   gpuTextureUnits: '',
   gpuRenderOutputUnits: '',
@@ -338,6 +341,7 @@ const initialForm: FormState = {
   gpuRenderScalePercent: '',
   gpuRelativeWorkloadComplexity: '',
   gpuRaysPerPixel: '',
+  gpuEstimatedMemoryTrafficBytesPerPixel: '',
   gamingSessionMinutes: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
@@ -430,6 +434,7 @@ const flagshipExample: FormState = {
   gpuExecutionUnits: '',
   gpuPeakClockGhz: '',
   gpuPeakPowerW: '',
+  gpuNonGpuPackagePowerW: '',
   gpuMemoryBandwidthGbps: '',
   gpuTextureUnits: '',
   gpuRenderOutputUnits: '',
@@ -441,6 +446,7 @@ const flagshipExample: FormState = {
   gpuRenderScalePercent: '',
   gpuRelativeWorkloadComplexity: '',
   gpuRaysPerPixel: '',
+  gpuEstimatedMemoryTrafficBytesPerPixel: '',
   gamingSessionMinutes: '',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
@@ -1678,6 +1684,9 @@ export default function InteractiveLeaksSimulator() {
             thermalResult?.status === 'resolved'
               ? thermalResult.sustainedPowerW
               : undefined,
+          nonGpuPackagePowerW: numeric(
+            form.gpuNonGpuPackagePowerW,
+          ),
         })
       : undefined;
 
@@ -1688,6 +1697,7 @@ export default function InteractiveLeaksSimulator() {
     form.gpuRenderScalePercent,
     form.gpuRelativeWorkloadComplexity,
     form.gpuRaysPerPixel,
+    form.gpuEstimatedMemoryTrafficBytesPerPixel,
   ].some((value) => value.trim() !== '');
 
   const gpuWorkloadDemand =
@@ -1726,6 +1736,10 @@ export default function InteractiveLeaksSimulator() {
           raysPerPixel: numeric(
             form.gpuRaysPerPixel,
           ),
+          estimatedMemoryTrafficBytesPerPixel:
+            numeric(
+              form.gpuEstimatedMemoryTrafficBytesPerPixel,
+            ),
         })
       : undefined;
 
@@ -3282,6 +3296,19 @@ export default function InteractiveLeaksSimulator() {
                 />
 
                 <NumericField
+                  label="Non-GPU package power"
+                  suffix="W"
+                  value={form.gpuNonGpuPackagePowerW}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuNonGpuPackagePowerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
                   label="GPU memory bandwidth"
                   suffix="GB/s"
                   value={form.gpuMemoryBandwidthGbps}
@@ -3410,6 +3437,21 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(value) =>
                     update(
                       'gpuRelativeWorkloadComplexity',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Estimated memory traffic"
+                  suffix="B/rendered px"
+                  value={
+                    form.gpuEstimatedMemoryTrafficBytesPerPixel
+                  }
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuEstimatedMemoryTrafficBytesPerPixel',
                       value,
                     )
                   }
@@ -5406,6 +5448,31 @@ export default function InteractiveLeaksSimulator() {
 
                         <div>
                           <strong>
+                            {gpuPowerEnvelope.nonGpuPackagePowerW !==
+                            undefined
+                              ? `${format(
+                                  gpuPowerEnvelope.nonGpuPackagePowerW,
+                                  2,
+                                )} W`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Reserved non-GPU package power</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gpuPowerEnvelope.allocationMode
+                              ? gpuPowerEnvelope.allocationMode.replaceAll(
+                                  '-',
+                                  ' ',
+                                )
+                              : 'Unknown'}
+                          </strong>
+                          <span>GPU power allocation mode</span>
+                        </div>
+
+                        <div>
+                          <strong>
                             {gpuPowerEnvelope.powerRetentionPercent !== undefined
                               ? `${format(
                                   gpuPowerEnvelope.powerRetentionPercent,
@@ -5502,6 +5569,39 @@ export default function InteractiveLeaksSimulator() {
                           : 'Unknown'}
                       </strong>
                       <span>Structural compute / demand</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.estimatedRequiredMemoryBandwidthGbps !==
+                        undefined
+                          ? `${format(
+                              gpuWorkloadResponse.estimatedRequiredMemoryBandwidthGbps,
+                              1,
+                            )} GB/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Estimated memory bandwidth demand</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.memoryBandwidthHeadroomGbps !==
+                        undefined
+                          ? `${format(
+                              gpuWorkloadResponse.memoryBandwidthHeadroomGbps,
+                              1,
+                            )} GB/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Memory bandwidth headroom</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.memoryBandwidthPressure}
+                      </strong>
+                      <span>Memory bandwidth pressure</span>
                     </div>
 
                     <div>
