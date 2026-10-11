@@ -202,6 +202,7 @@ describe('peak performance estimator', () => {
       {
         domain: 'geekbench6_single',
         socVendor: 'Samsung',
+        socName: 'Exynos 2600',
       },
     );
 
