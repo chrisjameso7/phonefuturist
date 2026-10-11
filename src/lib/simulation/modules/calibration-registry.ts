@@ -31,6 +31,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildCameraReferenceCorpus(),
       buildCameraOutcomeCorpus(),
       buildPerformanceReferenceCorpus(),
+      buildBulkDeviceCatalogCorpus(),
       buildTechApiDeviceCatalog(),
       buildPhoneArenaCurrentBatteryCorpus(),
       buildGsmaBatteryV2ReferenceCorpus(),
