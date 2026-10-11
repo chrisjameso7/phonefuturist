@@ -38,6 +38,14 @@ export interface GpuWorkloadResponseResult {
   gpuBandwidthPerComputeUnit?: number;
   theoreticalBandwidthBytesPerRenderedPixel?: number;
   structuralComputeIndexPerWeightedMegapixelPerSecond?: number;
+  estimatedRequiredMemoryBandwidthGbps?: number;
+  memoryBandwidthHeadroomGbps?: number;
+  memoryBandwidthHeadroomRatio?: number;
+  memoryBandwidthPressure:
+    | 'unknown'
+    | 'ample'
+    | 'tight'
+    | 'over-budget';
   peakGpuPowerW?: number;
   sustainableGpuPowerCeilingW?: number;
   powerRetentionPercent?: number;
@@ -133,6 +141,19 @@ export function interpretGpuWorkloadResponse(
   ) {
     bottleneckSignals.push(
       'Ray-tracing workload demand is present, but RT-unit geometry is missing.',
+    );
+  }
+
+  if (
+    architecture?.memoryBandwidthGbps !==
+      undefined &&
+    demand?.estimatedRequiredMemoryBandwidthGbps !==
+      undefined &&
+    architecture.memoryBandwidthGbps <
+      demand.estimatedRequiredMemoryBandwidthGbps
+  ) {
+    bottleneckSignals.push(
+      'The explicit workload memory-traffic estimate exceeds the supplied GPU memory bandwidth.',
     );
   }
 
@@ -254,6 +275,40 @@ export function interpretGpuWorkloadResponse(
             demand.complexityWeightedMegapixelsPerSecond,
         }
       : {}),
+    ...(demand?.estimatedRequiredMemoryBandwidthGbps !==
+      undefined
+      ? {
+          estimatedRequiredMemoryBandwidthGbps:
+            demand.estimatedRequiredMemoryBandwidthGbps,
+        }
+      : {}),
+    ...(architecture?.memoryBandwidthGbps !==
+      undefined &&
+    demand?.estimatedRequiredMemoryBandwidthGbps !==
+      undefined
+      ? {
+          memoryBandwidthHeadroomGbps:
+            architecture.memoryBandwidthGbps -
+            demand.estimatedRequiredMemoryBandwidthGbps,
+          memoryBandwidthHeadroomRatio:
+            architecture.memoryBandwidthGbps /
+            demand.estimatedRequiredMemoryBandwidthGbps,
+        }
+      : {}),
+    memoryBandwidthPressure:
+      architecture?.memoryBandwidthGbps !==
+          undefined &&
+        demand?.estimatedRequiredMemoryBandwidthGbps !==
+          undefined
+        ? architecture.memoryBandwidthGbps <
+          demand.estimatedRequiredMemoryBandwidthGbps
+          ? 'over-budget'
+          : architecture.memoryBandwidthGbps /
+                demand.estimatedRequiredMemoryBandwidthGbps <
+              1.25
+            ? 'tight'
+            : 'ample'
+        : 'unknown',
     peakGpuPowerW:
       envelope?.peakGpuPowerW ??
       architecture?.peakGpuPowerW,
