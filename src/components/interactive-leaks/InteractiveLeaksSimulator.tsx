@@ -114,6 +114,16 @@ import {
 } from '../../lib/simulation/modules/gaming-session-envelope';
 
 import {
+  BATTERY_AGING_ENVELOPE_VERSION,
+  calculateBatteryAgingEnvelope,
+} from '../../lib/simulation/modules/battery-aging-envelope';
+
+import {
+  BATTERY_AGING_RUNTIME_VERSION,
+  calculateBatteryAgingRuntime,
+} from '../../lib/simulation/modules/battery-aging-runtime';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -193,6 +203,10 @@ type FormState = {
   cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell';
   chargingStandard: string;
   wirelessChargingStandard: string;
+  batteryAgeYears: string;
+  batteryEquivalentFullCycles: string;
+  batteryAnnualCalendarFadePercent: string;
+  batteryCycleFadePercentPer100Cycles: string;
 
   socVendor: string;
   socName: string;
@@ -308,6 +322,10 @@ const initialForm: FormState = {
   cellArchitecture: 'unknown',
   chargingStandard: '',
   wirelessChargingStandard: '',
+  batteryAgeYears: '',
+  batteryEquivalentFullCycles: '',
+  batteryAnnualCalendarFadePercent: '',
+  batteryCycleFadePercentPer100Cycles: '',
 
   socVendor: '',
   socName: '',
@@ -413,6 +431,10 @@ const flagshipExample: FormState = {
   cellArchitecture: 'single-cell',
   chargingStandard: 'USB PD/PPS',
   wirelessChargingStandard: 'Qi2',
+  batteryAgeYears: '',
+  batteryEquivalentFullCycles: '',
+  batteryAnnualCalendarFadePercent: '',
+  batteryCycleFadePercentPer100Cycles: '',
 
   socVendor: 'Qualcomm',
   socName: 'Snapdragon 8 Elite Gen 5',
@@ -1318,6 +1340,63 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const batteryAgingInputsPresent = [
+    form.batteryAgeYears,
+    form.batteryEquivalentFullCycles,
+    form.batteryAnnualCalendarFadePercent,
+    form.batteryCycleFadePercentPer100Cycles,
+  ].some((value) => value.trim() !== '');
+
+  const batteryAging =
+    batteryAgingInputsPresent && result
+      ? calculateBatteryAgingEnvelope({
+          initialCapacityMah:
+            result.battery?.totalCapacityMah,
+          initialEnergyWh:
+            result.battery?.totalEnergyWh,
+          ageYears: numeric(
+            form.batteryAgeYears,
+          ),
+          equivalentFullCycles: numeric(
+            form.batteryEquivalentFullCycles,
+          ),
+          annualCalendarFadePercent: numeric(
+            form.batteryAnnualCalendarFadePercent,
+          ),
+          cycleFadePercentPer100Cycles:
+            numeric(
+              form.batteryCycleFadePercentPer100Cycles,
+            ),
+        })
+      : undefined;
+
+  const agedRuntimeRows =
+    batteryAging?.combinedRetentionFraction !==
+      undefined
+      ? (batteryExperience?.runtimes ?? [])
+          .filter(
+            (runtime) =>
+              runtime.status === 'resolved' &&
+              runtime.expectedHours !==
+                undefined,
+          )
+          .map((runtime) => ({
+            workload: runtime.workload,
+            result:
+              calculateBatteryAgingRuntime({
+                baselineRuntimeHours:
+                  runtime.expectedHours,
+                retainedEnergyFraction:
+                  batteryAging.combinedRetentionFraction,
+              }),
+          }))
+          .filter(
+            (row) =>
+              row.result.status ===
+              'resolved',
+          )
+      : [];
+
   const chargingResult = batteryExperience?.charging;
   const wirelessChargingResult =
     batteryExperience?.wirelessCharging;
@@ -1900,6 +1979,8 @@ export default function InteractiveLeaksSimulator() {
     deterministic: result,
     display: displayExperience,
     battery: batteryExperience,
+    batteryAging,
+    agedRuntimeRows,
     thermal: thermalResult
       ? {
           status: thermalResult.status,
@@ -2784,6 +2865,75 @@ export default function InteractiveLeaksSimulator() {
                   placeholder="70"
                   onChange={(value) =>
                     update('batteryWeightG', value)
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>Battery aging assumptions</summary>
+
+              <p className="il-help">
+                Optional aging scenario. Enter only rates you have evidence
+                for or explicitly want to test. PhoneFuturist does not assign
+                a default degradation rate from battery chemistry.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Battery age"
+                  suffix="years"
+                  value={form.batteryAgeYears}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'batteryAgeYears',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Equivalent full cycles"
+                  value={
+                    form.batteryEquivalentFullCycles
+                  }
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'batteryEquivalentFullCycles',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Calendar fade"
+                  suffix="% / year"
+                  value={
+                    form.batteryAnnualCalendarFadePercent
+                  }
+                  placeholder="Evidence / assumption"
+                  onChange={(value) =>
+                    update(
+                      'batteryAnnualCalendarFadePercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cycle fade"
+                  suffix="% / 100 cycles"
+                  value={
+                    form.batteryCycleFadePercentPer100Cycles
+                  }
+                  placeholder="Evidence / assumption"
+                  onChange={(value) =>
+                    update(
+                      'batteryCycleFadePercentPer100Cycles',
+                      value,
+                    )
                   }
                 />
               </div>
@@ -4703,6 +4853,133 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 </div>
               </div>
+
+              {batteryAging ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Battery aging · {BATTERY_AGING_ENVELOPE_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {batteryAging.combinedRetentionPercent !==
+                        undefined
+                          ? `${format(
+                              batteryAging.combinedRetentionPercent,
+                              1,
+                            )}%`
+                          : 'Unresolved'}
+                      </strong>
+                      <span>Retained energy / capacity</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.estimatedCapacityMah !==
+                        undefined
+                          ? `${format(
+                              batteryAging.estimatedCapacityMah,
+                              0,
+                            )} mAh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aged capacity scenario</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.estimatedEnergyWh !==
+                        undefined
+                          ? `${format(
+                              batteryAging.estimatedEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aged energy scenario</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.calendarRetentionFraction !==
+                        undefined
+                          ? `${format(
+                              batteryAging.calendarRetentionFraction *
+                                100,
+                              1,
+                            )}%`
+                          : 'Not supplied'}
+                      </strong>
+                      <span>Calendar retention</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.cycleRetentionFraction !==
+                        undefined
+                          ? `${format(
+                              batteryAging.cycleRetentionFraction *
+                                100,
+                              1,
+                            )}%`
+                          : 'Not supplied'}
+                      </strong>
+                      <span>Cycle retention</span>
+                    </div>
+                  </div>
+
+                  {agedRuntimeRows.length ? (
+                    <div className="il-sensitivity-grid">
+                      {agedRuntimeRows.map((row) => (
+                        <div
+                          className="il-sensitivity-card"
+                          key={row.workload}
+                        >
+                          <strong>
+                            {row.workload.replaceAll(
+                              '_',
+                              ' ',
+                            )}
+                          </strong>
+                          <span>
+                            {row.result.baselineRuntimeHours !==
+                            undefined
+                              ? `${format(
+                                  row.result.baselineRuntimeHours,
+                                  1,
+                                )} h new`
+                              : 'Baseline unknown'}
+                          </span>
+                          <span>
+                            {row.result.agedRuntimeHours !==
+                            undefined
+                              ? `${format(
+                                  row.result.agedRuntimeHours,
+                                  1,
+                                )} h aged`
+                              : 'Aged runtime unknown'}
+                          </span>
+                          <small>
+                            {BATTERY_AGING_RUNTIME_VERSION}
+                            {row.result.runtimeDeltaPercent !==
+                            undefined
+                              ? ` · ${format(
+                                  row.result.runtimeDeltaPercent,
+                                  1,
+                                )}% runtime`
+                              : ''}
+                          </small>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <p className="il-help">
+                    {batteryAging.note}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
