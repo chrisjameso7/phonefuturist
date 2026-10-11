@@ -89,6 +89,16 @@ import {
 } from '../../lib/simulation/modules/gpu-power-envelope';
 
 import {
+  GPU_WORKLOAD_DEMAND_VERSION,
+  calculateGpuWorkloadDemand,
+} from '../../lib/simulation/modules/gpu-workload-demand';
+
+import {
+  GPU_WORKLOAD_RESPONSE_VERSION,
+  interpretGpuWorkloadResponse,
+} from '../../lib/simulation/modules/gpu-workload-response';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -194,6 +204,12 @@ type FormState = {
   gpuRenderOutputUnits: string;
   gpuRayTracingUnits: string;
   gpuRelativeArchitectureEfficiency: string;
+  gpuRenderWidthPx: string;
+  gpuRenderHeightPx: string;
+  gpuTargetFps: string;
+  gpuRenderScalePercent: string;
+  gpuRelativeWorkloadComplexity: string;
+  gpuRaysPerPixel: string;
   coolingClass:
     | 'unknown'
     | 'passive-graphite'
@@ -300,6 +316,12 @@ const initialForm: FormState = {
   gpuRenderOutputUnits: '',
   gpuRayTracingUnits: '',
   gpuRelativeArchitectureEfficiency: '',
+  gpuRenderWidthPx: '',
+  gpuRenderHeightPx: '',
+  gpuTargetFps: '',
+  gpuRenderScalePercent: '',
+  gpuRelativeWorkloadComplexity: '',
+  gpuRaysPerPixel: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -396,6 +418,12 @@ const flagshipExample: FormState = {
   gpuRenderOutputUnits: '',
   gpuRayTracingUnits: '',
   gpuRelativeArchitectureEfficiency: '',
+  gpuRenderWidthPx: '',
+  gpuRenderHeightPx: '',
+  gpuTargetFps: '',
+  gpuRenderScalePercent: '',
+  gpuRelativeWorkloadComplexity: '',
+  gpuRaysPerPixel: '',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -1635,6 +1663,71 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const gpuWorkloadInputsPresent = [
+    form.gpuRenderWidthPx,
+    form.gpuRenderHeightPx,
+    form.gpuTargetFps,
+    form.gpuRenderScalePercent,
+    form.gpuRelativeWorkloadComplexity,
+    form.gpuRaysPerPixel,
+  ].some((value) => value.trim() !== '');
+
+  const gpuWorkloadDemand =
+    gpuWorkloadInputsPresent
+      ? calculateGpuWorkloadDemand({
+          workload:
+            form.thermalDomain ===
+            'ray_tracing'
+              ? 'ray-tracing'
+              : form.thermalDomain ===
+                  'gaming_sustained'
+                ? 'gaming'
+                : 'raster',
+          renderWidthPx: numeric(
+            form.gpuRenderWidthPx,
+          ),
+          renderHeightPx: numeric(
+            form.gpuRenderHeightPx,
+          ),
+          targetFps: numeric(
+            form.gpuTargetFps,
+          ),
+          ...(numeric(
+            form.gpuRenderScalePercent,
+          ) !== undefined
+            ? {
+                renderScaleFraction:
+                  numeric(
+                    form.gpuRenderScalePercent,
+                  )! / 100,
+              }
+            : {}),
+          relativeComplexity: numeric(
+            form.gpuRelativeWorkloadComplexity,
+          ),
+          raysPerPixel: numeric(
+            form.gpuRaysPerPixel,
+          ),
+        })
+      : undefined;
+
+  const gpuWorkloadResponse =
+    gpuArchitecture ||
+    gpuPowerEnvelope ||
+    gpuWorkloadDemand
+      ? interpretGpuWorkloadResponse({
+          ...(gpuArchitecture
+            ? { architecture: gpuArchitecture }
+            : {}),
+          ...(gpuPowerEnvelope
+            ? { powerEnvelope: gpuPowerEnvelope }
+            : {}),
+          ...(gpuWorkloadDemand
+            ? { demand: gpuWorkloadDemand }
+            : {}),
+        })
+      : undefined;
+
   const performanceContext =
     peakPerformanceEstimate
       ? buildPerformanceContext({
@@ -1792,6 +1885,8 @@ export default function InteractiveLeaksSimulator() {
     socArchitecture,
     gpuArchitecture,
     gpuPowerEnvelope,
+    gpuWorkloadDemand,
+    gpuWorkloadResponse,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -3166,6 +3261,86 @@ export default function InteractiveLeaksSimulator() {
                       'gpuRelativeArchitectureEfficiency',
                       value,
                     )
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>GPU workload target</summary>
+
+              <p className="il-help">
+                Optional demand-side inputs. These calculate frame budget,
+                pixel throughput and RT ray demand. They describe what the
+                workload asks from the GPU, not what FPS the phone will
+                achieve.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Render width"
+                  suffix="px"
+                  value={form.gpuRenderWidthPx}
+                  placeholder="1920"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuRenderWidthPx', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render height"
+                  suffix="px"
+                  value={form.gpuRenderHeightPx}
+                  placeholder="1080"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuRenderHeightPx', value)
+                  }
+                />
+
+                <NumericField
+                  label="Target FPS"
+                  value={form.gpuTargetFps}
+                  placeholder="60"
+                  onChange={(value) =>
+                    update('gpuTargetFps', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render scale"
+                  suffix="%"
+                  value={form.gpuRenderScalePercent}
+                  placeholder="100"
+                  onChange={(value) =>
+                    update(
+                      'gpuRenderScalePercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Relative workload complexity"
+                  value={
+                    form.gpuRelativeWorkloadComplexity
+                  }
+                  placeholder="1.0 = reference"
+                  onChange={(value) =>
+                    update(
+                      'gpuRelativeWorkloadComplexity',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Rays per pixel"
+                  value={form.gpuRaysPerPixel}
+                  placeholder="RT only"
+                  onChange={(value) =>
+                    update('gpuRaysPerPixel', value)
                   }
                 />
               </div>
@@ -5166,6 +5341,98 @@ export default function InteractiveLeaksSimulator() {
                       </p>
                     </>
                   ) : null}
+                </div>
+              ) : null}
+
+              {gpuWorkloadResponse ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    GPU workload response · {GPU_WORKLOAD_RESPONSE_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.state.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Workload state</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.frameBudgetMs !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.frameBudgetMs,
+                              2,
+                            )} ms`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Frame-time budget</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.megapixelsPerSecond !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.megapixelsPerSecond,
+                              1,
+                            )} MP/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Pixel throughput demand</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.powerPressure}
+                      </strong>
+                      <span>Power pressure</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.architectureCoverage.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>GPU architecture coverage</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.megaRaysPerSecondDemand !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.megaRaysPerSecondDemand,
+                              1,
+                            )} Mray/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>RT ray demand</span>
+                    </div>
+                  </div>
+
+                  {gpuWorkloadDemand ? (
+                    <p className="il-help">
+                      {GPU_WORKLOAD_DEMAND_VERSION} ·{' '}
+                      {gpuWorkloadDemand.note}
+                    </p>
+                  ) : null}
+
+                  <p className="il-help">
+                    {gpuWorkloadResponse.note}
+                  </p>
+
+                  {gpuWorkloadResponse.bottleneckSignals.map(
+                    (signal) => (
+                      <p className="il-help" key={signal}>
+                        {signal}
+                      </p>
+                    ),
+                  )}
                 </div>
               ) : null}
 
