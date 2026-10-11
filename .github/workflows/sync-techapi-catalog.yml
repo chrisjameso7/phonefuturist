@@ -74,7 +74,7 @@ jobs:
 
       - name: Commit generated snapshot
         run: |
-          if git diff --quiet -- data/calibration/techapi-recent-1000-0.1.json; then
+          if [ -z "$(git status --porcelain -- data/calibration/techapi-recent-1000-0.1.json)" ]; then
             echo "TechAPI snapshot is already current."
             exit 0
           fi
