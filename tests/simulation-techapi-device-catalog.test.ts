@@ -10,6 +10,9 @@ import {
 import {
   validateDeviceCorpus,
 } from '../src/lib/simulation/modules/device-corpus';
+import {
+  simulateChargingFromLiveCorpus,
+} from '../src/lib/simulation/live-charging';
 
 describe('TechAPI 1000-phone catalog', () => {
   it('loads exactly 1000 catalog devices without creating lab measurements', () => {
@@ -53,6 +56,27 @@ describe('TechAPI 1000-phone catalog', () => {
     expect(
       validateDeviceCorpus(corpus),
     ).toEqual([]);
+  });
+
+  it('does not let 1000 spec-only catalog devices crowd measured charging peers out of the estimator', () => {
+    clearCalibrationRegistryCache();
+
+    const result =
+      simulateChargingFromLiveCorpus({
+        batteryMah: 5700,
+        wiredChargingWatts: 60,
+        manufacturer: 'Samsung',
+        limit: 5,
+      });
+
+    expect(result.status).toBe(
+      'resolved',
+    );
+    expect(
+      result.estimate?.neighborIds,
+    ).toContain(
+      'legacy-charging-samsung-galaxy-s26-ultra',
+    );
   });
 
   it('marks every imported phone as catalog evidence in notes', () => {
