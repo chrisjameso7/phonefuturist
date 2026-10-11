@@ -36,6 +36,8 @@ export interface GpuWorkloadResponseResult {
   gpuComputeClockIndex?: number;
   gpuMemoryBandwidthGbps?: number;
   gpuBandwidthPerComputeUnit?: number;
+  theoreticalBandwidthBytesPerRenderedPixel?: number;
+  structuralComputeIndexPerWeightedMegapixelPerSecond?: number;
   peakGpuPowerW?: number;
   sustainableGpuPowerCeilingW?: number;
   powerRetentionPercent?: number;
@@ -162,6 +164,17 @@ export function interpretGpuWorkloadResponse(
   }
 
   if (
+    architecture?.computeGeometrySource ===
+      'execution-units' ||
+    architecture?.computeGeometrySource ===
+      'shader-cores'
+  ) {
+    warnings.push(
+      'Structural compute-density ratios are meaningful only within a consistent GPU geometry convention; shader cores and execution units are not treated as cross-vendor equivalents.',
+    );
+  }
+
+  if (
     architecture
       ?.efficiencyAdjustedComputeIndex ===
       undefined &&
@@ -218,6 +231,29 @@ export function interpretGpuWorkloadResponse(
       architecture?.memoryBandwidthGbps,
     gpuBandwidthPerComputeUnit:
       architecture?.bandwidthPerComputeUnit,
+    ...(architecture?.memoryBandwidthGbps !==
+      undefined &&
+    demand?.megapixelsPerSecond !== undefined &&
+    demand.megapixelsPerSecond > 0
+      ? {
+          theoreticalBandwidthBytesPerRenderedPixel:
+            architecture.memoryBandwidthGbps *
+            1000 /
+            demand.megapixelsPerSecond,
+        }
+      : {}),
+    ...(architecture?.rawComputeClockIndex !==
+      undefined &&
+    demand?.complexityWeightedMegapixelsPerSecond !==
+      undefined &&
+    demand.complexityWeightedMegapixelsPerSecond >
+      0
+      ? {
+          structuralComputeIndexPerWeightedMegapixelPerSecond:
+            architecture.rawComputeClockIndex /
+            demand.complexityWeightedMegapixelsPerSecond,
+        }
+      : {}),
     peakGpuPowerW:
       envelope?.peakGpuPowerW ??
       architecture?.peakGpuPowerW,
