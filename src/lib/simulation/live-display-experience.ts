@@ -7,6 +7,10 @@ import {
   calibrateLiveDisplayPower,
   type DisplayPowerCalibrationResult,
 } from './modules/display-power-calibration';
+import {
+  resolveLiveDisplayPowerResponse,
+  type DisplayPowerResponseResult,
+} from './modules/display-power-response';
 
 export const LIVE_DISPLAY_EXPERIENCE_VERSION =
   'live-display-experience-0.1.0';
@@ -35,6 +39,12 @@ export interface LiveDisplayExperienceResult {
   panelTechnology?: string;
   load: DisplayLoadResult;
   electricalPower: DisplayPowerCalibrationResult;
+  electricalResponse: DisplayPowerResponseResult;
+  electricalPowerMode:
+    | 'direct-calibration'
+    | 'controlled-interpolation'
+    | 'unresolved';
+  expectedPanelPowerW?: number;
   scenarios: Array<{
     scenario: '60hz' | '1080-class';
     label: string;
@@ -107,6 +117,46 @@ export function simulateLiveDisplayExperience(
         input.operatingRefreshRateHz ??
         input.refreshRateHz,
     });
+
+  const electricalResponse =
+    resolveLiveDisplayPowerResponse({
+      panelTechnology:
+        input.panelTechnology,
+      diagonalInches:
+        input.diagonalInches,
+      resolutionWidthPx:
+        input.resolutionWidthPx,
+      resolutionHeightPx:
+        input.resolutionHeightPx,
+      brightnessNits:
+        input.brightnessNits,
+      averagePictureLevelPercent:
+        input.averagePictureLevelPercent,
+      operatingRefreshRateHz:
+        input.operatingRefreshRateHz ??
+        input.refreshRateHz,
+    });
+
+  const electricalPowerMode =
+    electricalPower.status === 'resolved' &&
+    electricalPower.expectedPowerW !==
+      undefined
+      ? 'direct-calibration' as const
+      : electricalResponse.status ===
+            'resolved' &&
+          electricalResponse.expectedPowerW !==
+            undefined
+        ? 'controlled-interpolation' as const
+        : 'unresolved' as const;
+
+  const expectedPanelPowerW =
+    electricalPowerMode ===
+      'direct-calibration'
+      ? electricalPower.expectedPowerW
+      : electricalPowerMode ===
+          'controlled-interpolation'
+        ? electricalResponse.expectedPowerW
+        : undefined;
 
   let megapixelsPerFrame: number | undefined;
   let pixelThroughputMpxPerSecond: number | undefined;
@@ -244,14 +294,23 @@ export function simulateLiveDisplayExperience(
       input.panelTechnology?.trim() || undefined,
     load,
     electricalPower,
+    electricalResponse,
+    electricalPowerMode,
+    ...(expectedPanelPowerW !== undefined
+      ? { expectedPanelPowerW }
+      : {}),
     scenarios,
     warnings: [
       ...warnings,
       ...load.warnings,
     ],
     note:
-      electricalPower.status === 'resolved'
-        ? 'Pixel throughput and content-aware load remain deterministic proxies. Electrical panel watts are shown separately and come only from isolated measured panel-power references at similar operating conditions.'
-        : 'Pixel throughput and content-aware display load are deterministic workload proxies. Electrical panel watts remain unresolved because the calibration corpus does not contain sufficiently similar isolated panel-power measurements.',
+      electricalPowerMode ===
+        'direct-calibration'
+        ? 'Pixel throughput and content-aware load remain deterministic proxies. Electrical panel watts come from isolated measured panel-power references at similar operating conditions.'
+        : electricalPowerMode ===
+            'controlled-interpolation'
+          ? 'Electrical panel watts come from controlled interpolation between isolated measured panel-power points. Interpolation is used only inside measured one-variable intervals and never extrapolates.'
+          : 'Pixel throughput and content-aware display load are deterministic workload proxies. Electrical panel watts remain unresolved because the calibration corpus lacks sufficiently similar isolated measurements or controlled bracketing pairs.',
   };
 }
