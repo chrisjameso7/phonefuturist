@@ -185,7 +185,7 @@ for (const candidate of candidates) {
   }
 }
 
-const selected = [...byBaseModel.values()]
+const orderedCandidates = [...byBaseModel.values()]
   .sort((a, b) => {
     const date = String(b.row.release_date).localeCompare(String(a.row.release_date));
     if (date) return date;
@@ -194,8 +194,39 @@ const selected = [...byBaseModel.values()]
     const brand = String(a.row.brand).localeCompare(String(b.row.brand));
     if (brand) return brand;
     return String(a.row.name).localeCompare(String(b.row.name));
-  })
-  .slice(0, targetCount);
+  });
+
+const BRAND_DIVERSITY_CAP = 100;
+const selected = [];
+const selectedKeys = new Set();
+const selectedPerBrand = new Map();
+
+for (const candidate of orderedCandidates) {
+  if (selected.length >= targetCount) break;
+
+  const brand = String(candidate.row.brand);
+  const used = selectedPerBrand.get(brand) ?? 0;
+
+  if (used >= BRAND_DIVERSITY_CAP) continue;
+
+  const key = candidate.row.base_model_slug || candidate.row.slug;
+  selected.push(candidate);
+  selectedKeys.add(key);
+  selectedPerBrand.set(brand, used + 1);
+}
+
+// If broad brand coverage cannot fill the target, backfill the remaining
+// slots by recency/completeness. This keeps the target deterministic while
+// preventing the largest catalogs from dominating the first-pass selection.
+for (const candidate of orderedCandidates) {
+  if (selected.length >= targetCount) break;
+
+  const key = candidate.row.base_model_slug || candidate.row.slug;
+  if (selectedKeys.has(key)) continue;
+
+  selected.push(candidate);
+  selectedKeys.add(key);
+}
 
 if (selected.length < targetCount) {
   throw new Error(
@@ -293,7 +324,8 @@ const output = {
     uniqueBy: 'TechAPI canonical brand/year/slug.json records, then base_model_slug',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
-    order: 'release_date desc, completeness desc',
+    order: 'brand-diversity first pass, then release_date desc and completeness desc',
+    brandDiversityFirstPassCap: BRAND_DIVERSITY_CAP,
   },
   brandCounts,
   source: {
