@@ -139,6 +139,11 @@ import {
 } from '../../lib/simulation/modules/camera-video-workload';
 
 import {
+  CAMERA_VIDEO_THERMAL_VERSION,
+  calculateCameraVideoThermal,
+} from '../../lib/simulation/modules/camera-video-thermal';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -175,6 +180,9 @@ type CameraDraft = {
   videoEncodedBitrateMbps?: string;
   videoRecordingDurationMinutes?: string;
   videoPipelinePowerW?: string;
+  videoThermalResistanceCPerW?: string;
+  videoThermalMassJPerC?: string;
+  videoThermalLimitTemperatureC?: string;
   subjectAngularSpeedDegPerSecond?: string;
   cameraAngularShakeDegPerSecond?: string;
   oisAngularCompensationFraction?: string;
@@ -706,6 +714,9 @@ function emptyCamera(id: number): CameraDraft {
     videoEncodedBitrateMbps: '',
     videoRecordingDurationMinutes: '',
     videoPipelinePowerW: '',
+    videoThermalResistanceCPerW: '',
+    videoThermalMassJPerC: '',
+    videoThermalLimitTemperatureC: '',
     subjectAngularSpeedDegPerSecond: '',
     cameraAngularShakeDegPerSecond: '',
     oisAngularCompensationFraction: '',
@@ -2086,6 +2097,49 @@ export default function InteractiveLeaksSimulator() {
         : undefined;
     });
 
+  const cameraVideoThermals =
+    cameras.map((camera, index) => {
+      const workload =
+        cameraVideoWorkloads[index];
+
+      const hasThermalInput = [
+        camera.videoThermalResistanceCPerW ??
+          '',
+        camera.videoThermalMassJPerC ?? '',
+        camera.videoThermalLimitTemperatureC ??
+          '',
+      ].some((value) => value.trim() !== '');
+
+      if (
+        !workload &&
+        !hasThermalInput
+      ) {
+        return undefined;
+      }
+
+      return calculateCameraVideoThermal({
+        cameraPipelinePowerW:
+          workload?.cameraPipelinePowerW,
+        ambientTemperatureC: numeric(
+          form.ambientTemperatureC,
+        ),
+        thermalResistanceCPerW: numeric(
+          camera.videoThermalResistanceCPerW ??
+            '',
+        ),
+        thermalMassJPerC: numeric(
+          camera.videoThermalMassJPerC ??
+            '',
+        ),
+        thermalLimitTemperatureC: numeric(
+          camera.videoThermalLimitTemperatureC ??
+            '',
+        ),
+        recordingDurationMinutes:
+          workload?.recordingDurationMinutes,
+      });
+    });
+
   const zoomTargetEquivalentFocalLengthMm =
     numeric(
       form.zoomTargetEquivalentFocalLengthMm,
@@ -2227,6 +2281,7 @@ export default function InteractiveLeaksSimulator() {
       }),
     ),
     cameraVideoWorkloads,
+    cameraVideoThermals,
     cameraZoomHandoff,
   };
 
@@ -4366,6 +4421,54 @@ export default function InteractiveLeaksSimulator() {
                           onChange={(value) =>
                             updateCamera(camera.id, {
                               videoPipelinePowerW:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal resistance"
+                          suffix="°C/W"
+                          value={
+                            camera.videoThermalResistanceCPerW ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalResistanceCPerW:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal mass"
+                          suffix="J/°C"
+                          value={
+                            camera.videoThermalMassJPerC ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalMassJPerC:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal ceiling"
+                          suffix="°C"
+                          value={
+                            camera.videoThermalLimitTemperatureC ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalLimitTemperatureC:
                                 value,
                             })
                           }
@@ -7559,6 +7662,86 @@ export default function InteractiveLeaksSimulator() {
                             <span>Camera pipeline energy</span>
                           </div>
                         </div>
+
+                        {cameraVideoThermals[index]?.status ===
+                        'resolved' ? (
+                          <>
+                            <div className="il-metrics">
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.steadyStateTemperatureC !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.steadyStateTemperatureC,
+                                        1,
+                                      )} °C`
+                                    : 'Unknown'}
+                                </strong>
+                                <span>Video thermal steady state</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.thermalLimitMinutes !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.thermalLimitMinutes,
+                                        1,
+                                      )} min`
+                                    : cameraVideoThermals[index]
+                                          ?.noThermalLimitAtConstantPower
+                                      ? 'Not reached'
+                                      : 'Unknown'}
+                                </strong>
+                                <span>Time to thermal ceiling</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.temperatureAtRequestedDurationC !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.temperatureAtRequestedDurationC,
+                                        1,
+                                      )} °C`
+                                    : 'Unknown'}
+                                </strong>
+                                <span>Temperature at requested duration</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.thermalLimitWithinRequestedDuration ===
+                                  undefined
+                                    ? 'Unknown'
+                                    : cameraVideoThermals[index]
+                                        ?.thermalLimitWithinRequestedDuration
+                                      ? 'Ceiling crossed'
+                                      : 'Below ceiling'}
+                                </strong>
+                                <span>Recording thermal state</span>
+                              </div>
+                            </div>
+
+                            <p className="il-help">
+                              {CAMERA_VIDEO_THERMAL_VERSION} ·{' '}
+                              {cameraVideoThermals[index]?.note}
+                            </p>
+                          </>
+                        ) : cameraVideoThermals[index] ? (
+                          <p className="il-help">
+                            Video thermal limit unresolved:{' '}
+                            {cameraVideoThermals[index]
+                              ?.unresolvedReason}
+                          </p>
+                        ) : null}
 
                         <p className="il-help">
                           {cameraVideoWorkloads[index]?.note}
