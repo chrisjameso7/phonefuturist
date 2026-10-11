@@ -182,6 +182,27 @@
       "url": "https://www.gsmarena.com/zte-phones-62.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-blackview-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/blackview-phones-116.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-cubot-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/cubot-phones-130.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-doogee-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/doogee-phones-129.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -11063,6 +11084,1709 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/zte_nubia_red_magic_10_pro-13496.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_6_5g-14857",
+      "manufacturer": "Blackview",
+      "family": "Xplore 6",
+      "model": "Xplore 6",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_6_5g-14857.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_x1_pro_5g-14858",
+      "manufacturer": "Blackview",
+      "family": "Xplore X1 Pro",
+      "model": "Xplore X1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_x1_pro_5g-14858.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_bl7000_pro_5g-14852",
+      "manufacturer": "Blackview",
+      "family": "BL7000 Pro",
+      "model": "BL7000 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_bl7000_pro_5g-14852.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_active_7-14851",
+      "manufacturer": "Blackview",
+      "family": "Active 7",
+      "model": "Active 7",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_active_7-14851.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_active_5-14850",
+      "manufacturer": "Blackview",
+      "family": "Active 5",
+      "model": "Active 5",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_active_5-14850.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_link_mini_kids-14842",
+      "manufacturer": "Blackview",
+      "family": "Link Mini Kids",
+      "model": "Link Mini Kids",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_link_mini_kids-14842.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_link_1_kids-14841",
+      "manufacturer": "Blackview",
+      "family": "Link 1 Kids",
+      "model": "Link 1 Kids",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_link_1_kids-14841.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_2c-14840",
+      "manufacturer": "Blackview",
+      "family": "Wave 2C",
+      "model": "Wave 2C",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_2c-14840.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_2_satellite_5g-14838",
+      "manufacturer": "Blackview",
+      "family": "Xplore 2 Satellite",
+      "model": "Xplore 2 Satellite",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_2_satellite_5g-14838.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_2_projector_5g-14837",
+      "manufacturer": "Blackview",
+      "family": "Xplore 2 Projector",
+      "model": "Xplore 2 Projector",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_2_projector_5g-14837.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_1_pro_5g-14836",
+      "manufacturer": "Blackview",
+      "family": "Xplore 1 Pro",
+      "model": "Xplore 1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_1_pro_5g-14836.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_zeno_5-14793",
+      "manufacturer": "Blackview",
+      "family": "Zeno 5",
+      "model": "Zeno 5",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_zeno_5-14793.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_5-14792",
+      "manufacturer": "Blackview",
+      "family": "Mega 5",
+      "model": "Mega 5",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_5-14792.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_10c-14791",
+      "manufacturer": "Blackview",
+      "family": "Wave 10C",
+      "model": "Wave 10C",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_10c-14791.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_10-14790",
+      "manufacturer": "Blackview",
+      "family": "Wave 10",
+      "model": "Wave 10",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_10-14790.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_5-14786",
+      "manufacturer": "Blackview",
+      "family": "Rock 5",
+      "model": "Rock 5",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_5-14786.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_3-14785",
+      "manufacturer": "Blackview",
+      "family": "Rock 3",
+      "model": "Rock 3",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_3-14785.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_2_pro_5g-14784",
+      "manufacturer": "Blackview",
+      "family": "Rock 2 Pro",
+      "model": "Rock 2 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_2_pro_5g-14784.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_2_5g-14783",
+      "manufacturer": "Blackview",
+      "family": "Rock 2",
+      "model": "Rock 2",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_2_5g-14783.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_1_pro-14770",
+      "manufacturer": "Blackview",
+      "family": "Rock 1 Pro",
+      "model": "Rock 1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_1_pro-14770.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_rock_1-14769",
+      "manufacturer": "Blackview",
+      "family": "Rock 1",
+      "model": "Rock 1",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_rock_1-14769.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_fort_200-14767",
+      "manufacturer": "Blackview",
+      "family": "Fort 200",
+      "model": "Fort 200",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_fort_200-14767.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_fort_100-14766",
+      "manufacturer": "Blackview",
+      "family": "Fort 100",
+      "model": "Fort 100",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_fort_100-14766.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_fort_5-14765",
+      "manufacturer": "Blackview",
+      "family": "Fort 5",
+      "model": "Fort 5",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_fort_5-14765.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_7c-14755",
+      "manufacturer": "Blackview",
+      "family": "Wave 7C",
+      "model": "Wave 7C",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_7c-14755.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_12_5g-14437",
+      "manufacturer": "Blackview",
+      "family": "Mega 12",
+      "model": "Mega 12",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_12_5g-14437.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_1_walkie_talkie_5g-14438",
+      "manufacturer": "Blackview",
+      "family": "Xplore 1 Walkie Talkie",
+      "model": "Xplore 1 Walkie Talkie",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_1_walkie_talkie_5g-14438.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_x1_5g-14439",
+      "manufacturer": "Blackview",
+      "family": "Xplore X1",
+      "model": "Xplore X1",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_x1_5g-14439.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_9c-14440",
+      "manufacturer": "Blackview",
+      "family": "Wave 9C",
+      "model": "Wave 9C",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_9c-14440.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_zeno_10_5g-14441",
+      "manufacturer": "Blackview",
+      "family": "Zeno 10",
+      "model": "Zeno 10",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_zeno_10_5g-14441.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_link_2-14442",
+      "manufacturer": "Blackview",
+      "family": "Link 2",
+      "model": "Link 2",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_link_2-14442.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_link_8-14443",
+      "manufacturer": "Blackview",
+      "family": "Link 8",
+      "model": "Link 8",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_link_8-14443.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_fort_2-14444",
+      "manufacturer": "Blackview",
+      "family": "Fort 2",
+      "model": "Fort 2",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_fort_2-14444.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_2_5g-14229",
+      "manufacturer": "Blackview",
+      "family": "Xplore 2",
+      "model": "Xplore 2",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_2_5g-14229.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_zeno_1-14154",
+      "manufacturer": "Blackview",
+      "family": "Zeno 1",
+      "model": "Zeno 1",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_zeno_1-14154.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_shark_6_5g-14153",
+      "manufacturer": "Blackview",
+      "family": "Shark 6",
+      "model": "Shark 6",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_shark_6_5g-14153.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_color_6-14152",
+      "manufacturer": "Blackview",
+      "family": "Color 6",
+      "model": "Color 6",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_color_6-14152.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_fort_1-14151",
+      "manufacturer": "Blackview",
+      "family": "Fort 1",
+      "model": "Fort 1",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_fort_1-14151.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_xplore_1_5g-14127",
+      "manufacturer": "Blackview",
+      "family": "Xplore 1",
+      "model": "Xplore 1",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_xplore_1_5g-14127.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_active_12_pro_5g-14064",
+      "manufacturer": "Blackview",
+      "family": "Active 12 Pro",
+      "model": "Active 12 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_active_12_pro_5g-14064.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_3-13940",
+      "manufacturer": "Blackview",
+      "family": "Mega 3",
+      "model": "Mega 3",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_3-13940.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_bl7000_5g-13849",
+      "manufacturer": "Blackview",
+      "family": "BL7000",
+      "model": "BL7000",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_bl7000_5g-13849.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_bv7300-13848",
+      "manufacturer": "Blackview",
+      "family": "BV7300",
+      "model": "BV7300",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_bv7300-13848.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_2_wifi-13840",
+      "manufacturer": "Blackview",
+      "family": "Mega 2 WiFi",
+      "model": "Mega 2 WiFi",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_2_wifi-13840.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_8-13839",
+      "manufacturer": "Blackview",
+      "family": "Mega 8",
+      "model": "Mega 8",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_8-13839.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_bv4800_pro-13716",
+      "manufacturer": "Blackview",
+      "family": "BV4800 Pro",
+      "model": "BV4800 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_bv4800_pro-13716.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_8c-13638",
+      "manufacturer": "Blackview",
+      "family": "Wave 8C",
+      "model": "Wave 8C",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_8c-13638.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_wave_8-13637",
+      "manufacturer": "Blackview",
+      "family": "Wave 8",
+      "model": "Wave 8",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_wave_8-13637.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_bv8200-13636",
+      "manufacturer": "Blackview",
+      "family": "BV8200",
+      "model": "BV8200",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_bv8200-13636.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview_mega_2-13635",
+      "manufacturer": "Blackview",
+      "family": "Mega 2",
+      "model": "Mega 2",
+      "sourceIds": [
+        "gsmarena-catalog-blackview-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/blackview_mega_2-13635.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_x5-14915",
+      "manufacturer": "Cubot",
+      "family": "X5",
+      "model": "X5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_x5-14915.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_u3-14916",
+      "manufacturer": "Cubot",
+      "family": "U3",
+      "model": "U3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_u3-14916.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_u2-14917",
+      "manufacturer": "Cubot",
+      "family": "U2",
+      "model": "U2",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_u2-14917.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a50-14893",
+      "manufacturer": "Cubot",
+      "family": "A50",
+      "model": "A50",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a50-14893.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_es_pro-14855",
+      "manufacturer": "Cubot",
+      "family": "KingKong ES Pro",
+      "model": "KingKong ES Pro",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_es_pro-14855.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_dura-14854",
+      "manufacturer": "Cubot",
+      "family": "KingKong Dura",
+      "model": "KingKong Dura",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_dura-14854.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_es5-14732",
+      "manufacturer": "Cubot",
+      "family": "KingKong ES5",
+      "model": "KingKong ES5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_es5-14732.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_gt5-14461",
+      "manufacturer": "Cubot",
+      "family": "GT5",
+      "model": "GT5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_gt5-14461.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_beatbox-14460",
+      "manufacturer": "Cubot",
+      "family": "Beatbox",
+      "model": "Beatbox",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_beatbox-14460.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_ace_5-14381",
+      "manufacturer": "Cubot",
+      "family": "KingKong Ace 5",
+      "model": "KingKong Ace 5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_ace_5-14381.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_note_60-14287",
+      "manufacturer": "Cubot",
+      "family": "Note 60",
+      "model": "Note 60",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_note_60-14287.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_mini_4-14099",
+      "manufacturer": "Cubot",
+      "family": "KingKong Mini 4",
+      "model": "KingKong Mini 4",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_mini_4-14099.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_x100_5g-14098",
+      "manufacturer": "Cubot",
+      "family": "X100",
+      "model": "X100",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_x100_5g-14098.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_11_5g-14063",
+      "manufacturer": "Cubot",
+      "family": "KingKong 11",
+      "model": "KingKong 11",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_11_5g-14063.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_es_3-14062",
+      "manufacturer": "Cubot",
+      "family": "KingKong ES 3",
+      "model": "KingKong ES 3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_es_3-14062.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a40-14019",
+      "manufacturer": "Cubot",
+      "family": "A40",
+      "model": "A40",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a40-14019.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_p90-13962",
+      "manufacturer": "Cubot",
+      "family": "P90",
+      "model": "P90",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_p90-13962.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_power_5-13876",
+      "manufacturer": "Cubot",
+      "family": "KingKong Power 5",
+      "model": "KingKong Power 5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_power_5-13876.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_gt3-13765",
+      "manufacturer": "Cubot",
+      "family": "GT3",
+      "model": "GT3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_gt3-13765.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_x3-13732",
+      "manufacturer": "Cubot",
+      "family": "X3",
+      "model": "X3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_x3-13732.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_u1-13731",
+      "manufacturer": "Cubot",
+      "family": "U1",
+      "model": "U1",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_u1-13731.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a30-13532",
+      "manufacturer": "Cubot",
+      "family": "A30",
+      "model": "A30",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a30-13532.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_ace_2-13533",
+      "manufacturer": "Cubot",
+      "family": "KingKong Ace 2",
+      "model": "KingKong Ace 2",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_ace_2-13533.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_gt1-13534",
+      "manufacturer": "Cubot",
+      "family": "GT1",
+      "model": "GT1",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_gt1-13534.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_x_pro-13485",
+      "manufacturer": "Cubot",
+      "family": "KingKong X Pro",
+      "model": "KingKong X Pro",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_x_pro-13485.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_power_3-13370",
+      "manufacturer": "Cubot",
+      "family": "KingKong Power 3",
+      "model": "KingKong Power 3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_power_3-13370.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_star_2-13369",
+      "manufacturer": "Cubot",
+      "family": "KingKong Star 2",
+      "model": "KingKong Star 2",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_star_2-13369.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a20-13368",
+      "manufacturer": "Cubot",
+      "family": "A20",
+      "model": "A20",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a20-13368.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_c29-13282",
+      "manufacturer": "Cubot",
+      "family": "C29",
+      "model": "C29",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_c29-13282.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_es-13271",
+      "manufacturer": "Cubot",
+      "family": "KingKong ES",
+      "model": "KingKong ES",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_es-13271.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_c28-13256",
+      "manufacturer": "Cubot",
+      "family": "C28",
+      "model": "C28",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_c28-13256.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_max_5-13206",
+      "manufacturer": "Cubot",
+      "family": "Max 5",
+      "model": "Max 5",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_max_5-13206.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_x-13185",
+      "manufacturer": "Cubot",
+      "family": "KingKong X",
+      "model": "KingKong X",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_x-13185.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_ace_3-13184",
+      "manufacturer": "Cubot",
+      "family": "KingKong Ace 3",
+      "model": "KingKong Ace 3",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_ace_3-13184.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a10-13139",
+      "manufacturer": "Cubot",
+      "family": "A10",
+      "model": "A10",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a10-13139.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_x90-12997",
+      "manufacturer": "Cubot",
+      "family": "X90",
+      "model": "X90",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_x90-12997.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_x1-12983",
+      "manufacturer": "Cubot",
+      "family": "X1",
+      "model": "X1",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_x1-12983.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_hafury_v1-12924",
+      "manufacturer": "Cubot",
+      "family": "Hafury V1",
+      "model": "Hafury V1",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_hafury_v1-12924.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_hafury_meet-12923",
+      "manufacturer": "Cubot",
+      "family": "Hafury Meet",
+      "model": "Hafury Meet",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_hafury_meet-12923.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_kingkong_ax-12916",
+      "manufacturer": "Cubot",
+      "family": "KingKong AX",
+      "model": "KingKong AX",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_kingkong_ax-12916.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_a1-12915",
+      "manufacturer": "Cubot",
+      "family": "A1",
+      "model": "A1",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_a1-12915.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_c21-12996",
+      "manufacturer": "Cubot",
+      "family": "C21",
+      "model": "C21",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_c21-12996.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-cubot_c20_pro-12995",
+      "manufacturer": "Cubot",
+      "family": "C20 Pro",
+      "model": "C20 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-cubot-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/cubot_c20_pro-12995.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_s300_pro_5g-14741",
+      "manufacturer": "Doogee",
+      "family": "S300 Pro",
+      "model": "S300 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_s300_pro_5g-14741.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_s300_plus_5g-14742",
+      "manufacturer": "Doogee",
+      "family": "S300 Plus",
+      "model": "S300 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_s300_plus_5g-14742.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_s300_plus_thermal_5g-14743",
+      "manufacturer": "Doogee",
+      "family": "S300 Plus Thermal",
+      "model": "S300 Plus Thermal",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_s300_plus_thermal_5g-14743.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_v_max_2_pro_5g-14736",
+      "manufacturer": "Doogee",
+      "family": "V Max 2 Pro",
+      "model": "V Max 2 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_v_max_2_pro_5g-14736.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_v_max_2_5g-14735",
+      "manufacturer": "Doogee",
+      "family": "V Max 2",
+      "model": "V Max 2",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_v_max_2_5g-14735.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_10_energy-14492",
+      "manufacturer": "Doogee",
+      "family": "Blade 10 Energy",
+      "model": "Blade 10 Energy",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_10_energy-14492.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_10_pro_energy-14493",
+      "manufacturer": "Doogee",
+      "family": "Blade 10 Pro Energy",
+      "model": "Blade 10 Pro Energy",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_10_pro_energy-14493.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_10_ultra_energy-14494",
+      "manufacturer": "Doogee",
+      "family": "Blade 10 Ultra Energy",
+      "model": "Blade 10 Ultra Energy",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_10_ultra_energy-14494.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_20_pro-14495",
+      "manufacturer": "Doogee",
+      "family": "Blade 20 Pro",
+      "model": "Blade 20 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_20_pro-14495.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_20_max-14496",
+      "manufacturer": "Doogee",
+      "family": "Blade 20 Max",
+      "model": "Blade 20 Max",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_20_max-14496.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_anywise_w1_pro-14472",
+      "manufacturer": "Doogee",
+      "family": "Anywise W1 Pro",
+      "model": "Anywise W1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_anywise_w1_pro-14472.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_anywise_w1-14473",
+      "manufacturer": "Doogee",
+      "family": "Anywise W1",
+      "model": "Anywise W1",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_anywise_w1-14473.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_5_pro-14467",
+      "manufacturer": "Doogee",
+      "family": "Fire 5 Pro",
+      "model": "Fire 5 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_5_pro-14467.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_5_ultra-14468",
+      "manufacturer": "Doogee",
+      "family": "Fire 5 Ultra",
+      "model": "Fire 5 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_5_ultra-14468.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_7_pro_5g-14469",
+      "manufacturer": "Doogee",
+      "family": "Fire 7 Pro",
+      "model": "Fire 7 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_7_pro_5g-14469.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_7_ultra_5g-14470",
+      "manufacturer": "Doogee",
+      "family": "Fire 7 Ultra",
+      "model": "Fire 7 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_7_ultra_5g-14470.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_s200_ultra_5g-14204",
+      "manufacturer": "Doogee",
+      "family": "S200 Ultra",
+      "model": "S200 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_s200_ultra_5g-14204.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_note_58-14199",
+      "manufacturer": "Doogee",
+      "family": "Note 58",
+      "model": "Note 58",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_note_58-14199.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_note_58_pro-14200",
+      "manufacturer": "Doogee",
+      "family": "Note 58 Pro",
+      "model": "Note 58 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_note_58_pro-14200.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_5-14201",
+      "manufacturer": "Doogee",
+      "family": "Fire 5",
+      "model": "Fire 5",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_5-14201.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_v_max_play_5g-14202",
+      "manufacturer": "Doogee",
+      "family": "V Max Play",
+      "model": "V Max Play",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_v_max_play_5g-14202.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_v_max_lr_5g-14203",
+      "manufacturer": "Doogee",
+      "family": "V Max LR",
+      "model": "V Max LR",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_v_max_lr_5g-14203.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_s200_max_5g-14076",
+      "manufacturer": "Doogee",
+      "family": "S200 Max",
+      "model": "S200 Max",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_s200_max_5g-14076.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_3_ultra-14077",
+      "manufacturer": "Doogee",
+      "family": "Fire 3 Ultra",
+      "model": "Fire 3 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_3_ultra-14077.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_3_pro-14078",
+      "manufacturer": "Doogee",
+      "family": "Fire 3 Pro",
+      "model": "Fire 3 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_3_pro-14078.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_fire_7_5g-14079",
+      "manufacturer": "Doogee",
+      "family": "Fire 7",
+      "model": "Fire 7",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_fire_7_5g-14079.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_gt_pro_5g-13973",
+      "manufacturer": "Doogee",
+      "family": "Blade GT Pro",
+      "model": "Blade GT Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_gt_pro_5g-13973.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_gt_play_5g-13972",
+      "manufacturer": "Doogee",
+      "family": "Blade GT Play",
+      "model": "Blade GT Play",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_gt_play_5g-13972.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade20_play_5g-13902",
+      "manufacturer": "Doogee",
+      "family": "Blade20 Play",
+      "model": "Blade20 Play",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade20_play_5g-13902.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade20_turbo_5g-13901",
+      "manufacturer": "Doogee",
+      "family": "Blade20 Turbo",
+      "model": "Blade20 Turbo",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade20_turbo_5g-13901.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade20_ultra-13900",
+      "manufacturer": "Doogee",
+      "family": "Blade20 Ultra",
+      "model": "Blade20 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade20_ultra-13900.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade20-13899",
+      "manufacturer": "Doogee",
+      "family": "Blade20",
+      "model": "Blade20",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade20-13899.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_note59_pro+-13836",
+      "manufacturer": "Doogee",
+      "family": "Note59 Pro+",
+      "model": "Note59 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_note59_pro+-13836.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_note59_pro-13835",
+      "manufacturer": "Doogee",
+      "family": "Note59 Pro",
+      "model": "Note59 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_note59_pro-13835.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_note_59-13834",
+      "manufacturer": "Doogee",
+      "family": "Note 59",
+      "model": "Note 59",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_note_59-13834.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_v_max_s-13833",
+      "manufacturer": "Doogee",
+      "family": "V Max S",
+      "model": "V Max S",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_v_max_s-13833.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_u11_pro-13832",
+      "manufacturer": "Doogee",
+      "family": "U11 Pro",
+      "model": "U11 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_u11_pro-13832.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee_blade_gt_ultra-13739",
+      "manufacturer": "Doogee",
+      "family": "Blade GT Ultra",
+      "model": "Blade GT Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-doogee-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/doogee_blade_gt_ultra-13739.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
