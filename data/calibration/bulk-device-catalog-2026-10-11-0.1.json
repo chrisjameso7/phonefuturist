@@ -63,6 +63,41 @@
       "url": "https://www.gsmarena.com/honor-phones-121.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-huawei-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/huawei-phones-58.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-infinix-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/infinix-phones-119.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-itel-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/itel-phones-131.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-meizu-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/meizu-phones-74.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-motorola-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/motorola-phones-4.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -2325,6 +2360,2723 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/honor_magic8_rsr_porsche_design_5g-14429.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_90_rs_ultimate_5g-14985",
+      "manufacturer": "Huawei",
+      "family": "Mate 90 RS Ultimate",
+      "model": "Mate 90 RS Ultimate",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_90_rs_ultimate_5g-14985.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_90_pro_max_5g-14982",
+      "manufacturer": "Huawei",
+      "family": "Mate 90 Pro Max",
+      "model": "Mate 90 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_90_pro_max_5g-14982.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_90_pro_5g-14983",
+      "manufacturer": "Huawei",
+      "family": "Mate 90 Pro",
+      "model": "Mate 90 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_90_pro_5g-14983.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_90_5g-14984",
+      "manufacturer": "Huawei",
+      "family": "Mate 90",
+      "model": "Mate 90",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_90_5g-14984.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_xt_2_ultimate_5g-14929",
+      "manufacturer": "Huawei",
+      "family": "Mate XT 2 Ultimate",
+      "model": "Mate XT 2 Ultimate",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_xt_2_ultimate_5g-14929.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_x_view-14887",
+      "manufacturer": "Huawei",
+      "family": "Pura X View",
+      "model": "Pura X View",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_x_view-14887.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16s_pro_5g-14922",
+      "manufacturer": "Huawei",
+      "family": "nova 16s Pro",
+      "model": "nova 16s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16s_pro_5g-14922.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16s_5g-14923",
+      "manufacturer": "Huawei",
+      "family": "nova 16s",
+      "model": "nova 16s",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16s_5g-14923.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16_se-14861",
+      "manufacturer": "Huawei",
+      "family": "nova 16 SE",
+      "model": "nova 16 SE",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_se-14861.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_90s_pro_max_5g-14794",
+      "manufacturer": "Huawei",
+      "family": "Pura 90s Pro Max",
+      "model": "Pura 90s Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_90s_pro_max_5g-14794.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_90s_pro_5g-14795",
+      "manufacturer": "Huawei",
+      "family": "Pura 90s Pro",
+      "model": "Pura 90s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_90s_pro_5g-14795.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16_ultra_5g-14698",
+      "manufacturer": "Huawei",
+      "family": "nova 16 Ultra",
+      "model": "nova 16 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_ultra_5g-14698.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16_pro_5g-14699",
+      "manufacturer": "Huawei",
+      "family": "nova 16 Pro",
+      "model": "nova 16 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_pro_5g-14699.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16_5g-14700",
+      "manufacturer": "Huawei",
+      "family": "nova 16",
+      "model": "nova 16",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_5g-14700.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_16z_5g-14701",
+      "manufacturer": "Huawei",
+      "family": "nova 16z",
+      "model": "nova 16z",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_16z_5g-14701.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_y74-14703",
+      "manufacturer": "Huawei",
+      "family": "nova Y74",
+      "model": "nova Y74",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_y74-14703.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_15_max-14656",
+      "manufacturer": "Huawei",
+      "family": "nova 15 Max",
+      "model": "nova 15 Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_15_max-14656.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_x_max_5g-14607",
+      "manufacturer": "Huawei",
+      "family": "Pura X Max",
+      "model": "Pura X Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_x_max_5g-14607.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_90_pro_max_5g-14609",
+      "manufacturer": "Huawei",
+      "family": "Pura 90 Pro Max",
+      "model": "Pura 90 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_pro_max_5g-14609.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_90_pro_5g-14610",
+      "manufacturer": "Huawei",
+      "family": "Pura 90 Pro",
+      "model": "Pura 90 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_pro_5g-14610.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_pura_90_5g-14612",
+      "manufacturer": "Huawei",
+      "family": "Pura 90",
+      "model": "Pura 90",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_5g-14612.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_enjoy_90_pro_max-14553",
+      "manufacturer": "Huawei",
+      "family": "Enjoy 90 Pro Max",
+      "model": "Enjoy 90 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_enjoy_90_pro_max-14553.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_enjoy_90m_plus-14587",
+      "manufacturer": "Huawei",
+      "family": "Enjoy 90m Plus",
+      "model": "Enjoy 90m Plus",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_enjoy_90m_plus-14587.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_enjoy_90_plus-14554",
+      "manufacturer": "Huawei",
+      "family": "Enjoy 90 Plus",
+      "model": "Enjoy 90 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_enjoy_90_plus-14554.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_enjoy_90-14556",
+      "manufacturer": "Huawei",
+      "family": "Enjoy 90",
+      "model": "Enjoy 90",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_enjoy_90-14556.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_80_pro_max_wind_5g-14555",
+      "manufacturer": "Huawei",
+      "family": "Mate 80 Pro Max Wind",
+      "model": "Mate 80 Pro Max Wind",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_pro_max_wind_5g-14555.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_15_ultra_5g-14370",
+      "manufacturer": "Huawei",
+      "family": "nova 15 Ultra",
+      "model": "nova 15 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_15_ultra_5g-14370.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_15_pro_5g-14371",
+      "manufacturer": "Huawei",
+      "family": "nova 15 Pro",
+      "model": "nova 15 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_15_pro_5g-14371.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_nova_15_5g-14372",
+      "manufacturer": "Huawei",
+      "family": "nova 15",
+      "model": "nova 15",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_nova_15_5g-14372.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_x7_5g-14314",
+      "manufacturer": "Huawei",
+      "family": "Mate X7",
+      "model": "Mate X7",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_x7_5g-14314.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_80_rs_ultimate_5g-14313",
+      "manufacturer": "Huawei",
+      "family": "Mate 80 RS Ultimate",
+      "model": "Mate 80 RS Ultimate",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_rs_ultimate_5g-14313.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_80_pro_max_5g-14310",
+      "manufacturer": "Huawei",
+      "family": "Mate 80 Pro Max",
+      "model": "Mate 80 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_pro_max_5g-14310.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_80_pro_5g-14311",
+      "manufacturer": "Huawei",
+      "family": "Mate 80 Pro",
+      "model": "Mate 80 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_pro_5g-14311.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-huawei_mate_80_5g-14312",
+      "manufacturer": "Huawei",
+      "family": "Mate 80",
+      "model": "Mate 80",
+      "sourceIds": [
+        "gsmarena-catalog-huawei-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_5g-14312.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_70_pro_5g-14806",
+      "manufacturer": "Infinix",
+      "family": "Hot 70 Pro",
+      "model": "Hot 70 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_70_pro_5g-14806.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_70-14683",
+      "manufacturer": "Infinix",
+      "family": "Hot 70",
+      "model": "Hot 70",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_70-14683.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_gt_50_pro_5g-14497",
+      "manufacturer": "Infinix",
+      "family": "GT 50 Pro",
+      "model": "GT 50 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_gt_50_pro_5g-14497.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_60_ultra_5g-14528",
+      "manufacturer": "Infinix",
+      "family": "Note 60 Ultra",
+      "model": "Note 60 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_60_ultra_5g-14528.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_60_pro_5g-14499",
+      "manufacturer": "Infinix",
+      "family": "Note 60 Pro",
+      "model": "Note 60 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_60_pro_5g-14499.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_60_5g-14498",
+      "manufacturer": "Infinix",
+      "family": "Note 60",
+      "model": "Note 60",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_60_5g-14498.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_20-14502",
+      "manufacturer": "Infinix",
+      "family": "Smart 20",
+      "model": "Smart 20",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_20-14502.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_edge_5g-14421",
+      "manufacturer": "Infinix",
+      "family": "Note Edge",
+      "model": "Note Edge",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_edge_5g-14421.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_60i_5g-14072",
+      "manufacturer": "Infinix",
+      "family": "Hot 60i",
+      "model": "Hot 60i",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_60i_5g-14072.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_gt_30_5g-14044",
+      "manufacturer": "Infinix",
+      "family": "GT 30",
+      "model": "GT 30",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_gt_30_5g-14044.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_60_5g-14006",
+      "manufacturer": "Infinix",
+      "family": "Hot 60",
+      "model": "Hot 60",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_60_5g-14006.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_60_pro+-14002",
+      "manufacturer": "Infinix",
+      "family": "Hot 60 Pro+",
+      "model": "Hot 60 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_60_pro+-14002.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_60_pro-14003",
+      "manufacturer": "Infinix",
+      "family": "Hot 60 Pro",
+      "model": "Hot 60 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_60_pro-14003.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_60i-13983",
+      "manufacturer": "Infinix",
+      "family": "Hot 60i 4G",
+      "model": "Hot 60i 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_60i-13983.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_10_hd-13954",
+      "manufacturer": "Infinix",
+      "family": "Smart 10 HD",
+      "model": "Smart 10 HD",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_10_hd-13954.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_10_plus-13953",
+      "manufacturer": "Infinix",
+      "family": "Smart 10 Plus",
+      "model": "Smart 10 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_10_plus-13953.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_10-13933",
+      "manufacturer": "Infinix",
+      "family": "Smart 10",
+      "model": "Smart 10",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_10-13933.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_gt_30_pro_5g-13889",
+      "manufacturer": "Infinix",
+      "family": "GT 30 Pro",
+      "model": "GT 30 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_gt_30_pro_5g-13889.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_50s_5g-13793",
+      "manufacturer": "Infinix",
+      "family": "Note 50s",
+      "model": "Note 50s",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_50s_5g-13793.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_50x-13747",
+      "manufacturer": "Infinix",
+      "family": "Note 50x",
+      "model": "Note 50x",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_50x-13747.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_50_pro+-13746",
+      "manufacturer": "Infinix",
+      "family": "Note 50 Pro+",
+      "model": "Note 50 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_50_pro+-13746.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_50_pro_4g-13701",
+      "manufacturer": "Infinix",
+      "family": "Note 50 Pro 4G",
+      "model": "Note 50 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_50_pro_4g-13701.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_50_4g-13705",
+      "manufacturer": "Infinix",
+      "family": "Note 50 4G",
+      "model": "Note 50 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_50_4g-13705.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_9_hd-13590",
+      "manufacturer": "Infinix",
+      "family": "Smart 9 HD",
+      "model": "Smart 9 HD",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_9_hd-13590.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_50_pro_4g-13461",
+      "manufacturer": "Infinix",
+      "family": "Hot 50 Pro 4G",
+      "model": "Hot 50 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_50_pro_4g-13461.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_50_pro+_4g-13408",
+      "manufacturer": "Infinix",
+      "family": "Hot 50 Pro+ 4G",
+      "model": "Hot 50 Pro+ 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_50_pro+_4g-13408.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40s-13460",
+      "manufacturer": "Infinix",
+      "family": "Note 40S",
+      "model": "Note 40S",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40s-13460.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_50i-13375",
+      "manufacturer": "Infinix",
+      "family": "Hot 50i",
+      "model": "Hot 50i",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_50i-13375.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_9-13374",
+      "manufacturer": "Infinix",
+      "family": "Smart 9",
+      "model": "Smart 9",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_9-13374.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_50_4g-13367",
+      "manufacturer": "Infinix",
+      "family": "Hot 50 4G",
+      "model": "Hot 50 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_50_4g-13367.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_zero_flip-13347",
+      "manufacturer": "Infinix",
+      "family": "Zero Flip",
+      "model": "Zero Flip",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_zero_flip-13347.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_hot_50-13305",
+      "manufacturer": "Infinix",
+      "family": "Hot 50",
+      "model": "Hot 50",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_hot_50-13305.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_zero_40-13290",
+      "manufacturer": "Infinix",
+      "family": "Zero 40",
+      "model": "Zero 40",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_zero_40-13290.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_zero_40_4g-13276",
+      "manufacturer": "Infinix",
+      "family": "Zero 40 4G",
+      "model": "Zero 40 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_zero_40_4g-13276.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40x_5g-13246",
+      "manufacturer": "Infinix",
+      "family": "Note 40X 5G",
+      "model": "Note 40X 5G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40x_5g-13246.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40_5g-13035",
+      "manufacturer": "Infinix",
+      "family": "Note 40 5G",
+      "model": "Note 40 5G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40_5g-13035.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_gt_20_pro-12962",
+      "manufacturer": "Infinix",
+      "family": "GT 20 Pro",
+      "model": "GT 20 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_gt_20_pro-12962.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40_pro+-12874",
+      "manufacturer": "Infinix",
+      "family": "Note 40 Pro+",
+      "model": "Note 40 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40_pro+-12874.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40_pro-12875",
+      "manufacturer": "Infinix",
+      "family": "Note 40 Pro",
+      "model": "Note 40 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40_pro-12875.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40_pro_4g-12876",
+      "manufacturer": "Infinix",
+      "family": "Note 40 Pro 4G",
+      "model": "Note 40 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40_pro_4g-12876.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_note_40-12877",
+      "manufacturer": "Infinix",
+      "family": "Note 40",
+      "model": "Note 40",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_note_40-12877.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_8_plus-12817",
+      "manufacturer": "Infinix",
+      "family": "Smart 8 Plus",
+      "model": "Smart 8 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_8_plus-12817.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_8_pro-12812",
+      "manufacturer": "Infinix",
+      "family": "Smart 8 Pro",
+      "model": "Smart 8 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_8_pro-12812.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-infinix_smart_8_hd-12736",
+      "manufacturer": "Infinix",
+      "family": "Smart 8 HD",
+      "model": "Smart 8 HD",
+      "sourceIds": [
+        "gsmarena-catalog-infinix-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/infinix_smart_8_hd-12736.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_300-14997",
+      "manufacturer": "itel",
+      "family": "Zeno 300",
+      "model": "Zeno 300",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_300-14997.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_200-14998",
+      "manufacturer": "itel",
+      "family": "Zeno 200",
+      "model": "Zeno 200",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_200-14998.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_100_pro-14999",
+      "manufacturer": "itel",
+      "family": "Zeno 100 Pro",
+      "model": "Zeno 100 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_100_pro-14999.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a300c-14956",
+      "manufacturer": "itel",
+      "family": "A300C",
+      "model": "A300C",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a300c-14956.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a100cs-14816",
+      "manufacturer": "itel",
+      "family": "A100Cs",
+      "model": "A100Cs",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a100cs-14816.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_city_200s-14815",
+      "manufacturer": "itel",
+      "family": "City 200s",
+      "model": "City 200s",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_city_200s-14815.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_power_80-14814",
+      "manufacturer": "itel",
+      "family": "Power 80",
+      "model": "Power 80",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_power_80-14814.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a100_pro-14678",
+      "manufacturer": "itel",
+      "family": "A100 Pro",
+      "model": "A100 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a100_pro-14678.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_100-14533",
+      "manufacturer": "itel",
+      "family": "Zeno 100",
+      "model": "Zeno 100",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_100-14533.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a200+-14477",
+      "manufacturer": "itel",
+      "family": "A200+",
+      "model": "A200+",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a200+-14477.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a200-14478",
+      "manufacturer": "itel",
+      "family": "A200",
+      "model": "A200",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a200-14478.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_city_200-14479",
+      "manufacturer": "itel",
+      "family": "City 200",
+      "model": "City 200",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_city_200-14479.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_20_max-14374",
+      "manufacturer": "itel",
+      "family": "Zeno 20 Max",
+      "model": "Zeno 20 Max",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_20_max-14374.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_vistatab_10_mini-14355",
+      "manufacturer": "itel",
+      "family": "VistaTab 10 mini",
+      "model": "VistaTab 10 mini",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_vistatab_10_mini-14355.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_vistatab_30gt-14352",
+      "manufacturer": "itel",
+      "family": "VistaTab 30GT",
+      "model": "VistaTab 30GT",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_vistatab_30gt-14352.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_vistatab_30_pro-14350",
+      "manufacturer": "itel",
+      "family": "VistaTab 30 Pro",
+      "model": "VistaTab 30 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_vistatab_30_pro-14350.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_ts_pro-14223",
+      "manufacturer": "itel",
+      "family": "TS Pro",
+      "model": "TS Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_ts_pro-14223.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a100c-14212",
+      "manufacturer": "itel",
+      "family": "A100C",
+      "model": "A100C",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a100c-14212.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a100-14211",
+      "manufacturer": "itel",
+      "family": "A100",
+      "model": "A100",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a100-14211.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a95_5g-14210",
+      "manufacturer": "itel",
+      "family": "A95",
+      "model": "A95",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a95_5g-14210.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a90_limited-14209",
+      "manufacturer": "itel",
+      "family": "A90 Limited",
+      "model": "A90 Limited",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a90_limited-14209.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_super_26_ultra-14128",
+      "manufacturer": "itel",
+      "family": "Super 26 Ultra",
+      "model": "Super 26 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_super_26_ultra-14128.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_20-14096",
+      "manufacturer": "itel",
+      "family": "Zeno 20",
+      "model": "Zeno 20",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_20-14096.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_city_100-13853",
+      "manufacturer": "itel",
+      "family": "City 100",
+      "model": "City 100",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_city_100-13853.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a90-13852",
+      "manufacturer": "itel",
+      "family": "A90",
+      "model": "A90",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a90-13852.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_power_70-13684",
+      "manufacturer": "itel",
+      "family": "Power 70",
+      "model": "Power 70",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_power_70-13684.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_zeno_10-13618",
+      "manufacturer": "itel",
+      "family": "Zeno 10",
+      "model": "Zeno 10",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_zeno_10-13618.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s25_ultra-13504",
+      "manufacturer": "itel",
+      "family": "S25 Ultra",
+      "model": "S25 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s25_ultra-13504.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s25-13505",
+      "manufacturer": "itel",
+      "family": "S25",
+      "model": "S25",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s25-13505.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_vistatab_30-13344",
+      "manufacturer": "itel",
+      "family": "VistaTab 30",
+      "model": "VistaTab 30",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_vistatab_30-13344.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a80-13343",
+      "manufacturer": "itel",
+      "family": "A80",
+      "model": "A80",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a80-13343.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a50c-13287",
+      "manufacturer": "itel",
+      "family": "A50C",
+      "model": "A50C",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a50c-13287.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p65-13258",
+      "manufacturer": "itel",
+      "family": "P65",
+      "model": "P65",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p65-13258.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_color_pro-13626",
+      "manufacturer": "itel",
+      "family": "Color Pro",
+      "model": "Color Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_color_pro-13626.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a50-13183",
+      "manufacturer": "itel",
+      "family": "A50",
+      "model": "A50",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a50-13183.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_rs4-12930",
+      "manufacturer": "itel",
+      "family": "RS4",
+      "model": "RS4",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_rs4-12930.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s24-12917",
+      "manufacturer": "itel",
+      "family": "S24",
+      "model": "S24",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s24-12917.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p55+-12809",
+      "manufacturer": "itel",
+      "family": "P55+",
+      "model": "P55+",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p55+-12809.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p55-12808",
+      "manufacturer": "itel",
+      "family": "P55",
+      "model": "P55",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p55-12808.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a70-12704",
+      "manufacturer": "itel",
+      "family": "A70",
+      "model": "A70",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a70-12704.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p55_5g-12604",
+      "manufacturer": "itel",
+      "family": "P55 5G",
+      "model": "P55 5G",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p55_5g-12604.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s23+-12571",
+      "manufacturer": "itel",
+      "family": "S23+",
+      "model": "S23+",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s23+-12571.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s23-12478",
+      "manufacturer": "itel",
+      "family": "S23",
+      "model": "S23",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s23-12478.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_s18_pro-12479",
+      "manufacturer": "itel",
+      "family": "S18 Pro",
+      "model": "S18 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_s18_pro-12479.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p40+-12480",
+      "manufacturer": "itel",
+      "family": "P40+",
+      "model": "P40+",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p40+-12480.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_smartwatch_2es-12506",
+      "manufacturer": "itel",
+      "family": "Smartwatch 2ES",
+      "model": "Smartwatch 2ES",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_smartwatch_2es-12506.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_p40-12481",
+      "manufacturer": "itel",
+      "family": "P40",
+      "model": "P40",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_p40-12481.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-itel_a60s-12485",
+      "manufacturer": "itel",
+      "family": "A60s",
+      "model": "A60s",
+      "sourceIds": [
+        "gsmarena-catalog-itel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/itel_a60s-12485.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_22_5g-14150",
+      "manufacturer": "Meizu",
+      "family": "22",
+      "model": "22",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_22_5g-14150.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_22_pro_5g-13884",
+      "manufacturer": "Meizu",
+      "family": "Note 22 Pro",
+      "model": "Note 22 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_22_pro_5g-13884.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_22_5g-13883",
+      "manufacturer": "Meizu",
+      "family": "Note 22",
+      "model": "Note 22",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_22_5g-13883.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_mblu_22_pro-13700",
+      "manufacturer": "Meizu",
+      "family": "Mblu 22 Pro",
+      "model": "Mblu 22 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_mblu_22_pro-13700.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_mblu_22-13699",
+      "manufacturer": "Meizu",
+      "family": "Mblu 22",
+      "model": "Mblu 22",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_mblu_22-13699.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_22-13698",
+      "manufacturer": "Meizu",
+      "family": "Note 22 4G",
+      "model": "Note 22 4G",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_22-13698.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_16_5g-13862",
+      "manufacturer": "Meizu",
+      "family": "Note 16",
+      "model": "Note 16",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_16_5g-13862.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_16_pro_5g-13861",
+      "manufacturer": "Meizu",
+      "family": "Note 16 Pro",
+      "model": "Note 16 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_16_pro_5g-13861.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_mblu_21-13530",
+      "manufacturer": "Meizu",
+      "family": "mblu 21",
+      "model": "mblu 21",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_mblu_21-13530.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_lucky_08-13365",
+      "manufacturer": "Meizu",
+      "family": "Lucky 08",
+      "model": "Lucky 08",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_lucky_08-13365.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_21_pro-13341",
+      "manufacturer": "Meizu",
+      "family": "Note 21 Pro",
+      "model": "Note 21 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_21_pro-13341.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_21-13342",
+      "manufacturer": "Meizu",
+      "family": "Note 21",
+      "model": "Note 21",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_21-13342.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_blue_20-13212",
+      "manufacturer": "Meizu",
+      "family": "Blue 20",
+      "model": "Blue 20",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_blue_20-13212.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_21_note-13007",
+      "manufacturer": "Meizu",
+      "family": "21 Note",
+      "model": "21 Note",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_21_note-13007.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_21_pro-12805",
+      "manufacturer": "Meizu",
+      "family": "21 Pro",
+      "model": "21 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_21_pro-12805.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_21-12719",
+      "manufacturer": "Meizu",
+      "family": "21",
+      "model": "21",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_21-12719.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_20_classic-12630",
+      "manufacturer": "Meizu",
+      "family": "20 Classic",
+      "model": "20 Classic",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_20_classic-12630.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_20_infinity-12207",
+      "manufacturer": "Meizu",
+      "family": "20 Infinity",
+      "model": "20 Infinity",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_20_infinity-12207.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_20_pro-12161",
+      "manufacturer": "Meizu",
+      "family": "20 Pro",
+      "model": "20 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_20_pro-12161.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_20-12206",
+      "manufacturer": "Meizu",
+      "family": "20",
+      "model": "20",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_20-12206.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_18s_pro-11075",
+      "manufacturer": "Meizu",
+      "family": "18s Pro",
+      "model": "18s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_18s_pro-11075.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_18s-11115",
+      "manufacturer": "Meizu",
+      "family": "18s",
+      "model": "18s",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_18s-11115.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_18x-11116",
+      "manufacturer": "Meizu",
+      "family": "18x",
+      "model": "18x",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_18x-11116.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_18_pro-10751",
+      "manufacturer": "Meizu",
+      "family": "18 Pro",
+      "model": "18 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_18_pro-10751.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_18-10766",
+      "manufacturer": "Meizu",
+      "family": "18",
+      "model": "18",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_18-10766.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_17_pro-10232",
+      "manufacturer": "Meizu",
+      "family": "17 Pro",
+      "model": "17 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_17_pro-10232.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_17-10129",
+      "manufacturer": "Meizu",
+      "family": "17",
+      "model": "17",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_17-10129.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16t-9926",
+      "manufacturer": "Meizu",
+      "family": "16T",
+      "model": "16T",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16t-9926.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_m10-9953",
+      "manufacturer": "Meizu",
+      "family": "M10",
+      "model": "M10",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_m10-9953.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16s_pro-9792",
+      "manufacturer": "Meizu",
+      "family": "16s Pro",
+      "model": "16s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16s_pro-9792.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16xs-9724",
+      "manufacturer": "Meizu",
+      "family": "16Xs",
+      "model": "16Xs",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16xs-9724.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16s-9424",
+      "manufacturer": "Meizu",
+      "family": "16s",
+      "model": "16s",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16s-9424.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_9-9555",
+      "manufacturer": "Meizu",
+      "family": "Note 9",
+      "model": "Note 9",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_9-9555.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_zero-9528",
+      "manufacturer": "Meizu",
+      "family": "Zero",
+      "model": "Zero",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_zero-9528.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_c9_pro-9453",
+      "manufacturer": "Meizu",
+      "family": "C9 Pro",
+      "model": "C9 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_c9_pro-9453.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_c9-9454",
+      "manufacturer": "Meizu",
+      "family": "C9",
+      "model": "C9",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_c9-9454.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_note_8-9384",
+      "manufacturer": "Meizu",
+      "family": "Note 8",
+      "model": "Note 8",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_note_8-9384.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_x8-9341",
+      "manufacturer": "Meizu",
+      "family": "X8",
+      "model": "X8",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_x8-9341.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_v8_pro-9338",
+      "manufacturer": "Meizu",
+      "family": "V8 Pro",
+      "model": "V8 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_v8_pro-9338.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_v8-9339",
+      "manufacturer": "Meizu",
+      "family": "V8",
+      "model": "V8",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_v8-9339.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16x-9337",
+      "manufacturer": "Meizu",
+      "family": "16X",
+      "model": "16X",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16x-9337.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16-9280",
+      "manufacturer": "Meizu",
+      "family": "16",
+      "model": "16",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16-9280.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_16_plus-9279",
+      "manufacturer": "Meizu",
+      "family": "16 Plus",
+      "model": "16 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_16_plus-9279.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_m6t-9213",
+      "manufacturer": "Meizu",
+      "family": "M6T",
+      "model": "M6T",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_m6t-9213.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_m8c-9210",
+      "manufacturer": "Meizu",
+      "family": "M8c",
+      "model": "M8c",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_m8c-9210.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_15_plus-9160",
+      "manufacturer": "Meizu",
+      "family": "15 Plus",
+      "model": "15 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_15_plus-9160.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_15-9159",
+      "manufacturer": "Meizu",
+      "family": "15",
+      "model": "15",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_15-9159.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_15_lite-9158",
+      "manufacturer": "Meizu",
+      "family": "15 Lite",
+      "model": "15 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_15_lite-9158.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu_e3-9066",
+      "manufacturer": "Meizu",
+      "family": "E3",
+      "model": "E3",
+      "sourceIds": [
+        "gsmarena-catalog-meizu-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/meizu_e3-9066.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_signature_27_5g-14955",
+      "manufacturer": "Motorola",
+      "family": "Signature 27",
+      "model": "Signature 27",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_signature_27_5g-14955.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_plus_5g-14920",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Plus",
+      "model": "Edge 70 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_plus_5g-14920.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g_max_5g-14724",
+      "manufacturer": "Motorola",
+      "family": "Moto G Max",
+      "model": "Moto G Max",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g_max_5g-14724.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_max_5g-14789",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Max",
+      "model": "Edge 70 Max",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_max_5g-14789.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g77_power_5g-14772",
+      "manufacturer": "Motorola",
+      "family": "Moto G77 Power",
+      "model": "Moto G77 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g77_power_5g-14772.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_pro+_5g-14702",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Pro+",
+      "model": "Edge 70 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_pro+_5g-14702.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g87_5g-14644",
+      "manufacturer": "Motorola",
+      "family": "Moto G87",
+      "model": "Moto G87",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g87_5g-14644.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g47-14645",
+      "manufacturer": "Motorola",
+      "family": "Moto G47",
+      "model": "Moto G47",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g47-14645.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g37_power-14647",
+      "manufacturer": "Motorola",
+      "family": "Moto G37 Power",
+      "model": "Moto G37 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g37_power-14647.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g37-14646",
+      "manufacturer": "Motorola",
+      "family": "Moto G37",
+      "model": "Moto G37",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g37-14646.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_ultra_2026-14638",
+      "manufacturer": "Motorola",
+      "family": "Razr Ultra 2026",
+      "model": "Razr Ultra 2026",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_ultra_2026-14638.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_70_ultra-14641",
+      "manufacturer": "Motorola",
+      "family": "Razr 70 Ultra",
+      "model": "Razr 70 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_70_ultra-14641.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr+_2026-14639",
+      "manufacturer": "Motorola",
+      "family": "Razr+ 2026",
+      "model": "Razr+ 2026",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr+_2026-14639.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_70+-14642",
+      "manufacturer": "Motorola",
+      "family": "Razr 70+",
+      "model": "Razr 70+",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_70+-14642.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_2026-14640",
+      "manufacturer": "Motorola",
+      "family": "Razr 2026",
+      "model": "Razr 2026",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_2026-14640.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_70-14643",
+      "manufacturer": "Motorola",
+      "family": "Razr 70",
+      "model": "Razr 70",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_70-14643.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_pro_5g-14620",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Pro",
+      "model": "Edge 70 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_pro_5g-14620.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_fusion+_5g-14540",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Fusion+",
+      "model": "Edge 70 Fusion+",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_fusion+_5g-14540.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_fusion_5g-14432",
+      "manufacturer": "Motorola",
+      "family": "Edge 70 Fusion",
+      "model": "Edge 70 Fusion",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_fusion_5g-14432.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g77_5g-14433",
+      "manufacturer": "Motorola",
+      "family": "Moto G77",
+      "model": "Moto G77",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g77_5g-14433.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g67_5g-14434",
+      "manufacturer": "Motorola",
+      "family": "Moto G67",
+      "model": "Moto G67",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g67_5g-14434.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g17_power-14452",
+      "manufacturer": "Motorola",
+      "family": "Moto G17 Power",
+      "model": "Moto G17 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g17_power-14452.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g17-14455",
+      "manufacturer": "Motorola",
+      "family": "Moto G17",
+      "model": "Moto G17",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g17-14455.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_razr_fold_5g-14402",
+      "manufacturer": "Motorola",
+      "family": "Razr Fold",
+      "model": "Razr Fold",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_razr_fold_5g-14402.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_signature_5g-14397",
+      "manufacturer": "Motorola",
+      "family": "Signature",
+      "model": "Signature",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_signature_5g-14397.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g57_power_5g-14282",
+      "manufacturer": "Motorola",
+      "family": "Moto G57 Power",
+      "model": "Moto G57 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g57_power_5g-14282.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g57_5g-14284",
+      "manufacturer": "Motorola",
+      "family": "Moto G57",
+      "model": "Moto G57",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g57_5g-14284.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g67_power_5g-14266",
+      "manufacturer": "Motorola",
+      "family": "Moto G67 Power",
+      "model": "Moto G67 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g67_power_5g-14266.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_70_5g-14216",
+      "manufacturer": "Motorola",
+      "family": "Edge 70",
+      "model": "Edge 70",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_70_5g-14216.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_edge_60_neo_5g-14124",
+      "manufacturer": "Motorola",
+      "family": "Edge 60 Neo",
+      "model": "Edge 60 Neo",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_edge_60_neo_5g-14124.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g06_power-14125",
+      "manufacturer": "Motorola",
+      "family": "Moto G06 Power",
+      "model": "Moto G06 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g06_power-14125.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g06-14115",
+      "manufacturer": "Motorola",
+      "family": "Moto G06",
+      "model": "Moto G06",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g06-14115.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_g96_5g-13989",
+      "manufacturer": "Motorola",
+      "family": "G96",
+      "model": "G96",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_g96_5g-13989.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-motorola_moto_g86_power_5g-13918",
+      "manufacturer": "Motorola",
+      "family": "Moto G86 Power",
+      "model": "Moto G86 Power",
+      "sourceIds": [
+        "gsmarena-catalog-motorola-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/motorola_moto_g86_power_5g-13918.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
