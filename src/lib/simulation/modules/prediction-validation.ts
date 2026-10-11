@@ -1,5 +1,5 @@
 export const PREDICTION_VALIDATION_VERSION =
-  'prediction-validation-0.1.0';
+  'prediction-validation-0.2.0';
 
 export type ValidationMetricDirection =
   | 'higher-is-better'
@@ -75,6 +75,26 @@ export interface MetricValidationRow {
   realitySourcePublisher?: string;
 }
 
+export interface PredictionValidationUnitSummary {
+  unit: string;
+  evaluatedMetrics: number;
+  mae: number;
+  meanSignedError: number;
+  mapePercent?: number;
+  meanSignedPercentError?: number;
+  medianAbsolutePercentError?: number;
+}
+
+export interface PredictionValidationProvenanceSummary {
+  provenance:
+    | PredictionMetric['provenance']
+    | 'unspecified';
+  evaluatedMetrics: number;
+  mapePercent?: number;
+  meanSignedPercentError?: number;
+  medianAbsolutePercentError?: number;
+}
+
 export interface PredictionValidationResult {
   version: string;
   status: 'resolved' | 'partial' | 'unresolved';
@@ -83,9 +103,19 @@ export interface PredictionValidationResult {
   evaluatedMetrics: number;
   missingRealityKeys: string[];
   unmatchedRealityKeys: string[];
+  /**
+   * Raw MAE is emitted only when every evaluated row shares the same unit.
+   * Mixed-unit MAE is intentionally withheld.
+   */
   mae?: number;
   mapePercent?: number;
+  meanSignedPercentError?: number;
   medianAbsolutePercentError?: number;
+  overpredictedCount: number;
+  underpredictedCount: number;
+  exactCount: number;
+  unitSummaries: PredictionValidationUnitSummary[];
+  provenanceSummaries: PredictionValidationProvenanceSummary[];
   rows: MetricValidationRow[];
   note: string;
 }
@@ -168,6 +198,54 @@ function desirabilityOutcome(
     : 'worse-than-predicted';
 }
 
+function percentageSummary(
+  rows: MetricValidationRow[],
+) {
+  const percentageRows =
+    rows.filter(
+      (
+        row,
+      ): row is MetricValidationRow & {
+        absolutePercentError: number;
+        signedPercentError: number;
+      } =>
+        row.absolutePercentError !==
+          undefined &&
+        row.signedPercentError !==
+          undefined,
+    );
+
+  if (!percentageRows.length) {
+    return {};
+  }
+
+  return {
+    mapePercent:
+      percentageRows.reduce(
+        (sum, row) =>
+          sum +
+          row.absolutePercentError,
+        0,
+      ) /
+      percentageRows.length,
+    meanSignedPercentError:
+      percentageRows.reduce(
+        (sum, row) =>
+          sum +
+          row.signedPercentError,
+        0,
+      ) /
+      percentageRows.length,
+    medianAbsolutePercentError:
+      median(
+        percentageRows.map(
+          (row) =>
+            row.absolutePercentError,
+        ),
+      ),
+  };
+}
+
 export function validatePredictionAgainstReality(
   prediction: PredictionSnapshot,
   reality: RealitySnapshot,
@@ -188,6 +266,11 @@ export function validatePredictionAgainstReality(
       evaluatedMetrics: 0,
       missingRealityKeys: [],
       unmatchedRealityKeys: [],
+      overpredictedCount: 0,
+      underpredictedCount: 0,
+      exactCount: 0,
+      unitSummaries: [],
+      provenanceSummaries: [],
       rows: [],
       note:
         'Reality snapshot must explicitly reference the immutable prediction snapshot being evaluated.',
@@ -348,22 +431,87 @@ export function validatePredictionAgainstReality(
       evaluatedMetrics: 0,
       missingRealityKeys,
       unmatchedRealityKeys,
+      overpredictedCount: 0,
+      underpredictedCount: 0,
+      exactCount: 0,
+      unitSummaries: [],
+      provenanceSummaries: [],
       rows: [],
       note:
         'No prediction/reality metric pairs with matching keys and units were available for validation.',
     };
   }
 
-  const percentageRows =
-    rows.filter(
-      (
-        row,
-      ): row is MetricValidationRow & {
-        absolutePercentError: number;
-      } =>
-        row.absolutePercentError !==
-        undefined,
+  const globalPercentageSummary =
+    percentageSummary(rows);
+
+  const unitGroups =
+    new Map<string, MetricValidationRow[]>();
+
+  for (const row of rows) {
+    const unitKey =
+      normalizeUnit(row.unit);
+    const group =
+      unitGroups.get(unitKey) ?? [];
+    group.push(row);
+    unitGroups.set(unitKey, group);
+  }
+
+  const unitSummaries =
+    [...unitGroups.entries()].map(
+      ([unit, group]) => ({
+        unit,
+        evaluatedMetrics:
+          group.length,
+        mae:
+          group.reduce(
+            (sum, row) =>
+              sum + row.absoluteError,
+            0,
+          ) / group.length,
+        meanSignedError:
+          group.reduce(
+            (sum, row) =>
+              sum + row.signedError,
+            0,
+          ) / group.length,
+        ...percentageSummary(group),
+      }),
     );
+
+  const provenanceGroups =
+    new Map<
+      PredictionValidationProvenanceSummary['provenance'],
+      MetricValidationRow[]
+    >();
+
+  for (const row of rows) {
+    const provenance =
+      row.predictionProvenance ??
+      'unspecified';
+    const group =
+      provenanceGroups.get(
+        provenance,
+      ) ?? [];
+    group.push(row);
+    provenanceGroups.set(
+      provenance,
+      group,
+    );
+  }
+
+  const provenanceSummaries =
+    [...provenanceGroups.entries()].map(
+      ([provenance, group]) => ({
+        provenance,
+        evaluatedMetrics:
+          group.length,
+        ...percentageSummary(group),
+      }),
+    );
+
+  const singleUnit =
+    unitGroups.size === 1;
 
   return {
     version:
@@ -381,36 +529,43 @@ export function validatePredictionAgainstReality(
       rows.length,
     missingRealityKeys,
     unmatchedRealityKeys,
-    mae:
-      rows.reduce(
-        (sum, row) =>
-          sum +
-          row.absoluteError,
-        0,
-      ) /
-      rows.length,
-    ...(percentageRows.length
+    ...(singleUnit
       ? {
-          mapePercent:
-            percentageRows.reduce(
+          mae:
+            rows.reduce(
               (sum, row) =>
                 sum +
-                row.absolutePercentError,
+                row.absoluteError,
               0,
             ) /
-            percentageRows.length,
-          medianAbsolutePercentError:
-            median(
-              percentageRows.map(
-                (row) =>
-                  row.absolutePercentError,
-              ),
-            ),
+            rows.length,
         }
       : {}),
+    ...globalPercentageSummary,
+    overpredictedCount:
+      rows.filter(
+        (row) =>
+          row.outcome ===
+          'overpredicted',
+      ).length,
+    underpredictedCount:
+      rows.filter(
+        (row) =>
+          row.outcome ===
+          'underpredicted',
+      ).length,
+    exactCount:
+      rows.filter(
+        (row) =>
+          row.outcome === 'exact',
+      ).length,
+    unitSummaries,
+    provenanceSummaries,
     rows,
     note:
-      'Prediction values are evaluated exactly as originally recorded. Reality observations are attached separately with their own timestamps and provenance; validation never rewrites historical predictions.',
+      singleUnit
+        ? 'Prediction values are evaluated exactly as originally recorded. Raw MAE is valid because every evaluated metric uses one unit. Reality observations retain their own timestamps and provenance.'
+        : 'Prediction values are evaluated exactly as originally recorded. Mixed-unit raw MAE is intentionally withheld; use per-unit MAE and percentage-error summaries instead. Reality observations retain their own timestamps and provenance.',
   };
 }
 
