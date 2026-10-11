@@ -144,6 +144,12 @@ import {
 } from '../../lib/simulation/modules/camera-video-thermal';
 
 import {
+  CONNECTIVITY_WORKLOAD_VERSION,
+  calculateConnectivityWorkload,
+  type ConnectivityMode,
+} from '../../lib/simulation/modules/connectivity-workload';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -242,6 +248,16 @@ type FormState = {
   batteryAnnualCalendarFadePercent: string;
   batteryCycleFadePercentPer100Cycles: string;
   batteryHealthThresholdPercent: string;
+
+  connectivityMode: ConnectivityMode;
+  connectivityDownloadMbps: string;
+  connectivityUploadMbps: string;
+  connectivityLinkCapacityMbps: string;
+  connectivitySessionMinutes: string;
+  connectivityRadioPowerW: string;
+  connectivityActiveDutyPercent: string;
+  connectivitySignalMetricLabel: string;
+  connectivitySignalMetricValue: string;
 
   socVendor: string;
   socName: string;
@@ -363,6 +379,16 @@ const initialForm: FormState = {
   batteryCycleFadePercentPer100Cycles: '',
   batteryHealthThresholdPercent: '',
 
+  connectivityMode: 'wifi',
+  connectivityDownloadMbps: '',
+  connectivityUploadMbps: '',
+  connectivityLinkCapacityMbps: '',
+  connectivitySessionMinutes: '',
+  connectivityRadioPowerW: '',
+  connectivityActiveDutyPercent: '',
+  connectivitySignalMetricLabel: '',
+  connectivitySignalMetricValue: '',
+
   socVendor: '',
   socName: '',
   socFabricationNodeNm: '',
@@ -472,6 +498,16 @@ const flagshipExample: FormState = {
   batteryAnnualCalendarFadePercent: '',
   batteryCycleFadePercentPer100Cycles: '',
   batteryHealthThresholdPercent: '',
+
+  connectivityMode: 'wifi',
+  connectivityDownloadMbps: '',
+  connectivityUploadMbps: '',
+  connectivityLinkCapacityMbps: '',
+  connectivitySessionMinutes: '',
+  connectivityRadioPowerW: '',
+  connectivityActiveDutyPercent: '',
+  connectivitySignalMetricLabel: '',
+  connectivitySignalMetricValue: '',
 
   socVendor: 'Qualcomm',
   socName: 'Snapdragon 8 Elite Gen 5',
@@ -1514,6 +1550,66 @@ export default function InteractiveLeaksSimulator() {
           )
       : [];
 
+  const connectivityInputsPresent = [
+    form.connectivityDownloadMbps,
+    form.connectivityUploadMbps,
+    form.connectivityLinkCapacityMbps,
+    form.connectivitySessionMinutes,
+    form.connectivityRadioPowerW,
+    form.connectivityActiveDutyPercent,
+    form.connectivitySignalMetricLabel,
+    form.connectivitySignalMetricValue,
+  ].some((value) => value.trim() !== '');
+
+  const connectivityWorkload =
+    connectivityInputsPresent
+      ? calculateConnectivityWorkload({
+          mode: form.connectivityMode,
+          downloadMbps: numeric(
+            form.connectivityDownloadMbps,
+          ),
+          uploadMbps: numeric(
+            form.connectivityUploadMbps,
+          ),
+          linkCapacityMbps: numeric(
+            form.connectivityLinkCapacityMbps,
+          ),
+          sessionDurationMinutes: numeric(
+            form.connectivitySessionMinutes,
+          ),
+          radioPowerW: numeric(
+            form.connectivityRadioPowerW,
+          ),
+          ...(numeric(
+            form.connectivityActiveDutyPercent,
+          ) !== undefined
+            ? {
+                activeDutyFraction:
+                  numeric(
+                    form.connectivityActiveDutyPercent,
+                  )! / 100,
+              }
+            : {}),
+          signalMetricLabel:
+            form.connectivitySignalMetricLabel.trim() ||
+            undefined,
+          signalMetricValue: numeric(
+            form.connectivitySignalMetricValue,
+          ),
+        })
+      : undefined;
+
+  const connectivityBatteryPercent =
+    connectivityWorkload?.radioEnergyWh !==
+      undefined &&
+    result?.battery?.totalEnergyWh !==
+      undefined &&
+    result.battery.totalEnergyWh > 0
+      ? connectivityWorkload.radioEnergyWh /
+        result.battery.totalEnergyWh *
+        100
+      : undefined;
+
   const chargingResult = batteryExperience?.charging;
   const wirelessChargingResult =
     batteryExperience?.wirelessCharging;
@@ -2192,6 +2288,8 @@ export default function InteractiveLeaksSimulator() {
     batteryCycleExposure,
     batteryHealthForecast,
     agedRuntimeRows,
+    connectivityWorkload,
+    connectivityBatteryPercent,
     thermal: thermalResult
       ? {
           status: thermalResult.status,
@@ -3282,6 +3380,162 @@ export default function InteractiveLeaksSimulator() {
             <div className="il-section-heading">
               <span>05</span>
               <div>
+                <h2>Connectivity</h2>
+                <p>
+                  Model one explicit radio/network workload.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <label className="il-field">
+                <span>Network mode</span>
+                <select
+                  value={form.connectivityMode}
+                  onChange={(event) =>
+                    update(
+                      'connectivityMode',
+                      event.currentTarget
+                        .value as ConnectivityMode,
+                    )
+                  }
+                >
+                  <option value="wifi">Wi-Fi</option>
+                  <option value="lte">LTE</option>
+                  <option value="5g-sub6">5G sub-6</option>
+                  <option value="5g-mmwave">5G mmWave</option>
+                  <option value="hotspot">Hotspot</option>
+                  <option value="gnss">GNSS</option>
+                  <option value="bluetooth">Bluetooth</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Download traffic"
+                suffix="Mbps"
+                value={form.connectivityDownloadMbps}
+                placeholder="100"
+                onChange={(value) =>
+                  update(
+                    'connectivityDownloadMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Upload traffic"
+                suffix="Mbps"
+                value={form.connectivityUploadMbps}
+                placeholder="20"
+                onChange={(value) =>
+                  update(
+                    'connectivityUploadMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Link capacity"
+                suffix="Mbps"
+                value={
+                  form.connectivityLinkCapacityMbps
+                }
+                placeholder="300"
+                onChange={(value) =>
+                  update(
+                    'connectivityLinkCapacityMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Session duration"
+                suffix="min"
+                value={form.connectivitySessionMinutes}
+                placeholder="30"
+                onChange={(value) =>
+                  update(
+                    'connectivitySessionMinutes',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Radio power"
+                suffix="W"
+                value={form.connectivityRadioPowerW}
+                placeholder="Evidence / assumption"
+                onChange={(value) =>
+                  update(
+                    'connectivityRadioPowerW',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Radio active duty"
+                suffix="%"
+                value={
+                  form.connectivityActiveDutyPercent
+                }
+                placeholder="100"
+                onChange={(value) =>
+                  update(
+                    'connectivityActiveDutyPercent',
+                    value,
+                  )
+                }
+              />
+
+              <label className="il-field">
+                <span>Signal metric label</span>
+                <input
+                  type="text"
+                  value={
+                    form.connectivitySignalMetricLabel
+                  }
+                  placeholder="RSRP dBm"
+                  onChange={(event) =>
+                    update(
+                      'connectivitySignalMetricLabel',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
+
+              <NumericField
+                label="Signal metric value"
+                value={
+                  form.connectivitySignalMetricValue
+                }
+                placeholder="-105"
+                onChange={(value) =>
+                  update(
+                    'connectivitySignalMetricValue',
+                    value,
+                  )
+                }
+              />
+            </div>
+
+            <p className="il-help">
+              Network type and signal labels do not secretly change power.
+              Enter measured or explicit radio power when you want an energy
+              estimate.
+            </p>
+          </div>
+
+          <div className="il-section">
+            <div className="il-section-heading">
+              <span>06</span>
+              <div>
                 <h2>Thermal & performance</h2>
                 <p>
                   Model sustained SoC power, heat and throttling.
@@ -4014,7 +4268,7 @@ export default function InteractiveLeaksSimulator() {
           <div className="il-section">
             <div className="il-section-heading il-section-heading-action">
               <div className="il-heading-copy">
-                <span>06</span>
+                <span>07</span>
                 <div>
                   <h2>Cameras</h2>
                   <p>
@@ -4640,7 +4894,7 @@ export default function InteractiveLeaksSimulator() {
 
           <div className="il-section">
             <div className="il-section-heading">
-              <span>07</span>
+              <span>08</span>
               <div>
                 <h2>Packaging</h2>
                 <p>
@@ -6683,6 +6937,124 @@ export default function InteractiveLeaksSimulator() {
                       </p>
                     </div>
                   )}
+                </div>
+              ) : null}
+
+              {connectivityWorkload ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Connectivity · {CONNECTIVITY_WORKLOAD_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {connectivityWorkload.mode.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Network mode</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.aggregateTrafficMbps !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.aggregateTrafficMbps,
+                              1,
+                            )} Mbps`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aggregate traffic</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.throughputUtilizationPercent !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.throughputUtilizationPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Link utilization</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.totalTransferredDataGb !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.totalTransferredDataGb,
+                              2,
+                            )} GB`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Transferred data</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.effectiveRadioPowerW !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.effectiveRadioPowerW,
+                              2,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Effective radio power</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.radioEnergyWh !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.radioEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Radio session energy</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityBatteryPercent !==
+                        undefined
+                          ? `${format(
+                              connectivityBatteryPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Known battery-energy share</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.signalMetricValue !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.signalMetricValue,
+                              1,
+                            )}`
+                          : 'Unknown'}
+                      </strong>
+                      <span>
+                        {connectivityWorkload.signalMetricLabel ??
+                          'Signal metadata'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {connectivityWorkload.note}
+                  </p>
                 </div>
               ) : null}
 
