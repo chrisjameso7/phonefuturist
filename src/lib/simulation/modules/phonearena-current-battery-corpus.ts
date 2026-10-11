@@ -168,7 +168,6 @@ const rows: readonly Row[] = [
     video: [14, 14],
     gaming: [5, 51],
   },
-,
   {
     id: 'phonearena-xiaomi15t-pro-5500',
     manufacturer: 'Xiaomi',
