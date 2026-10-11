@@ -38,7 +38,7 @@ jobs:
         run: |
           rm -rf /tmp/TechAPI
           git clone --depth 1 --branch develop --filter=blob:none --sparse https://github.com/GetTechAPI/TechAPI.git /tmp/TechAPI
-          git -C /tmp/TechAPI sparse-checkout set data/smartphone data/LICENSE.md
+          git -C /tmp/TechAPI sparse-checkout set data/smartphone
 
       - name: Generate 1000-phone snapshot
         run: |
