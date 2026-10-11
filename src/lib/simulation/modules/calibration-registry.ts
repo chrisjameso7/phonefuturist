@@ -8,6 +8,7 @@ import { buildChargingModeCorpus } from './charging-mode-corpus';
 import { buildCameraReferenceCorpus } from './camera-reference-corpus';
 import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
 import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
+import { buildBulkDeviceCatalogCorpus } from './bulk-device-catalog-corpus';
 import { enrichCorpusWithBatteryEnergyEvidence } from './battery-energy-evidence';
 import { buildTechApiDeviceCatalog } from './techapi-device-catalog';
 import { buildPhoneArenaCurrentBatteryCorpus } from './phonearena-current-battery-corpus';
