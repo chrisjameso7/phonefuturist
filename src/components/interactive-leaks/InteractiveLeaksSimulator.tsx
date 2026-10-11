@@ -155,6 +155,11 @@ import {
 } from '../../lib/simulation/modules/display-refresh-profile';
 
 import {
+  CAMERA_SENSOR_NOISE_VERSION,
+  calculateCameraSensorNoise,
+} from '../../lib/simulation/modules/camera-sensor-noise';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -194,6 +199,10 @@ type CameraDraft = {
   videoThermalResistanceCPerW?: string;
   videoThermalMassJPerC?: string;
   videoThermalLimitTemperatureC?: string;
+  fullWellElectrons?: string;
+  readNoiseElectrons?: string;
+  darkCurrentElectronsPerSecond?: string;
+  signalElectrons?: string;
   subjectAngularSpeedDegPerSecond?: string;
   cameraAngularShakeDegPerSecond?: string;
   oisAngularCompensationFraction?: string;
@@ -770,6 +779,10 @@ function emptyCamera(id: number): CameraDraft {
     videoThermalResistanceCPerW: '',
     videoThermalMassJPerC: '',
     videoThermalLimitTemperatureC: '',
+    fullWellElectrons: '',
+    readNoiseElectrons: '',
+    darkCurrentElectronsPerSecond: '',
+    signalElectrons: '',
     subjectAngularSpeedDegPerSecond: '',
     cameraAngularShakeDegPerSecond: '',
     oisAngularCompensationFraction: '',
@@ -2300,6 +2313,40 @@ export default function InteractiveLeaksSimulator() {
       });
     });
 
+  const cameraSensorNoise =
+    cameras.map((camera) => {
+      const hasNoiseInput = [
+        camera.fullWellElectrons ?? '',
+        camera.readNoiseElectrons ?? '',
+        camera.darkCurrentElectronsPerSecond ??
+          '',
+        camera.signalElectrons ?? '',
+      ].some((value) => value.trim() !== '');
+
+      return hasNoiseInput
+        ? calculateCameraSensorNoise({
+            fullWellElectrons: numeric(
+              camera.fullWellElectrons ?? '',
+            ),
+            readNoiseElectrons: numeric(
+              camera.readNoiseElectrons ?? '',
+            ),
+            darkCurrentElectronsPerSecond:
+              numeric(
+                camera.darkCurrentElectronsPerSecond ??
+                  '',
+              ),
+            exposureTimeSeconds: numeric(
+              camera.exposureTimeSeconds ??
+                '',
+            ),
+            signalElectrons: numeric(
+              camera.signalElectrons ?? '',
+            ),
+          })
+        : undefined;
+    });
+
   const zoomTargetEquivalentFocalLengthMm =
     numeric(
       form.zoomTargetEquivalentFocalLengthMm,
@@ -2445,6 +2492,7 @@ export default function InteractiveLeaksSimulator() {
     ),
     cameraVideoWorkloads,
     cameraVideoThermals,
+    cameraSensorNoise,
     cameraZoomHandoff,
   };
 
@@ -4925,6 +4973,64 @@ export default function InteractiveLeaksSimulator() {
                           onChange={(value) =>
                             updateCamera(camera.id, {
                               quantumEfficiencyFraction: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Full-well capacity"
+                          suffix="e⁻"
+                          value={
+                            camera.fullWellElectrons ?? ''
+                          }
+                          placeholder="Evidence only"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              fullWellElectrons: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Read noise"
+                          suffix="e⁻ RMS"
+                          value={
+                            camera.readNoiseElectrons ?? ''
+                          }
+                          placeholder="Evidence only"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              readNoiseElectrons: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Dark current"
+                          suffix="e⁻/s"
+                          value={
+                            camera.darkCurrentElectronsPerSecond ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              darkCurrentElectronsPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Signal electrons"
+                          suffix="e⁻"
+                          value={
+                            camera.signalElectrons ?? ''
+                          }
+                          placeholder="Optional SNR probe"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              signalElectrons: value,
                             })
                           }
                         />
@@ -8322,6 +8428,111 @@ export default function InteractiveLeaksSimulator() {
 
                         <p className="il-help">
                           {cameraVideoWorkloads[index]?.note}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    {cameraSensorNoise[index] ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Sensor electronics · {CAMERA_SENSOR_NOISE_VERSION}
+                        </span>
+
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.dynamicRangeStops !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.dynamicRangeStops,
+                                    2,
+                                  )} stops`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Electron-domain dynamic range</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.dynamicRangeDb !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.dynamicRangeDb,
+                                    1,
+                                  )} dB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Dynamic range</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.effectiveNoiseFloorElectrons !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.effectiveNoiseFloorElectrons,
+                                    2,
+                                  )} e⁻`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Effective noise floor</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.signalToNoiseRatio !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.signalToNoiseRatio,
+                                    1,
+                                  )}:1`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Signal-to-noise ratio</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.signalToNoiseDb !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.signalToNoiseDb,
+                                    1,
+                                  )} dB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Signal-to-noise</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.saturationFraction !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.saturationFraction *
+                                      100,
+                                    1,
+                                  )}%`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Full-well utilization</span>
+                          </div>
+                        </div>
+
+                        <p className="il-help">
+                          {cameraSensorNoise[index]?.note}
                         </p>
                       </div>
                     ) : null}
