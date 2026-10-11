@@ -84,6 +84,11 @@ import {
 } from '../../lib/simulation/modules/gpu-architecture';
 
 import {
+  GPU_POWER_ENVELOPE_VERSION,
+  calculateGpuPowerEnvelope,
+} from '../../lib/simulation/modules/gpu-power-envelope';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1615,6 +1620,21 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const gpuPowerEnvelope =
+    gpuArchitecture &&
+    form.thermalDomain !== 'cpu_sustained'
+      ? calculateGpuPowerEnvelope({
+          workload:
+            form.thermalDomain,
+          peakGpuPowerW:
+            gpuArchitecture.peakGpuPowerW,
+          sustainableSocPowerW:
+            thermalResult?.status === 'resolved'
+              ? thermalResult.sustainedPowerW
+              : undefined,
+        })
+      : undefined;
+
   const performanceContext =
     peakPerformanceEstimate
       ? buildPerformanceContext({
@@ -1771,6 +1791,7 @@ export default function InteractiveLeaksSimulator() {
     performanceContext,
     socArchitecture,
     gpuArchitecture,
+    gpuPowerEnvelope,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -5087,6 +5108,64 @@ export default function InteractiveLeaksSimulator() {
                   <p className="il-help">
                     {gpuArchitecture.note}
                   </p>
+
+                  {gpuPowerEnvelope ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {gpuPowerEnvelope.sustainableSocPowerW !== undefined
+                              ? `${format(
+                                  gpuPowerEnvelope.sustainableSocPowerW,
+                                  2,
+                                )} W`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Sustainable package power</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gpuPowerEnvelope.sustainableGpuPowerCeilingW !== undefined
+                              ? `${format(
+                                  gpuPowerEnvelope.sustainableGpuPowerCeilingW,
+                                  2,
+                                )} W`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Sustainable GPU power ceiling</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gpuPowerEnvelope.powerRetentionPercent !== undefined
+                              ? `${format(
+                                  gpuPowerEnvelope.powerRetentionPercent,
+                                  1,
+                                )}%`
+                              : 'Unknown'}
+                          </strong>
+                          <span>GPU power-envelope retention</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gpuPowerEnvelope.thermallyPowerLimited === undefined
+                              ? 'Unknown'
+                              : gpuPowerEnvelope.thermallyPowerLimited
+                                ? 'Power-limited'
+                                : 'Peak power sustainable'}
+                          </strong>
+                          <span>GPU thermal power state</span>
+                        </div>
+                      </div>
+
+                      <p className="il-help">
+                        {GPU_POWER_ENVELOPE_VERSION} ·{' '}
+                        {gpuPowerEnvelope.note}
+                      </p>
+                    </>
+                  ) : null}
                 </div>
               ) : null}
 
