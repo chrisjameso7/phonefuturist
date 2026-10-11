@@ -1,0 +1,34 @@
+{
+  "version": "bulk-device-catalog-2026-10-11-0.1.0",
+  "sources": [
+    {
+      "id": "geekerwan-battery-5-0-2026",
+      "publisher": "Geekerwan",
+      "url": "https://www.youtube.com/watch?v=MpgUFrsIWSQ",
+      "protocol": "2026 annual smartphone battery comparison; self-purchased retail devices; AI Agent smartphone 5.0 methodology",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "geekerwan-socpk-2026",
+      "publisher": "Geekerwan",
+      "url": "https://www.geekerwan.com/",
+      "protocol": "Mobile SoC ranking and performance/efficiency charts including Geekbench and 3DMark families",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "notebookcheck-smartphone-reviews-2026",
+      "publisher": "Notebookcheck",
+      "url": "https://www.notebookcheck.net/Ranking-Best-smartphones-reviewed-by-Notebookcheck.101858.0.html",
+      "protocol": "Independent smartphone reviews with runtime, display and performance measurements",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "dxomark-smartphone-2026",
+      "publisher": "DXOMARK",
+      "url": "https://www.dxomark.com/smartphones/",
+      "protocol": "Professional smartphone camera/display/battery test results",
+      "accessedDate": "2026-10-11"
+    }
+  ],
+  "devices": []
+}
