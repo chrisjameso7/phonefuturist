@@ -64,6 +64,15 @@ function positive(
   return nonNegative(value) && value > 0;
 }
 
+function finite(
+  value: unknown,
+): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isFinite(value)
+  );
+}
+
 export function calculateConnectivityWorkload(
   input: ConnectivityWorkloadInput,
 ): ConnectivityWorkloadResult {
@@ -260,7 +269,7 @@ export function calculateConnectivityWorkload(
             input.signalMetricLabel,
         }
       : {}),
-    ...(nonNegative(input.signalMetricValue)
+    ...(finite(input.signalMetricValue)
       ? {
           signalMetricValue:
             input.signalMetricValue,
