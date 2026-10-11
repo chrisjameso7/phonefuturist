@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { simulateChargingFromLiveCorpus } from '../src/lib/simulation/live-charging';
+import { CALIBRATION_REGISTRY_VERSION } from '../src/lib/simulation/modules/calibration-registry';
 
 describe('live charging simulator', () => {
   it('uses measured 60 W Samsung-class peers for a 5700 mAh future flagship concept', () => {
@@ -36,7 +37,9 @@ describe('live charging simulator', () => {
     });
 
     expect(result.simulatorVersion).toBe('live-charging-simulator-0.1.0');
-    expect(result.corpusVersion).toBe('calibration-registry-0.3.0');
+    expect(result.corpusVersion).toBe(
+      CALIBRATION_REGISTRY_VERSION,
+    );
     expect(['resolved', 'unresolved']).toContain(result.status);
   });
 });
