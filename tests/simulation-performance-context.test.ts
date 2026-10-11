@@ -5,6 +5,9 @@ import {
 import {
   calculateSocArchitecture,
 } from '../src/lib/simulation/modules/soc-architecture';
+import {
+  calculateGpuArchitecture,
+} from '../src/lib/simulation/modules/gpu-architecture';
 import type {
   PeakPerformanceEstimate,
 } from '../src/lib/simulation/modules/peak-performance-estimator';
@@ -123,6 +126,82 @@ describe('performance context guardrail', () => {
     expect(result.note).toContain(
       'what-if scenario',
     );
+  });
+
+  it('uses GPU compute and bandwidth as structural context for raster benchmarks without inventing points', () => {
+    const gpuArchitecture =
+      calculateGpuArchitecture({
+        shaderCores: 1024,
+        peakClockGhz: 1.25,
+        peakGpuPowerW: 8,
+        memoryBandwidthGbps: 120,
+      });
+
+    const result =
+      buildPerformanceContext({
+        peak: peak({
+          domain: '3dmark_wle',
+        }),
+        gpuArchitecture,
+      });
+
+    expect(result.status).toBe('partial');
+    expect(
+      result.architectureCanExplainDirection,
+    ).toBe(true);
+    expect(
+      result.benchmarkScore,
+    ).toBeUndefined();
+    expect(
+      result.architectureSignals.some(
+        (signal) =>
+          signal.key ===
+          'gpu_compute_clock',
+      ),
+    ).toBe(true);
+  });
+
+  it('requires explicit RT geometry before Solar Bay direction is considered explainable', () => {
+    const withoutRt =
+      calculateGpuArchitecture({
+        executionUnits: 16,
+        peakClockGhz: 1.3,
+        memoryBandwidthGbps: 120,
+      });
+
+    const withRt =
+      calculateGpuArchitecture({
+        executionUnits: 16,
+        peakClockGhz: 1.3,
+        memoryBandwidthGbps: 120,
+        rayTracingUnits: 8,
+      });
+
+    const unresolved =
+      buildPerformanceContext({
+        peak: peak({
+          domain: '3dmark_solar_bay',
+        }),
+        gpuArchitecture: withoutRt,
+      });
+
+    const resolvedDirection =
+      buildPerformanceContext({
+        peak: peak({
+          domain: '3dmark_solar_bay',
+        }),
+        gpuArchitecture: withRt,
+      });
+
+    expect(
+      unresolved.architectureCanExplainDirection,
+    ).toBe(false);
+    expect(
+      resolvedDirection.architectureCanExplainDirection,
+    ).toBe(true);
+    expect(
+      resolvedDirection.benchmarkScore,
+    ).toBeUndefined();
   });
 
   it('does not let CPU architecture pretend to explain GPU benchmark scores', () => {
