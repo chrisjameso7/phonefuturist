@@ -20,6 +20,9 @@ export interface PredictionSnapshotExperienceMetrics {
     | 'measured-calibrated'
     | 'assumption-adjusted';
   displayPanelPowerW?: number;
+  displayPanelPowerProvenance?:
+    | 'measured-calibrated'
+    | 'derived';
 }
 
 export interface BuildPredictionSnapshotInput {
@@ -112,7 +115,10 @@ export function buildPredictionSnapshot(
         experience.wiredFullChargeMinutes,
       unit: 'minutes',
       direction: 'lower-is-better',
-      provenance: 'measured-calibrated',
+      provenance:
+        experience
+          .displayPanelPowerProvenance ??
+        'measured-calibrated',
     });
   }
 
