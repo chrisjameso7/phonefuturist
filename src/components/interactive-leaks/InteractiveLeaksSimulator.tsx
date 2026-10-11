@@ -124,6 +124,11 @@ import {
 } from '../../lib/simulation/modules/battery-aging-runtime';
 
 import {
+  BATTERY_CYCLE_EXPOSURE_VERSION,
+  calculateBatteryCycleExposure,
+} from '../../lib/simulation/modules/battery-cycle-exposure';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1347,6 +1352,48 @@ export default function InteractiveLeaksSimulator() {
     form.batteryCycleFadePercentPer100Cycles,
   ].some((value) => value.trim() !== '');
 
+  const batteryCycleExposure =
+    numeric(form.batteryAgeYears) !==
+      undefined &&
+    batteryExperience?.mixedUse &&
+    result
+      ? calculateBatteryCycleExposure({
+          ageYears: numeric(
+            form.batteryAgeYears,
+          ),
+          ...(batteryExperience.mixedUse
+            .energyBasis === 'wh'
+            ? {
+                dailyDrainWh:
+                  batteryExperience.mixedUse
+                    .expectedDrainWhPerDay,
+                batteryEnergyWh:
+                  result.battery?.totalEnergyWh,
+              }
+            : {
+                dailyDrainMah:
+                  batteryExperience.mixedUse
+                    .expectedDrainMahPerDay,
+                batteryCapacityMah:
+                  result.battery
+                    ?.totalCapacityMah,
+              }),
+        })
+      : undefined;
+
+  const explicitEquivalentFullCycles =
+    numeric(
+      form.batteryEquivalentFullCycles,
+    );
+
+  const agingEquivalentFullCycles =
+    explicitEquivalentFullCycles ??
+    (batteryCycleExposure?.status ===
+      'resolved'
+      ? batteryCycleExposure
+          .equivalentFullCycles
+      : undefined);
+
   const batteryAging =
     batteryAgingInputsPresent && result
       ? calculateBatteryAgingEnvelope({
@@ -1357,9 +1404,8 @@ export default function InteractiveLeaksSimulator() {
           ageYears: numeric(
             form.batteryAgeYears,
           ),
-          equivalentFullCycles: numeric(
-            form.batteryEquivalentFullCycles,
-          ),
+          equivalentFullCycles:
+            agingEquivalentFullCycles,
           annualCalendarFadePercent: numeric(
             form.batteryAnnualCalendarFadePercent,
           ),
@@ -1980,6 +2026,7 @@ export default function InteractiveLeaksSimulator() {
     display: displayExperience,
     battery: batteryExperience,
     batteryAging,
+    batteryCycleExposure,
     agedRuntimeRows,
     thermal: thermalResult
       ? {
@@ -4927,6 +4974,28 @@ export default function InteractiveLeaksSimulator() {
                       </strong>
                       <span>Cycle retention</span>
                     </div>
+
+                    <div>
+                      <strong>
+                        {agingEquivalentFullCycles !==
+                        undefined
+                          ? format(
+                              agingEquivalentFullCycles,
+                              0,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>
+                        Equivalent full cycles ·{' '}
+                        {explicitEquivalentFullCycles !==
+                        undefined
+                          ? 'explicit'
+                          : batteryCycleExposure?.status ===
+                              'resolved'
+                            ? 'active-use estimate'
+                            : 'unresolved'}
+                      </span>
+                    </div>
                   </div>
 
                   {agedRuntimeRows.length ? (
@@ -4973,6 +5042,16 @@ export default function InteractiveLeaksSimulator() {
                         </div>
                       ))}
                     </div>
+                  ) : null}
+
+                  {explicitEquivalentFullCycles ===
+                    undefined &&
+                  batteryCycleExposure?.status ===
+                    'resolved' ? (
+                    <p className="il-help">
+                      {BATTERY_CYCLE_EXPOSURE_VERSION} ·{' '}
+                      {batteryCycleExposure.note}
+                    </p>
                   ) : null}
 
                   <p className="il-help">
