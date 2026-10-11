@@ -154,6 +154,20 @@
       "url": "https://www.gsmarena.com/tecno-phones-120.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-ulefone-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/ulefone-phones-124.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-vivo-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/vivo-phones-98.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -8890,6 +8904,1059 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/tecno_pova_6_neo_5g-13326.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_24_pro-14891",
+      "manufacturer": "Ulefone",
+      "family": "Armor 24 Pro",
+      "model": "Armor 24 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_24_pro-14891.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_22_pro-14890",
+      "manufacturer": "Ulefone",
+      "family": "Armor 22 Pro",
+      "model": "Armor 22 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_22_pro-14890.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_note_23-14825",
+      "manufacturer": "Ulefone",
+      "family": "Note 23",
+      "model": "Note 23",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_note_23-14825.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_mini_5-14694",
+      "manufacturer": "Ulefone",
+      "family": "Armor Mini 5",
+      "model": "Armor Mini 5",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_mini_5-14694.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_note_22-14685",
+      "manufacturer": "Ulefone",
+      "family": "Note 22",
+      "model": "Note 22",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_note_22-14685.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_rugking_5_pro-14544",
+      "manufacturer": "Ulefone",
+      "family": "RugKing 5 Pro",
+      "model": "RugKing 5 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_rugking_5_pro-14544.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_27t_pro+_5g-14475",
+      "manufacturer": "Ulefone",
+      "family": "Armor 27T Pro+",
+      "model": "Armor 27T Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_27t_pro+_5g-14475.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_27t+-14476",
+      "manufacturer": "Ulefone",
+      "family": "Armor 27T+",
+      "model": "Armor 27T+",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_27t+-14476.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_34_pro+_5g-14368",
+      "manufacturer": "Ulefone",
+      "family": "Armor 34 Pro+",
+      "model": "Armor 34 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_34_pro+_5g-14368.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_34+_5g-14367",
+      "manufacturer": "Ulefone",
+      "family": "Armor 34+",
+      "model": "Armor 34+",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_34+_5g-14367.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_rugking_4_pro-14340",
+      "manufacturer": "Ulefone",
+      "family": "RugKing 4 Pro",
+      "model": "RugKing 4 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_rugking_4_pro-14340.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_rugking_3_pro-14339",
+      "manufacturer": "Ulefone",
+      "family": "RugKing 3 Pro",
+      "model": "RugKing 3 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_rugking_3_pro-14339.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_rugking_2_pro-14338",
+      "manufacturer": "Ulefone",
+      "family": "RugKing 2 Pro",
+      "model": "RugKing 2 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_rugking_2_pro-14338.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_29_pro_thermal_5g-14104",
+      "manufacturer": "Ulefone",
+      "family": "Armor 29 Pro Thermal",
+      "model": "Armor 29 Pro Thermal",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_29_pro_thermal_5g-14104.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_29_pro_5g-14103",
+      "manufacturer": "Ulefone",
+      "family": "Armor 29 Pro",
+      "model": "Armor 29 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_29_pro_5g-14103.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_rugking-14102",
+      "manufacturer": "Ulefone",
+      "family": "RugKing",
+      "model": "RugKing",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_rugking-14102.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_29_ultra_5g-14056",
+      "manufacturer": "Ulefone",
+      "family": "Armor 29 Ultra",
+      "model": "Armor 29 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_29_ultra_5g-14056.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_34_5g-14053",
+      "manufacturer": "Ulefone",
+      "family": "Armor 34",
+      "model": "Armor 34",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_34_5g-14053.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_33_pro_5g-13692",
+      "manufacturer": "Ulefone",
+      "family": "Armor 33 Pro",
+      "model": "Armor 33 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_33_pro_5g-13692.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_33-14055",
+      "manufacturer": "Ulefone",
+      "family": "Armor 33",
+      "model": "Armor 33",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_33-14055.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_30-13999",
+      "manufacturer": "Ulefone",
+      "family": "Armor 30",
+      "model": "Armor 30",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_30-13999.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x16_pro_5g-14000",
+      "manufacturer": "Ulefone",
+      "family": "Armor X16 Pro",
+      "model": "Armor X16 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x16_pro_5g-14000.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x16-14001",
+      "manufacturer": "Ulefone",
+      "family": "Armor X16",
+      "model": "Armor X16",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x16-14001.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_34_pro-13691",
+      "manufacturer": "Ulefone",
+      "family": "Armor 34 Pro",
+      "model": "Armor 34 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_34_pro-13691.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_28_pro_5g-13864",
+      "manufacturer": "Ulefone",
+      "family": "Armor 28 Pro",
+      "model": "Armor 28 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_28_pro_5g-13864.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x32_pro_5g-13777",
+      "manufacturer": "Ulefone",
+      "family": "Armor X32 Pro",
+      "model": "Armor X32 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x32_pro_5g-13777.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x32_5g-13778",
+      "manufacturer": "Ulefone",
+      "family": "Armor X32",
+      "model": "Armor X32",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x32_5g-13778.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_30_pro_5g-13776",
+      "manufacturer": "Ulefone",
+      "family": "Armor 30 Pro",
+      "model": "Armor 30 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_30_pro_5g-13776.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_28_ultra_thermal-13297",
+      "manufacturer": "Ulefone",
+      "family": "Armor 28 Ultra Thermal",
+      "model": "Armor 28 Ultra Thermal",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_28_ultra_thermal-13297.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_mini_4-13693",
+      "manufacturer": "Ulefone",
+      "family": "Armor Mini 4",
+      "model": "Armor Mini 4",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_mini_4-13693.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_28_ultra-13674",
+      "manufacturer": "Ulefone",
+      "family": "Armor 28 Ultra",
+      "model": "Armor 28 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_28_ultra-13674.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x31-13854",
+      "manufacturer": "Ulefone",
+      "family": "Armor X31",
+      "model": "Armor X31",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x31-13854.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_x31_pro-13589",
+      "manufacturer": "Ulefone",
+      "family": "Armor X31 Pro",
+      "model": "Armor X31 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_x31_pro-13589.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_27t-13545",
+      "manufacturer": "Ulefone",
+      "family": "Armor 27T",
+      "model": "Armor 27T",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_27t-13545.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_27-13544",
+      "manufacturer": "Ulefone",
+      "family": "Armor 27",
+      "model": "Armor 27",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_27-13544.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_note_18_pro-13543",
+      "manufacturer": "Ulefone",
+      "family": "Note 18 Pro",
+      "model": "Note 18 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_note_18_pro-13543.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_note_20_pro-13451",
+      "manufacturer": "Ulefone",
+      "family": "Note 20 Pro",
+      "model": "Note 20 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_note_20_pro-13451.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_note_19-13450",
+      "manufacturer": "Ulefone",
+      "family": "Note 19",
+      "model": "Note 19",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_note_19-13450.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone_armor_mini_20-13541",
+      "manufacturer": "Ulefone",
+      "family": "Armor Mini 20",
+      "model": "Armor Mini 20",
+      "sourceIds": [
+        "gsmarena-catalog-ulefone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/ulefone_armor_mini_20-13541.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_v80_5g-14989",
+      "manufacturer": "vivo",
+      "family": "V80",
+      "model": "V80",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_v80_5g-14989.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_s2_fe_5g-14962",
+      "manufacturer": "vivo",
+      "family": "S2 FE",
+      "model": "S2 FE",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_s2_fe_5g-14962.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_16_5g-14976",
+      "manufacturer": "vivo",
+      "family": "iQOO 16",
+      "model": "iQOO 16",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_16_5g-14976.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y600i_5g-14964",
+      "manufacturer": "vivo",
+      "family": "Y600i",
+      "model": "Y600i",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y600i_5g-14964.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x500_pro_max_5g-14782",
+      "manufacturer": "vivo",
+      "family": "X500 Pro Max",
+      "model": "X500 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x500_pro_max_5g-14782.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x500_pro_5g-14950",
+      "manufacturer": "vivo",
+      "family": "X500 Pro",
+      "model": "X500 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x500_pro_5g-14950.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x500_5g-14951",
+      "manufacturer": "vivo",
+      "family": "X500",
+      "model": "X500",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x500_5g-14951.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_v80_lite_5g-14892",
+      "manufacturer": "vivo",
+      "family": "V80 Lite",
+      "model": "V80 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_v80_lite_5g-14892.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5_5g-14899",
+      "manufacturer": "vivo",
+      "family": "T5",
+      "model": "T5",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5_5g-14899.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_v70_lite-14898",
+      "manufacturer": "vivo",
+      "family": "V70 Lite 4G",
+      "model": "V70 Lite 4G",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_v70_lite-14898.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y31t_5g-14884",
+      "manufacturer": "vivo",
+      "family": "Y31t",
+      "model": "Y31t",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y31t_5g-14884.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_neo11_ultra_5g-14878",
+      "manufacturer": "vivo",
+      "family": "iQOO Neo11 Ultra",
+      "model": "iQOO Neo11 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_neo11_ultra_5g-14878.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_s2_5g-14839",
+      "manufacturer": "vivo",
+      "family": "S2",
+      "model": "S2",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_s2_5g-14839.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5e-14829",
+      "manufacturer": "vivo",
+      "family": "T5e",
+      "model": "T5e",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5e-14829.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x300_e_5g-14826",
+      "manufacturer": "vivo",
+      "family": "X300 E",
+      "model": "X300 E",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x300_e_5g-14826.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y11d-14945",
+      "manufacturer": "vivo",
+      "family": "Y11d",
+      "model": "Y11d",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y11d-14945.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_z11_lite_5g-14809",
+      "manufacturer": "vivo",
+      "family": "iQOO Z11 Lite 44W",
+      "model": "iQOO Z11 Lite 44W",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_z11_lite_5g-14809.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5_lite_5g-14734",
+      "manufacturer": "vivo",
+      "family": "T5 Lite",
+      "model": "T5 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5_lite_5g-14734.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y500-14780",
+      "manufacturer": "vivo",
+      "family": "Y500",
+      "model": "Y500",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y500-14780.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_z11i_5g-14771",
+      "manufacturer": "vivo",
+      "family": "iQOO Z11i",
+      "model": "iQOO Z11i",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_z11i_5g-14771.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x_fold6_5g-14748",
+      "manufacturer": "vivo",
+      "family": "X Fold6",
+      "model": "X Fold6",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x_fold6_5g-14748.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_pad5c-14763",
+      "manufacturer": "vivo",
+      "family": "IQOO Pad5c",
+      "model": "IQOO Pad5c",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_pad5c-14763.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_v70_lite_5g-14710",
+      "manufacturer": "vivo",
+      "family": "V70 Lite",
+      "model": "V70 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_v70_lite_5g-14710.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_s60_5g-14692",
+      "manufacturer": "vivo",
+      "family": "S60",
+      "model": "S60",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_s60_5g-14692.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_s60_vitality_5g-14693",
+      "manufacturer": "vivo",
+      "family": "S60e",
+      "model": "S60e",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_s60_vitality_5g-14693.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5-14697",
+      "manufacturer": "vivo",
+      "family": "T5 4G",
+      "model": "T5 4G",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5-14697.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y600_turbo_5g-14687",
+      "manufacturer": "vivo",
+      "family": "Y600 Turbo",
+      "model": "Y600 Turbo",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y600_turbo_5g-14687.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_15t_5g-14661",
+      "manufacturer": "vivo",
+      "family": "iQOO 15T",
+      "model": "iQOO 15T",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_15t_5g-14661.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_pad6_pro-14679",
+      "manufacturer": "vivo",
+      "family": "iQOO Pad6 Pro",
+      "model": "iQOO Pad6 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_pad6_pro-14679.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_iqoo_z11_5g-14654",
+      "manufacturer": "vivo",
+      "family": "iQOO Z11",
+      "model": "iQOO Z11",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_z11_5g-14654.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y500s_5g-14631",
+      "manufacturer": "vivo",
+      "family": "Y500s",
+      "model": "Y500s",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y500s_5g-14631.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y6_5g-14632",
+      "manufacturer": "vivo",
+      "family": "Y6",
+      "model": "Y6",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y6_5g-14632.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y6t_5g-14649",
+      "manufacturer": "vivo",
+      "family": "Y6t",
+      "model": "Y6t",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y6t_5g-14649.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y60_5g-14633",
+      "manufacturer": "vivo",
+      "family": "Y60",
+      "model": "Y60",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y60_5g-14633.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x300_fe_5g-14491",
+      "manufacturer": "vivo",
+      "family": "X300 FE",
+      "model": "X300 FE",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x300_fe_5g-14491.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5_pro_5g-14599",
+      "manufacturer": "vivo",
+      "family": "T5 Pro",
+      "model": "T5 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5_pro_5g-14599.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x300_ultra_5g-14388",
+      "manufacturer": "vivo",
+      "family": "X300 Ultra",
+      "model": "X300 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x300_ultra_5g-14388.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_x300s_5g-14557",
+      "manufacturer": "vivo",
+      "family": "X300s",
+      "model": "X300s",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_x300s_5g-14557.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_pad6_pro-14569",
+      "manufacturer": "vivo",
+      "family": "Pad6 Pro",
+      "model": "Pad6 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_pad6_pro-14569.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y21_5g-14561",
+      "manufacturer": "vivo",
+      "family": "Y21",
+      "model": "Y21",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y21_5g-14561.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_y11_5g-14564",
+      "manufacturer": "vivo",
+      "family": "Y11",
+      "model": "Y11",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_y11_5g-14564.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-vivo_t5x_5g-14536",
+      "manufacturer": "vivo",
+      "family": "T5x",
+      "model": "T5x",
+      "sourceIds": [
+        "gsmarena-catalog-vivo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/vivo_t5x_5g-14536.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
