@@ -14,6 +14,12 @@ export interface GpuWorkloadDemandInput {
   renderScaleFraction?: number;
   relativeComplexity?: number;
   raysPerPixel?: number;
+  /**
+   * Optional workload traffic assumption. This is deliberately explicit
+   * because real bytes-per-pixel traffic depends on overdraw, compression,
+   * tiling, cache behavior, textures and render passes.
+   */
+  estimatedMemoryTrafficBytesPerPixel?: number;
 }
 
 export interface GpuWorkloadDemandResult {
@@ -32,6 +38,8 @@ export interface GpuWorkloadDemandResult {
   complexityWeightedMegapixelsPerSecond?: number;
   raysPerPixel?: number;
   megaRaysPerSecondDemand?: number;
+  estimatedMemoryTrafficBytesPerPixel?: number;
+  estimatedRequiredMemoryBandwidthGbps?: number;
   warnings: string[];
   note: string;
 }
@@ -99,12 +107,30 @@ export function calculateGpuWorkloadDemand(
       ? input.raysPerPixel
       : undefined;
 
+  const estimatedMemoryTrafficBytesPerPixel =
+    positive(
+      input.estimatedMemoryTrafficBytesPerPixel,
+    )
+      ? input.estimatedMemoryTrafficBytesPerPixel
+      : undefined;
+
   if (
     input.raysPerPixel !== undefined &&
     raysPerPixel === undefined
   ) {
     warnings.push(
       'Rays per pixel must be a positive finite value when supplied.',
+    );
+  }
+
+  if (
+    input.estimatedMemoryTrafficBytesPerPixel !==
+      undefined &&
+    estimatedMemoryTrafficBytesPerPixel ===
+      undefined
+  ) {
+    warnings.push(
+      'Estimated memory traffic must be a positive finite number of bytes per rendered pixel when supplied.',
     );
   }
 
@@ -166,6 +192,15 @@ export function calculateGpuWorkloadDemand(
         raysPerPixel
       : undefined;
 
+  const estimatedRequiredMemoryBandwidthGbps =
+    estimatedMemoryTrafficBytesPerPixel !==
+      undefined
+      ? (
+          megapixelsPerSecond *
+          estimatedMemoryTrafficBytesPerPixel
+        ) / 1000
+      : undefined;
+
   if (
     input.workload === 'ray-tracing' &&
     raysPerPixel === undefined
@@ -199,8 +234,20 @@ export function calculateGpuWorkloadDemand(
     ...(megaRaysPerSecondDemand !== undefined
       ? { megaRaysPerSecondDemand }
       : {}),
+    ...(estimatedMemoryTrafficBytesPerPixel !==
+    undefined
+      ? {
+          estimatedMemoryTrafficBytesPerPixel,
+        }
+      : {}),
+    ...(estimatedRequiredMemoryBandwidthGbps !==
+    undefined
+      ? {
+          estimatedRequiredMemoryBandwidthGbps,
+        }
+      : {}),
     warnings,
     note:
-      'This is a deterministic workload-demand model. Pixel throughput, frame budget and optional relative complexity describe demand only; they do not predict FPS without a compatible measured GPU response curve.',
+      'This is a deterministic workload-demand model. Pixel throughput, frame budget, optional relative complexity and explicit memory-traffic assumptions describe demand only; they do not predict FPS without a compatible measured GPU response curve.',
   };
 }
