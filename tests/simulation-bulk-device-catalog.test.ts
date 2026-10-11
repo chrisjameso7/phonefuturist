@@ -38,11 +38,7 @@ describe('bulk device catalog corpus', () => {
         ),
       );
 
-    expect(publishers).toEqual(
-      expect.objectContaining
-        ? publishers
-        : publishers,
-    );
+    expect(publishers.size).toBeGreaterThanOrEqual(3);
 
     expect(
       publishers.has('Geekerwan'),
