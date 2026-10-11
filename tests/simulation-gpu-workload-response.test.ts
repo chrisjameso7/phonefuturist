@@ -100,6 +100,42 @@ describe('GPU workload response interpretation', () => {
     expect(result.powerPressure).toBe('none');
   });
 
+  it('flags an explicit memory-bandwidth over-budget workload', () => {
+    const result =
+      interpretGpuWorkloadResponse({
+        architecture:
+          calculateGpuArchitecture({
+            shaderCores: 512,
+            peakClockGhz: 1.1,
+            memoryBandwidthGbps: 10,
+          }),
+        demand:
+          calculateGpuWorkloadDemand({
+            workload: 'gaming',
+            renderWidthPx: 3840,
+            renderHeightPx: 2160,
+            targetFps: 120,
+            estimatedMemoryTrafficBytesPerPixel:
+              128,
+          }),
+      });
+
+    expect(
+      result.memoryBandwidthPressure,
+    ).toBe('over-budget');
+    expect(
+      result.memoryBandwidthHeadroomGbps,
+    ).toBeLessThan(0);
+    expect(
+      result.bottleneckSignals.some(
+        (signal) =>
+          signal.includes(
+            'memory-traffic estimate exceeds',
+          ),
+      ),
+    ).toBe(true);
+  });
+
   it('flags missing RT geometry for ray-tracing demand', () => {
     const result =
       interpretGpuWorkloadResponse({
