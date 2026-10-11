@@ -1,17 +1,19 @@
 {
   "version": "techapi-recent-1000-0.1.0",
-  "generatedAt": "2026-10-11T19:54:23.625Z",
+  "generatedAt": "2026-10-11T19:55:57.866Z",
   "license": "CC-BY-SA-4.0",
   "attribution": "Data from TechAPI (https://github.com/GetTechAPI/TechAPI)",
   "selection": {
     "targetCount": 1000,
     "selectedCount": 1000,
     "years": [
+      2022,
+      2023,
       2024,
       2025,
       2026
     ],
-    "uniqueBy": "base_model_slug",
+    "uniqueBy": "TechAPI canonical brand/year/slug.json records, then base_model_slug",
     "requireSourceUrls": true,
     "excludeVerifiedFalse": true,
     "order": "release_date desc, completeness desc"
@@ -21,7 +23,6 @@
     "Asus": 19,
     "Fujitsu": 5,
     "Google": 41,
-    "HMD": 2,
     "Honor": 3,
     "Huawei": 140,
     "Kyocera": 3,
@@ -30,10 +31,10 @@
     "OPPO": 64,
     "OnePlus": 4,
     "POCO": 3,
-    "Samsung": 400,
+    "Samsung": 403,
     "Sharp": 28,
     "Sony": 1,
-    "Xiaomi": 131,
+    "Xiaomi": 130,
     "ZTE": 21,
     "iQOO": 2,
     "realme": 2,
@@ -14061,39 +14062,6 @@
       ]
     },
     {
-      "id": "techapi-hmd-aura-2",
-      "manufacturer": "HMD",
-      "model": "Hmd Aura 2",
-      "baseModelSlug": "aura-2",
-      "releaseDate": "2025-03-13",
-      "batteryMah": 5000,
-      "socVendor": "Unisoc",
-      "socName": "Unisoc Sc9863a",
-      "display": {
-        "diagonalInches": 6.52,
-        "resolutionWidthPx": 1280,
-        "resolutionHeightPx": 576,
-        "panelTechnology": "IPS LCD"
-      },
-      "dimensions": {
-        "weightG": 185.4
-      },
-      "cameras": [
-        {
-          "role": "main"
-        }
-      ],
-      "charging": {
-        "advertisedWiredWatts": 10
-      },
-      "verified": true,
-      "sourceUrls": [
-        "https://www.kaggle.com/datasets/rajibdab/global-smartphone-database-2025",
-        "https://www.mobiledokan.com/mobile/hmd-aura-2",
-        "https://en.wikipedia.org/wiki/HMD_Aura2"
-      ]
-    },
-    {
       "id": "techapi-nothing-nothing-phone-3a",
       "manufacturer": "Nothing",
       "model": "Nothing Phone (3a)",
@@ -21123,39 +21091,6 @@
       ]
     },
     {
-      "id": "techapi-hmd-key",
-      "manufacturer": "HMD",
-      "model": "HMD Key",
-      "baseModelSlug": "key",
-      "releaseDate": "2025-01-01",
-      "batteryMah": 4000,
-      "socVendor": "Unisoc",
-      "socName": "Unisoc Sc9832e",
-      "display": {
-        "diagonalInches": 6.52,
-        "resolutionWidthPx": 1280,
-        "resolutionHeightPx": 576,
-        "panelTechnology": "IPS LCD, 460 nits (peak)"
-      },
-      "dimensions": {
-        "weightG": 185.4
-      },
-      "cameras": [
-        {
-          "role": "main"
-        },
-        {
-          "role": "selfie"
-        }
-      ],
-      "verified": true,
-      "sourceUrls": [
-        "https://aitoolbuzz.com/mobiles/hmd-key",
-        "https://en.wikipedia.org/wiki/HMD_Key",
-        "https://storage.googleapis.com/play_public/supported_devices.csv"
-      ]
-    },
-    {
       "id": "techapi-samsung-samsung-sm-s721j-galaxy-s24-fe-5g-td-lte-jp-128gb-scg30-samsung-r12",
       "manufacturer": "Samsung",
       "model": "Samsung SM-S721J Galaxy S24 FE 5G TD-LTE JP 128GB SCG30 (Samsung R12)",
@@ -25770,32 +25705,106 @@
       ]
     },
     {
-      "id": "techapi-xiaomi-redmi-14c",
-      "manufacturer": "Xiaomi",
-      "model": "Xiaomi Redmi 14C",
-      "baseModelSlug": "redmi-14c",
-      "releaseDate": "2024-10-07",
-      "batteryMah": 5160,
-      "socVendor": "MediaTek",
-      "socName": "Mediatek Helio",
+      "id": "techapi-samsung-galaxy-s24-fe",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S24 FE",
+      "baseModelSlug": "galaxy-s24-fe",
+      "releaseDate": "2024-10-03",
+      "batteryMah": 4700,
+      "socVendor": "Samsung",
+      "socName": "Exynos 2400",
       "display": {
-        "diagonalInches": 6.88,
-        "resolutionWidthPx": 1640,
-        "resolutionHeightPx": 720,
-        "panelTechnology": "IPS LCD, 120Hz, 450 nits (typ), 600 nits (HBM)"
+        "diagonalInches": 6.7,
+        "resolutionWidthPx": 2340,
+        "resolutionHeightPx": 1080,
+        "refreshRateHz": 120,
+        "panelTechnology": "Dynamic AMOLED 2X",
+        "brightnessNits": 1900
       },
       "dimensions": {
-        "weightG": 211
+        "widthMm": 77.3,
+        "heightMm": 162,
+        "thicknessMm": 8,
+        "weightG": 213
       },
       "cameras": [
         {
+          "role": "main",
+          "resolutionMp": 50,
+          "apertureFNumber": 1.8
+        },
+        {
+          "role": "ultrawide",
+          "resolutionMp": 12,
+          "apertureFNumber": 2.2
+        },
+        {
+          "role": "telephoto",
+          "resolutionMp": 8,
+          "apertureFNumber": 2.4
+        },
+        {
           "role": "selfie",
-          "resolutionMp": 13
+          "resolutionMp": 10,
+          "apertureFNumber": 2.4
         }
       ],
+      "charging": {
+        "advertisedWiredWatts": 25,
+        "advertisedWirelessWatts": 15
+      },
       "verified": true,
       "sourceUrls": [
-        "https://www.gsmarena.com/xiaomi_redmi_14c-13291.php"
+        "https://www.samsung.com/global/galaxy/galaxy-s24-fe/specs/",
+        "https://en.wikipedia.org/wiki/Samsung_Galaxy_S24_FE"
+      ]
+    },
+    {
+      "id": "techapi-samsung-samsung-sm-s721b-galaxy-s24-fe-5g-global-td-lte-128gb-samsung-r12",
+      "manufacturer": "Samsung",
+      "model": "Samsung SM-S721B Galaxy S24 FE 5G Global TD-LTE 128GB (Samsung R12)",
+      "baseModelSlug": "samsung-sm-s721b-galaxy-s24-fe-5g-global-td-lte-128gb-samsung-r12",
+      "releaseDate": "2024-10-03",
+      "batteryMah": 4700,
+      "socVendor": "Samsung",
+      "socName": "Samsung Exynos 2400E 5G S5e9945",
+      "display": {
+        "diagonalInches": 6.7,
+        "resolutionWidthPx": 2340,
+        "resolutionHeightPx": 1080,
+        "panelTechnology": "AM-OLED display"
+      },
+      "dimensions": {
+        "weightG": 213
+      },
+      "verified": true,
+      "sourceUrls": [
+        "https://phonedb.net/index.php?m=device&id=23960",
+        "https://storage.googleapis.com/play_public/supported_devices.csv"
+      ]
+    },
+    {
+      "id": "techapi-samsung-samsung-sm-s721b-galaxy-s24-fe-5g-global-td-lte-256gb-samsung-r12",
+      "manufacturer": "Samsung",
+      "model": "Samsung SM-S721B Galaxy S24 FE 5G Global TD-LTE 256GB (Samsung R12)",
+      "baseModelSlug": "samsung-sm-s721b-galaxy-s24-fe-5g-global-td-lte-256gb-samsung-r12",
+      "releaseDate": "2024-10-03",
+      "batteryMah": 4700,
+      "socVendor": "Samsung",
+      "socName": "Samsung Exynos 2400E 5G S5e9945",
+      "display": {
+        "diagonalInches": 6.7,
+        "resolutionWidthPx": 2340,
+        "resolutionHeightPx": 1080,
+        "panelTechnology": "AM-OLED display"
+      },
+      "dimensions": {
+        "weightG": 213
+      },
+      "verified": true,
+      "sourceUrls": [
+        "https://phonedb.net/index.php?m=device&id=23964",
+        "https://storage.googleapis.com/play_public/supported_devices.csv"
       ]
     }
   ]
