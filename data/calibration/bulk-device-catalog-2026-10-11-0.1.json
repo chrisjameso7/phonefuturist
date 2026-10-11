@@ -168,6 +168,20 @@
       "url": "https://www.gsmarena.com/vivo-phones-98.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-xiaomi-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/xiaomi-phones-80.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-zte-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/zte-phones-62.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -9957,6 +9971,1098 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_t5x_5g-14536.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_18_pro_max_5g-14958",
+      "manufacturer": "Xiaomi",
+      "family": "18 Pro Max",
+      "model": "18 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_18_pro_max_5g-14958.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_18_pro_5g-14959",
+      "manufacturer": "Xiaomi",
+      "family": "18 Pro",
+      "model": "18 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_18_pro_5g-14959.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_c95_pro-14933",
+      "manufacturer": "Xiaomi",
+      "family": "Poco C95 Pro",
+      "model": "Poco C95 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_c95_pro-14933.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_18_fold_5g-14931",
+      "manufacturer": "Xiaomi",
+      "family": "18 Fold",
+      "model": "18 Fold",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_18_fold_5g-14931.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_x8_power_5g-14912",
+      "manufacturer": "Xiaomi",
+      "family": "Poco X8 Power",
+      "model": "Poco X8 Power",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_x8_power_5g-14912.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_x8_5g-14911",
+      "manufacturer": "Xiaomi",
+      "family": "Poco X8",
+      "model": "Poco X8",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_x8_5g-14911.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_f9_ultra_5g-14876",
+      "manufacturer": "Xiaomi",
+      "family": "Poco F9 Ultra",
+      "model": "Poco F9 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_f9_ultra_5g-14876.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_f9_pro_5g-14877",
+      "manufacturer": "Xiaomi",
+      "family": "Poco F9 Pro",
+      "model": "Poco F9 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_f9_pro_5g-14877.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_note_17_pro_max_5g-14845",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Note 17 Pro Max",
+      "model": "Redmi Note 17 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_17_pro_max_5g-14845.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_note_17_pro_5g-14844",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Note 17 Pro",
+      "model": "Redmi Note 17 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_17_pro_5g-14844.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_note_17_5g-14846",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Note 17",
+      "model": "Redmi Note 17",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_17_5g-14846.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_note_17-14847",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Note 17 4G",
+      "model": "Redmi Note 17 4G",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_17-14847.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_17c_5g-14866",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi 17C",
+      "model": "Redmi 17C",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_17c_5g-14866.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_m8x_5g-14879",
+      "manufacturer": "Xiaomi",
+      "family": "Poco M8x",
+      "model": "Poco M8x",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_m8x_5g-14879.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_m100_5g-14882",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi M100",
+      "model": "Redmi M100",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_m100_5g-14882.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_k100_pro_max_5g-14865",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K100 Pro Max",
+      "model": "Redmi K100 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k100_pro_max_5g-14865.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_k100_pro_5g-14715",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K100 Pro",
+      "model": "Redmi K100 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k100_pro_5g-14715.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_17_5g-14869",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi 17",
+      "model": "Redmi 17",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_17_5g-14869.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_17-14807",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi 17 4G",
+      "model": "Redmi 17 4G",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_17-14807.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_m8_power_5g-14804",
+      "manufacturer": "Xiaomi",
+      "family": "Poco M8 Power",
+      "model": "Poco M8 Power",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_m8_power_5g-14804.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_k90_ultra_5g-14757",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K90 Ultra",
+      "model": "Redmi K90 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k90_ultra_5g-14757.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_17t_pro_5g-14651",
+      "manufacturer": "Xiaomi",
+      "family": "17T Pro",
+      "model": "17T Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_17t_pro_5g-14651.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_17t_5g-14652",
+      "manufacturer": "Xiaomi",
+      "family": "17T",
+      "model": "17T",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_17t_5g-14652.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_17_max_5g-14667",
+      "manufacturer": "Xiaomi",
+      "family": "17 Max",
+      "model": "17 Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_17_max_5g-14667.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_c81_pro-14635",
+      "manufacturer": "Xiaomi",
+      "family": "Poco C81 Pro",
+      "model": "Poco C81 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_c81_pro-14635.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_c81-14626",
+      "manufacturer": "Xiaomi",
+      "family": "Poco C81",
+      "model": "Poco C81",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_c81-14626.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_c81x-14627",
+      "manufacturer": "Xiaomi",
+      "family": "Poco C81x",
+      "model": "Poco C81x",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_c81x-14627.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_k90_max_5g-14618",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K90 Max",
+      "model": "Redmi K90 Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k90_max_5g-14618.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_a7_pro_5g-14616",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi A7 Pro",
+      "model": "Redmi A7 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_a7_pro_5g-14616.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_a7-14623",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi A7",
+      "model": "Redmi A7",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_a7-14623.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_m8s_5g-14615",
+      "manufacturer": "Xiaomi",
+      "family": "Poco M8s",
+      "model": "Poco M8s",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_m8s_5g-14615.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_r70m_5g-14600",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi R70m",
+      "model": "Redmi R70m",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_r70m_5g-14600.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_r70_5g-14598",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi R70",
+      "model": "Redmi R70",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_r70_5g-14598.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_note_15_special_edition_5g-14571",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Note 15 Special",
+      "model": "Redmi Note 15 Special",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_15_special_edition_5g-14571.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_a7_pro-14463",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi A7 Pro 4G",
+      "model": "Redmi A7 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_a7_pro-14463.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_redmi_15a_5g-14565",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi 15a",
+      "model": "Redmi 15a",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_15a_5g-14565.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-xiaomi_poco_x8_pro_max_5g-14507",
+      "manufacturer": "Xiaomi",
+      "family": "Poco X8 Pro Max",
+      "model": "Poco X8 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-xiaomi-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/xiaomi_poco_x8_pro_max_5g-14507.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_navix_ultra_5g-14946",
+      "manufacturer": "ZTE",
+      "family": "nubia NaviX Ultra",
+      "model": "nubia NaviX Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_navix_ultra_5g-14946.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_a57-14910",
+      "manufacturer": "ZTE",
+      "family": "nubia A57",
+      "model": "nubia A57",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_a57-14910.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_a77_5g-14908",
+      "manufacturer": "ZTE",
+      "family": "nubia A77",
+      "model": "nubia A77",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_a77_5g-14908.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_a77-14909",
+      "manufacturer": "ZTE",
+      "family": "nubia A77 4G",
+      "model": "nubia A77 4G",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_a77-14909.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_5_max_5g-14903",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 5 Max",
+      "model": "nubia Neo 5 Max",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_5_max_5g-14903.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_redmagic_gaming_tablet_5_pro-14762",
+      "manufacturer": "ZTE",
+      "family": "RedMagic Astra 2",
+      "model": "RedMagic Astra 2",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_redmagic_gaming_tablet_5_pro-14762.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_air_pro_5g-14754",
+      "manufacturer": "ZTE",
+      "family": "nubia Air Pro",
+      "model": "nubia Air Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_air_pro_5g-14754.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11s_pro_5g-14669",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11S Pro",
+      "model": "nubia RedMagic 11S Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11s_pro_5g-14669.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11s_pro+_5g-14671",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11S Pro+",
+      "model": "nubia RedMagic 11S Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11s_pro+_5g-14671.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_5_gt_5g-14524",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 5 GT",
+      "model": "nubia Neo 5 GT",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_5_gt_5g-14524.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_5_pro_5g-14594",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 5 Pro",
+      "model": "nubia Neo 5 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_5_pro_5g-14594.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_5_5g-14595",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 5",
+      "model": "nubia Neo 5",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_5_5g-14595.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_x1001-14525",
+      "manufacturer": "ZTE",
+      "family": "Blade X1001",
+      "model": "Blade X1001",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_x1001-14525.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_a76-14906",
+      "manufacturer": "ZTE",
+      "family": "nubia A76",
+      "model": "nubia A76",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_a76-14906.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_a75-14907",
+      "manufacturer": "ZTE",
+      "family": "nubia A75",
+      "model": "nubia A75",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_a75-14907.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v80_max-14449",
+      "manufacturer": "ZTE",
+      "family": "Blade V80 Max",
+      "model": "Blade V80 Max",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v80_max-14449.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11_air_5g-14430",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11 Air",
+      "model": "nubia RedMagic 11 Air",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11_air_5g-14430.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_fold_5g-14324",
+      "manufacturer": "ZTE",
+      "family": "Nubia Fold",
+      "model": "Nubia Fold",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_fold_5g-14324.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_flip3_5g-14325",
+      "manufacturer": "ZTE",
+      "family": "nubia Flip3",
+      "model": "nubia Flip3",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_flip3_5g-14325.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v80_pro-14305",
+      "manufacturer": "ZTE",
+      "family": "Blade V80 Pro",
+      "model": "Blade V80 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v80_pro-14305.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v80_design-14291",
+      "manufacturer": "ZTE",
+      "family": "Blade V80 Design",
+      "model": "Blade V80 Design",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v80_design-14291.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11_pro_5g_int-14277",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11 Pro",
+      "model": "nubia RedMagic 11 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11_pro_5g_int-14277.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_z80_ultra_5g-14247",
+      "manufacturer": "ZTE",
+      "family": "nubia Z80 Ultra",
+      "model": "nubia Z80 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_z80_ultra_5g-14247.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11_pro+_5g-14238",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11 Pro+",
+      "model": "nubia RedMagic 11 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11_pro+_5g-14238.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_11_pro_5g-14239",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 11 Pro (China)",
+      "model": "nubia RedMagic 11 Pro (China)",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11_pro_5g-14239.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_air_5g-14123",
+      "manufacturer": "ZTE",
+      "family": "nubia Air",
+      "model": "nubia Air",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_air_5g-14123.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_a36-13966",
+      "manufacturer": "ZTE",
+      "family": "Blade A36",
+      "model": "Blade A36",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_a36-13966.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_a56-13948",
+      "manufacturer": "ZTE",
+      "family": "Blade A56",
+      "model": "Blade A56",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_a56-13948.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_redmagic_tablet_3_pro-13939",
+      "manufacturer": "ZTE",
+      "family": "RedMagic Astra",
+      "model": "RedMagic Astra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_redmagic_tablet_3_pro-13939.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_a76-14290",
+      "manufacturer": "ZTE",
+      "family": "Blade A76 4G",
+      "model": "Blade A76 4G",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_a76-14290.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_a76_5g-13932",
+      "manufacturer": "ZTE",
+      "family": "Blade A76",
+      "model": "Blade A76",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_a76_5g-13932.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_10spro+_5g-13905",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 10SPro+",
+      "model": "nubia RedMagic 10SPro+",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_10spro+_5g-13905.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_10spro_5g-13906",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 10S Pro",
+      "model": "nubia RedMagic 10S Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_10spro_5g-13906.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_z70s_ultra_5g-13819",
+      "manufacturer": "ZTE",
+      "family": "nubia Z70S Ultra",
+      "model": "nubia Z70S Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_z70s_ultra_5g-13819.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_redmagic_10_air_5g-13797",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 10 Air",
+      "model": "nubia RedMagic 10 Air",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_10_air_5g-13797.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_focus_2_ultra-13708",
+      "manufacturer": "ZTE",
+      "family": "nubia Focus 2 Ultra",
+      "model": "nubia Focus 2 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_focus_2_ultra-13708.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_focus_2-13709",
+      "manufacturer": "ZTE",
+      "family": "nubia Focus 2",
+      "model": "nubia Focus 2",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_focus_2-13709.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_3_gt-13710",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 3 GT",
+      "model": "nubia Neo 3 GT",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_3_gt-13710.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_neo_3-13711",
+      "manufacturer": "ZTE",
+      "family": "nubia Neo 3",
+      "model": "nubia Neo 3",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_neo_3-13711.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_flip2-13625",
+      "manufacturer": "ZTE",
+      "family": "nubia Flip2",
+      "model": "nubia Flip2",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_flip2-13625.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v70_max-13654",
+      "manufacturer": "ZTE",
+      "family": "Blade V70 Max",
+      "model": "Blade V70 Max",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v70_max-13654.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_music_2-13611",
+      "manufacturer": "ZTE",
+      "family": "nubia Music 2",
+      "model": "nubia Music 2",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_music_2-13611.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v70_design-13513",
+      "manufacturer": "ZTE",
+      "family": "Blade V70 Design",
+      "model": "Blade V70 Design",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v70_design-13513.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_z70_ultra-13508",
+      "manufacturer": "ZTE",
+      "family": "nubia Z70 Ultra",
+      "model": "nubia Z70 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_z70_ultra-13508.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_blade_v70-13501",
+      "manufacturer": "ZTE",
+      "family": "Blade V70",
+      "model": "Blade V70",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_blade_v70-13501.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_red_magic_10_pro+-13495",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 10 Pro+",
+      "model": "nubia RedMagic 10 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_red_magic_10_pro+-13495.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-zte_nubia_red_magic_10_pro-13496",
+      "manufacturer": "ZTE",
+      "family": "nubia RedMagic 10 Pro",
+      "model": "nubia RedMagic 10 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-zte-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/zte_nubia_red_magic_10_pro-13496.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
