@@ -129,6 +129,11 @@ import {
 } from '../../lib/simulation/modules/battery-cycle-exposure';
 
 import {
+  BATTERY_HEALTH_FORECAST_VERSION,
+  forecastBatteryHealthThreshold,
+} from '../../lib/simulation/modules/battery-health-forecast';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -212,6 +217,7 @@ type FormState = {
   batteryEquivalentFullCycles: string;
   batteryAnnualCalendarFadePercent: string;
   batteryCycleFadePercentPer100Cycles: string;
+  batteryHealthThresholdPercent: string;
 
   socVendor: string;
   socName: string;
@@ -331,6 +337,7 @@ const initialForm: FormState = {
   batteryEquivalentFullCycles: '',
   batteryAnnualCalendarFadePercent: '',
   batteryCycleFadePercentPer100Cycles: '',
+  batteryHealthThresholdPercent: '',
 
   socVendor: '',
   socName: '',
@@ -440,6 +447,7 @@ const flagshipExample: FormState = {
   batteryEquivalentFullCycles: '',
   batteryAnnualCalendarFadePercent: '',
   batteryCycleFadePercentPer100Cycles: '',
+  batteryHealthThresholdPercent: '',
 
   socVendor: 'Qualcomm',
   socName: 'Snapdragon 8 Elite Gen 5',
@@ -1416,6 +1424,35 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const batteryHealthForecast =
+    numeric(
+      form.batteryHealthThresholdPercent,
+    ) !== undefined
+      ? forecastBatteryHealthThreshold({
+          targetRetentionPercent:
+            numeric(
+              form.batteryHealthThresholdPercent,
+            )!,
+          currentAgeYears: numeric(
+            form.batteryAgeYears,
+          ),
+          annualCalendarFadePercent:
+            numeric(
+              form.batteryAnnualCalendarFadePercent,
+            ),
+          cycleFadePercentPer100Cycles:
+            numeric(
+              form.batteryCycleFadePercentPer100Cycles,
+            ),
+          equivalentFullCyclesPerYear:
+            batteryCycleExposure?.status ===
+            'resolved'
+              ? batteryCycleExposure
+                  .equivalentFullCyclesPerYear
+              : undefined,
+        })
+      : undefined;
+
   const agedRuntimeRows =
     batteryAging?.combinedRetentionFraction !==
       undefined
@@ -2027,6 +2064,7 @@ export default function InteractiveLeaksSimulator() {
     battery: batteryExperience,
     batteryAging,
     batteryCycleExposure,
+    batteryHealthForecast,
     agedRuntimeRows,
     thermal: thermalResult
       ? {
@@ -2979,6 +3017,21 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(value) =>
                     update(
                       'batteryCycleFadePercentPer100Cycles',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Health threshold"
+                  suffix="% retained"
+                  value={
+                    form.batteryHealthThresholdPercent
+                  }
+                  placeholder="80"
+                  onChange={(value) =>
+                    update(
+                      'batteryHealthThresholdPercent',
                       value,
                     )
                   }
@@ -5042,6 +5095,67 @@ export default function InteractiveLeaksSimulator() {
                         </div>
                       ))}
                     </div>
+                  ) : null}
+
+                  {batteryHealthForecast ? (
+                    batteryHealthForecast.status ===
+                    'resolved' ? (
+                      <>
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.yearsFromNewToThreshold !==
+                              undefined
+                                ? `${format(
+                                    batteryHealthForecast.yearsFromNewToThreshold,
+                                    1,
+                                  )} years`
+                                : 'Unknown'}
+                            </strong>
+                            <span>
+                              Time from new to{' '}
+                              {batteryHealthForecast.targetRetentionPercent}%
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.remainingYearsFromCurrentAge !==
+                              undefined
+                                ? `${format(
+                                    batteryHealthForecast.remainingYearsFromCurrentAge,
+                                    1,
+                                  )} years`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Remaining from entered age</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.equivalentFullCyclesToThreshold !==
+                              undefined
+                                ? format(
+                                    batteryHealthForecast.equivalentFullCyclesToThreshold,
+                                    0,
+                                  )
+                                : 'Unknown'}
+                            </strong>
+                            <span>Projected EFC at threshold</span>
+                          </div>
+                        </div>
+
+                        <p className="il-help">
+                          {BATTERY_HEALTH_FORECAST_VERSION} ·{' '}
+                          {batteryHealthForecast.note}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="il-help">
+                        Health threshold unresolved:{' '}
+                        {batteryHealthForecast.unresolvedReason}
+                      </p>
+                    )
                   ) : null}
 
                   {explicitEquivalentFullCycles ===
