@@ -74,6 +74,11 @@ import {
 } from '../../lib/simulation/modules/soc-architecture';
 
 import {
+  PERFORMANCE_CONTEXT_VERSION,
+  buildPerformanceContext,
+} from '../../lib/simulation/modules/performance-context';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1529,6 +1534,16 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const performanceContext =
+    peakPerformanceEstimate
+      ? buildPerformanceContext({
+          peak: peakPerformanceEstimate,
+          ...(socArchitecture
+            ? { architecture: socArchitecture }
+            : {}),
+        })
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -1669,6 +1684,7 @@ export default function InteractiveLeaksSimulator() {
       sustainedPerformanceEstimate,
     peakPerformance:
       peakPerformanceEstimate,
+    performanceContext,
     socArchitecture,
     camera: cameraExperiences.map(
       (experience) => ({
@@ -4786,6 +4802,67 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {performanceContext ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Performance interpretation · {PERFORMANCE_CONTEXT_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {performanceContext.scoreDisposition.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Peak score provenance</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {performanceContext.benchmarkRelevance.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Benchmark domain</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {performanceContext.architectureCanExplainDirection
+                          ? 'Relevant context'
+                          : 'Not predictive'}
+                      </strong>
+                      <span>Architecture relevance</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {performanceContext.architectureSignals.length}
+                      </strong>
+                      <span>Structural signals available</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {performanceContext.note}
+                  </p>
+
+                  {performanceContext.warnings.map(
+                    (warning) => (
+                      <p
+                        className="il-help"
+                        key={warning}
+                      >
+                        {warning}
+                      </p>
+                    ),
+                  )}
+                </div>
+              ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
