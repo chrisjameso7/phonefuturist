@@ -150,6 +150,11 @@ import {
 } from '../../lib/simulation/modules/connectivity-workload';
 
 import {
+  DISPLAY_REFRESH_PROFILE_VERSION,
+  calculateDisplayRefreshProfile,
+} from '../../lib/simulation/modules/display-refresh-profile';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -223,6 +228,10 @@ type FormState = {
   brightnessNits: string;
   averagePictureLevelPercent: string;
   panelTechnology: string;
+  displayRefreshState1Hz: string;
+  displayRefreshState1DutyPercent: string;
+  displayRefreshState2Hz: string;
+  displayRefreshState2DutyPercent: string;
 
   bezelTopMm: string;
   bezelRightMm: string;
@@ -353,6 +362,10 @@ const initialForm: FormState = {
   brightnessNits: '',
   averagePictureLevelPercent: '',
   panelTechnology: '',
+  displayRefreshState1Hz: '',
+  displayRefreshState1DutyPercent: '',
+  displayRefreshState2Hz: '',
+  displayRefreshState2DutyPercent: '',
 
   bezelTopMm: '',
   bezelRightMm: '',
@@ -473,6 +486,10 @@ const flagshipExample: FormState = {
   brightnessNits: '1000',
   averagePictureLevelPercent: '50',
   panelTechnology: 'LTPO OLED',
+  displayRefreshState1Hz: '',
+  displayRefreshState1DutyPercent: '',
+  displayRefreshState2Hz: '',
+  displayRefreshState2DutyPercent: '',
 
   bezelTopMm: '1.5',
   bezelRightMm: '1.5',
@@ -1363,6 +1380,53 @@ export default function InteractiveLeaksSimulator() {
             numeric(form.averagePictureLevelPercent),
           panelTechnology:
             form.panelTechnology.trim() || undefined,
+        })
+      : undefined;
+
+  const displayRefreshProfileInputsPresent = [
+    form.displayRefreshState1Hz,
+    form.displayRefreshState1DutyPercent,
+    form.displayRefreshState2Hz,
+    form.displayRefreshState2DutyPercent,
+  ].some((value) => value.trim() !== '');
+
+  const displayRefreshProfile =
+    displayRefreshProfileInputsPresent
+      ? calculateDisplayRefreshProfile({
+          resolutionWidthPx: numeric(
+            form.resolutionWidthPx,
+          ),
+          resolutionHeightPx: numeric(
+            form.resolutionHeightPx,
+          ),
+          states: [
+            {
+              label: 'State 1',
+              refreshRateHz:
+                numeric(
+                  form.displayRefreshState1Hz,
+                ) ?? Number.NaN,
+              dutyFraction:
+                (
+                  numeric(
+                    form.displayRefreshState1DutyPercent,
+                  ) ?? Number.NaN
+                ) / 100,
+            },
+            {
+              label: 'State 2',
+              refreshRateHz:
+                numeric(
+                  form.displayRefreshState2Hz,
+                ) ?? Number.NaN,
+              dutyFraction:
+                (
+                  numeric(
+                    form.displayRefreshState2DutyPercent,
+                  ) ?? Number.NaN
+                ) / 100,
+            },
+          ],
         })
       : undefined;
 
@@ -2283,6 +2347,7 @@ export default function InteractiveLeaksSimulator() {
     simulationInput,
     deterministic: result,
     display: displayExperience,
+    displayRefreshProfile,
     battery: batteryExperience,
     batteryAging,
     batteryCycleExposure,
@@ -2990,6 +3055,66 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(value) =>
                     update(
                       'averagePictureLevelPercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Adaptive state 1"
+                  suffix="Hz"
+                  value={form.displayRefreshState1Hz}
+                  placeholder="10"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState1Hz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="State 1 duty"
+                  suffix="%"
+                  value={
+                    form.displayRefreshState1DutyPercent
+                  }
+                  placeholder="70"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState1DutyPercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Adaptive state 2"
+                  suffix="Hz"
+                  value={form.displayRefreshState2Hz}
+                  placeholder="120"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState2Hz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="State 2 duty"
+                  suffix="%"
+                  value={
+                    form.displayRefreshState2DutyPercent
+                  }
+                  placeholder="30"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState2DutyPercent',
                       value,
                     )
                   }
@@ -5263,6 +5388,86 @@ export default function InteractiveLeaksSimulator() {
                       Electrical panel power:{' '}
                       {displayExperience.note}
                     </p>
+
+                    {displayRefreshProfile ? (
+                      displayRefreshProfile.status ===
+                      'resolved' ? (
+                        <div className="il-display-sensitivity">
+                          <span className="il-result-label">
+                            Adaptive refresh ·{' '}
+                            {DISPLAY_REFRESH_PROFILE_VERSION}
+                          </span>
+
+                          <div className="il-metrics">
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.weightedAverageRefreshRateHz !==
+                                undefined
+                                  ? `${format(
+                                      displayRefreshProfile.weightedAverageRefreshRateHz,
+                                      1,
+                                    )} Hz`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Time-weighted refresh</span>
+                            </div>
+
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.highRefreshDutyPercent !==
+                                undefined
+                                  ? `${format(
+                                      displayRefreshProfile.highRefreshDutyPercent,
+                                      1,
+                                    )}%`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Time above 60 Hz</span>
+                            </div>
+
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.weightedPixelThroughputMpxPerSecond !==
+                                undefined
+                                  ? `${format(
+                                      displayRefreshProfile.weightedPixelThroughputMpxPerSecond,
+                                      1,
+                                    )} MP/s`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Weighted pixel scan demand</span>
+                            </div>
+
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.minimumRefreshRateHz !==
+                                  undefined &&
+                                displayRefreshProfile.maximumRefreshRateHz !==
+                                  undefined
+                                  ? `${format(
+                                      displayRefreshProfile.minimumRefreshRateHz,
+                                      0,
+                                    )}–${format(
+                                      displayRefreshProfile.maximumRefreshRateHz,
+                                      0,
+                                    )} Hz`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Refresh range in profile</span>
+                            </div>
+                          </div>
+
+                          <p className="il-help">
+                            {displayRefreshProfile.note}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="il-help">
+                          Adaptive refresh unresolved:{' '}
+                          {displayRefreshProfile.unresolvedReason}
+                        </p>
+                      )
+                    ) : null}
 
                     {displayExperience.load.scenarios.length ? (
                       <div className="il-display-sensitivity">
