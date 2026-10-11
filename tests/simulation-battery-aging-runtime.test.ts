@@ -14,7 +14,9 @@ describe('battery aging runtime impact', () => {
     expect(result.status).toBe('resolved');
     expect(result.agedRuntimeHours).toBe(16);
     expect(result.runtimeDeltaHours).toBe(-4);
-    expect(result.runtimeDeltaPercent).toBe(-20);
+    expect(
+      result.runtimeDeltaPercent,
+    ).toBeCloseTo(-20, 8);
   });
 
   it('fails closed without retained energy', () => {
