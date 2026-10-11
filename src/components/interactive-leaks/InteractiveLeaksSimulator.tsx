@@ -109,6 +109,11 @@ import {
 } from '../../lib/simulation/modules/sustained-benchmark-envelope';
 
 import {
+  GAMING_SESSION_ENVELOPE_VERSION,
+  calculateGamingSessionEnvelope,
+} from '../../lib/simulation/modules/gaming-session-envelope';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -220,6 +225,7 @@ type FormState = {
   gpuRenderScalePercent: string;
   gpuRelativeWorkloadComplexity: string;
   gpuRaysPerPixel: string;
+  gamingSessionMinutes: string;
   coolingClass:
     | 'unknown'
     | 'passive-graphite'
@@ -332,6 +338,7 @@ const initialForm: FormState = {
   gpuRenderScalePercent: '',
   gpuRelativeWorkloadComplexity: '',
   gpuRaysPerPixel: '',
+  gamingSessionMinutes: '',
   coolingClass: 'unknown',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -434,6 +441,7 @@ const flagshipExample: FormState = {
   gpuRenderScalePercent: '',
   gpuRelativeWorkloadComplexity: '',
   gpuRaysPerPixel: '',
+  gamingSessionMinutes: '',
   coolingClass: 'large-vapor-chamber',
   thermalDomain: 'gpu_sustained',
   peakBenchmarkDomain: 'geekbench6_multi',
@@ -1778,6 +1786,25 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const gamingSessionEnvelope =
+    numeric(form.gamingSessionMinutes) !==
+      undefined ||
+    thermalResult?.throttleStartSecond !==
+      undefined ||
+    thermalResult?.sustainedPerformancePercent !==
+      undefined
+      ? calculateGamingSessionEnvelope({
+          sessionDurationMinutes: numeric(
+            form.gamingSessionMinutes,
+          ),
+          throttleStartSecond:
+            thermalResult?.throttleStartSecond,
+          sustainedPerformancePercent:
+            thermalResult
+              ?.sustainedPerformancePercent,
+        })
+      : undefined;
+
   const performanceContext =
     peakPerformanceEstimate
       ? buildPerformanceContext({
@@ -1939,6 +1966,7 @@ export default function InteractiveLeaksSimulator() {
     gpuWorkloadResponse,
     gamingDisplayEnvelope,
     sustainedBenchmarkEnvelope,
+    gamingSessionEnvelope,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -3382,6 +3410,19 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(value) =>
                     update(
                       'gpuRelativeWorkloadComplexity',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Gaming session"
+                  suffix="min"
+                  value={form.gamingSessionMinutes}
+                  placeholder="30"
+                  onChange={(value) =>
+                    update(
+                      'gamingSessionMinutes',
                       value,
                     )
                   }
@@ -5439,6 +5480,32 @@ export default function InteractiveLeaksSimulator() {
 
                     <div>
                       <strong>
+                        {gpuWorkloadResponse.theoreticalBandwidthBytesPerRenderedPixel !==
+                        undefined
+                          ? `${format(
+                              gpuWorkloadResponse.theoreticalBandwidthBytesPerRenderedPixel,
+                              1,
+                            )} B/pixel`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Theoretical bandwidth budget</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.structuralComputeIndexPerWeightedMegapixelPerSecond !==
+                        undefined
+                          ? format(
+                              gpuWorkloadResponse.structuralComputeIndexPerWeightedMegapixelPerSecond,
+                              3,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>Structural compute / demand</span>
+                    </div>
+
+                    <div>
+                      <strong>
                         {gpuWorkloadResponse.powerPressure}
                       </strong>
                       <span>Power pressure</span>
@@ -5512,6 +5579,53 @@ export default function InteractiveLeaksSimulator() {
                       <p className="il-help">
                         {GAMING_DISPLAY_ENVELOPE_VERSION} ·{' '}
                         {gamingDisplayEnvelope.note}
+                      </p>
+                    </>
+                  ) : null}
+
+                  {gamingSessionEnvelope ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.thermalState.replaceAll(
+                              '-',
+                              ' ',
+                            )}
+                          </strong>
+                          <span>Gaming-session thermal state</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.minutesBeforeThrottle !==
+                            undefined
+                              ? `${format(
+                                  gamingSessionEnvelope.minutesBeforeThrottle,
+                                  1,
+                                )} min`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Time before throttle</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.percentOfSessionBeforeThrottle !==
+                            undefined
+                              ? `${format(
+                                  gamingSessionEnvelope.percentOfSessionBeforeThrottle,
+                                  1,
+                                )}%`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Session before throttle</span>
+                        </div>
+                      </div>
+
+                      <p className="il-help">
+                        {GAMING_SESSION_ENVELOPE_VERSION} ·{' '}
+                        {gamingSessionEnvelope.note}
                       </p>
                     </>
                   ) : null}
