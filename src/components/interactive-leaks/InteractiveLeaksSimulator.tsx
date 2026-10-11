@@ -134,6 +134,11 @@ import {
 } from '../../lib/simulation/modules/battery-health-forecast';
 
 import {
+  CAMERA_VIDEO_WORKLOAD_VERSION,
+  calculateCameraVideoWorkload,
+} from '../../lib/simulation/modules/camera-video-workload';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -159,6 +164,17 @@ type CameraDraft = {
   exposureTimeSeconds?: string;
   sensorReadoutTimeSeconds?: string;
   videoFrameRateFps?: string;
+  videoWidthPx?: string;
+  videoHeightPx?: string;
+  videoBitDepth?: string;
+  videoChromaSubsampling?:
+    | ''
+    | '4:2:0'
+    | '4:2:2'
+    | '4:4:4';
+  videoEncodedBitrateMbps?: string;
+  videoRecordingDurationMinutes?: string;
+  videoPipelinePowerW?: string;
   subjectAngularSpeedDegPerSecond?: string;
   cameraAngularShakeDegPerSecond?: string;
   oisAngularCompensationFraction?: string;
@@ -683,6 +699,13 @@ function emptyCamera(id: number): CameraDraft {
     exposureTimeSeconds: '',
     sensorReadoutTimeSeconds: '',
     videoFrameRateFps: '',
+    videoWidthPx: '',
+    videoHeightPx: '',
+    videoBitDepth: '',
+    videoChromaSubsampling: '',
+    videoEncodedBitrateMbps: '',
+    videoRecordingDurationMinutes: '',
+    videoPipelinePowerW: '',
     subjectAngularSpeedDegPerSecond: '',
     cameraAngularShakeDegPerSecond: '',
     oisAngularCompensationFraction: '',
@@ -2014,6 +2037,55 @@ export default function InteractiveLeaksSimulator() {
         )
       : [];
 
+  const cameraVideoWorkloads =
+    cameras.map((camera) => {
+      const hasVideoWorkloadInput = [
+        camera.videoWidthPx ?? '',
+        camera.videoHeightPx ?? '',
+        camera.videoFrameRateFps ?? '',
+        camera.videoBitDepth ?? '',
+        camera.videoEncodedBitrateMbps ?? '',
+        camera.videoRecordingDurationMinutes ?? '',
+        camera.videoPipelinePowerW ?? '',
+      ].some((value) => value.trim() !== '') ||
+        Boolean(
+          camera.videoChromaSubsampling,
+        );
+
+      return hasVideoWorkloadInput
+        ? calculateCameraVideoWorkload({
+            widthPx: numeric(
+              camera.videoWidthPx ?? '',
+            ),
+            heightPx: numeric(
+              camera.videoHeightPx ?? '',
+            ),
+            frameRateFps: numeric(
+              camera.videoFrameRateFps ?? '',
+            ),
+            bitDepth: numeric(
+              camera.videoBitDepth ?? '',
+            ),
+            chromaSubsampling:
+              camera.videoChromaSubsampling ||
+              undefined,
+            encodedBitrateMbps: numeric(
+              camera.videoEncodedBitrateMbps ??
+                '',
+            ),
+            recordingDurationMinutes:
+              numeric(
+                camera.videoRecordingDurationMinutes ??
+                  '',
+              ),
+            cameraPipelinePowerW: numeric(
+              camera.videoPipelinePowerW ??
+                '',
+            ),
+          })
+        : undefined;
+    });
+
   const zoomTargetEquivalentFocalLengthMm =
     numeric(
       form.zoomTargetEquivalentFocalLengthMm,
@@ -2154,6 +2226,7 @@ export default function InteractiveLeaksSimulator() {
         warnings: experience.warnings,
       }),
     ),
+    cameraVideoWorkloads,
     cameraZoomHandoff,
   };
 
@@ -4171,6 +4244,129 @@ export default function InteractiveLeaksSimulator() {
                           onChange={(value) =>
                             updateCamera(camera.id, {
                               videoFrameRateFps: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video width"
+                          suffix="px"
+                          value={
+                            camera.videoWidthPx ?? ''
+                          }
+                          placeholder="3840"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoWidthPx: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video height"
+                          suffix="px"
+                          value={
+                            camera.videoHeightPx ?? ''
+                          }
+                          placeholder="2160"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoHeightPx: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video bit depth"
+                          suffix="bit"
+                          value={
+                            camera.videoBitDepth ?? ''
+                          }
+                          placeholder="10"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoBitDepth: value,
+                            })
+                          }
+                        />
+
+                        <label className="il-field">
+                          <span>Video chroma</span>
+                          <select
+                            value={
+                              camera.videoChromaSubsampling ??
+                              ''
+                            }
+                            onChange={(event) =>
+                              updateCamera(camera.id, {
+                                videoChromaSubsampling:
+                                  event.currentTarget
+                                    .value as CameraDraft['videoChromaSubsampling'],
+                              })
+                            }
+                          >
+                            <option value="">
+                              Unknown
+                            </option>
+                            <option value="4:2:0">
+                              4:2:0
+                            </option>
+                            <option value="4:2:2">
+                              4:2:2
+                            </option>
+                            <option value="4:4:4">
+                              4:4:4
+                            </option>
+                          </select>
+                        </label>
+
+                        <NumericField
+                          label="Encoded bitrate"
+                          suffix="Mbps"
+                          value={
+                            camera.videoEncodedBitrateMbps ??
+                            ''
+                          }
+                          placeholder="200"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoEncodedBitrateMbps:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Recording duration"
+                          suffix="min"
+                          value={
+                            camera.videoRecordingDurationMinutes ??
+                            ''
+                          }
+                          placeholder="10"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoRecordingDurationMinutes:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Camera pipeline power"
+                          suffix="W"
+                          value={
+                            camera.videoPipelinePowerW ??
+                            ''
+                          }
+                          placeholder="Evidence / assumption"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoPipelinePowerW:
+                                value,
                             })
                           }
                         />
@@ -7280,6 +7476,95 @@ export default function InteractiveLeaksSimulator() {
                         <span>Optical footprint check</span>
                       </div>
                     </div>
+
+                    {cameraVideoWorkloads[index] ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Video workload · {CAMERA_VIDEO_WORKLOAD_VERSION}
+                        </span>
+
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.megapixelsPerSecond !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.megapixelsPerSecond,
+                                    1,
+                                  )} MP/s`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Sensor/video pixel throughput</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.uncompressedDataRateGbps !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.uncompressedDataRateGbps,
+                                    2,
+                                  )} Gbps`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Uncompressed video data rate</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.compressionRatioVsRaw !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.compressionRatioVsRaw,
+                                    1,
+                                  )}×`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Raw-to-encoded ratio</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.estimatedFileSizeGb !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.estimatedFileSizeGb,
+                                    2,
+                                  )} GB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Recording file size</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.estimatedPipelineEnergyWh !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.estimatedPipelineEnergyWh,
+                                    2,
+                                  )} Wh`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Camera pipeline energy</span>
+                          </div>
+                        </div>
+
+                        <p className="il-help">
+                          {cameraVideoWorkloads[index]?.note}
+                        </p>
+                      </div>
+                    ) : null}
 
                     {cameraExperiences[index]?.warnings.length ? (
                       <div className="il-warnings">
