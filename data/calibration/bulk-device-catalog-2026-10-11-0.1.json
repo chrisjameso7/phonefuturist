@@ -203,6 +203,27 @@
       "url": "https://www.gsmarena.com/doogee-phones-129.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-oukitel-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/oukitel-phones-132.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-sharp-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/sharp-phones-23.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-fairphone-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/fairphone-phones-127.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -12787,6 +12808,1384 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/doogee_blade_gt_ultra-13739.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c26_mini-14968",
+      "manufacturer": "Oukitel",
+      "family": "C26 Mini",
+      "model": "C26 Mini",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c26_mini-14968.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c17_mini-14967",
+      "manufacturer": "Oukitel",
+      "family": "C17 Mini",
+      "model": "C17 Mini",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c17_mini-14967.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_p2_plus_5g-14966",
+      "manufacturer": "Oukitel",
+      "family": "P2 Plus",
+      "model": "P2 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_p2_plus_5g-14966.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_rt11_5g-14965",
+      "manufacturer": "Oukitel",
+      "family": "RT11",
+      "model": "RT11",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_rt11_5g-14965.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp63_5g-14943",
+      "manufacturer": "Oukitel",
+      "family": "WP63",
+      "model": "WP63",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp63_5g-14943.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp100_plus-14848",
+      "manufacturer": "Oukitel",
+      "family": "WP100 Plus",
+      "model": "WP100 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp100_plus-14848.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp68_air_5g-14824",
+      "manufacturer": "Oukitel",
+      "family": "WP68 Air",
+      "model": "WP68 Air",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp68_air_5g-14824.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c17_plus-14823",
+      "manufacturer": "Oukitel",
+      "family": "C17 Plus",
+      "model": "C17 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c17_plus-14823.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp500_ultra_5g-14764",
+      "manufacturer": "Oukitel",
+      "family": "WP500 Ultra",
+      "model": "WP500 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp500_ultra_5g-14764.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp500_5g-14761",
+      "manufacturer": "Oukitel",
+      "family": "WP500",
+      "model": "WP500",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp500_5g-14761.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c67-14758",
+      "manufacturer": "Oukitel",
+      "family": "C67",
+      "model": "C67",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c67-14758.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c72-14759",
+      "manufacturer": "Oukitel",
+      "family": "C72",
+      "model": "C72",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c72-14759.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c26-14719",
+      "manufacturer": "Oukitel",
+      "family": "C26",
+      "model": "C26",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c26-14719.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c62_gt-14720",
+      "manufacturer": "Oukitel",
+      "family": "C62 GT",
+      "model": "C62 GT",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c62_gt-14720.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_g6-14721",
+      "manufacturer": "Oukitel",
+      "family": "G6",
+      "model": "G6",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_g6-14721.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_g7-14722",
+      "manufacturer": "Oukitel",
+      "family": "G7",
+      "model": "G7",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_g7-14722.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp23s-14723",
+      "manufacturer": "Oukitel",
+      "family": "WP23S",
+      "model": "WP23S",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp23s-14723.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp61_5g-14725",
+      "manufacturer": "Oukitel",
+      "family": "WP61",
+      "model": "WP61",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp61_5g-14725.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp61_plus_5g-14726",
+      "manufacturer": "Oukitel",
+      "family": "WP61 Plus",
+      "model": "WP61 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp61_plus_5g-14726.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp61_ultra_5g-14727",
+      "manufacturer": "Oukitel",
+      "family": "WP61 Ultra",
+      "model": "WP61 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp61_ultra_5g-14727.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp66_5g-14730",
+      "manufacturer": "Oukitel",
+      "family": "WP66",
+      "model": "WP66",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp66_5g-14730.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_rt10_5g-14731",
+      "manufacturer": "Oukitel",
+      "family": "RT10",
+      "model": "RT10",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_rt10_5g-14731.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c17-14482",
+      "manufacturer": "Oukitel",
+      "family": "C17",
+      "model": "C17",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c17-14482.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_rt10_industry_5g-14462",
+      "manufacturer": "Oukitel",
+      "family": "RT10 Industry",
+      "model": "RT10 Industry",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_rt10_industry_5g-14462.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c7-14331",
+      "manufacturer": "Oukitel",
+      "family": "C7",
+      "model": "C7",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c7-14331.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c68-14332",
+      "manufacturer": "Oukitel",
+      "family": "C68",
+      "model": "C68",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c68-14332.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp55_s-14333",
+      "manufacturer": "Oukitel",
+      "family": "WP55 S",
+      "model": "WP55 S",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp55_s-14333.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp58_5g-14334",
+      "manufacturer": "Oukitel",
+      "family": "WP58",
+      "model": "WP58",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp58_5g-14334.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp60_5g-14335",
+      "manufacturer": "Oukitel",
+      "family": "WP60",
+      "model": "WP60",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp60_5g-14335.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp62_5g-14336",
+      "manufacturer": "Oukitel",
+      "family": "WP62",
+      "model": "WP62",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp62_5g-14336.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c69-14254",
+      "manufacturer": "Oukitel",
+      "family": "C69",
+      "model": "C69",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c69-14254.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_p1_pro-14255",
+      "manufacturer": "Oukitel",
+      "family": "P1 Pro",
+      "model": "P1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_p1_pro-14255.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c2-14256",
+      "manufacturer": "Oukitel",
+      "family": "C2",
+      "model": "C2",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c2-14256.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c3-14257",
+      "manufacturer": "Oukitel",
+      "family": "C3",
+      "model": "C3",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c3-14257.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c5-14258",
+      "manufacturer": "Oukitel",
+      "family": "C5",
+      "model": "C5",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c5-14258.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c6_5g-14261",
+      "manufacturer": "Oukitel",
+      "family": "C6",
+      "model": "C6",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c6_5g-14261.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c62_pro-14262",
+      "manufacturer": "Oukitel",
+      "family": "C62 Pro",
+      "model": "C62 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c62_pro-14262.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c62-14263",
+      "manufacturer": "Oukitel",
+      "family": "C62",
+      "model": "C62",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c62-14263.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c65_pro-14264",
+      "manufacturer": "Oukitel",
+      "family": "C65 Pro",
+      "model": "C65 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c65_pro-14264.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c65-14265",
+      "manufacturer": "Oukitel",
+      "family": "C65",
+      "model": "C65",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c65-14265.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_ot6_pro-14249",
+      "manufacturer": "Oukitel",
+      "family": "OT6 Pro",
+      "model": "OT6 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_ot6_pro-14249.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp210_5g-14185",
+      "manufacturer": "Oukitel",
+      "family": "WP210",
+      "model": "WP210",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp210_5g-14185.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp200_5g-14186",
+      "manufacturer": "Oukitel",
+      "family": "WP200",
+      "model": "WP200",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp200_5g-14186.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp56_5g-14187",
+      "manufacturer": "Oukitel",
+      "family": "WP56",
+      "model": "WP56",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp56_5g-14187.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp55_ultra_5g-14188",
+      "manufacturer": "Oukitel",
+      "family": "WP55 Ultra",
+      "model": "WP55 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp55_ultra_5g-14188.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_wp53-14189",
+      "manufacturer": "Oukitel",
+      "family": "WP53",
+      "model": "WP53",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_wp53-14189.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_g5-14190",
+      "manufacturer": "Oukitel",
+      "family": "G5",
+      "model": "G5",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_g5-14190.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_g3-14191",
+      "manufacturer": "Oukitel",
+      "family": "G3",
+      "model": "G3",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_g3-14191.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c1_pro-14165",
+      "manufacturer": "Oukitel",
+      "family": "C1 Pro",
+      "model": "C1 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c1_pro-14165.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oukitel_c61-14164",
+      "manufacturer": "Oukitel",
+      "family": "C61",
+      "model": "C61",
+      "sourceIds": [
+        "gsmarena-catalog-oukitel-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oukitel_c61-14164.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r11_5g-14740",
+      "manufacturer": "Sharp",
+      "family": "Aquos R11",
+      "model": "Aquos R11",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r11_5g-14740.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense10_5g-14289",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense10",
+      "model": "Aquos sense10",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense10_5g-14289.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_wish5_5g-13995",
+      "manufacturer": "Sharp",
+      "family": "Aquos wish5",
+      "model": "Aquos wish5",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_wish5_5g-13995.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r10_5g-13934",
+      "manufacturer": "Sharp",
+      "family": "Aquos R10",
+      "model": "Aquos R10",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r10_5g-13934.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense9-13622",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense9",
+      "model": "Aquos sense9",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense9-13622.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r9_pro-13479",
+      "manufacturer": "Sharp",
+      "family": "Aquos R9 pro",
+      "model": "Aquos R9 pro",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r9_pro-13479.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r9-13483",
+      "manufacturer": "Sharp",
+      "family": "Aquos R9",
+      "model": "Aquos R9",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r9-13483.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_wish4-13484",
+      "manufacturer": "Sharp",
+      "family": "Aquos wish4",
+      "model": "Aquos wish4",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_wish4-13484.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense8-12904",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense8",
+      "model": "Aquos sense8",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense8-12904.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r8s-12903",
+      "manufacturer": "Sharp",
+      "family": "Aquos R8s",
+      "model": "Aquos R8s",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r8s-12903.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r8s_pro-12902",
+      "manufacturer": "Sharp",
+      "family": "Aquos R8s pro",
+      "model": "Aquos R8s pro",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r8s_pro-12902.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r7s-12605",
+      "manufacturer": "Sharp",
+      "family": "Aquos R7s",
+      "model": "Aquos R7s",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r7s-12605.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_v7_plus-12606",
+      "manufacturer": "Sharp",
+      "family": "Aquos V7 Plus",
+      "model": "Aquos V7 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_v7_plus-12606.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense7_plus-12565",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense7 plus",
+      "model": "Aquos sense7 plus",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense7_plus-12565.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense7-12564",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense7",
+      "model": "Aquos sense7",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense7-12564.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_v6_plus-11868",
+      "manufacturer": "Sharp",
+      "family": "Aquos V6 Plus",
+      "model": "Aquos V6 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_v6_plus-11868.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_v6-11867",
+      "manufacturer": "Sharp",
+      "family": "Aquos V6",
+      "model": "Aquos V6",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_v6-11867.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_wish-11847",
+      "manufacturer": "Sharp",
+      "family": "Aquos wish",
+      "model": "Aquos wish",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_wish-11847.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_zero6-11846",
+      "manufacturer": "Sharp",
+      "family": "Aquos zero6",
+      "model": "Aquos zero6",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_zero6-11846.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense5g-11845",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense5G",
+      "model": "Aquos sense5G",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense5g-11845.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sense4_plus-11844",
+      "manufacturer": "Sharp",
+      "family": "Aquos sense4 plus",
+      "model": "Aquos sense4 plus",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sense4_plus-11844.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_zero_2-10259",
+      "manufacturer": "Sharp",
+      "family": "Aquos Zero 2",
+      "model": "Aquos Zero 2",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_zero_2-10259.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r5g-11843",
+      "manufacturer": "Sharp",
+      "family": "Aquos R5G",
+      "model": "Aquos R5G",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r5g-11843.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_v-9962",
+      "manufacturer": "Sharp",
+      "family": "Aquos V",
+      "model": "Aquos V",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_v-9962.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r3-11839",
+      "manufacturer": "Sharp",
+      "family": "Aquos R3",
+      "model": "Aquos R3",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r3-11839.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_zero-9512",
+      "manufacturer": "Sharp",
+      "family": "Aquos Zero",
+      "model": "Aquos Zero",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_zero-9512.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r2_compact-9406",
+      "manufacturer": "Sharp",
+      "family": "Aquos R2 compact",
+      "model": "Aquos R2 compact",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r2_compact-9406.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_d10-9311",
+      "manufacturer": "Sharp",
+      "family": "Aquos D10",
+      "model": "Aquos D10",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_d10-9311.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_b10-9275",
+      "manufacturer": "Sharp",
+      "family": "Aquos B10",
+      "model": "Aquos B10",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_b10-9275.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_c10-9274",
+      "manufacturer": "Sharp",
+      "family": "Aquos C10",
+      "model": "Aquos C10",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_c10-9274.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_s3_high-9233",
+      "manufacturer": "Sharp",
+      "family": "Aquos S3 High",
+      "model": "Aquos S3 High",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_s3_high-9233.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_r2-9193",
+      "manufacturer": "Sharp",
+      "family": "Aquos R2",
+      "model": "Aquos R2",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_r2-9193.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_s3-9138",
+      "manufacturer": "Sharp",
+      "family": "Aquos S3",
+      "model": "Aquos S3",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_s3-9138.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_s3_mini-8822",
+      "manufacturer": "Sharp",
+      "family": "Aquos S3 mini",
+      "model": "Aquos S3 mini",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_s3_mini-8822.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_pi-9060",
+      "manufacturer": "Sharp",
+      "family": "Pi",
+      "model": "Pi",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_pi-9060.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_r1s-9059",
+      "manufacturer": "Sharp",
+      "family": "R1S",
+      "model": "R1S",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_r1s-9059.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_s2-8797",
+      "manufacturer": "Sharp",
+      "family": "Aquos S2",
+      "model": "Aquos S2",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_s2-8797.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_z3-8787",
+      "manufacturer": "Sharp",
+      "family": "Z3",
+      "model": "Z3",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_z3-8787.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_z2-8410",
+      "manufacturer": "Sharp",
+      "family": "Z2",
+      "model": "Z2",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_z2-8410.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_ms1-8409",
+      "manufacturer": "Sharp",
+      "family": "MS1",
+      "model": "MS1",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_ms1-8409.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_xx-7252",
+      "manufacturer": "Sharp",
+      "family": "Aquos Xx",
+      "model": "Aquos Xx",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_xx-7252.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_crystal_2-7251",
+      "manufacturer": "Sharp",
+      "family": "Aquos Crystal 2",
+      "model": "Aquos Crystal 2",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_crystal_2-7251.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_crystal-6590",
+      "manufacturer": "Sharp",
+      "family": "Aquos Crystal",
+      "model": "Aquos Crystal",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_crystal-6590.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_sh530u-5056",
+      "manufacturer": "Sharp",
+      "family": "SH530U",
+      "model": "SH530U",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_sh530u-5056.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_se_02-4632",
+      "manufacturer": "Sharp",
+      "family": "SE-02",
+      "model": "SE-02",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_se_02-4632.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sh80f-4207",
+      "manufacturer": "Sharp",
+      "family": "Aquos SH80F",
+      "model": "Aquos SH80F",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sh80f-4207.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos_sh8298u-4149",
+      "manufacturer": "Sharp",
+      "family": "Aquos SH8298U",
+      "model": "Aquos SH8298U",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos_sh8298u-4149.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_fx-3460",
+      "manufacturer": "Sharp",
+      "family": "FX",
+      "model": "FX",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_fx-3460.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_aquos__941sh-3142",
+      "manufacturer": "Sharp",
+      "family": "AQUOS 941SH",
+      "model": "AQUOS 941SH",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_aquos__941sh-3142.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-sharp_940sh-3143",
+      "manufacturer": "Sharp",
+      "family": "940SH",
+      "model": "940SH",
+      "sourceIds": [
+        "gsmarena-catalog-sharp-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/sharp_940sh-3143.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_6+_5g-14883",
+      "manufacturer": "Fairphone",
+      "family": "6+",
+      "model": "6+",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_6+_5g-14883.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_6-13955",
+      "manufacturer": "Fairphone",
+      "family": "6",
+      "model": "6",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_6-13955.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_5-12540",
+      "manufacturer": "Fairphone",
+      "family": "5",
+      "model": "5",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_5-12540.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_4-11136",
+      "manufacturer": "Fairphone",
+      "family": "4",
+      "model": "4",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_4-11136.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_3+-10069",
+      "manufacturer": "Fairphone",
+      "family": "3+",
+      "model": "3+",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_3+-10069.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-fairphone_3-10397",
+      "manufacturer": "Fairphone",
+      "family": "3",
+      "model": "3",
+      "sourceIds": [
+        "gsmarena-catalog-fairphone-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/fairphone_3-10397.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
