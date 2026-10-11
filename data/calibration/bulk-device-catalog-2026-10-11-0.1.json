@@ -224,6 +224,13 @@
       "url": "https://www.gsmarena.com/fairphone-phones-127.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "geekerwan-battery-results-2026",
+      "publisher": "Geekerwan",
+      "url": "https://socpk.com/batlife",
+      "protocol": "Smartphone battery life 5.0 results; 78 self-purchased retail phones; lab-controlled 5G environment",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -285,11 +292,35 @@
       "family": "iPhone 17 Pro Max",
       "model": "iPhone 17 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_17_pro_max-13964.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 4823,
+        "ratedEnergyWh": 18.75
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A19 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.9,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5 RC",
+          "notes": [
+            "Rank 38 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -298,11 +329,35 @@
       "family": "iPhone 17 Pro",
       "model": "iPhone 17 Pro",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_17_pro-14049.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3988,
+        "ratedEnergyWh": 15.53
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A19 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.316666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5 RC",
+          "notes": [
+            "Rank 63 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -311,11 +366,35 @@
       "family": "iPhone Air",
       "model": "iPhone Air",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_17_air-13502.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3149,
+        "ratedEnergyWh": 12.26
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A19 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.516666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5.2",
+          "notes": [
+            "Rank 77 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -324,11 +403,35 @@
       "family": "iPhone 17",
       "model": "iPhone 17",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_17-14050.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3692,
+        "ratedEnergyWh": 14.35
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A19"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 6.416666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5 RC",
+          "notes": [
+            "Rank 71 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -350,11 +453,35 @@
       "family": "iPhone 16 Pro Max",
       "model": "iPhone 16 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_16_pro_max-13123.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 4685,
+        "ratedEnergyWh": 18.17
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A18 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.05,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5",
+          "notes": [
+            "Rank 66 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -363,11 +490,35 @@
       "family": "iPhone 16 Pro",
       "model": "iPhone 16 Pro",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_16_pro-13315.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3582,
+        "ratedEnergyWh": 13.94
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A18 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.55,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5",
+          "notes": [
+            "Rank 76 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -389,11 +540,35 @@
       "family": "iPhone 16",
       "model": "iPhone 16",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_16-13317.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3561,
+        "ratedEnergyWh": 13.84
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A18"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.7,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5",
+          "notes": [
+            "Rank 75 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -402,11 +577,35 @@
       "family": "iPhone 15 Pro Max",
       "model": "iPhone 15 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_15_pro_max-12548.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 4422,
+        "ratedEnergyWh": 17.11
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A17 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 6.6,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5",
+          "notes": [
+            "Rank 70 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -415,11 +614,35 @@
       "family": "iPhone 15 Pro",
       "model": "iPhone 15 Pro",
       "sourceIds": [
-        "gsmarena-catalog-apple-2026-10-11"
+        "gsmarena-catalog-apple-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/apple_iphone_15_pro-12557.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3274,
+        "ratedEnergyWh": 12.7
+      },
+      "soc": {
+        "vendor": "Apple",
+        "name": "A17 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "iOS 26.5 RC",
+          "notes": [
+            "Rank 78 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -1091,11 +1314,35 @@
       "family": "Pixel 10 Pro XL",
       "model": "Pixel 10 Pro XL",
       "sourceIds": [
-        "gsmarena-catalog-google-2026-10-11"
+        "gsmarena-catalog-google-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/google_pixel_10_pro_xl_5g-13988.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 5200,
+        "ratedEnergyWh": 19.76
+      },
+      "soc": {
+        "vendor": "Google",
+        "name": "Google Tensor G5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.85,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "Android 16",
+          "notes": [
+            "Rank 74 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2248,11 +2495,35 @@
       "family": "Win Turbo",
       "model": "Win Turbo",
       "sourceIds": [
-        "gsmarena-catalog-honor-2026-10-11"
+        "gsmarena-catalog-honor-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/honor_win_turbo_5g-14684.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 10000,
+        "ratedEnergyWh": 36.88
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 11.883333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.160",
+          "notes": [
+            "Rank 2 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2482,11 +2753,35 @@
       "family": "Magic8 RSR Porsche Design",
       "model": "Magic8 RSR Porsche Design",
       "sourceIds": [
-        "gsmarena-catalog-honor-2026-10-11"
+        "gsmarena-catalog-honor-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/honor_magic8_rsr_porsche_design_5g-14429.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.78
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.2,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.155",
+          "notes": [
+            "Rank 33 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2651,11 +2946,35 @@
       "family": "nova 16 Pro",
       "model": "nova 16 Pro",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_pro_5g-14699.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.98
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9010S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.933333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.130",
+          "notes": [
+            "Rank 17 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2664,11 +2983,35 @@
       "family": "nova 16",
       "model": "nova 16",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_nova_16_5g-14700.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.98
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9010S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.130",
+          "notes": [
+            "Rank 16 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2729,11 +3072,35 @@
       "family": "Pura 90 Pro Max",
       "model": "Pura 90 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_pro_max_5g-14609.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.35
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9030S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.2,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 32 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2742,11 +3109,35 @@
       "family": "Pura 90 Pro",
       "model": "Pura 90 Pro",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_pro_5g-14610.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.35
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9030S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.6,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 23 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2755,11 +3146,35 @@
       "family": "Pura 90",
       "model": "Pura 90",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_pura_90_5g-14612.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6500,
+        "ratedEnergyWh": 24.21
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9010S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.033333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 35 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2846,11 +3261,35 @@
       "family": "nova 15 Pro",
       "model": "nova 15 Pro",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_nova_15_pro_5g-14371.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6500,
+        "ratedEnergyWh": 24.21
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9010S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.466666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 26 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2898,11 +3337,35 @@
       "family": "Mate 80 Pro Max",
       "model": "Mate 80 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_pro_max_5g-14310.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.31
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9030 Pro"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.233333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 51 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2911,11 +3374,35 @@
       "family": "Mate 80 Pro",
       "model": "Mate 80 Pro",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_pro_5g-14311.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 5750,
+        "ratedEnergyWh": 21.36
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9030"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.233333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 50 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -2924,11 +3411,35 @@
       "family": "Mate 80",
       "model": "Mate 80",
       "sourceIds": [
-        "gsmarena-catalog-huawei-2026-10-11"
+        "gsmarena-catalog-huawei-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/huawei_mate_80_5g-14312.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 5750,
+        "ratedEnergyWh": 21.36
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9020"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.533333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.125",
+          "notes": [
+            "Rank 44 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5355,11 +5866,35 @@
       "family": "15T",
       "model": "15T",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_15t_5g-14385.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7500,
+        "ratedEnergyWh": 27.05
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.4,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.8.300",
+          "notes": [
+            "Rank 11 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5407,11 +5942,35 @@
       "family": "Ace 6T",
       "model": "Ace 6T",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_ace_6t_5g-14315.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 8300,
+        "ratedEnergyWh": 30.88
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.666666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.702",
+          "notes": [
+            "Rank 10 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5420,11 +5979,35 @@
       "family": "15",
       "model": "15",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_15_5g-14206.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7300,
+        "ratedEnergyWh": 27.03
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.2,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.702",
+          "notes": [
+            "Rank 31 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5433,11 +6016,35 @@
       "family": "Ace 6",
       "model": "Ace 6",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_ace_6_5g-14259.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7800,
+        "ratedEnergyWh": 28.66
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.666666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.702",
+          "notes": [
+            "Rank 21 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5537,11 +6144,35 @@
       "family": "Ace 5 Pro",
       "model": "Ace 5 Pro",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5_pro-13591.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6100,
+        "ratedEnergyWh": 22.76
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.75,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.701",
+          "notes": [
+            "Rank 57 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5550,11 +6181,35 @@
       "family": "Ace 5",
       "model": "Ace 5",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5-13592.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6700,
+        "ratedEnergyWh": 25.28
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9400+"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.433333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.8.300",
+          "notes": [
+            "Rank 45 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5563,11 +6218,35 @@
       "family": "13",
       "model": "13",
       "sourceIds": [
-        "gsmarena-catalog-oneplus-2026-10-11"
+        "gsmarena-catalog-oneplus-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oneplus_13-13477.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.31
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.6,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.703",
+          "notes": [
+            "Rank 60 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5888,11 +6567,35 @@
       "family": "Find X9 Ultra",
       "model": "Find X9 Ultra",
       "sourceIds": [
-        "gsmarena-catalog-oppo-2026-10-11"
+        "gsmarena-catalog-oppo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oppo_find_x9_ultra_5g-14548.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7050,
+        "ratedEnergyWh": 25.64
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.55,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.7.210",
+          "notes": [
+            "Rank 43 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -5901,11 +6604,35 @@
       "family": "Find X9s Pro",
       "model": "Find X9s Pro",
       "sourceIds": [
-        "gsmarena-catalog-oppo-2026-10-11"
+        "gsmarena-catalog-oppo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/oppo_find_x9s_pro-14592.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7025,
+        "ratedEnergyWh": 25.64
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.216666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.8.306",
+          "notes": [
+            "Rank 29 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -6915,11 +7642,35 @@
       "family": "Galaxy S26 Ultra",
       "model": "Galaxy S26 Ultra",
       "sourceIds": [
-        "gsmarena-catalog-samsung-2026-10-11"
+        "gsmarena-catalog-samsung-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26_ultra_5g-14320.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 5000,
+        "ratedEnergyWh": 18.94
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5 for Galaxy"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.25,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OneUI 8.5",
+          "notes": [
+            "Rank 64 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -6928,11 +7679,35 @@
       "family": "Galaxy S26+",
       "model": "Galaxy S26+",
       "sourceIds": [
-        "gsmarena-catalog-samsung-2026-10-11"
+        "gsmarena-catalog-samsung-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s26+_5g-14457.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 4300,
+        "ratedEnergyWh": 16.29
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5 for Galaxy"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 6.666666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OneUI 8.5",
+          "notes": [
+            "Rank 69 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -7188,11 +7963,35 @@
       "family": "Galaxy S25 Edge",
       "model": "Galaxy S25 Edge",
       "sourceIds": [
-        "gsmarena-catalog-samsung-2026-10-11"
+        "gsmarena-catalog-samsung-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/samsung_galaxy_s25_edge-13506.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 3900,
+        "ratedEnergyWh": 14.77
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite for Galaxy"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.9,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OneUI 8.5",
+          "notes": [
+            "Rank 73 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -9658,11 +10457,35 @@
       "family": "X300 E",
       "model": "X300 E",
       "sourceIds": [
-        "gsmarena-catalog-vivo-2026-10-11"
+        "gsmarena-catalog-vivo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_x300_e_5g-14826.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6040,
+        "ratedEnergyWh": 22.34
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.333333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.28.30",
+          "notes": [
+            "Rank 47 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -9827,11 +10650,35 @@
       "family": "iQOO 15T",
       "model": "iQOO 15T",
       "sourceIds": [
-        "gsmarena-catalog-vivo-2026-10-11"
+        "gsmarena-catalog-vivo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_15t_5g-14661.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6800,
+        "ratedEnergyWh": 25.62
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.283333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.26.22",
+          "notes": [
+            "Rank 28 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -9853,11 +10700,35 @@
       "family": "iQOO Z11",
       "model": "iQOO Z11",
       "sourceIds": [
-        "gsmarena-catalog-vivo-2026-10-11"
+        "gsmarena-catalog-vivo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_iqoo_z11_5g-14654.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7600,
+        "ratedEnergyWh": 27.83
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.966666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.11.3",
+          "notes": [
+            "Rank 8 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -9944,11 +10815,35 @@
       "family": "X300 Ultra",
       "model": "X300 Ultra",
       "sourceIds": [
-        "gsmarena-catalog-vivo-2026-10-11"
+        "gsmarena-catalog-vivo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_x300_ultra_5g-14388.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6600,
+        "ratedEnergyWh": 23.92
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.166666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.21.11",
+          "notes": [
+            "Rank 52 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -9957,11 +10852,35 @@
       "family": "X300s",
       "model": "X300s",
       "sourceIds": [
-        "gsmarena-catalog-vivo-2026-10-11"
+        "gsmarena-catalog-vivo-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/vivo_x300s_5g-14557.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7100,
+        "ratedEnergyWh": 25.81
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.033333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.8.7",
+          "notes": [
+            "Rank 36 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10126,11 +11045,35 @@
       "family": "Redmi Note 17 Pro Max",
       "model": "Redmi Note 17 Pro Max",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_17_pro_max_5g-14845.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 6300,
+        "ratedEnergyWh": 23.13
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.666666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.306.0",
+          "notes": [
+            "Rank 58 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10282,11 +11225,35 @@
       "family": "Redmi K90 Ultra",
       "model": "Redmi K90 Ultra",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k90_ultra_5g-14757.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7100,
+        "ratedEnergyWh": 26.52
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.6,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.304.0",
+          "notes": [
+            "Rank 42 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10295,11 +11262,35 @@
       "family": "17T Pro",
       "model": "17T Pro",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_17t_pro_5g-14651.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.82
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.3,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.308.0",
+          "notes": [
+            "Rank 27 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10308,11 +11299,35 @@
       "family": "17T",
       "model": "17T",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_17t_5g-14652.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.82
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 8500-Ultra"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.683333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.304.0",
+          "notes": [
+            "Rank 41 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10321,11 +11336,35 @@
       "family": "17 Max",
       "model": "17 Max",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_17_max_5g-14667.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 8000,
+        "ratedEnergyWh": 29.84
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.966666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.307.0",
+          "notes": [
+            "Rank 7 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10373,11 +11412,35 @@
       "family": "Redmi K90 Max",
       "model": "Redmi K90 Max",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_k90_max_5g-14618.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 8550,
+        "ratedEnergyWh": 31.85
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 11.4,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.310.0",
+          "notes": [
+            "Rank 5 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10451,11 +11514,35 @@
       "family": "Redmi Note 15 Special",
       "model": "Redmi Note 15 Special",
       "sourceIds": [
-        "gsmarena-catalog-xiaomi-2026-10-11"
+        "gsmarena-catalog-xiaomi-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/xiaomi_redmi_note_15_special_edition_5g-14571.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 5400,
+        "ratedEnergyWh": 20.26
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.033333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.302.0",
+          "notes": [
+            "Rank 67 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10776,11 +11863,35 @@
       "family": "nubia RedMagic 11 Pro",
       "model": "nubia RedMagic 11 Pro",
       "sourceIds": [
-        "gsmarena-catalog-zte-2026-10-11"
+        "gsmarena-catalog-zte-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/zte_nubia_redmagic_11_pro_5g_int-14277.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 8000,
+        "ratedEnergyWh": 29.66
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 11.35,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "RedMagicOS 11.0.23MR1",
+          "notes": [
+            "Rank 6 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -10789,11 +11900,35 @@
       "family": "nubia Z80 Ultra",
       "model": "nubia Z80 Ultra",
       "sourceIds": [
-        "gsmarena-catalog-zte-2026-10-11"
+        "gsmarena-catalog-zte-2026-10-11",
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/zte_nubia_z80_ultra_5g-14247.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ],
+      "battery": {
+        "capacityMah": 7200,
+        "ratedEnergyWh": 27
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.633333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "NebulaAIOS 2.0.26",
+          "notes": [
+            "Rank 22 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     },
     {
@@ -14187,6 +15322,881 @@
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/fairphone_3-10397.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "geekerwan-honor-win-rt",
+      "manufacturer": "Honor",
+      "family": "WIN RT",
+      "model": "WIN RT",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 10000,
+        "ratedEnergyWh": 36.88
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 12.1,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.160",
+          "notes": [
+            "Rank 1 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-redmi-k90-ultimate",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K90 Ultimate",
+      "model": "Redmi K90 Ultimate",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 8550,
+        "ratedEnergyWh": 31.85
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 11.783333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.306.0",
+          "notes": [
+            "Rank 3 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-redmi-turbo-5-max",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi Turbo 5 Max",
+      "model": "Redmi Turbo 5 Max",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 9000,
+        "ratedEnergyWh": 33.53
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 11.433333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.304.0",
+          "notes": [
+            "Rank 4 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-iqoo-z10-turbo",
+      "manufacturer": "vivo",
+      "family": "iQOO Z10 Turbo+",
+      "model": "iQOO Z10 Turbo+",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 8000,
+        "ratedEnergyWh": 29.72
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9400+"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.95,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.1.14.1",
+          "notes": [
+            "Rank 9 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-iqoo-neo-11",
+      "manufacturer": "vivo",
+      "family": "iQOO Neo 11",
+      "model": "iQOO Neo 11",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7500,
+        "ratedEnergyWh": 27.59
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.133333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.24.6",
+          "notes": [
+            "Rank 13 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-honor-magic8-pro",
+      "manufacturer": "Honor",
+      "family": "Magic8 Pro",
+      "model": "Magic8 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7200,
+        "ratedEnergyWh": 26.54
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10.05,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.160",
+          "notes": [
+            "Rank 14 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-oppo-find-x9-pro",
+      "manufacturer": "Oppo",
+      "family": "Find X9 Pro",
+      "model": "Find X9 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7500,
+        "ratedEnergyWh": 27.34
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 10,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.703",
+          "notes": [
+            "Rank 15 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-iqoo-15-ultra",
+      "manufacturer": "vivo",
+      "family": "iQOO 15 Ultra",
+      "model": "iQOO 15 Ultra",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7400,
+        "ratedEnergyWh": 27.08
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.883333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.14.9",
+          "notes": [
+            "Rank 18 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-redmi-k90-pro-max",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K90 Pro Max",
+      "model": "Redmi K90 Pro Max",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7560,
+        "ratedEnergyWh": 28.13
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.683333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.306.0",
+          "notes": [
+            "Rank 20 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-redmi-k80-ultimate",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K80 Ultimate",
+      "model": "Redmi K80 Ultimate",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7410,
+        "ratedEnergyWh": 28
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9400+"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.55,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.302.0",
+          "notes": [
+            "Rank 24 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-honor-gt-pro",
+      "manufacturer": "Honor",
+      "family": "GT Pro",
+      "model": "GT Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7200,
+        "ratedEnergyWh": 27.51
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.5,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.150",
+          "notes": [
+            "Rank 25 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-iqoo-neo-10-pro",
+      "manufacturer": "vivo",
+      "family": "iQOO Neo 10 Pro+",
+      "model": "iQOO Neo 10 Pro+",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6800,
+        "ratedEnergyWh": 25.26
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 9.216666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.1.18.6",
+          "notes": [
+            "Rank 30 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-realme-gt8",
+      "manufacturer": "Realme",
+      "family": "GT8",
+      "model": "GT8",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 7000,
+        "ratedEnergyWh": 25.9
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.316666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.5.704",
+          "notes": [
+            "Rank 48 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-vivo-x300-pro",
+      "manufacturer": "vivo",
+      "family": "X300 Pro",
+      "model": "X300 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6510,
+        "ratedEnergyWh": 24.55
+      },
+      "soc": {
+        "vendor": "MediaTek",
+        "name": "Dimensity 9500"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.35,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.28.30",
+          "notes": [
+            "Rank 46 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-huawei-mate-70-pro",
+      "manufacturer": "Huawei",
+      "family": "Mate 70 Pro+",
+      "model": "Mate 70 Pro+",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 5700,
+        "ratedEnergyWh": 21.34
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9020"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 8.266666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.117",
+          "notes": [
+            "Rank 49 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-xiaomi-17-ultra",
+      "manufacturer": "Xiaomi",
+      "family": "17 Ultra",
+      "model": "17 Ultra",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6800,
+        "ratedEnergyWh": 25.11
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite Gen 5"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.966666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.303.0",
+          "notes": [
+            "Rank 53 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-iqoo-13",
+      "manufacturer": "vivo",
+      "family": "iQOO 13",
+      "model": "iQOO 13",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6150,
+        "ratedEnergyWh": 22.97
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.916666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.0.16.5",
+          "notes": [
+            "Rank 54 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-oppo-find-x8-ultra",
+      "manufacturer": "Oppo",
+      "family": "Find X8 Ultra",
+      "model": "Find X8 Ultra",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6100,
+        "ratedEnergyWh": 22.87
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.866666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "ColorOS 16.0.8.300",
+          "notes": [
+            "Rank 55 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-redmi-k80-pro",
+      "manufacturer": "Xiaomi",
+      "family": "Redmi K80 Pro",
+      "model": "Redmi K80 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.62
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.783333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.303.0",
+          "notes": [
+            "Rank 56 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-honor-magic7-pro",
+      "manufacturer": "Honor",
+      "family": "Magic7 Pro",
+      "model": "Magic7 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 5850,
+        "ratedEnergyWh": 21.97
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.633333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "MagicOS 10.0.0.150",
+          "notes": [
+            "Rank 59 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-xiaomi-15s-pro",
+      "manufacturer": "Xiaomi",
+      "family": "15s Pro",
+      "model": "15s Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6100,
+        "ratedEnergyWh": 22.95
+      },
+      "soc": {
+        "vendor": "other",
+        "name": "XRING O1"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.566666666666666,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.301.0",
+          "notes": [
+            "Rank 61 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-xiaomi-15-pro",
+      "manufacturer": "Xiaomi",
+      "family": "15 Pro",
+      "model": "15 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6100,
+        "ratedEnergyWh": 22.95
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.416666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HyperOS 3.0.302.0",
+          "notes": [
+            "Rank 62 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-vivo-x200-ultra",
+      "manufacturer": "vivo",
+      "family": "X200 Ultra",
+      "model": "X200 Ultra",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 6000,
+        "ratedEnergyWh": 22.35
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 7.233333333333333,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OriginOS 6 16.1.17.2",
+          "notes": [
+            "Rank 65 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-samsung-s25-ultra",
+      "manufacturer": "Samsung",
+      "family": "Galaxy S25 Ultra",
+      "model": "Galaxy S25 Ultra",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 5000,
+        "ratedEnergyWh": 18.84
+      },
+      "soc": {
+        "vendor": "Qualcomm",
+        "name": "Snapdragon 8 Elite for Galaxy"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 6.766666666666667,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "OneUI 8.5",
+          "notes": [
+            "Rank 68 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geekerwan-huawei-mate-60-pro",
+      "manufacturer": "Huawei",
+      "family": "Mate 60 Pro",
+      "model": "Mate 60 Pro",
+      "sourceIds": [
+        "geekerwan-battery-results-2026",
+        "geekerwan-battery-5-0-2026"
+      ],
+      "notes": [
+        "Created from Geekerwan 2026 Smartphone 5.0 battery cohort because no bulk catalog identity matched."
+      ],
+      "battery": {
+        "capacityMah": 5000,
+        "ratedEnergyWh": 19.15
+      },
+      "soc": {
+        "vendor": "Huawei",
+        "name": "Kirin 9000S"
+      },
+      "measurements": [
+        {
+          "metric": "geekerwan_battery_life_5_0_hours",
+          "value": 5.933333333333334,
+          "unit": "hours",
+          "workload": "benchmark",
+          "sourceId": "geekerwan-battery-results-2026",
+          "evidenceKind": "measured",
+          "softwareBuild": "HarmonyOS 6.1.0.117",
+          "notes": [
+            "Rank 72 of 78 in Geekerwan Smartphone 5.0 battery test."
+          ]
+        }
       ]
     }
   ]
