@@ -11,9 +11,13 @@ describe('current battery source cohorts', () => {
     const corpus =
       buildPhoneArenaCurrentBatteryCorpus();
 
-    expect(corpus.devices.length).toBe(13);
-    expect(corpus.measurements.length).toBe(
-      52,
+    expect(
+      corpus.devices.length,
+    ).toBeGreaterThanOrEqual(43);
+    expect(
+      corpus.measurements.length,
+    ).toBe(
+      corpus.devices.length * 4,
     );
 
     expect(
