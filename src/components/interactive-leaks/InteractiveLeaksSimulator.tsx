@@ -99,6 +99,16 @@ import {
 } from '../../lib/simulation/modules/gpu-workload-response';
 
 import {
+  GAMING_DISPLAY_ENVELOPE_VERSION,
+  calculateGamingDisplayEnvelope,
+} from '../../lib/simulation/modules/gaming-display-envelope';
+
+import {
+  SUSTAINED_BENCHMARK_ENVELOPE_VERSION,
+  calculateSustainedBenchmarkEnvelope,
+} from '../../lib/simulation/modules/sustained-benchmark-envelope';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1728,6 +1738,46 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const gamingDisplayEnvelope =
+    numeric(form.gpuTargetFps) !== undefined ||
+    numeric(form.operatingRefreshRateHz) !==
+      undefined ||
+    numeric(form.refreshRateHz) !== undefined
+      ? calculateGamingDisplayEnvelope({
+          targetFps: numeric(
+            form.gpuTargetFps,
+          ),
+          operatingRefreshRateHz:
+            numeric(
+              form.operatingRefreshRateHz,
+            ),
+          maxRefreshRateHz: numeric(
+            form.refreshRateHz,
+          ),
+        })
+      : undefined;
+
+  const sustainedBenchmarkEnvelope =
+    peakPerformanceEstimate &&
+    sustainedPerformanceEstimate
+      ? calculateSustainedBenchmarkEnvelope({
+          peak: peakPerformanceEstimate,
+          sustained:
+            sustainedPerformanceEstimate,
+          ...(thermalResult?.status ===
+            'resolved' &&
+          thermalResult.evidenceScope ===
+            'same-soc-family' &&
+          thermalResult.sustainedPerformancePercent !==
+            undefined
+            ? {
+                finalSustainedPerformancePercent:
+                  thermalResult.sustainedPerformancePercent,
+              }
+            : {}),
+        })
+      : undefined;
+
   const performanceContext =
     peakPerformanceEstimate
       ? buildPerformanceContext({
@@ -1887,6 +1937,8 @@ export default function InteractiveLeaksSimulator() {
     gpuPowerEnvelope,
     gpuWorkloadDemand,
     gpuWorkloadResponse,
+    gamingDisplayEnvelope,
+    sustainedBenchmarkEnvelope,
     camera: cameraExperiences.map(
       (experience) => ({
         physics: experience.physics,
@@ -5415,6 +5467,55 @@ export default function InteractiveLeaksSimulator() {
                     </div>
                   </div>
 
+                  {gamingDisplayEnvelope ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.visibleFrameRateCeilingFps !==
+                            undefined
+                              ? `${format(
+                                  gamingDisplayEnvelope.visibleFrameRateCeilingFps,
+                                  0,
+                                )} FPS`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Visible frame-rate ceiling</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.refreshHeadroomFps !==
+                            undefined
+                              ? `${format(
+                                  gamingDisplayEnvelope.refreshHeadroomFps,
+                                  0,
+                                )} FPS`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Display refresh headroom</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.targetExceedsPanelMaximum ===
+                            undefined
+                              ? 'Unknown'
+                              : gamingDisplayEnvelope.targetExceedsPanelMaximum
+                                ? 'Above panel max'
+                                : 'Within panel max'}
+                          </strong>
+                          <span>Target vs display</span>
+                        </div>
+                      </div>
+
+                      <p className="il-help">
+                        {GAMING_DISPLAY_ENVELOPE_VERSION} ·{' '}
+                        {gamingDisplayEnvelope.note}
+                      </p>
+                    </>
+                  ) : null}
+
                   {gpuWorkloadDemand ? (
                     <p className="il-help">
                       {GPU_WORKLOAD_DEMAND_VERSION} ·{' '}
@@ -5493,6 +5594,92 @@ export default function InteractiveLeaksSimulator() {
                         {warning}
                       </p>
                     ),
+                  )}
+                </div>
+              ) : null}
+
+              {sustainedBenchmarkEnvelope ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Sustained benchmark envelope ·{' '}
+                    {SUSTAINED_BENCHMARK_ENVELOPE_VERSION}
+                  </span>
+
+                  {sustainedBenchmarkEnvelope.status ===
+                  'resolved' ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.peakScore !==
+                            undefined
+                              ? format(
+                                  sustainedBenchmarkEnvelope.peakScore,
+                                  0,
+                                )
+                              : 'Unknown'}
+                          </strong>
+                          <span>Exact-family measured peak</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.sustainedRetentionPercent !==
+                            undefined
+                              ? `${format(
+                                  sustainedBenchmarkEnvelope.sustainedRetentionPercent,
+                                  1,
+                                )}%`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Sustained retention</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.derivedSustainedScore !==
+                            undefined
+                              ? format(
+                                  sustainedBenchmarkEnvelope.derivedSustainedScore,
+                                  0,
+                                )
+                              : 'Unknown'}
+                          </strong>
+                          <span>Derived sustained WLE-family score</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.derivedMinScore !==
+                              undefined &&
+                            sustainedBenchmarkEnvelope.derivedMaxScore !==
+                              undefined
+                              ? `${format(
+                                  sustainedBenchmarkEnvelope.derivedMinScore,
+                                  0,
+                                )}–${format(
+                                  sustainedBenchmarkEnvelope.derivedMaxScore,
+                                  0,
+                                )}`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Measured peak-range envelope</span>
+                        </div>
+                      </div>
+
+                      <p className="il-help">
+                        {sustainedBenchmarkEnvelope.note}
+                      </p>
+                    </>
+                  ) : (
+                    <div className="il-empty">
+                      <p>
+                        {sustainedBenchmarkEnvelope.reason}
+                      </p>
+                      <p className="il-help">
+                        {sustainedBenchmarkEnvelope.note}
+                      </p>
+                    </div>
                   )}
                 </div>
               ) : null}
