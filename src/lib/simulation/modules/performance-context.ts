@@ -5,6 +5,9 @@ import type {
 import type {
   SocArchitectureResult,
 } from './soc-architecture';
+import type {
+  GpuArchitectureResult,
+} from './gpu-architecture';
 
 export const PERFORMANCE_CONTEXT_VERSION =
   'performance-context-0.1.0';
@@ -23,6 +26,7 @@ export type PerformanceArchitectureRelevance =
 export interface PerformanceContextInput {
   peak: PeakPerformanceEstimate;
   architecture?: SocArchitectureResult;
+  gpuArchitecture?: GpuArchitectureResult;
 }
 
 export interface PerformanceContextResult {
@@ -41,7 +45,13 @@ export interface PerformanceContextResult {
       | 'ipc_aggregate'
       | 'ipc_aggregate_per_w'
       | 'memory_bandwidth_per_core'
-      | 'fabrication_node';
+      | 'fabrication_node'
+      | 'gpu_compute_clock'
+      | 'gpu_compute_per_w'
+      | 'gpu_efficiency_adjusted_compute'
+      | 'gpu_efficiency_adjusted_per_w'
+      | 'gpu_bandwidth_per_compute_unit'
+      | 'gpu_ray_tracing_density';
     label: string;
     value: number;
     unit: string;
@@ -84,6 +94,8 @@ export function buildPerformanceContext(
 
   const architecture =
     input.architecture;
+  const gpuArchitecture =
+    input.gpuArchitecture;
 
   const signals:
     PerformanceContextResult['architectureSignals'] =
@@ -166,41 +178,180 @@ export function buildPerformanceContext(
     });
   }
 
-  const architectureAvailable =
+  if (
+    gpuArchitecture
+      ?.rawComputeClockIndex !==
+    undefined
+  ) {
+    signals.push({
+      key: 'gpu_compute_clock',
+      label: 'GPU compute-clock index',
+      value:
+        gpuArchitecture
+          .rawComputeClockIndex,
+      unit: 'index',
+    });
+  }
+
+  if (
+    gpuArchitecture
+      ?.rawComputePerWIndex !==
+    undefined
+  ) {
+    signals.push({
+      key: 'gpu_compute_per_w',
+      label: 'GPU compute-clock per-watt index',
+      value:
+        gpuArchitecture
+          .rawComputePerWIndex,
+      unit: 'index/W',
+    });
+  }
+
+  if (
+    gpuArchitecture
+      ?.efficiencyAdjustedComputeIndex !==
+    undefined
+  ) {
+    signals.push({
+      key:
+        'gpu_efficiency_adjusted_compute',
+      label:
+        'Efficiency-adjusted GPU compute index',
+      value:
+        gpuArchitecture
+          .efficiencyAdjustedComputeIndex,
+      unit: 'index',
+    });
+  }
+
+  if (
+    gpuArchitecture
+      ?.efficiencyAdjustedComputePerWIndex !==
+    undefined
+  ) {
+    signals.push({
+      key:
+        'gpu_efficiency_adjusted_per_w',
+      label:
+        'Efficiency-adjusted GPU compute per-watt index',
+      value:
+        gpuArchitecture
+          .efficiencyAdjustedComputePerWIndex,
+      unit: 'index/W',
+    });
+  }
+
+  if (
+    gpuArchitecture
+      ?.bandwidthPerComputeUnit !==
+    undefined
+  ) {
+    signals.push({
+      key:
+        'gpu_bandwidth_per_compute_unit',
+      label:
+        'GPU memory bandwidth per compute unit',
+      value:
+        gpuArchitecture
+          .bandwidthPerComputeUnit,
+      unit: 'GB/s',
+    });
+  }
+
+  if (
+    gpuArchitecture
+      ?.rayTracingDensityPerComputeUnit !==
+    undefined
+  ) {
+    signals.push({
+      key:
+        'gpu_ray_tracing_density',
+      label:
+        'Ray-tracing unit density',
+      value:
+        gpuArchitecture
+          .rayTracingDensityPerComputeUnit,
+      unit: 'ratio',
+    });
+  }
+
+  const cpuArchitectureAvailable =
     Boolean(architecture) &&
     architecture?.status !== 'unresolved';
 
+  const gpuArchitectureAvailable =
+    Boolean(gpuArchitecture) &&
+    gpuArchitecture?.status !== 'unresolved';
+
+  const architectureAvailable =
+    cpuArchitectureAvailable ||
+    gpuArchitectureAvailable;
+
   const architectureCanExplainDirection =
-    architectureAvailable &&
     (
-      (
-        benchmarkRelevance ===
-          'cpu-single-thread' &&
-        architecture
-          ?.ipcAdjustedSingleThreadIndex !==
-          undefined
-      ) ||
-      (
-        benchmarkRelevance ===
-          'cpu-multi-thread' &&
-        architecture
-          ?.ipcAdjustedAggregateIndex !==
-          undefined
-      )
+      benchmarkRelevance ===
+        'cpu-single-thread' &&
+      cpuArchitectureAvailable &&
+      architecture
+        ?.ipcAdjustedSingleThreadIndex !==
+        undefined
+    ) ||
+    (
+      benchmarkRelevance ===
+        'cpu-multi-thread' &&
+      cpuArchitectureAvailable &&
+      architecture
+        ?.ipcAdjustedAggregateIndex !==
+        undefined
+    ) ||
+    (
+      benchmarkRelevance === 'gpu' &&
+      gpuArchitectureAvailable &&
+      gpuArchitecture
+        ?.rawComputeClockIndex !==
+        undefined &&
+      gpuArchitecture
+        ?.memoryBandwidthGbps !==
+        undefined
+    ) ||
+    (
+      benchmarkRelevance ===
+        'gpu-ray-tracing' &&
+      gpuArchitectureAvailable &&
+      gpuArchitecture
+        ?.rawComputeClockIndex !==
+        undefined &&
+      gpuArchitecture
+        ?.rayTracingUnits !==
+        undefined
     );
 
   const warnings: string[] = [];
 
   if (
-    architectureAvailable &&
+    cpuArchitectureAvailable &&
     (
       benchmarkRelevance === 'gpu' ||
       benchmarkRelevance ===
         'gpu-ray-tracing'
-    )
+    ) &&
+    !gpuArchitectureAvailable
   ) {
     warnings.push(
-      'CPU cluster geometry does not predict 3DMark GPU or ray-tracing performance. A GPU architecture/power model is still required.',
+      'CPU cluster geometry does not predict 3DMark GPU or ray-tracing performance. Supply GPU architecture and power inputs for structural GPU context.',
+    );
+  }
+
+  if (
+    benchmarkRelevance ===
+      'gpu-ray-tracing' &&
+    gpuArchitectureAvailable &&
+    gpuArchitecture?.rayTracingUnits ===
+      undefined
+  ) {
+    warnings.push(
+      'GPU raster structure is available, but ray-tracing direction remains unresolved because RT-unit geometry is missing.',
     );
   }
 
@@ -254,7 +405,7 @@ export function buildPerformanceContext(
             'explicit-assumption'
           ? 'Benchmark score is an explicitly labelled what-if scenario built from measured reference evidence plus a caller-supplied uplift. Architecture indices do not alter the score.'
           : architectureCanExplainDirection
-            ? 'Peak benchmark score is withheld. CPU architecture indices may explain structural direction, but no benchmark points are derived from them.'
-            : 'Peak benchmark score is withheld. Available architecture inputs are not sufficient to predict this benchmark domain.',
+            ? 'Peak benchmark score is withheld. Architecture indices may explain structural direction for this benchmark domain, but no benchmark points are derived from them.'
+            : 'Peak benchmark score is withheld. Available architecture inputs are not sufficient to explain this benchmark domain.',
   };
 }
