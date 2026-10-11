@@ -9,8 +9,9 @@ import { buildCameraReferenceCorpus } from './camera-reference-corpus';
 import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
 import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
 import { enrichCorpusWithBatteryEnergyEvidence } from './battery-energy-evidence';
+import { buildTechApiDeviceCatalog } from './techapi-device-catalog';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.3.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.4.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -27,6 +28,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildCameraReferenceCorpus(),
       buildCameraOutcomeCorpus(),
       buildPerformanceReferenceCorpus(),
+      buildTechApiDeviceCatalog(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
