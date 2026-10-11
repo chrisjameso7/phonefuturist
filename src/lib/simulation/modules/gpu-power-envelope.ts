@@ -184,7 +184,7 @@ export function calculateGpuPowerEnvelope(
     warnings,
     note:
       nonGpuPackagePowerW !== undefined
-        ? 'GPU power ceiling subtracts the explicitly supplied non-GPU package load from sustainable SoC power before applying the GPU peak limit. Power retention is still not a direct FPS or benchmark multiplier.'
-        : 'Sustainable SoC power is treated as an upper bound for GPU power because non-GPU package load is unknown. Power retention describes thermal/electrical headroom only and is not a direct FPS or benchmark multiplier.',
+        ? 'GPU power ceiling subtracts the explicitly supplied non-GPU package load from sustainable SoC power before applying the GPU peak limit. Power retention is not a sustained-performance percentage and is not a direct FPS or benchmark multiplier.'
+        : 'Sustainable SoC power is treated as an upper bound for GPU power because non-GPU package load is unknown. Power retention describes thermal/electrical headroom only; it is not a sustained-performance percentage and is not a direct FPS or benchmark multiplier.',
   };
 }
