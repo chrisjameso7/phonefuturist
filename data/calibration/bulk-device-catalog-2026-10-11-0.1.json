@@ -140,6 +140,20 @@
       "url": "https://www.gsmarena.com/sony-phones-7.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-tcl-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/tcl-phones-123.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-tecno-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/tecno-phones-120.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -7784,6 +7798,1098 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/sony_xperia_x-7948.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_p80_ultra_5g-14927",
+      "manufacturer": "TCL",
+      "family": "P80 Ultra",
+      "model": "P80 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_p80_ultra_5g-14927.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_p80_pro_5g-14867",
+      "manufacturer": "TCL",
+      "family": "P80 Pro",
+      "model": "P80 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_p80_pro_5g-14867.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_p80_5g-14868",
+      "manufacturer": "TCL",
+      "family": "P80",
+      "model": "P80",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_p80_5g-14868.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_k70_se-14526",
+      "manufacturer": "TCL",
+      "family": "K70 SE",
+      "model": "K70 SE",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_k70_se-14526.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_k70_power-14464",
+      "manufacturer": "TCL",
+      "family": "K70 Power",
+      "model": "K70 Power",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_k70_power-14464.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_k70-14465",
+      "manufacturer": "TCL",
+      "family": "K70",
+      "model": "K70",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_k70-14465.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_nxtpaper_70_pro_5g-14398",
+      "manufacturer": "TCL",
+      "family": "NxtPaper 70 Pro",
+      "model": "NxtPaper 70 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_nxtpaper_70_pro_5g-14398.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_nxtpaper_11_gen_2-14295",
+      "manufacturer": "TCL",
+      "family": "NxtPaper 11 Gen 2",
+      "model": "NxtPaper 11 Gen 2",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_nxtpaper_11_gen_2-14295.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_nxtpaper_60_ultra_5g-14085",
+      "manufacturer": "TCL",
+      "family": "NxtPaper 60 Ultra",
+      "model": "NxtPaper 60 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_nxtpaper_60_ultra_5g-14085.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60_se-14020",
+      "manufacturer": "TCL",
+      "family": "60 SE",
+      "model": "60 SE",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60_se-14020.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_605-13970",
+      "manufacturer": "TCL",
+      "family": "605",
+      "model": "605",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_605-13970.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_nxtpaper_11_plus-13874",
+      "manufacturer": "TCL",
+      "family": "NxtPaper 11 Plus",
+      "model": "NxtPaper 11 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_nxtpaper_11_plus-13874.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60_xe_nxtpaper-13842",
+      "manufacturer": "TCL",
+      "family": "60 XE NxtPaper",
+      "model": "60 XE NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60_xe_nxtpaper-13842.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60_5g-13829",
+      "manufacturer": "TCL",
+      "family": "60",
+      "model": "60",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60_5g-13829.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60_se_nxtpaper_5g-13830",
+      "manufacturer": "TCL",
+      "family": "60 SE NxtPaper",
+      "model": "60 SE NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60_se_nxtpaper_5g-13830.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60_nxtpaper_4g-13831",
+      "manufacturer": "TCL",
+      "family": "60 NxtPaper 4G",
+      "model": "60 NxtPaper 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60_nxtpaper_4g-13831.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_60r_5g-13772",
+      "manufacturer": "TCL",
+      "family": "60R",
+      "model": "60R",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_60r_5g-13772.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_503-13439",
+      "manufacturer": "TCL",
+      "family": "503",
+      "model": "503",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_503-13439.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_pro_nxtpaper-13300",
+      "manufacturer": "TCL",
+      "family": "50 Pro NxtPaper",
+      "model": "50 Pro NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_pro_nxtpaper-13300.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_nxtpaper-13301",
+      "manufacturer": "TCL",
+      "family": "50 NxtPaper",
+      "model": "50 NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_nxtpaper-13301.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_xe_nxtpaper-13302",
+      "manufacturer": "TCL",
+      "family": "50 XE NxtPaper",
+      "model": "50 XE NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_xe_nxtpaper-13302.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_nxtpaper_14-13296",
+      "manufacturer": "TCL",
+      "family": "NxtPaper 14",
+      "model": "NxtPaper 14",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_nxtpaper_14-13296.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_xl_nxtpaper-13173",
+      "manufacturer": "TCL",
+      "family": "50 XL NxtPaper",
+      "model": "50 XL NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_xl_nxtpaper-13173.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_xl-13174",
+      "manufacturer": "TCL",
+      "family": "50 XL",
+      "model": "50 XL",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_xl-13174.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_xe-13175",
+      "manufacturer": "TCL",
+      "family": "50 XE",
+      "model": "50 XE",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_xe-13175.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_le-13176",
+      "manufacturer": "TCL",
+      "family": "50 LE",
+      "model": "50 LE",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_le-13176.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_flip-13431",
+      "manufacturer": "TCL",
+      "family": "Flip",
+      "model": "Flip",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_flip-13431.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_classic-13430",
+      "manufacturer": "TCL",
+      "family": "Classic",
+      "model": "Classic",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_classic-13430.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_flip_3-13429",
+      "manufacturer": "TCL",
+      "family": "Flip 3",
+      "model": "Flip 3",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_flip_3-13429.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_flip_2-13428",
+      "manufacturer": "TCL",
+      "family": "Flip 2",
+      "model": "Flip 2",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_flip_2-13428.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_5g-12842",
+      "manufacturer": "TCL",
+      "family": "50 5G",
+      "model": "50 5G",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_5g-12842.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_50_se-12841",
+      "manufacturer": "TCL",
+      "family": "50 SE",
+      "model": "50 SE",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_50_se-12841.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_501-12840",
+      "manufacturer": "TCL",
+      "family": "501",
+      "model": "501",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_501-12840.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_502-13943",
+      "manufacturer": "TCL",
+      "family": "502",
+      "model": "502",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_502-13943.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_505-12823",
+      "manufacturer": "TCL",
+      "family": "505",
+      "model": "505",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_505-12823.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_40_nxtpaper_5g-12536",
+      "manufacturer": "TCL",
+      "family": "40 NxtPaper 5G",
+      "model": "40 NxtPaper 5G",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_40_nxtpaper_5g-12536.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_40_nxtpaper-12535",
+      "manufacturer": "TCL",
+      "family": "40 NxtPaper",
+      "model": "40 NxtPaper",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_40_nxtpaper-12535.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl_40_xl-12142",
+      "manufacturer": "TCL",
+      "family": "40 XL",
+      "model": "40 XL",
+      "sourceIds": [
+        "gsmarena-catalog-tcl-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tcl_40_xl-12142.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_air-14919",
+      "manufacturer": "Tecno",
+      "family": "Camon Air",
+      "model": "Camon Air",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_air-14919.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_slim_5g-14918",
+      "manufacturer": "Tecno",
+      "family": "Camon Slim",
+      "model": "Camon Slim",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_slim_5g-14918.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_go_3_pro-14905",
+      "manufacturer": "Tecno",
+      "family": "Spark Go 3 Pro",
+      "model": "Spark Go 3 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_go_3_pro-14905.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_8_pro_5g-14875",
+      "manufacturer": "Tecno",
+      "family": "Pova 8 Pro",
+      "model": "Pova 8 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_8_pro_5g-14875.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_slim-14745",
+      "manufacturer": "Tecno",
+      "family": "Camon Slim 4G",
+      "model": "Camon Slim 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_slim-14745.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_50_pro-14728",
+      "manufacturer": "Tecno",
+      "family": "Spark 50 Pro",
+      "model": "Spark 50 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_50_pro-14728.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_8_5g-14714",
+      "manufacturer": "Tecno",
+      "family": "Pova 8",
+      "model": "Pova 8",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_8_5g-14714.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pop_x_5g-14608",
+      "manufacturer": "Tecno",
+      "family": "Pop X",
+      "model": "Pop X",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pop_x_5g-14608.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pop_x-14665",
+      "manufacturer": "Tecno",
+      "family": "Pop X 4G",
+      "model": "Pop X 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pop_x-14665.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_50_4g-14596",
+      "manufacturer": "Tecno",
+      "family": "Spark 50 4G",
+      "model": "Spark 50 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_50_4g-14596.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_50_5g-14566",
+      "manufacturer": "Tecno",
+      "family": "Spark 50",
+      "model": "Spark 50",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_50_5g-14566.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_50_ultra_5g-14519",
+      "manufacturer": "Tecno",
+      "family": "Camon 50 Ultra",
+      "model": "Camon 50 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_50_ultra_5g-14519.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_50_pro_5g-14538",
+      "manufacturer": "Tecno",
+      "family": "Camon 50 Pro",
+      "model": "Camon 50 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_50_pro_5g-14538.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_50_pro-14500",
+      "manufacturer": "Tecno",
+      "family": "Camon 50 Pro 4G",
+      "model": "Camon 50 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_50_pro-14500.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_50-14501",
+      "manufacturer": "Tecno",
+      "family": "Camon 50 4G",
+      "model": "Camon 50 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_50-14501.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_curve_2_5g-14384",
+      "manufacturer": "Tecno",
+      "family": "Pova Curve 2",
+      "model": "Pova Curve 2",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_curve_2_5g-14384.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_go_3-14420",
+      "manufacturer": "Tecno",
+      "family": "Spark Go 3",
+      "model": "Spark Go 3",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_go_3-14420.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_slim_5g-14111",
+      "manufacturer": "Tecno",
+      "family": "Pova Slim",
+      "model": "Pova Slim",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_slim_5g-14111.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_slim-14112",
+      "manufacturer": "Tecno",
+      "family": "Spark Slim",
+      "model": "Spark Slim",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_slim-14112.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_40_5g-14568",
+      "manufacturer": "Tecno",
+      "family": "Spark 40",
+      "model": "Spark 40",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_40_5g-14568.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_go_5g-14074",
+      "manufacturer": "Tecno",
+      "family": "Spark Go",
+      "model": "Spark Go",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_go_5g-14074.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_40c-14052",
+      "manufacturer": "Tecno",
+      "family": "Spark 40C",
+      "model": "Spark 40C",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_40c-14052.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_7_pro_5g-13990",
+      "manufacturer": "Tecno",
+      "family": "Pova 7 Pro",
+      "model": "Pova 7 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_7_pro_5g-13990.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_7_5g-13991",
+      "manufacturer": "Tecno",
+      "family": "Pova 7",
+      "model": "Pova 7",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_7_5g-13991.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_40_pro+-13986",
+      "manufacturer": "Tecno",
+      "family": "Spark 40 Pro+",
+      "model": "Spark 40 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_40_pro+-13986.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_40_pro-13985",
+      "manufacturer": "Tecno",
+      "family": "Spark 40 Pro",
+      "model": "Spark 40 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_40_pro-13985.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_40_4g-13984",
+      "manufacturer": "Tecno",
+      "family": "Spark 40 4G",
+      "model": "Spark 40 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_40_4g-13984.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_7_ultra_5g-13976",
+      "manufacturer": "Tecno",
+      "family": "Pova 7 Ultra",
+      "model": "Pova 7 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_7_ultra_5g-13976.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_7-13974",
+      "manufacturer": "Tecno",
+      "family": "Pova 7 4G",
+      "model": "Pova 7 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_7-13974.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_go_2-13975",
+      "manufacturer": "Tecno",
+      "family": "Spark Go 2",
+      "model": "Spark Go 2",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_go_2-13975.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_curve_5g-13915",
+      "manufacturer": "Tecno",
+      "family": "Pova Curve",
+      "model": "Pova Curve",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_curve_5g-13915.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_40_premier-13694",
+      "manufacturer": "Tecno",
+      "family": "Camon 40 Premier",
+      "model": "Camon 40 Premier",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_40_premier-13694.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_40_pro_5g-13695",
+      "manufacturer": "Tecno",
+      "family": "Camon 40 Pro",
+      "model": "Camon 40 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_40_pro_5g-13695.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_40_pro-13696",
+      "manufacturer": "Tecno",
+      "family": "Camon 40 Pro 4G",
+      "model": "Camon 40 Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_40_pro-13696.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_40-13697",
+      "manufacturer": "Tecno",
+      "family": "Camon 40",
+      "model": "Camon 40",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_40-13697.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_go_1s-13648",
+      "manufacturer": "Tecno",
+      "family": "Spark Go 1S",
+      "model": "Spark Go 1S",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_go_1s-13648.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pop_9_4g-13509",
+      "manufacturer": "Tecno",
+      "family": "Pop 9 4G",
+      "model": "Pop 9 4G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pop_9_4g-13509.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_camon_30s-13426",
+      "manufacturer": "Tecno",
+      "family": "Camon 30S",
+      "model": "Camon 30S",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_camon_30s-13426.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_30c_5g-13385",
+      "manufacturer": "Tecno",
+      "family": "Spark 30C 5G",
+      "model": "Spark 30C 5G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_30c_5g-13385.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_30_5g-13384",
+      "manufacturer": "Tecno",
+      "family": "Spark 30 5G",
+      "model": "Spark 30 5G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_30_5g-13384.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pop_9-13358",
+      "manufacturer": "Tecno",
+      "family": "Pop 9",
+      "model": "Pop 9",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pop_9-13358.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_30_pro-13357",
+      "manufacturer": "Tecno",
+      "family": "Spark 30 Pro",
+      "model": "Spark 30 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_30_pro-13357.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_spark_30-13356",
+      "manufacturer": "Tecno",
+      "family": "Spark 30",
+      "model": "Spark 30",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_spark_30-13356.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_phantom_v_fold2-13334",
+      "manufacturer": "Tecno",
+      "family": "Phantom V Fold2",
+      "model": "Phantom V Fold2",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_phantom_v_fold2-13334.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_phantom_v_flip2-13335",
+      "manufacturer": "Tecno",
+      "family": "Phantom V Flip2",
+      "model": "Phantom V Flip2",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_phantom_v_flip2-13335.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-tecno_pova_6_neo_5g-13326",
+      "manufacturer": "Tecno",
+      "family": "Pova 6 Neo 5G",
+      "model": "Pova 6 Neo 5G",
+      "sourceIds": [
+        "gsmarena-catalog-tecno-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/tecno_pova_6_neo_5g-13326.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
