@@ -98,6 +98,34 @@
       "url": "https://www.gsmarena.com/motorola-phones-4.php",
       "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
       "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-nothing-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/nothing-phones-128.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-oneplus-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/oneplus-phones-95.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-oppo-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/oppo-phones-82.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
+    },
+    {
+      "id": "gsmarena-catalog-realme-2026-10-11",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/realme-phones-118.php",
+      "protocol": "Brand catalog page ordered by time of release; device identity coverage only",
+      "accessedDate": "2026-10-11"
     }
   ],
   "devices": [
@@ -5077,6 +5105,1501 @@
       ],
       "notes": [
         "Catalog identity source: https://www.gsmarena.com/motorola_moto_g86_power_5g-13918.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-nothing_cmf_phone_2_pro_5g-13821",
+      "manufacturer": "Nothing",
+      "family": "CMF Phone 2 Pro",
+      "model": "CMF Phone 2 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-nothing-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/nothing_cmf_phone_2_pro_5g-13821.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-nothing_cmf_phone_1-13122",
+      "manufacturer": "Nothing",
+      "family": "CMF Phone 1",
+      "model": "CMF Phone 1",
+      "sourceIds": [
+        "gsmarena-catalog-nothing-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/nothing_cmf_phone_1-13122.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_n6_lite-14952",
+      "manufacturer": "OnePlus",
+      "family": "N6 Lite",
+      "model": "N6 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_n6_lite-14952.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_n6x-14849",
+      "manufacturer": "OnePlus",
+      "family": "N6x",
+      "model": "N6x",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_n6x-14849.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_n6-14760",
+      "manufacturer": "OnePlus",
+      "family": "N6",
+      "model": "N6",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_n6-14760.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_turbo_6x_pro_5g-14711",
+      "manufacturer": "OnePlus",
+      "family": "Turbo 6X Pro",
+      "model": "Turbo 6X Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_turbo_6x_pro_5g-14711.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_turbo_6x_5g-14712",
+      "manufacturer": "OnePlus",
+      "family": "Turbo 6X",
+      "model": "Turbo 6X",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_turbo_6x_5g-14712.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_ce6_5g-14611",
+      "manufacturer": "OnePlus",
+      "family": "Nord CE6",
+      "model": "Nord CE6",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_ce6_5g-14611.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_ce6_lite_5g-14567",
+      "manufacturer": "OnePlus",
+      "family": "Nord CE6 Lite",
+      "model": "Nord CE6 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_ce6_lite_5g-14567.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_6_ultra_5g-14637",
+      "manufacturer": "OnePlus",
+      "family": "Ace 6 Ultra",
+      "model": "Ace 6 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_6_ultra_5g-14637.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_6_5g-14558",
+      "manufacturer": "OnePlus",
+      "family": "Nord 6",
+      "model": "Nord 6",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_6_5g-14558.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_15t_5g-14385",
+      "manufacturer": "OnePlus",
+      "family": "15T",
+      "model": "15T",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_15t_5g-14385.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_turbo_6_5g-14260",
+      "manufacturer": "OnePlus",
+      "family": "Turbo 6",
+      "model": "Turbo 6",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_turbo_6_5g-14260.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_turbo_6v_5g-14404",
+      "manufacturer": "OnePlus",
+      "family": "Turbo 6V",
+      "model": "Turbo 6V",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_turbo_6v_5g-14404.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_15r_5g-14358",
+      "manufacturer": "OnePlus",
+      "family": "15R",
+      "model": "15R",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_15r_5g-14358.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_6t_5g-14315",
+      "manufacturer": "OnePlus",
+      "family": "Ace 6T",
+      "model": "Ace 6T",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_6t_5g-14315.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_15_5g-14206",
+      "manufacturer": "OnePlus",
+      "family": "15",
+      "model": "15",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_15_5g-14206.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_6_5g-14259",
+      "manufacturer": "OnePlus",
+      "family": "Ace 6",
+      "model": "Ace 6",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_6_5g-14259.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_5_5g-13992",
+      "manufacturer": "OnePlus",
+      "family": "Nord 5",
+      "model": "Nord 5",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_5_5g-13992.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_ce5_5g-13792",
+      "manufacturer": "OnePlus",
+      "family": "Nord CE5",
+      "model": "Nord CE5",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_ce5_5g-13792.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_13s_5g-13818",
+      "manufacturer": "OnePlus",
+      "family": "13s",
+      "model": "13s",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_13s_5g-13818.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_5_ultra_5g-13891",
+      "manufacturer": "OnePlus",
+      "family": "Ace 5 Ultra",
+      "model": "Ace 5 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5_ultra_5g-13891.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_5_racing_5g-13892",
+      "manufacturer": "OnePlus",
+      "family": "Ace 5 Racing",
+      "model": "Ace 5 Racing",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5_racing_5g-13892.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_13t_5g-13791",
+      "manufacturer": "OnePlus",
+      "family": "13T",
+      "model": "13T",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_13t_5g-13791.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_13r-13548",
+      "manufacturer": "OnePlus",
+      "family": "13R",
+      "model": "13R",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_13r-13548.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_5_pro-13591",
+      "manufacturer": "OnePlus",
+      "family": "Ace 5 Pro",
+      "model": "Ace 5 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5_pro-13591.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_5-13592",
+      "manufacturer": "OnePlus",
+      "family": "Ace 5",
+      "model": "Ace 5",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_5-13592.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_13-13477",
+      "manufacturer": "OnePlus",
+      "family": "13",
+      "model": "13",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_13-13477.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_4-13200",
+      "manufacturer": "OnePlus",
+      "family": "Nord 4",
+      "model": "Nord 4",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_4-13200.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_3_pro-13179",
+      "manufacturer": "OnePlus",
+      "family": "Ace 3 Pro",
+      "model": "Ace 3 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_3_pro-13179.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_ce4_lite-13166",
+      "manufacturer": "OnePlus",
+      "family": "Nord CE4 Lite",
+      "model": "Nord CE4 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_ce4_lite-13166.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_ace_3v-12889",
+      "manufacturer": "OnePlus",
+      "family": "Ace 3V",
+      "model": "Ace 3V",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_ace_3v-12889.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_ce4-12892",
+      "manufacturer": "OnePlus",
+      "family": "Nord CE4",
+      "model": "Nord CE4",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_ce4-12892.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_nord_n30_se-12811",
+      "manufacturer": "OnePlus",
+      "family": "Nord N30 SE",
+      "model": "Nord N30 SE",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_nord_n30_se-12811.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oneplus_12r-12727",
+      "manufacturer": "OnePlus",
+      "family": "12R",
+      "model": "12R",
+      "sourceIds": [
+        "gsmarena-catalog-oneplus-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oneplus_12r-12727.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k15s_5g-14995",
+      "manufacturer": "Oppo",
+      "family": "K15s",
+      "model": "K15s",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k15s_5g-14995.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k15x_5g-14996",
+      "manufacturer": "Oppo",
+      "family": "K15x",
+      "model": "K15x",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k15x_5g-14996.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_f35_pro_5g-14859",
+      "manufacturer": "Oppo",
+      "family": "F35 Pro",
+      "model": "F35 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_f35_pro_5g-14859.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_f35_5g-14990",
+      "manufacturer": "Oppo",
+      "family": "F35",
+      "model": "F35",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_f35_5g-14990.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x10_pro_max-14939",
+      "manufacturer": "Oppo",
+      "family": "Find X10 Pro Max",
+      "model": "Find X10 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x10_pro_max-14939.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x10-14953",
+      "manufacturer": "Oppo",
+      "family": "Find X10",
+      "model": "Find X10",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x10-14953.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x10_e-14954",
+      "manufacturer": "Oppo",
+      "family": "Find X10 E",
+      "model": "Find X10 E",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x10_e-14954.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k14_plus_5g-14963",
+      "manufacturer": "Oppo",
+      "family": "K14 Plus",
+      "model": "K14 Plus",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k14_plus_5g-14963.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k14_lite-14942",
+      "manufacturer": "Oppo",
+      "family": "K14 Lite",
+      "model": "K14 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k14_lite-14942.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a7_pro_5g-14928",
+      "manufacturer": "Oppo",
+      "family": "A7 Pro",
+      "model": "A7 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a7_pro_5g-14928.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a7_pro_max_5g-14828",
+      "manufacturer": "Oppo",
+      "family": "A7 Pro Max",
+      "model": "A7 Pro Max",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a7_pro_max_5g-14828.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k15_5g-14810",
+      "manufacturer": "Oppo",
+      "family": "K15",
+      "model": "K15",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k15_5g-14810.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno16c_5g-14768",
+      "manufacturer": "Oppo",
+      "family": "Reno16c",
+      "model": "Reno16c",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno16c_5g-14768.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno16_pro_5g-14746",
+      "manufacturer": "Oppo",
+      "family": "Reno16 Pro",
+      "model": "Reno16 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno16_pro_5g-14746.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno16_5g-14747",
+      "manufacturer": "Oppo",
+      "family": "Reno16",
+      "model": "Reno16",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno16_5g-14747.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno16_fs_5g-14752",
+      "manufacturer": "Oppo",
+      "family": "Reno16 FS",
+      "model": "Reno16 FS",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno16_fs_5g-14752.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno16_f_5g-14751",
+      "manufacturer": "Oppo",
+      "family": "Reno16 F",
+      "model": "Reno16 F",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno16_f_5g-14751.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x9_ultra_5g-14548",
+      "manufacturer": "Oppo",
+      "family": "Find X9 Ultra",
+      "model": "Find X9 Ultra",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x9_ultra_5g-14548.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x9s_pro-14592",
+      "manufacturer": "Oppo",
+      "family": "Find X9s Pro",
+      "model": "Find X9s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x9s_pro-14592.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_x9s_5g-14617",
+      "manufacturer": "Oppo",
+      "family": "Find X9s",
+      "model": "Find X9s",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_x9s_5g-14617.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_f33_pro_5g-14601",
+      "manufacturer": "Oppo",
+      "family": "F33 Pro",
+      "model": "F33 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_f33_pro_5g-14601.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_f33_5g-14602",
+      "manufacturer": "Oppo",
+      "family": "F33",
+      "model": "F33",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_f33_5g-14602.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6c-14418",
+      "manufacturer": "Oppo",
+      "family": "A6c",
+      "model": "A6c",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6c-14418.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6k-14588",
+      "manufacturer": "Oppo",
+      "family": "A6k",
+      "model": "A6k",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6k-14588.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k15_pro+_5g-14572",
+      "manufacturer": "Oppo",
+      "family": "K15 Pro+",
+      "model": "K15 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k15_pro+_5g-14572.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k15_pro_5g-14573",
+      "manufacturer": "Oppo",
+      "family": "K15 Pro",
+      "model": "K15 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k15_pro_5g-14573.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_find_n6_5g-14389",
+      "manufacturer": "Oppo",
+      "family": "Find N6",
+      "model": "Find N6",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_find_n6_5g-14389.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k14_5g-14530",
+      "manufacturer": "Oppo",
+      "family": "K14",
+      "model": "K14",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k14_5g-14530.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6s_pro-14523",
+      "manufacturer": "Oppo",
+      "family": "A6s Pro",
+      "model": "A6s Pro",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6s_pro-14523.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_k14x_5g-14458",
+      "manufacturer": "Oppo",
+      "family": "K14x",
+      "model": "K14x",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_k14x_5g-14458.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_reno15_fs_5g-14373",
+      "manufacturer": "Oppo",
+      "family": "Reno15 FS",
+      "model": "Reno15 FS",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_reno15_fs_5g-14373.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6t_pro-14415",
+      "manufacturer": "Oppo",
+      "family": "A6t Pro 4G",
+      "model": "A6t Pro 4G",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6t_pro-14415.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6t_5g-14417",
+      "manufacturer": "Oppo",
+      "family": "A6t",
+      "model": "A6t",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6t_5g-14417.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6t-14416",
+      "manufacturer": "Oppo",
+      "family": "A6t 4G",
+      "model": "A6t 4G",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6t-14416.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6_5g-14412",
+      "manufacturer": "Oppo",
+      "family": "A6",
+      "model": "A6",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6_5g-14412.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6-14413",
+      "manufacturer": "Oppo",
+      "family": "A6 4G",
+      "model": "A6 4G",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6-14413.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6s-14411",
+      "manufacturer": "Oppo",
+      "family": "A6s 4G",
+      "model": "A6s 4G",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6s-14411.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-oppo_a6s_5g-14410",
+      "manufacturer": "Oppo",
+      "family": "A6s",
+      "model": "A6s",
+      "sourceIds": [
+        "gsmarena-catalog-oppo-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/oppo_a6s_5g-14410.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4s_lite-14991",
+      "manufacturer": "Realme",
+      "family": "P4s Lite",
+      "model": "P4s Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4s_lite-14991.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4s_5g-14885",
+      "manufacturer": "Realme",
+      "family": "P4s",
+      "model": "P4s",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4s_5g-14885.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_16x_5g-14871",
+      "manufacturer": "Realme",
+      "family": "16x",
+      "model": "16x",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_16x_5g-14871.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_100x_5g-14787",
+      "manufacturer": "Realme",
+      "family": "Narzo 100x",
+      "model": "Narzo 100x",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_100x_5g-14787.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4x-14744",
+      "manufacturer": "Realme",
+      "family": "P4x 4G",
+      "model": "P4x 4G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4x-14744.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4r_5g-14706",
+      "manufacturer": "Realme",
+      "family": "P4R",
+      "model": "P4R",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4r_5g-14706.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_16t_5g-14674",
+      "manufacturer": "Realme",
+      "family": "16T",
+      "model": "16T",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_16t_5g-14674.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c100x-14628",
+      "manufacturer": "Realme",
+      "family": "C100x",
+      "model": "C100x",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c100x-14628.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c100i-14655",
+      "manufacturer": "Realme",
+      "family": "C100i",
+      "model": "C100i",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c100i-14655.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_100_lite_5g-14593",
+      "manufacturer": "Realme",
+      "family": "Narzo 100 Lite",
+      "model": "Narzo 100 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_100_lite_5g-14593.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c100-14586",
+      "manufacturer": "Realme",
+      "family": "C100 4G",
+      "model": "C100 4G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c100-14586.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c100_5g-14585",
+      "manufacturer": "Realme",
+      "family": "C100",
+      "model": "C100",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c100_5g-14585.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4_lite_5g-14545",
+      "manufacturer": "Realme",
+      "family": "P4 Lite",
+      "model": "P4 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4_lite_5g-14545.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_note_80-14537",
+      "manufacturer": "Realme",
+      "family": "Note 80",
+      "model": "Note 80",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_note_80-14537.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c83_5g-14532",
+      "manufacturer": "Realme",
+      "family": "C83",
+      "model": "C83",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c83_5g-14532.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_power_5g-14515",
+      "manufacturer": "Realme",
+      "family": "Narzo Power",
+      "model": "Narzo Power",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_power_5g-14515.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4_lite-14490",
+      "manufacturer": "Realme",
+      "family": "P4 Lite 4G",
+      "model": "P4 Lite 4G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4_lite-14490.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_16_5g-14419",
+      "manufacturer": "Realme",
+      "family": "16",
+      "model": "16",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_16_5g-14419.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4_power_5g-14451",
+      "manufacturer": "Realme",
+      "family": "P4 Power",
+      "model": "P4 Power",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4_power_5g-14451.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_neo8_5g-14408",
+      "manufacturer": "Realme",
+      "family": "Neo8",
+      "model": "Neo8",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_neo8_5g-14408.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c85-14435",
+      "manufacturer": "Realme",
+      "family": "C85 4G",
+      "model": "C85 4G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c85-14435.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_16_pro+_5g-14363",
+      "manufacturer": "Realme",
+      "family": "16 Pro+",
+      "model": "16 Pro+",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_16_pro+_5g-14363.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_16_pro_5g-14400",
+      "manufacturer": "Realme",
+      "family": "16 Pro",
+      "model": "16 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_16_pro_5g-14400.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_90_5g-14345",
+      "manufacturer": "Realme",
+      "family": "Narzo 90",
+      "model": "Narzo 90",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_90_5g-14345.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_90x_5g-14346",
+      "manufacturer": "Realme",
+      "family": "Narzo 90X",
+      "model": "Narzo 90X",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_90x_5g-14346.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p3_lite_5g-14360",
+      "manufacturer": "Realme",
+      "family": "P3 Lite",
+      "model": "P3 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p3_lite_5g-14360.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p3_lite-14361",
+      "manufacturer": "Realme",
+      "family": "P3 Lite 4G",
+      "model": "P3 Lite 4G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p3_lite-14361.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4x_5g-14329",
+      "manufacturer": "Realme",
+      "family": "P4x",
+      "model": "P4x",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4x_5g-14329.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c85_pro-14275",
+      "manufacturer": "Realme",
+      "family": "C85 Pro",
+      "model": "C85 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c85_pro-14275.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c85_5g-14274",
+      "manufacturer": "Realme",
+      "family": "C85",
+      "model": "C85",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c85_5g-14274.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_15_lite_5g-14159",
+      "manufacturer": "Realme",
+      "family": "15 Lite",
+      "model": "15 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_15_lite_5g-14159.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_15t_5g-14105",
+      "manufacturer": "Realme",
+      "family": "15T",
+      "model": "15T",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_15t_5g-14105.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4_5g-14087",
+      "manufacturer": "Realme",
+      "family": "P4",
+      "model": "P4",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4_5g-14087.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_p4_pro_5g-14086",
+      "manufacturer": "Realme",
+      "family": "P4 Pro",
+      "model": "P4 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_p4_pro_5g-14086.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_80_lite-14023",
+      "manufacturer": "Realme",
+      "family": "Narzo 80 Lite",
+      "model": "Narzo 80 Lite",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_80_lite-14023.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_15_pro_5g-14017",
+      "manufacturer": "Realme",
+      "family": "15 Pro",
+      "model": "15 Pro",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_15_pro_5g-14017.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_note_70-14436",
+      "manufacturer": "Realme",
+      "family": "Note 70",
+      "model": "Note 70",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_note_70-14436.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_15_5g-14018",
+      "manufacturer": "Realme",
+      "family": "15 (India)",
+      "model": "15 (India)",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_15_5g-14018.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_note_70t-14007",
+      "manufacturer": "Realme",
+      "family": "Note 70T",
+      "model": "Note 70T",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_note_70t-14007.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_narzo_80_lite_5g-13952",
+      "manufacturer": "Realme",
+      "family": "Narzo 80 Lite 5G",
+      "model": "Narzo 80 Lite 5G",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_narzo_80_lite_5g-13952.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c73_5g-13928",
+      "manufacturer": "Realme",
+      "family": "C73",
+      "model": "C73",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c73_5g-13928.php",
+        "Catalog coverage only. No measurement evidence is implied by presence in this file."
+      ]
+    },
+    {
+      "id": "gsmarena-realme_c71-13931",
+      "manufacturer": "Realme",
+      "family": "C71",
+      "model": "C71",
+      "sourceIds": [
+        "gsmarena-catalog-realme-2026-10-11"
+      ],
+      "notes": [
+        "Catalog identity source: https://www.gsmarena.com/realme_c71-13931.php",
         "Catalog coverage only. No measurement evidence is implied by presence in this file."
       ]
     }
