@@ -9,7 +9,7 @@ if (!inputRoot) {
   throw new Error('Usage: node scripts/sync-techapi-catalog.mjs <TechAPI data/smartphone dir> [output] [count]');
 }
 
-const YEAR_MIN = 2024;
+const YEAR_MIN = 2022;
 const YEAR_MAX = 2026;
 
 const BRAND_NAMES = new Map([
@@ -145,6 +145,11 @@ for await (const file of walk(inputRoot)) {
   const relative = path.relative(inputRoot, file).split(path.sep);
   const year = Number(relative[1]);
 
+  // TechAPI's curated canonical smartphone records live directly at
+  // brand/year/slug.json. Nested directories contain market/storage/SKU
+  // expansions that are useful for device catalogs but would overweight
+  // one marketed phone family in PhoneFuturist calibration.
+  if (relative.length !== 3) continue;
   if (!Number.isInteger(year) || year < YEAR_MIN || year > YEAR_MAX) continue;
 
   let row;
@@ -284,8 +289,8 @@ const output = {
   selection: {
     targetCount,
     selectedCount: devices.length,
-    years: [2024, 2025, 2026],
-    uniqueBy: 'base_model_slug',
+    years: [2022, 2023, 2024, 2025, 2026],
+    uniqueBy: 'TechAPI canonical brand/year/slug.json records, then base_model_slug',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
     order: 'release_date desc, completeness desc',
