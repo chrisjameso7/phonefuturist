@@ -2082,14 +2082,16 @@ export default function InteractiveLeaksSimulator() {
                     : ('measured-calibrated' as const),
               }
             : {}),
-          ...(displayExperience?.electricalPower.status ===
-            'resolved' &&
-          displayExperience.electricalPower
-            .expectedPowerW !== undefined
+          ...(displayExperience?.expectedPanelPowerW !==
+            undefined
             ? {
                 displayPanelPowerW:
-                  displayExperience.electricalPower
-                    .expectedPowerW,
+                  displayExperience.expectedPanelPowerW,
+                displayPanelPowerProvenance:
+                  displayExperience.electricalPowerMode ===
+                  'direct-calibration'
+                    ? ('measured-calibrated' as const)
+                    : ('derived' as const),
               }
             : {}),
         },
@@ -4412,34 +4414,51 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {displayExperience.electricalPower.status ===
-                            'resolved' &&
-                          displayExperience.electricalPower
-                            .expectedPowerW !== undefined
+                          {displayExperience.expectedPanelPowerW !==
+                          undefined
                             ? `${format(
-                                displayExperience.electricalPower
-                                  .expectedPowerW,
+                                displayExperience.expectedPanelPowerW,
                                 2,
                               )} W`
                             : 'Unresolved'}
                         </strong>
-                        <span>Measured-calibrated panel power</span>
+                        <span>
+                          {displayExperience.electricalPowerMode ===
+                          'direct-calibration'
+                            ? 'Measured-calibrated panel power'
+                            : displayExperience.electricalPowerMode ===
+                                'controlled-interpolation'
+                              ? 'Interpolated measured panel power'
+                              : 'Electrical panel power'}
+                        </span>
                       </div>
 
                       <div>
                         <strong>
-                          {displayExperience.electricalPower.referenceCount}
+                          {displayExperience.electricalPowerMode ===
+                          'controlled-interpolation'
+                            ? displayExperience.electricalResponse
+                                .referenceCount
+                            : displayExperience.electricalPower
+                                .referenceCount}
                         </strong>
                         <span>Isolated panel-power references</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.electricalPowerMode.replaceAll(
+                            '-',
+                            ' ',
+                          )}
+                        </strong>
+                        <span>Electrical power provenance</span>
                       </div>
                     </div>
 
                     <p className="il-help">
                       Electrical panel power:{' '}
-                      {displayExperience.electricalPower.status === 'resolved'
-                        ? displayExperience.electricalPower.note
-                        : displayExperience.electricalPower.unresolvedReason ??
-                          displayExperience.electricalPower.note}
+                      {displayExperience.note}
                     </p>
 
                     {displayExperience.load.scenarios.length ? (
