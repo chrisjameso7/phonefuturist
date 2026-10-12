@@ -568,3 +568,18 @@ body:not(.product-mode) .mobile-app-brand {
  .pf-home-v2 .pf-spotlight,.pf-home-v2 .pf-spotlight__content > *, .interactive-page .il-results :is(.il-metrics,.il-result-group,.il-warning) {animation:none!important;}
  .pf-home-v2 .pf-home-path,.article-card,.interactive-page .il-section,.interactive-page .il-field :is(input,select,textarea),.mobile-tabbar > a {transition:none!important;}
 }
+
+/* Explain battery endurance separately from daily usage assumptions. */
+.il-simple-battery-readout {
+  display:grid;gap:10px;padding:20px 22px;margin:12px 0 16px;
+  border:1px solid rgb(52 143 230 / .30);border-radius:16px;
+  background:linear-gradient(135deg,rgb(20 98 170 / .14),transparent 75%),#101e30;
+}
+.il-simple-battery-readout > strong {
+  font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.06;
+  letter-spacing:-.05em;color:#f0f8ff;
+}
+.il-simple-battery-readout p {margin:0;line-height:1.55;color:#d0dceb;font-size:.9rem;}
+.il-simple-battery-readout p b {color:#fff;font-weight:600;}
+.il-simple-battery-readout small {line-height:1.5;color:#a3b7c9;}
+@media(max-width:760px){.il-simple-battery-readout{padding:18px 16px;}}
