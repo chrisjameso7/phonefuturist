@@ -26,6 +26,22 @@ describe('live charging simulator', () => {
     expect(
       result.estimate?.referenceCount,
     ).toBeGreaterThanOrEqual(2);
+
+    expect(
+      result.observedInputPower.status,
+    ).toBe('resolved');
+
+    expect(
+      result.observedInputPower.expectedObservedPeakWatts,
+    ).toBeGreaterThan(48);
+
+    expect(
+      result.observedInputPower.expectedObservedPeakWatts,
+    ).toBeLessThan(56);
+
+    expect(
+      result.observedInputPower.expectedObservedPeakWatts,
+    ).toBeLessThan(60);
   });
 
 
