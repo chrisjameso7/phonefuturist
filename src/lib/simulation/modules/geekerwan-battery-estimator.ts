@@ -6,7 +6,7 @@ import {
   normalizeSocFamily,
 } from './comparable-devices';
 import {
-  resolveCanonicalDeviceId,
+  linkDeviceIdentities,
 } from './device-identity-linker';
 
 export const GEEKERWAN_BATTERY_ESTIMATOR_VERSION =
@@ -131,6 +131,24 @@ export function estimateGeekerwanBatteryLife(
       ),
     );
 
+  const canonicalById =
+    new Map<string, string>();
+
+  for (
+    const link of
+    linkDeviceIdentities(corpus)
+  ) {
+    for (
+      const linkedId of
+      link.linkedDeviceIds
+    ) {
+      canonicalById.set(
+        linkedId,
+        link.canonicalDeviceId,
+      );
+    }
+  }
+
   const evidenceCorpus: DeviceCorpus = {
     ...corpus,
     devices:
@@ -143,10 +161,10 @@ export function estimateGeekerwanBatteryLife(
         )
         .map((device) => {
           const canonicalId =
-            resolveCanonicalDeviceId(
-              corpus,
+            canonicalById.get(
               device.variant.id,
-            );
+            ) ??
+            device.variant.id;
 
           const canonical =
             deviceById.get(
