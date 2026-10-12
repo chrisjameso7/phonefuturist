@@ -110,12 +110,6 @@ describe('Geekerwan SoCPK efficiency curve corpus', () => {
           ),
       );
 
-    expect(metrics).toEqual(
-      expect.objectContaining
-        ? metrics
-        : metrics,
-    );
-
     expect(
       metrics.has(
         'geekerwan_gb6_multi_curve_score',
