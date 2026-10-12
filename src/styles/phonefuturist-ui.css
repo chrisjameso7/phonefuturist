@@ -493,3 +493,35 @@ body:not(.product-mode) .mobile-app-brand {
   body:not(.product-mode) .mobile-app-logo img { width:43px!important; height:27px!important; }
   body:not(.product-mode) .mobile-app-brand > span:last-child { font-weight:800; }
 }
+
+/* Restore the PF vector mark inside the legacy mobile header.
+   The old PNG crop used absolute positioning and negative offsets. */
+@media (max-width:760px) {
+  body:not(.product-mode) .mobile-app-brand .mobile-app-logo {
+    position:relative!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 44px!important;
+    width:44px!important;
+    height:34px!important;
+    overflow:visible!important;
+    border-radius:0!important;
+    background:transparent!important;
+  }
+  body:not(.product-mode) .mobile-app-brand .mobile-app-logo img {
+    position:static!important;
+    display:block!important;
+    flex:none!important;
+    width:44px!important;
+    height:auto!important;
+    max-width:44px!important;
+    max-height:32px!important;
+    margin:0!important;
+    inset:auto!important;
+    object-fit:contain!important;
+    filter:none!important;
+    opacity:1!important;
+    transform:none!important;
+  }
+}
