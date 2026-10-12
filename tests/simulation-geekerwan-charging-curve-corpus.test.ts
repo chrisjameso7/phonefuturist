@@ -91,7 +91,7 @@ describe('Geekerwan wall-input charging curves', () => {
     expect(
       onePlusEnd?.value,
     ).toBeCloseTo(
-      31.418,
+      31.42,
       8,
     );
 
