@@ -292,7 +292,7 @@ type FormState = {
   wiredChargeW: string;
   wirelessChargeW: string;
   batteryChemistry: string;
-  cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell';
+  cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell';
   chargingStandard: string;
   wirelessChargingStandard: string;
   batteryAgeYears: string;
@@ -3714,7 +3714,9 @@ export default function InteractiveLeaksSimulator() {
                       event.currentTarget.value as
                         | 'unknown'
                         | 'single-cell'
-                        | 'dual-cell',
+                        | 'dual-cell'
+                        | 'tri-cell'
+                        | 'quad-cell',
                     )
                   }
                 >
@@ -3725,6 +3727,8 @@ export default function InteractiveLeaksSimulator() {
                   <option value="dual-cell">
                     Dual cell
                   </option>
+                  <option value="tri-cell">Tri-cell (3 cells)</option>
+                  <option value="quad-cell">Quad-cell (4 cells)</option>
                 </select>
               </label>
 
