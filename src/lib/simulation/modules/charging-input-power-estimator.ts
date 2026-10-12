@@ -1,3 +1,6 @@
+import {
+  buildCalibrationRegistry,
+} from './calibration-registry';
 import type {
   DeviceCorpus,
 } from './device-corpus';
@@ -343,4 +346,14 @@ export function estimateObservedChargingInputPower(
     note:
       'Observed phone input is estimated from measured peak-power utilization of comparable devices. Advertised adapter wattage is never assumed to equal sustained or phone-side charging power.',
   };
+}
+
+
+export function estimateLiveObservedChargingInputPower(
+  query: ChargingInputPowerQuery,
+) {
+  return estimateObservedChargingInputPower(
+    buildCalibrationRegistry(),
+    query,
+  );
 }
