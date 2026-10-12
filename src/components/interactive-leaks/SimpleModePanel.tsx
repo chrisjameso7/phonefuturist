@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import type {
   SimpleCoolingPreset,
   SimpleModeInput,
@@ -138,10 +139,8 @@ export default function SimpleModePanel({
           ))}
         </div>
         <p className="il-help">
-          {usage === 'Light' ? 'Mostly messaging, occasional browsing and video.' :
-            usage === 'Typical' ? 'A balanced day of browsing, video, social apps and some gaming.' :
-              'Longer screen time, frequent video and more demanding gaming.'}
-          {' '}These are illustrative usage scenarios, not measured population averages.
+          {SIMPLE_USAGE_SCENARIOS[usage].description}
+          {' '}{SIMPLE_USAGE_SCENARIOS[usage].disclaimer}
         </p>
       </fieldset>
       <div className="il-simple-grid">
