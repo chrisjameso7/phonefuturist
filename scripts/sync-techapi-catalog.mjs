@@ -555,7 +555,8 @@ const output = {
     years: [2025, 2026],
     uniqueBy: 'TechAPI 2025-2026 records: verified/source-backed base models first, then source-backed unverified base models only as catalog fallback',
     requireSourceUrls: true,
-    excludeVerifiedFalse: true,
+    verifiedFalsePolicy:
+      'allowed only as source-backed catalog-only fallback after higher-trust entries',
     order: 'verified/source-backed unique base models first, then one verified variant per base if available, then source-backed unverified unique base models as catalog-only fallback',
     brandDiversityFirstPassCap: BRAND_DIVERSITY_CAP,
   },
