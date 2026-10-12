@@ -10,6 +10,11 @@ export interface PredictionMetricScorecardRow {
   key: string;
   unit: string;
   observations: number;
+  // The 99% target means at least 99% of held-out predictions within 1% relative error.
+  // Require enough observations before calling a metric validated.
+  withinOnePercentCount: number;
+  withinOnePercentRate?: number;
+  accuracyTargetStatus: 'insufficient-data' | 'met' | 'not-met';
   meanSignedError: number;
   mae: number;
   mapePercent?: number;
@@ -173,6 +178,29 @@ export function buildPredictionValidationScorecard(
         key: group[0].key,
         unit: group[0].unit,
         observations: group.length,
+        withinOnePercentCount: group.filter(
+          row => row.absolutePercentError !== undefined &&
+            Number.isFinite(row.absolutePercentError) &&
+            row.absolutePercentError <= 1,
+        ).length,
+        withinOnePercentRate: group.some(
+          row => row.absolutePercentError !== undefined &&
+            Number.isFinite(row.absolutePercentError),
+        )
+          ? 100 * group.filter(
+              row => row.absolutePercentError !== undefined &&
+                Number.isFinite(row.absolutePercentError) &&
+                row.absolutePercentError <= 1,
+            ).length / group.length
+          : undefined,
+        accuracyTargetStatus: group.length < 100 ||
+          group.some(row => row.absolutePercentError === undefined ||
+            !Number.isFinite(row.absolutePercentError))
+          ? 'insufficient-data' as const
+          : group.filter(row => row.absolutePercentError !== undefined &&
+              Number.isFinite(row.absolutePercentError) &&
+              row.absolutePercentError <= 1).length / group.length >= 0.99
+            ? 'met' as const : 'not-met' as const,
         meanSignedError:
           group.reduce(
             (sum, row) =>
@@ -242,6 +270,6 @@ export function buildPredictionValidationScorecard(
     metricRows,
     provenanceRows,
     note:
-      'Scorecard aggregates immutable prediction-vs-reality errors by metric/unit and by prediction provenance. Signed error exposes systematic bias; percentage error enables scale-normalized comparison without mixing raw units.',
+      'Scorecard aggregates immutable prediction-vs-reality errors by metric/unit and by prediction provenance. The aspirational 99% accuracy gate requires at least 100 independently validated metric observations with at least 99% within 1% relative error; validation provenance and holdout independence must be audited separately. Signed error exposes systematic bias; percentage error enables scale-normalized comparison without mixing raw units.',
   };
 }
