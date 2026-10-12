@@ -223,7 +223,13 @@ export function resolveCorpusRuntimeBand(
         input.displays.primary.refreshRateHz,
       thicknessMm: input.dimensions?.thicknessMm,
       weightG: input.dimensions?.weightG,
-      limit: 20,
+      // Evidence scope selection happens after protocol grouping.
+      // Keep the full eligible evidence set here so a large generic cohort
+      // cannot crowd same-SoC-vendor references out before that decision.
+      limit: Math.max(
+        20,
+        evidenceCorpus.devices.length,
+      ),
     },
   );
 
