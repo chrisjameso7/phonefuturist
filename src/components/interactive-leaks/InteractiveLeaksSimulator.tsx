@@ -2938,7 +2938,7 @@ export default function InteractiveLeaksSimulator() {
 
   return (
     <div className="il-app" data-mode={workspaceMode}>
-      <div className="il-toolbar">
+      <div className="il-toolbar" aria-label="Simulation workspace">
         <div>
           <span className="il-status">
             Interactive Leaks
