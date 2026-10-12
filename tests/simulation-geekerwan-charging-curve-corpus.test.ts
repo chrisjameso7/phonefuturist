@@ -2,24 +2,56 @@ import { describe, expect, it } from 'vitest';
 import {
   buildGeekerwanChargingCurveCorpus,
   geekerwanChargingCurveCount,
+  geekerwanDetailedCurveCount,
 } from '../src/lib/simulation/modules/geekerwan-charging-curve-corpus';
 
 describe('Geekerwan wall-input charging curves', () => {
-  it('contains twelve protocol-isolated charging curves', () => {
+  it('contains the full 74-phone metadata cohort plus twelve detailed curves', () => {
     const corpus =
       buildGeekerwanChargingCurveCorpus();
 
     expect(
       geekerwanChargingCurveCount(),
+    ).toBe(74);
+
+    expect(
+      geekerwanDetailedCurveCount(),
     ).toBe(12);
 
     expect(
       corpus.devices,
-    ).toHaveLength(12);
+    ).toHaveLength(74);
 
     expect(
       corpus.sources[0]?.sourceRole,
     ).toBe('measurement-lab');
+  });
+
+  it('pins charger metadata from the SOCPK API', () => {
+    const corpus =
+      buildGeekerwanChargingCurveCorpus();
+
+    const s26 =
+      corpus.devices.find(
+        (device) =>
+          device.variant.id ===
+          'geekerwan-charge-samsung-galaxy-s26-ultra',
+      );
+
+    const onePlus =
+      corpus.devices.find(
+        (device) =>
+          device.variant.id ===
+          'geekerwan-charge-oneplus-15',
+      );
+
+    expect(
+      s26?.charging?.referenceWiredWatts,
+    ).toBe(60);
+
+    expect(
+      onePlus?.charging?.referenceWiredWatts,
+    ).toBe(120);
   });
 
   it('pins the Galaxy S26 Ultra 30-minute wall-input energy point', () => {
