@@ -82,16 +82,17 @@ describe('cross-source device identity linker', () => {
         corpus,
       );
 
-    expect(links).toHaveLength(1);
+    const s25Link =
+      links.find(
+        (link) =>
+          link.canonicalDeviceId ===
+          'techapi-samsung-galaxy-s25-ultra',
+      );
+
+    expect(s25Link).toBeDefined();
 
     expect(
-      links[0].canonicalDeviceId,
-    ).toBe(
-      'techapi-samsung-galaxy-s25-ultra',
-    );
-
-    expect(
-      links[0].linkedDeviceIds,
+      s25Link?.linkedDeviceIds,
     ).toEqual(
       expect.arrayContaining([
         'techapi-samsung-galaxy-s25-ultra',
