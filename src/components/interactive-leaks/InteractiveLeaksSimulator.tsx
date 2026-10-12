@@ -1,4 +1,5 @@
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
+import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
@@ -216,6 +217,9 @@ type CameraDraft = {
   equivalentFocalLengthMm: string;
   physicalFocalLengthMm: string;
   apertureFNumber: string;
+  variableAperture: boolean;
+  variableApertureWide: string;
+  variableApertureNarrow: string;
   exposureTimeSeconds?: string;
   sensorReadoutTimeSeconds?: string;
   videoFrameRateFps?: string;
@@ -800,6 +804,9 @@ function emptyCamera(id: number): CameraDraft {
     equivalentFocalLengthMm: '',
     physicalFocalLengthMm: '',
     apertureFNumber: '',
+    variableAperture: false,
+    variableApertureWide: '',
+    variableApertureNarrow: '',
     exposureTimeSeconds: '',
     sensorReadoutTimeSeconds: '',
     videoFrameRateFps: '',
@@ -4812,20 +4819,19 @@ export default function InteractiveLeaksSimulator() {
                         </select>
                       </label>
 
-                      <NumericField
-                        label="Sensor format"
-                        suffix="1/x″"
-                        value={
-                          camera.sensorFormatDenominator
-                        }
-                        placeholder="1.3"
-                        onChange={(value) =>
-                          updateCamera(camera.id, {
-                            sensorFormatDenominator:
-                              value,
-                          })
-                        }
-                      />
+                      <label className="il-field">
+                        <span>Sensor format (optical type)</span>
+                        <select value={camera.sensorFormatDenominator}
+                          onChange={(event) => updateCamera(camera.id, { sensorFormatDenominator: event.currentTarget.value })}>
+                          <option value="">Select sensor format</option>
+                          {CAMERA_SENSOR_FORMATS.map(value => (
+                            <option value={String(value)} key={value}>1/{value}″ type</option>
+                          ))}
+                          {camera.sensorFormatDenominator && !CAMERA_SENSOR_FORMATS.some(value => String(value) === camera.sensorFormatDenominator) &&
+                            <option value={camera.sensorFormatDenominator}>1/{camera.sensorFormatDenominator}″ (saved)</option>}
+                        </select>
+                        <small>Optical format designation, not literal sensor width. Exact dimensions remain available below.</small>
+                      </label>
 
                       <NumericField
                         label="Exact sensor width"
@@ -4882,19 +4888,55 @@ export default function InteractiveLeaksSimulator() {
                         }
                       />
 
-                      <NumericField
-                        label="Aperture"
-                        suffix="f/"
-                        value={
-                          camera.apertureFNumber
-                        }
-                        placeholder="1.6"
-                        onChange={(value) =>
-                          updateCamera(camera.id, {
-                            apertureFNumber: value,
-                          })
-                        }
-                      />
+                      <label className="il-field">
+                        <span>Aperture mechanism</span>
+                        <select value={camera.variableAperture ? 'variable' : 'fixed'} onChange={(event) =>
+                          updateCamera(camera.id, { variableAperture: event.currentTarget.value === 'variable' })}>
+                          <option value="fixed">Fixed aperture</option>
+                          <option value="variable">Variable aperture</option>
+                        </select>
+                      </label>
+                      {camera.variableAperture && (
+                        <>
+                          <label className="il-field">
+                            <span>Widest aperture</span>
+                            <select value={camera.variableApertureWide}
+                              onChange={(event) => {
+                                const wide = event.currentTarget.value;
+                                updateCamera(camera.id, { variableApertureWide: wide,
+                                  apertureFNumber: wide });
+                              }}>
+                              <option value="">Select widest aperture</option>
+                              {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                            </select>
+                          </label>
+                          <label className="il-field">
+                            <span>Narrowest aperture</span>
+                            <select value={camera.variableApertureNarrow}
+                              onChange={(event) => updateCamera(camera.id, { variableApertureNarrow: event.currentTarget.value })}>
+                              <option value="">Select narrowest aperture</option>
+                              {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                            </select>
+                          </label>
+                        </>
+                      )}
+                      <label className="il-field">
+                        <span>{camera.variableAperture ? 'Active aperture for simulation' : 'Fixed aperture'}</span>
+                        <select value={camera.apertureFNumber}
+                          onChange={(event) => updateCamera(camera.id, { apertureFNumber: event.currentTarget.value })}>
+                          <option value="">Select f-number</option>
+                          {CAMERA_APERTURES.filter(value => !camera.variableAperture ||
+                            (cameraApertureRangeValid(camera.variableApertureWide, camera.variableApertureNarrow) &&
+                            value >= Number(camera.variableApertureWide) &&
+                            value <= Number(camera.variableApertureNarrow)))
+                            .map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                          {camera.apertureFNumber && !CAMERA_APERTURES.some(value => String(value) === camera.apertureFNumber) &&
+                            <option value={camera.apertureFNumber}>f/{camera.apertureFNumber} (saved)</option>}
+                        </select>
+                        {camera.variableAperture && <small>{cameraApertureRangeValid(camera.variableApertureWide, camera.variableApertureNarrow)
+                          ? 'Results use the selected active aperture, not an assumed automatic exposure curve.'
+                          : 'Choose a valid widest/narrowest range (the narrowest f-number must be larger).'}</small>}
+                      </label>
                     </div>
 
                     <details className="il-advanced">
