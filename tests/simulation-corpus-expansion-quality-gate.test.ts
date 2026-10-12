@@ -106,7 +106,9 @@ describe('large corpus expansion quality gate', () => {
       labs.size,
     ).toBeGreaterThanOrEqual(4);
 
-    expect(labs).toEqual(
+    expect(
+      [...labs],
+    ).toEqual(
       expect.arrayContaining([
         'Geekerwan',
         'PhoneArena',
