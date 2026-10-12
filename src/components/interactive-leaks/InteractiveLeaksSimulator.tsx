@@ -6401,6 +6401,12 @@ export default function InteractiveLeaksSimulator() {
                                   : ''}
                               </small>
 
+                              {runtime.evidenceScope !== 'same-soc-family' && form.socName.trim() ? (
+                                <small role="note" style={{ color: '#f6c879', fontWeight: 650 }}>
+                                  Chip-specific efficiency unverified. This estimate uses {runtime.evidenceScope === 'same-soc-vendor' ? 'other chips from the same vendor' : 'a broader device group'} and may remain unchanged across chip generations.
+                                </small>
+                              ) : null}
+
                               <small>
                                 {runtime.energyBasis === 'wh'
                                   ? `${format(
