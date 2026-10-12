@@ -42,7 +42,7 @@ describe('Geekerwan Smartphone 5.0 battery estimator', () => {
     ]);
   });
 
-  it('contains the full 78-device measured Geekerwan battery cohort', () => {
+  it('contains the full live Geekerwan Battery Life 5.0 cohort', () => {
     clearCalibrationRegistryCache();
     const corpus =
       buildCalibrationRegistry();
@@ -54,7 +54,7 @@ describe('Geekerwan Smartphone 5.0 battery estimator', () => {
           'geekerwan_battery_life_5_0_hours',
       );
 
-    expect(rows).toHaveLength(78);
+    expect(rows).toHaveLength(80);
     expect(
       new Set(
         rows.map(
@@ -62,7 +62,7 @@ describe('Geekerwan Smartphone 5.0 battery estimator', () => {
             row.deviceVariantId,
         ),
       ).size,
-    ).toBe(78);
+    ).toBe(80);
   });
 
   it('does not mix PhoneArena or GSMArena battery protocols into the Geekerwan estimate', () => {
