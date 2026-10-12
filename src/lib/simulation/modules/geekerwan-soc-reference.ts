@@ -50,6 +50,7 @@ export const GEEKERWAN_SOURCES = [
   {
     id: 'geekerwan-geekbench6-ranking',
     publisher: 'Geekerwan',
+    sourceRole: 'measurement-lab' as const,
     url: 'https://www.geekerwan.com/geekbench6/',
     protocol:
       'Geekerwan Geekbench 6 SoC ranking, multi-core table',
@@ -58,6 +59,7 @@ export const GEEKERWAN_SOURCES = [
   {
     id: 'geekerwan-cpu-efficiency-gb6',
     publisher: 'Geekerwan',
+    sourceRole: 'measurement-lab' as const,
     url: 'https://geekerwan.com/cpucurve/gb6/',
     protocol:
       'CPU efficiency curve: Geekbench 6 multi-frequency measurements using Power Monitor + dummy battery, subtracting live display power to estimate mainboard power',
@@ -66,6 +68,7 @@ export const GEEKERWAN_SOURCES = [
   {
     id: 'geekerwan-gpu-efficiency-snl',
     publisher: 'Geekerwan',
+    sourceRole: 'measurement-lab' as const,
     url: 'https://geekerwan.com/gpucurve/',
     protocol:
       'GPU efficiency curve: 3DMark SNL measurements using Power Monitor + dummy battery, subtracting live display power to estimate mainboard power',
