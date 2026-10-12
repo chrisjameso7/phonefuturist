@@ -3262,17 +3262,27 @@ export default function InteractiveLeaksSimulator() {
 
               <label className="il-field">
                 <span>Panel technology</span>
-                <input
-                  type="text"
+                <select
                   value={form.panelTechnology}
-                  placeholder="LTPO OLED"
-                  onChange={(event) =>
-                    update(
-                      'panelTechnology',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                  onChange={(event) => update('panelTechnology', event.currentTarget.value)}
+                >
+                  <option value="">Select display panel</option>
+                  <optgroup label="OLED">
+                    <option value="LTPO OLED">LTPO OLED</option>
+                    <option value="LTPS OLED">LTPS OLED</option>
+                    <option value="AMOLED">AMOLED</option>
+                    <option value="Super AMOLED">Super AMOLED</option>
+                    <option value="Dynamic AMOLED 2X">Dynamic AMOLED 2X</option>
+                    <option value="Tandem OLED">Tandem OLED</option>
+                    <option value="Micro-lens Array OLED">MLA OLED</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option value="IPS LCD">IPS LCD</option>
+                    <option value="TFT LCD">TFT LCD</option>
+                    <option value="microLED">microLED</option>
+                  </optgroup>
+                  {form.panelTechnology && !['LTPO OLED','LTPS OLED','AMOLED','Super AMOLED','Dynamic AMOLED 2X','Tandem OLED','Micro-lens Array OLED','IPS LCD','TFT LCD','microLED'].includes(form.panelTechnology) && <option value={form.panelTechnology}>{form.panelTechnology} (saved selection)</option>}
+                </select>
               </label>
             </div>
 
@@ -4003,17 +4013,29 @@ export default function InteractiveLeaksSimulator() {
 
               <label className="il-field">
                 <span>SoC model</span>
-                <input
-                  type="text"
+                <select
                   value={form.socName}
-                  placeholder="Snapdragon 8 Elite Gen 5"
-                  onChange={(event) =>
-                    update(
-                      'socName',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                  onChange={(event) => update('socName', event.currentTarget.value)}
+                >
+                  <option value="">Select processor</option>
+                  {([
+                    ['Qualcomm', ['Snapdragon 8 Elite Gen 5', 'Snapdragon 8 Elite', 'Snapdragon 8 Gen 5', 'Snapdragon 8 Gen 3', 'Snapdragon 8 Gen 2', 'Snapdragon 8 Elite Gen 6', 'Snapdragon 8 Elite Extreme Gen 6']],
+                    ['Samsung', ['Exynos 2600', 'Exynos 2500', 'Exynos 2400', 'Exynos 2200', 'Exynos 2700']],
+                    ['MediaTek', ['Dimensity 9500', 'Dimensity 9400', 'Dimensity 9300', 'Dimensity 9200']],
+                    ['Apple', ['A20 Pro', 'A19 Pro', 'A19', 'A18 Pro', 'A18', 'A17 Pro']],
+                    ['Google', ['Tensor G5', 'Tensor G4', 'Tensor G3']],
+                    ['Huawei', ['Kirin 9030', 'Kirin 9020', 'Kirin 9010']],
+                  ] as Array<[string, string[]]>).map(([vendor, chips]) => (
+                    <optgroup key={vendor} label={vendor}>
+                      {chips.map(chip => <option key={chip} value={chip}>{chip}</option>)}
+                    </optgroup>
+                  ))}
+                  {form.socName && ![
+                    'Snapdragon 8 Elite Gen 5','Snapdragon 8 Elite','Snapdragon 8 Gen 5','Snapdragon 8 Gen 3','Snapdragon 8 Gen 2','Snapdragon 8 Elite Gen 6','Snapdragon 8 Elite Extreme Gen 6',
+                    'Exynos 2600','Exynos 2500','Exynos 2400','Exynos 2200','Exynos 2700','Dimensity 9500','Dimensity 9400','Dimensity 9300','Dimensity 9200',
+                    'A20 Pro','A19 Pro','A19','A18 Pro','A18','A17 Pro','Tensor G5','Tensor G4','Tensor G3','Kirin 9030','Kirin 9020','Kirin 9010'
+                  ].includes(form.socName) && <option value={form.socName}>{form.socName} (saved selection)</option>}
+                </select>
               </label>
 
               <label className="il-field">
