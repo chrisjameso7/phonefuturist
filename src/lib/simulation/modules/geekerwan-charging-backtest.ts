@@ -128,9 +128,58 @@ function positive(
 export function backtestAgainstGeekerwanCharging(
   corpus: DeviceCorpus,
 ): GeekerwanChargingBacktestResult {
+  const evidenceDeviceIds =
+    new Set(
+      corpus.measurements.map(
+        (measurement) =>
+          measurement.deviceVariantId,
+      ),
+    );
+
+  const relevantDevices =
+    corpus.devices.filter(
+      (device) =>
+        evidenceDeviceIds.has(
+          device.variant.id,
+        ) ||
+        device.variant.battery
+          ?.capacityMah !==
+          undefined ||
+        device.variant.battery
+          ?.typicalCapacityMah !==
+          undefined ||
+        device.charging
+          ?.advertisedWiredWatts !==
+          undefined ||
+        device.charging
+          ?.referenceWiredWatts !==
+          undefined,
+    );
+
+  const relevantDeviceIds =
+    new Set(
+      relevantDevices.map(
+        (device) =>
+          device.variant.id,
+      ),
+    );
+
+  const workingCorpus:
+    DeviceCorpus = {
+      ...corpus,
+      devices: relevantDevices,
+      measurements:
+        corpus.measurements.filter(
+          (measurement) =>
+            relevantDeviceIds.has(
+              measurement.deviceVariantId,
+            ),
+        ),
+    };
+
   const deviceById =
     new Map(
-      corpus.devices.map(
+      workingCorpus.devices.map(
         (device) => [
           device.variant.id,
           device,
@@ -143,7 +192,9 @@ export function backtestAgainstGeekerwanCharging(
 
   for (
     const link of
-    linkDeviceIdentities(corpus)
+    linkDeviceIdentities(
+      workingCorpus,
+    )
   ) {
     for (
       const id of
@@ -157,7 +208,7 @@ export function backtestAgainstGeekerwanCharging(
   }
 
   const geekerwanRows =
-    corpus.measurements.filter(
+    workingCorpus.measurements.filter(
       (measurement) =>
         measurement.metric ===
         'geekerwan_wall_input_curve_end_minutes' &&
@@ -174,9 +225,9 @@ export function backtestAgainstGeekerwanCharging(
 
   const nonGeekerwanCorpus:
     DeviceCorpus = {
-      ...corpus,
+      ...workingCorpus,
       measurements:
-        corpus.measurements.filter(
+        workingCorpus.measurements.filter(
           (measurement) =>
             !measurement.metric.startsWith(
               'geekerwan_wall_input_',
