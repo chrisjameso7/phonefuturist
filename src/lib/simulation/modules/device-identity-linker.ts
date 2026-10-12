@@ -57,22 +57,22 @@ function normalizeModel(
     .trim()
     .toLowerCase()
     .replace(
-      /(global|dual sim|td-lte|5g|4g|lte|uw|unlocked)/g,
+      /\b(global|dual sim|td-lte|5g|4g|lte|uw|unlocked)\b/g,
       ' ',
     )
     .replace(
-      /([^)]*)/g,
+      /\([^)]*\)/g,
       ' ',
     )
     .replace(
-      /d{2,4}gb/g,
+      /\b\d{2,4}gb\b/g,
       ' ',
     )
     .replace(
       /[^a-z0-9+]+/g,
       ' ',
     )
-    .replace(/s+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -118,35 +118,82 @@ function containsOrderedModel(
   return false;
 }
 
-function cleanCatalogCandidates(
+function cleanCatalogCandidateMap(
   corpus: DeviceCorpus,
 ) {
-  return corpus.devices
-    .filter(
-      (device) =>
-        device.variant.id.startsWith(
-          'techapi-',
-        ),
-    )
-    .filter((device) => {
-      const model =
+  const byManufacturer =
+    new Map<
+      string,
+      DeviceCorpusRecord[]
+    >();
+
+  for (const device of corpus.devices) {
+    if (
+      !device.variant.id.startsWith(
+        'techapi-',
+      )
+    ) {
+      continue;
+    }
+
+    const model =
+      device.variant.identity
+        .modelName;
+
+    const normalized =
+      normalizeModel(model);
+
+    if (
+      !normalized.length ||
+      /\b(sm-|a\d{4}|gb\b|tb\b|dual sim|td lte|global|uw)\b/i.test(
+        model,
+      )
+    ) {
+      continue;
+    }
+
+    const manufacturer =
+      normalizeManufacturer(
         device.variant.identity
-          .modelName;
-
-      const normalized =
-        normalizeModel(model);
-
-      return (
-        normalized.length > 0 &&
-        !/\b(sm-|a\d{4}|gb\b|tb\b|dual sim|td lte|global|uw)\b/i.test(
-          model,
-        )
+          .manufacturer,
       );
-    });
+
+    const group =
+      byManufacturer.get(
+        manufacturer,
+      ) ?? [];
+
+    group.push(device);
+
+    byManufacturer.set(
+      manufacturer,
+      group,
+    );
+  }
+
+  for (
+    const group of
+    byManufacturer.values()
+  ) {
+    group.sort(
+      (a, b) =>
+        normalizeModel(
+          b.variant.identity
+            .modelName,
+        ).length -
+        normalizeModel(
+          a.variant.identity
+            .modelName,
+        ).length,
+    );
+  }
+
+  return byManufacturer;
 }
 
 function canonicalCatalogMatch(
-  corpus: DeviceCorpus,
+  candidatesByManufacturer:
+    Map<string, DeviceCorpusRecord[]>,
   device: DeviceCorpusRecord,
 ) {
   const manufacturer =
@@ -156,38 +203,24 @@ function canonicalCatalogMatch(
     );
 
   const candidates =
-    cleanCatalogCandidates(
-      corpus,
-    )
-      .filter(
-        (candidate) =>
-          normalizeManufacturer(
-            candidate.variant.identity
-              .manufacturer,
-          ) === manufacturer,
-      )
-      .filter(
-        (candidate) =>
-          containsOrderedModel(
-            device.variant.identity
-              .modelName,
-            candidate.variant.identity
-              .modelName,
-          ),
-      )
-      .sort(
-        (a, b) =>
-          normalizeModel(
-            b.variant.identity
-              .modelName,
-          ).length -
-          normalizeModel(
-            a.variant.identity
-              .modelName,
-          ).length,
-      );
+    candidatesByManufacturer.get(
+      manufacturer,
+    ) ?? [];
 
-  return candidates[0];
+  for (const candidate of candidates) {
+    if (
+      containsOrderedModel(
+        device.variant.identity
+          .modelName,
+        candidate.variant.identity
+          .modelName,
+      )
+    ) {
+      return candidate;
+    }
+  }
+
+  return undefined;
 }
 
 function identityKey(
@@ -245,6 +278,11 @@ export function linkDeviceIdentities(
       DeviceCorpusRecord[]
     >();
 
+  const catalogCandidates =
+    cleanCatalogCandidateMap(
+      corpus,
+    );
+
   for (const device of corpus.devices) {
     if (
       device.variant.identity
@@ -259,7 +297,7 @@ export function linkDeviceIdentities(
 
     const catalogMatch =
       canonicalCatalogMatch(
-        corpus,
+        catalogCandidates,
         device,
       );
 
