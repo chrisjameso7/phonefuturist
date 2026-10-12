@@ -7030,6 +7030,32 @@ export default function InteractiveLeaksSimulator() {
 
                     <div>
                       <strong>
+                        {crossLabBatteryContext.tomsGuide
+                          ? `${format(
+                              crossLabBatteryContext.tomsGuide
+                                .runtimeMinutes / 60,
+                              2,
+                            )} h`
+                          : 'No exact match'}
+                      </strong>
+                      <span>Tom's Guide 5G web-surf runtime</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.tomsGuide
+                          ? `${format(
+                              crossLabBatteryContext.tomsGuide
+                                .minutesPer1000Mah,
+                              1,
+                            )} min/1000mAh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Tom's Guide mAh-normalized runtime</span>
+                    </div>
+
+                    <div>
+                      <strong>
                         {crossLabBatteryContext.evidenceCount}
                       </strong>
                       <span>Independent lab protocols</span>
