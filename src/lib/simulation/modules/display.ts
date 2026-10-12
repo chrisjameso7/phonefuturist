@@ -99,6 +99,18 @@ export function calculateDisplay(
     }
   }
 
+  // GPU rendering workload proxy; physical PPI always uses native pixels.
+  if (input.resolutionWidthPx && input.resolutionHeightPx && input.renderingWidthPx && input.renderingHeightPx) {
+    const nativePixels = input.resolutionWidthPx * input.resolutionHeightPx;
+    const renderedPixels = input.renderingWidthPx * input.renderingHeightPx;
+    if (nativePixels > 0 && renderedPixels > 0 && Number.isFinite(nativePixels) && Number.isFinite(renderedPixels)) {
+      result.nativePixelCount = nativePixels;
+      result.renderingPixelCount = renderedPixels;
+      result.renderingPixelRatio = renderedPixels / nativePixels;
+      if (renderedPixels > nativePixels) warnings.push({code:'RENDER_ABOVE_NATIVE',message:'Rendering resolution exceeds panel native resolution; this is supersampling, not a power-savings mode.'});
+    }
+  }
+
   // -------------------------------------------------------
   // Device dimensions estimated from display + bezels
   // -------------------------------------------------------
