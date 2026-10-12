@@ -88,3 +88,38 @@
   .pf-home-v2 .pf-home-path strong { font-size:1.25rem; }
 }
 @media (prefers-reduced-motion:reduce) { .pf-home-v2 .pf-home-path { transition:none; } .pf-home-v2 .pf-home-path:hover { transform:none; } }
+
+/* Shared navigation visual rules: one surface language, all routes. */
+body:not(.product-mode) .site-header {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--pf-radius-lg);
+}
+body:not(.product-mode) .site-header::before,
+body:not(.product-mode) .site-header::after { opacity: .36; }
+body:not(.product-mode) .desktop-nav { border-color:var(--line); background:var(--surface-deep); }
+body:not(.product-mode) .desktop-nav a { font-weight: 600; }
+body:not(.product-mode) .desktop-nav a[aria-current="page"] { color:var(--ink); background:var(--surface-raised); }
+body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px; display:inline-flex; align-items:center; }
+@media (max-width:760px) {
+  body:not(.product-mode) { background:var(--paper)!important; color:var(--ink)!important; }
+  body:not(.product-mode) .mobile-appbar { background:color-mix(in srgb,var(--surface-deep) 93%,transparent)!important; border-bottom:1px solid var(--line)!important; }
+  body:not(.product-mode) .mobile-app-brand { color:var(--ink)!important; }
+  body:not(.product-mode) .mobile-app-menu-panel { background:var(--surface)!important; border-color:var(--line)!important; }
+  body:not(.product-mode) .mobile-app-menu-panel a { color:var(--ink)!important; border-color:var(--line)!important; }
+  body:not(.product-mode) .mobile-tabbar,
+  body:not(.product-mode) .mobile-tabbar[data-compact='true'] {
+    background:var(--surface-deep)!important;
+    border-top:1px solid var(--line)!important;
+    border-radius:20px 20px 0 0!important;
+  }
+  body:not(.product-mode) .mobile-tabbar>a { color:var(--muted)!important; }
+  body:not(.product-mode) .mobile-tabbar>a[aria-current='page'] { color:var(--accent)!important; background:var(--surface-raised)!important; }
+  #main.home-page .pf-home-v2 { padding: 0 16px 32px; }
+  #main.home-page .pf-home-v2 .latest-section { display:block!important; }
+  #main.home-page .pf-home-v2 .about-section { display:grid; }
+}
+@media (min-width:761px) {
+  #main.home-page .pf-home-v2 { padding:0 24px 36px; }
+  #main.home-page .pf-home-v2 .latest-section { display:grid!important; }
+}
