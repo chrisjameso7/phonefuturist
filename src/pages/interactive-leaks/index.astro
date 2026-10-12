@@ -1681,3 +1681,43 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-page .il-section {background:#0e1b2c;}
 }
 </style>
+
+<style is:global>
+/* Shared Simple + Advanced simulator surfaces, replacing legacy graphite. */
+.interactive-page .il-app[data-mode="simple"] .il-simple-panel,
+.interactive-page .il-app[data-mode="simple"] .il-section,
+.interactive-page .il-app[data-mode="simple"] .il-results,
+.interactive-page .il-app[data-mode="simple"] .il-result-empty {
+  background:#0e1b2c;
+  border-color:#243b56;
+}
+.interactive-page .il-app[data-mode="simple"] .il-mode-switch {
+  background:#091321;
+  border-color:#2a405a;
+}
+.interactive-page .il-app[data-mode="simple"] .il-mode-switch button:not(.active) {
+  background:transparent;
+  color:#b0c5dd;
+}
+.interactive-page .il-app[data-mode="simple"] .il-simple-intro span,
+.interactive-page .il-app[data-mode="simple"] .il-simple-note,
+.interactive-page .il-app[data-mode="simple"] .il-feedback-trigger {
+  background:#10243a;
+  border-color:#2a435f;
+}
+.interactive-page .il-app[data-mode="simple"] .il-field input,
+.interactive-page .il-app[data-mode="simple"] .il-field select {
+  background:#080f1a;
+  border-color:#324762;
+  color:#f0f7ff;
+}
+.interactive-page .il-feedback-modal {
+  background:#0e1b2c;
+  border-color:#304b67;
+}
+.interactive-page .il-feedback-modal textarea,
+.interactive-page .il-feedback-head > button {
+  background:#080f1a;
+  border-color:#324762;
+}
+</style>
