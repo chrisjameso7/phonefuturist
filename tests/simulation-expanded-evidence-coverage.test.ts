@@ -10,7 +10,7 @@ describe('expanded evidence coverage', () => {
 
     expect(
       report.rawExpandedCatalogRecords,
-    ).toBeGreaterThanOrEqual(2000);
+    ).toBeGreaterThanOrEqual(3000);
 
     expect(
       report.calibrationMeasurements,
@@ -18,7 +18,17 @@ describe('expanded evidence coverage', () => {
 
     expect(
       report.coverage.catalogDeviceCount,
-    ).toBeGreaterThanOrEqual(2000);
+    ).toBeGreaterThanOrEqual(3000);
+
+    expect(
+      report.coverage.canonicalCatalogDeviceCount,
+    ).toBeGreaterThan(1000);
+
+    expect(
+      report.coverage.canonicalCatalogDeviceCount,
+    ).toBeLessThanOrEqual(
+      report.coverage.catalogDeviceCount,
+    );
 
     expect(
       report.coverage.measurementBackedCanonicalDevices,
