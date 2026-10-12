@@ -61,9 +61,33 @@ function sameProtocol(
   const a = normalize(actual) ?? '';
   const b = normalize(requested) ?? '';
 
+  const requiredModifiers = [
+    'pps',
+    'supervooc',
+    'ufcs',
+    'qi2',
+    'magsafe',
+  ];
+
+  for (
+    const modifier of
+    requiredModifiers
+  ) {
+    if (
+      b.includes(modifier) &&
+      !a.includes(modifier)
+    ) {
+      return false;
+    }
+  }
+
   return (
     a.includes(b) ||
-    b.includes(a)
+    b.includes(a) ||
+    (
+      b.includes('usb pd') &&
+      a.includes('usb pd')
+    )
   );
 }
 
