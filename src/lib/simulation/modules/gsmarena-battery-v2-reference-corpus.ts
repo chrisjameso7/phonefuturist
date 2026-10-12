@@ -210,6 +210,7 @@ export function buildGsmaBatteryV2ReferenceCorpus(): DeviceCorpus {
       {
         id: sourceId,
         publisher: 'GSMArena',
+        sourceRole: 'measurement-lab',
         url:
           'https://www.gsmarena.com/battery-test-v2.php3',
         protocol:
