@@ -74,6 +74,28 @@ function capacityChemistry(device: DeviceCorpusRecord) {
   return device.variant.battery?.chemistry;
 }
 
+function effectiveChargingWatts(
+  measurement: DeviceCorpus['measurements'][number],
+) {
+  if (
+    measurement.measuredPeakWatts !== undefined &&
+    Number.isFinite(measurement.measuredPeakWatts) &&
+    measurement.measuredPeakWatts > 0
+  ) {
+    return measurement.measuredPeakWatts;
+  }
+
+  if (
+    measurement.testChargerWatts !== undefined &&
+    Number.isFinite(measurement.testChargerWatts) &&
+    measurement.testChargerWatts > 0
+  ) {
+    return measurement.testChargerWatts;
+  }
+
+  return undefined;
+}
+
 export function collectChargingPowerResponseEvidence(
   corpus: DeviceCorpus,
 ): ChargingPowerResponseEvidence[] {
@@ -85,8 +107,7 @@ export function collectChargingPowerResponseEvidence(
         measurement.deviceVariantId === device.variant.id &&
         measurement.workload === 'charging' &&
         fullChargeMetric(measurement.metric) &&
-        measurement.testChargerWatts !== undefined &&
-        measurement.testChargerWatts > 0 &&
+        effectiveChargingWatts(measurement) !== undefined &&
         measurement.value > 0,
     );
 
@@ -95,21 +116,28 @@ export function collectChargingPowerResponseEvidence(
         const a = full[i];
         const b = full[j];
 
+        const aWatts =
+          effectiveChargingWatts(a);
+        const bWatts =
+          effectiveChargingWatts(b);
+
         if (
-          a.testChargerWatts === undefined ||
-          b.testChargerWatts === undefined ||
-          a.testChargerWatts === b.testChargerWatts
+          aWatts === undefined ||
+          bWatts === undefined ||
+          Math.abs(aWatts - bWatts) < 0.25
         ) {
           continue;
         }
 
         const low =
-          a.testChargerWatts < b.testChargerWatts ? a : b;
+          aWatts < bWatts ? a : b;
         const high = low === a ? b : a;
+        const lowWatts =
+          Math.min(aWatts, bWatts);
+        const highWatts =
+          Math.max(aWatts, bWatts);
 
         if (
-          low.testChargerWatts === undefined ||
-          high.testChargerWatts === undefined ||
           low.value <= high.value
         ) {
           continue;
@@ -117,7 +145,7 @@ export function collectChargingPowerResponseEvidence(
 
         const elasticity =
           Math.log(low.value / high.value) /
-          Math.log(high.testChargerWatts / low.testChargerWatts);
+          Math.log(highWatts / lowWatts);
 
         if (
           !Number.isFinite(elasticity) ||
@@ -129,8 +157,8 @@ export function collectChargingPowerResponseEvidence(
 
         evidence.push({
           deviceVariantId: device.variant.id,
-          lowWatts: low.testChargerWatts,
-          highWatts: high.testChargerWatts,
+          lowWatts,
+          highWatts,
           lowFullChargeMinutes: low.value,
           highFullChargeMinutes: high.value,
           elasticity,
@@ -167,21 +195,28 @@ export function collectEarlyChargePowerResponseEvidence(
         const a = p30[i];
         const b = p30[j];
 
+        const aWatts =
+          effectiveChargingWatts(a);
+        const bWatts =
+          effectiveChargingWatts(b);
+
         if (
-          a.testChargerWatts === undefined ||
-          b.testChargerWatts === undefined ||
-          a.testChargerWatts === b.testChargerWatts
+          aWatts === undefined ||
+          bWatts === undefined ||
+          Math.abs(aWatts - bWatts) < 0.25
         ) {
           continue;
         }
 
         const low =
-          a.testChargerWatts < b.testChargerWatts ? a : b;
+          aWatts < bWatts ? a : b;
         const high = low === a ? b : a;
+        const lowWatts =
+          Math.min(aWatts, bWatts);
+        const highWatts =
+          Math.max(aWatts, bWatts);
 
         if (
-          low.testChargerWatts === undefined ||
-          high.testChargerWatts === undefined ||
           high.value <= low.value
         ) {
           continue;
@@ -189,7 +224,7 @@ export function collectEarlyChargePowerResponseEvidence(
 
         const elasticity =
           Math.log(high.value / low.value) /
-          Math.log(high.testChargerWatts / low.testChargerWatts);
+          Math.log(highWatts / lowWatts);
 
         if (
           !Number.isFinite(elasticity) ||
@@ -201,8 +236,8 @@ export function collectEarlyChargePowerResponseEvidence(
 
         evidence.push({
           deviceVariantId: device.variant.id,
-          lowWatts: low.testChargerWatts,
-          highWatts: high.testChargerWatts,
+          lowWatts,
+          highWatts,
           lowThirtyMinutePercent: low.value,
           highThirtyMinutePercent: high.value,
           elasticity,
