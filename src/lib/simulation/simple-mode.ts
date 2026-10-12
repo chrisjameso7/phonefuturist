@@ -31,6 +31,7 @@ export interface SimpleModeInput {
 
   displayDiagonalInches: number;
   displayResolution: SimpleResolutionPreset;
+  renderingScalePercent?: 100 | 75 | 50;
   customResolutionWidthPx?: number;
   customResolutionHeightPx?: number;
   refreshRateHz: number;
@@ -188,6 +189,11 @@ export function expandSimpleMode(
     throw new Error('A custom display resolution requires positive width and height.');
   }
 
+  const renderScale = input.renderingScalePercent ?? 100;
+  if (![100, 75, 50].includes(renderScale)) {
+    throw new Error('Rendering scale must be 100%, 75%, or 50%.');
+  }
+
   const cameras: CameraInput[] = [];
 
   const main = cameraFromSimple(
@@ -222,6 +228,8 @@ export function expandSimpleMode(
           input.displayDiagonalInches,
         resolutionWidthPx: resolution.width,
         resolutionHeightPx: resolution.height,
+        renderingWidthPx: Math.max(1, Math.round(resolution.width * renderScale / 100)),
+        renderingHeightPx: Math.max(1, Math.round(resolution.height * renderScale / 100)),
         refreshRateHz: input.refreshRateHz,
         aspectWidth: resolution.width,
         aspectHeight: resolution.height,
