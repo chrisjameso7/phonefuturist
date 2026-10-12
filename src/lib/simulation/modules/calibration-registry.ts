@@ -9,6 +9,7 @@ import { buildCameraReferenceCorpus } from './camera-reference-corpus';
 import { buildCameraOutcomeCorpus } from './camera-outcome-corpus';
 import { buildPerformanceReferenceCorpus } from './performance-reference-corpus';
 import { enrichCorpusWithBatteryEnergyEvidence } from './battery-energy-evidence';
+import { buildGsmArenaCurrentIdentityCorpus } from './gsmarena-current-identity-corpus';
 import { buildTechApiDeviceCatalog } from './techapi-device-catalog';
 import { buildPhoneArenaCurrentBatteryCorpus } from './phonearena-current-battery-corpus';
 import { buildPhoneArenaCurrentChargingCorpus } from './phonearena-current-charging-corpus';
