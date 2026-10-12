@@ -43,7 +43,8 @@ export function enhanceNavigation() {
   const hiddenControls=[...header.querySelectorAll<HTMLElement>('.header-brand-row,.header-actions')];
   let scrolled=false;
   const update=()=>{
-    const compact=desktop.matches&&scrolled;
+    // Full-width PhoneFuturist headers stay intact while scrolling. Capsule mode is opt-in.
+    const compact=desktop.matches&&scrolled&&header.dataset.compactNavigation==='true';
     if(compact&&hiddenControls.some(control=>control.contains(document.activeElement))) {
       rail?.querySelector<HTMLElement>('a[aria-current],a')?.focus({preventScroll:true});
     }
