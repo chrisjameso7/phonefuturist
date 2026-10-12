@@ -113,6 +113,19 @@ describe('Geekerwan / SoCPK evidence adapter', () => {
     ).toBe(true);
   });
 
+  it('normalizes Samsung Galaxy aliases for exact battery evidence', () => {
+    const result =
+      findGeekerwanBatteryResult(
+        'Samsung',
+        'Galaxy S26 Ultra',
+      );
+
+    expect(result).toBeDefined();
+    expect(result?.model).toBe(
+      'S26 Ultra',
+    );
+  });
+
   it('preserves battery-test system version, rated energy and full-test video provenance', () => {
     const result =
       findGeekerwanBatteryResult(
