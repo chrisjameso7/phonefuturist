@@ -6564,8 +6564,7 @@ export default function InteractiveLeaksSimulator() {
               'resolved' ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    Geekerwan wall-energy context ·{' '}
-                    {GEEKERWAN_CHARGING_CONTEXT_VERSION}
+                    Charging energy analysis
                   </span>
 
                   <div className="il-metrics">
@@ -6628,7 +6627,7 @@ export default function InteractiveLeaksSimulator() {
                       <strong>
                         {geekerwanChargingContext.referenceCount}
                       </strong>
-                      <span>Paired Geekerwan references</span>
+                      <span>Comparable charging measurements</span>
                     </div>
 
                     <div>
@@ -6642,7 +6641,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <p className="il-help">
-                    {geekerwanChargingContext.note}
+                    Charging estimates incorporate measured power-conversion overhead and comparable charging behaviour.
                   </p>
                 </div>
               ) : null}
@@ -6917,8 +6916,7 @@ export default function InteractiveLeaksSimulator() {
                 geekerwanBatteryResult) ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    Geekerwan / SoCPK lab context ·{' '}
-                    {GEEKERWAN_SOCPK_EVIDENCE_VERSION}
+                    Performance and battery measurements
                   </span>
 
                   <div className="il-metrics">
@@ -7070,23 +7068,20 @@ export default function InteractiveLeaksSimulator() {
                   {geekerwanCpuContext?.status ===
                   'resolved' ? (
                     <p className="il-help">
-                      CPU: {geekerwanCpuContext.note}
+                      CPU estimates are informed by available measured power and performance curves.
                     </p>
                   ) : null}
 
                   {geekerwanGpuContext?.status ===
                   'resolved' ? (
                     <p className="il-help">
-                      GPU: {geekerwanGpuContext.note}
+                      GPU estimates are informed by available measured power and performance curves.
                     </p>
                   ) : null}
 
                   {geekerwanBatteryResult ? (
                     <p className="il-help">
-                      Battery Life 5.0 ·{' '}
-                      {geekerwanBatteryResult.systemVersion}
-                      {' · '}
-                      {geekerwanBatteryResult.videoUrl}
+                      Battery runtime reference is based on an existing device measurement.
                     </p>
                   ) : null}
                 </div>
