@@ -10,9 +10,12 @@ import {
 import {
   buildGsmArenaCurrentIdentityCorpus,
 } from './gsmarena-current-identity-corpus';
+import {
+  buildSourcedDeviceCatalog,
+} from './sourced-device-catalog';
 
 export const EXPANDED_DEVICE_CATALOG_VERSION =
-  'expanded-device-catalog-0.1.0';
+  'expanded-device-catalog-0.2.0';
 
 export interface ExpandedDeviceCatalogStats {
   rawDeviceRecords: number;
@@ -25,6 +28,7 @@ export function buildExpandedDeviceCatalog(): DeviceCorpus {
     [
       buildTechApiDeviceCatalog(),
       buildGsmArenaCurrentIdentityCorpus(),
+      buildSourcedDeviceCatalog(),
     ],
     EXPANDED_DEVICE_CATALOG_VERSION,
   ).corpus;
