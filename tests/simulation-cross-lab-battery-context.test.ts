@@ -12,9 +12,10 @@ describe('cross-lab battery context', () => {
       );
 
     expect(result.status).toBe('resolved');
-    expect(result.evidenceCount).toBe(2);
+    expect(result.evidenceCount).toBe(3);
     expect(result.geekerwan).toBeDefined();
     expect(result.phoneArena).toBeDefined();
+    expect(result.tomsGuide).toBeDefined();
     expect(result.labAgreement).toBe(
       'cross-lab-context',
     );
@@ -26,6 +27,24 @@ describe('cross-lab battery context', () => {
           ),
       ),
     ).toBe(true);
+  });
+
+  it("keeps Tom's Guide runtime in its own protocol instead of comparing raw hours directly", () => {
+    const result =
+      buildCrossLabBatteryContext(
+        'Samsung',
+        'Galaxy S26 Ultra',
+      );
+
+    expect(
+      result.tomsGuide?.runtimeMinutes,
+    ).toBe(970);
+    expect(
+      result.tomsGuide?.minutesPer1000Mah,
+    ).toBeCloseTo(194, 8);
+    expect(result.note).toContain(
+      '3 independent lab protocols',
+    );
   });
 
   it('keeps a single-lab result partial rather than inventing agreement', () => {
