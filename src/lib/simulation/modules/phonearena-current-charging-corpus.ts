@@ -60,6 +60,7 @@ export function buildPhoneArenaCurrentChargingCorpus(): DeviceCorpus {
     {
       id: SOURCE_ID,
       publisher: 'PhoneArena',
+      sourceRole: 'measurement-lab',
       url: 'https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025',
       protocol:
         'PhoneArena charging benchmark: charging starts from a powered-on phone at 1%; time is measured to 100%; factory charger or verified fully compatible maximum-speed charger; new devices in controlled lab conditions.',
