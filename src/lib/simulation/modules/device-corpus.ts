@@ -110,7 +110,8 @@ export interface CorpusValidationIssue {
     | 'MISSING_VARIANT'
     | 'MISSING_SOURCE'
     | 'INVALID_MEASUREMENT'
-    | 'INVALID_CAPACITY';
+    | 'INVALID_CAPACITY'
+    | 'CATALOG_SOURCE_MEASUREMENT';
   message: string;
 }
 
@@ -188,6 +189,25 @@ export function validateDeviceCorpus(
       issues.push({
         code: 'INVALID_MEASUREMENT',
         message: `Measurement ${measurement.id} is invalid.`,
+      });
+    }
+
+    const source =
+      corpus.sources.find(
+        (candidate) =>
+          candidate.id ===
+          measurement.sourceId,
+      );
+
+    if (
+      source?.sourceRole ===
+      'catalog'
+    ) {
+      issues.push({
+        code:
+          'CATALOG_SOURCE_MEASUREMENT',
+        message:
+          `Measurement ${measurement.id} uses catalog-only source ${source.id} as calibration evidence.`,
       });
     }
   }
