@@ -10,6 +10,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-vivo-x300-ultra-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Vivo-X300-Ultra-Review-Best-2026-camera-smartphone-with-a-surprising-number-of-weaknesses.1293093.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -18,6 +19,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-vivo-x300-pro-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/More-than-just-an-unusual-camera-setup-Vivo-X300-Pro-review.1184298.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -26,6 +28,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-vivo-x300-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Brilliant-Zeiss-camera-in-a-compact-smartphone-Vivo-X300-review.1192262.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -34,6 +37,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-oppo-find-x9-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Oppo-Find-X9-smartphone-review-High-end-for-under-900-but-with-SoC-problems.1173149.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -42,6 +46,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-oneplus-15-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/OnePlus-15-smartphone-review-Gaming-at-165fps-despite-being-slower-than-the-predecessor.1171622.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -50,6 +55,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-honor-magic8-pro-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Flagship-power-with-an-XXL-battery-Honor-Magic8-Pro-smartphone-review.1204159.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -58,6 +64,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-samsung-s26-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -66,6 +73,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-samsung-s26-plus-performance',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Will-the-Exynos-2600-save-the-unwanted-flagship-Samsung-Galaxy-S26-review.1272005.0.html',
         protocol:
           '3DMark Wild Life Extreme Stress Test stability',
@@ -74,6 +82,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-samsung-s26-wifi-runtime',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
         protocol:
           'Notebookcheck WiFi Websurfing v1.3',
@@ -83,6 +92,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-samsung-s26-plus-wifi-runtime',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Will-the-Exynos-2600-save-the-unwanted-flagship-Samsung-Galaxy-S26-review.1272005.0.html',
         protocol:
           'Notebookcheck WiFi Websurfing v1.3',
@@ -92,6 +102,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-samsung-s26-h264-runtime',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Exynos-and-more-battery-power-make-it-a-star-Samsung-Galaxy-S26-review.1284566.0.html',
         protocol:
           'Notebookcheck Big Buck Bunny H.264 1080p',
@@ -100,6 +111,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'xiaomi-17-ultra-official-performance',
         publisher: 'Xiaomi',
+        sourceRole: 'official',
         url: 'https://www.mi.com/global/product/xiaomi-17-ultra/',
         protocol: 'official product specification',
         accessedDate: '2026-10-09',
@@ -107,6 +119,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-exynos2600-peak-cpu',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Samsung-Exynos-2600-Processor-Benchmarks-and-Specs.1270874.0.html',
         protocol: 'Geekbench 6.7.1',
         accessedDate: '2026-10-10',
@@ -114,6 +127,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-xclipse960-peak-gpu',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Samsung-Xclipse-960-Benchmarks-and-Specs.1271092.0.html',
         protocol: '3DMark Wild Life Extreme Unlimited / Solar Bay',
         accessedDate: '2026-10-10',
@@ -121,6 +135,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-oneplus15-peak',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/OnePlus-15-smartphone-review-Gaming-at-165fps-despite-being-slower-than-the-predecessor.1171622.0.html',
         protocol: 'Geekbench 6.7 / 3DMark Wild Life Extreme Unlimited / Solar Bay',
         accessedDate: '2026-10-10',
@@ -128,6 +143,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-honor-magic8-pro-peak',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Flagship-power-with-an-XXL-battery-Honor-Magic8-Pro-smartphone-review.1204159.0.html',
         protocol: 'Geekbench 6.7 / 3DMark Wild Life Extreme Unlimited',
         accessedDate: '2026-10-10',
@@ -135,6 +151,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-vivo-x300-pro-peak',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/More-than-just-an-unusual-camera-setup-Vivo-X300-Pro-review.1184298.0.html',
         protocol: 'Geekbench 6.7 / 3DMark Wild Life Extreme Unlimited / Solar Bay',
         accessedDate: '2026-10-10',
@@ -142,6 +159,7 @@ export function buildPerformanceReferenceCorpus(): DeviceCorpus {
       {
         id: 'notebookcheck-oppo-find-x9-pro-peak',
         publisher: 'Notebookcheck',
+        sourceRole: 'measurement-lab',
         url: 'https://www.notebookcheck.net/Ingenious-smartphone-with-camera-innovation-SoC-dilemma-Oppo-Find-X9-Pro-review.1158701.0.html',
         protocol: 'Geekbench 6.7 / 3DMark Wild Life Extreme Unlimited / Solar Bay',
         accessedDate: '2026-10-10',
