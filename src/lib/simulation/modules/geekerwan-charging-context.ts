@@ -1,6 +1,7 @@
 import type {
   DeviceCorpus,
 } from './device-corpus';
+import { buildCalibrationRegistry } from './calibration-registry';
 import {
   buildGeekerwanChargingEfficiencyRows,
 } from './geekerwan-charging-efficiency';
@@ -396,4 +397,14 @@ export function estimateGeekerwanChargingContext(
         ? 'Geekerwan context is weighted from same-manufacturer phones first, using measured cell-to-wall energy ratio and average charger utilization. It is an independent wall-energy estimate and does not replace the main charging corpus estimator.'
         : 'Geekerwan context uses the closest measured cross-brand energy/charger pairs because fewer than two same-manufacturer pairs were available. It remains independent from the main charging estimator.',
   };
+}
+
+
+export function estimateLiveGeekerwanChargingContext(
+  input: GeekerwanChargingContextInput,
+) {
+  return estimateGeekerwanChargingContext(
+    buildCalibrationRegistry(),
+    input,
+  );
 }
