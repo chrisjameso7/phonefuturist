@@ -923,11 +923,15 @@ function DeterministicShareCard({
   result,
   mode,
   usage,
+  activeUseHours,
+  chargeMinutes,
 }: {
   input: SimulationInput;
   result: DeterministicResult;
   mode: 'simple' | 'advanced';
   usage: 'Light' | 'Typical' | 'Heavy';
+  activeUseHours?: number;
+  chargeMinutes?: number;
 }) {
   const [shareMessage, setShareMessage] = useState('');
   const display = result.displays.primary;
@@ -974,6 +978,8 @@ function DeterministicShareCard({
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
         ['SCREEN', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(1) + ' in' : 'Unknown'],
         ['USAGE', usage],
+        ['ACTIVE USE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
+        ['FULL CHARGE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
       ] : [
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
         ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
@@ -1024,7 +1030,7 @@ function DeterministicShareCard({
     const text = [
       deviceName,
       battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
-      ...(mode === 'simple' ? [usage + ' usage scenario'] : []),
+      ...(mode === 'simple' ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active use estimate: ' + activeUseHours.toFixed(1) + ' h' : null] : []),
       display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
       packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded',
       'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
@@ -1053,7 +1059,10 @@ function DeterministicShareCard({
       <strong>{deviceName}</strong>
       <div className="il-share-card-metrics">
         <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
-        {mode === 'simple' ? <span>{usage} usage scenario</span> : <>
+        {mode === 'simple' ? <>
+          <span>{usage} usage scenario</span>
+          <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h active use' : 'Runtime unresolved'}</span>
+        </> : <>
           <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
           <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
         </>}
@@ -9847,7 +9856,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={workspaceMode === 'simple' ? batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge : undefined} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} />
               )}
 
               {result.warnings.length > 0 && (
