@@ -160,6 +160,11 @@ import {
 } from '../../lib/simulation/modules/camera-sensor-noise';
 
 import {
+  GEEKERWAN_CHARGING_CONTEXT_VERSION,
+  estimateLiveGeekerwanChargingContext,
+} from '../../lib/simulation/modules/geekerwan-charging-context';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1691,6 +1696,22 @@ export default function InteractiveLeaksSimulator() {
   const wirelessChargingResult =
     batteryExperience?.wirelessCharging;
 
+  const geekerwanChargingContext =
+    result?.battery?.totalEnergyWh !==
+      undefined &&
+    numeric(form.wiredChargeW) !==
+      undefined
+      ? estimateLiveGeekerwanChargingContext({
+          batteryEnergyWh:
+            result.battery.totalEnergyWh,
+          chargerWatts:
+            numeric(form.wiredChargeW),
+          manufacturer:
+            form.manufacturer.trim() ||
+            undefined,
+        })
+      : undefined;
+
   const targetSocPowerW = numeric(form.targetSocPowerW);
   const ambientTemperatureC = numeric(form.ambientTemperatureC);
   const thermalResistanceCPerW = numeric(
@@ -2396,6 +2417,7 @@ export default function InteractiveLeaksSimulator() {
     display: displayExperience,
     displayRefreshProfile,
     battery: batteryExperience,
+    geekerwanChargingContext,
     batteryAging,
     batteryCycleExposure,
     batteryHealthForecast,
@@ -6425,6 +6447,93 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {geekerwanChargingContext?.status ===
+              'resolved' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Geekerwan wall-energy context ·{' '}
+                    {GEEKERWAN_CHARGING_CONTEXT_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {formatDurationMinutes(
+                          geekerwanChargingContext
+                            .expectedFullChargeMinutes,
+                        )}
+                      </strong>
+                      <span>Independent full-charge context</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedWallInputEnergyWh !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedWallInputEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Expected wall-input energy</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedWallToCellOverheadPercent !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedWallToCellOverheadPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Wall-to-cell energy overhead</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedAverageChargerUtilizationPercent !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedAverageChargerUtilizationPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Average charger utilization</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext.referenceCount}
+                      </strong>
+                      <span>Paired Geekerwan references</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext.targetPosition
+                          ?.replaceAll('-', ' ') ??
+                          'Unknown'}
+                      </strong>
+                      <span>Charger-power evidence position</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {geekerwanChargingContext.note}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
