@@ -7,7 +7,7 @@ import type {
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
 type Props = {
-  onRun: (input: SimpleModeInput) => void;
+  onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') => void;
 };
 
 const vendors: SocVendor[] = [
@@ -56,6 +56,7 @@ export default function SimpleModePanel({
   const [aperture, setAperture] =
     useState('1.8');
   const [error, setError] = useState('');
+  const [usage, setUsage] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
 
   function submit() {
     const battery = number(batteryMah);
@@ -109,7 +110,7 @@ export default function SimpleModePanel({
           : {}),
         equivalentFocalLengthMm: 24,
       },
-    });
+    }, usage);
   }
 
   return (
@@ -126,6 +127,23 @@ export default function SimpleModePanel({
         </p>
       </div>
 
+      <fieldset className="il-simple-usage" aria-label="Daily usage profile">
+        <legend>How do you use your phone?</legend>
+        <div className="il-mode-switch">
+          {(['Light', 'Typical', 'Heavy'] as const).map((preset) => (
+            <button key={preset} type="button" className={usage === preset ? 'active' : ''}
+              aria-pressed={usage === preset} onClick={() => setUsage(preset)}>
+              {preset}
+            </button>
+          ))}
+        </div>
+        <p className="il-help">
+          {usage === 'Light' ? 'Mostly messaging, occasional browsing and video.' :
+            usage === 'Typical' ? 'A balanced day of browsing, video, social apps and some gaming.' :
+              'Longer screen time, frequent video and more demanding gaming.'}
+          {' '}These are illustrative usage scenarios, not measured population averages.
+        </p>
+      </fieldset>
       <div className="il-simple-grid">
         <label className="il-field il-wide">
           <span>Device name</span>
