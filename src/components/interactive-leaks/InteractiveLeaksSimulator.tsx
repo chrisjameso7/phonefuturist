@@ -1084,7 +1084,6 @@ export default function InteractiveLeaksSimulator() {
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
   const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
-  const [lastRunMode, setLastRunMode] = useState<'simple' | 'advanced'>('simple');
 
   const [predictionSaveState, setPredictionSaveState] =
     useState<
@@ -1264,7 +1263,6 @@ export default function InteractiveLeaksSimulator() {
 
   function runSimpleMode(input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') {
     setUsagePreset(usage);
-    setLastRunMode('simple');
     const expansion = expandSimpleMode(input);
     const primary =
       expansion.simulationInput.displays.primary;
@@ -1396,7 +1394,6 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function simulate() {
-    setLastRunMode('advanced');
     setPredictionSaveState({ status: 'idle' });
     setSimulationInput(buildInput());
     setHasSimulated(true);
@@ -2911,14 +2908,14 @@ export default function InteractiveLeaksSimulator() {
             <button
               type="button"
               className={workspaceMode === 'simple' ? 'active' : ''}
-              onClick={() => setWorkspaceMode('simple')}
+              onClick={() => { setWorkspaceMode('simple'); setHasSimulated(false); }}
             >
               Simple
             </button>
             <button
               type="button"
               className={workspaceMode === 'advanced' ? 'active' : ''}
-              onClick={() => setWorkspaceMode('advanced')}
+              onClick={() => { setWorkspaceMode('advanced'); setHasSimulated(false); }}
             >
               Advanced
             </button>
