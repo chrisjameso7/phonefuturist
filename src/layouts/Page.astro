@@ -339,10 +339,8 @@ const active = activeNavigation(Astro.url);
 
 <script>
   import { enhanceNavigation } from '../lib/navigation-client';
-  import { enhanceOpticalPointer } from '../lib/optical-pointer-client';
 
   enhanceNavigation();
-  enhanceOpticalPointer();
   const mobileMenu=document.querySelector<HTMLDetailsElement>('.mobile-app-menu');
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileMenu?.open){mobileMenu.open=false;mobileMenu.querySelector('summary')?.focus();}});
   document.addEventListener('click',event=>{if(mobileMenu?.open&&event.target instanceof Node&&!mobileMenu.contains(event.target))mobileMenu.open=false;});
