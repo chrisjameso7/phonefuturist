@@ -976,11 +976,11 @@ function DeterministicShareCard({
       y += 118;
 
       const metrics = mode === 'simple' ? [
-        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
-        ['SCREEN', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(1) + ' in' : 'Unknown'],
-        ['USAGE', usage],
-        ['ACTIVE USE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
-        ['FULL CHARGE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
+        ['USE SCENARIO', usage],
+        ['ACTIVE-USE ESTIMATE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
+        ['FULL CHARGE ESTIMATE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
+        ['BATTERY CAPACITY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
+        ['DISPLAY SIZE', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(1) + ' in' : 'Unknown'],
       ] : [
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
         ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
@@ -1007,7 +1007,7 @@ function DeterministicShareCard({
 
       ctx.fillStyle = '#8e9399';
       ctx.font = '400 20px Arial';
-      ctx.fillText('Calculated from supplied specifications. Unknown inputs remain unknown.', 72, 1185);
+      ctx.fillText(mode === 'simple' ? 'Illustrative active use, not time between charges.' : 'Engineering estimates, not verified physical measurements.', 72, 1185);
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 22px Arial';
       ctx.fillText('Engine v' + SIMULATION_ENGINE_VERSION + ' · phonefuturist', 72, 1240);
@@ -1031,9 +1031,10 @@ function DeterministicShareCard({
     const text = [
       deviceName,
       battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
-      ...(mode === 'simple' ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active use estimate: ' + activeUseHours.toFixed(1) + ' h' : null] : []),
-      display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
-      packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded',
+      ...(mode === 'simple'
+        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, chargeMinutes !== undefined ? 'Full-charge estimate: ' + Math.round(chargeMinutes) + ' min' : null, 'Illustrative scenario; not time between charges']
+        : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
+           packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded']),
       'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
     ].filter(Boolean).join(' · ');
 
@@ -1062,7 +1063,8 @@ function DeterministicShareCard({
         <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
         {mode === 'simple' ? <>
           <span>{usage} usage scenario</span>
-          <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h active use' : 'Runtime unresolved'}</span>
+          <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h estimated active use' : 'Active use unresolved'}</span>
+          <span>{chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min estimated full charge' : 'Charging unresolved'}</span>
         </> : <>
           <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
           <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
