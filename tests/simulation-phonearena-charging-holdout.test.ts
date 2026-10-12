@@ -25,6 +25,30 @@ describe('external PhoneArena charging holdout', () => {
       'resolved',
     );
 
+    console.info(
+      'PHONEARENA_CHARGING_HOLDOUT',
+      JSON.stringify({
+        evaluatedDevices:
+          result.evaluatedDevices,
+        skippedDevices:
+          result.skippedDevices,
+        maeMinutes:
+          result.maeMinutes,
+        mapePercent:
+          result.mapePercent,
+        meanSignedErrorMinutes:
+          result.meanSignedErrorMinutes,
+        thirtyMinuteEvaluatedDevices:
+          result.thirtyMinuteEvaluatedDevices,
+        thirtyMinuteMaePoints:
+          result.thirtyMinuteMaePoints,
+        byWattageBand:
+          result.byWattageBand,
+      }),
+    );
+
+
+
     expect(
       result.evaluatedDevices,
     ).toBeGreaterThanOrEqual(20);
