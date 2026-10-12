@@ -18,8 +18,9 @@ import { buildGeekerwanSocCorpus } from './geekerwan-soc-corpus';
 import { buildGeekerwanBatteryCorpus } from './geekerwan-battery-corpus';
 import { buildGeekerwanChargingCurveCorpus } from './geekerwan-charging-curve-corpus';
 import { buildNanoReviewSocCorpus } from './nanoreview-soc-corpus';
+import { buildDxomarkCurrentBatteryCorpus } from './dxomark-current-battery-corpus';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.10.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.11.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -44,6 +45,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildGeekerwanBatteryCorpus(),
       buildGeekerwanChargingCurveCorpus(),
       buildNanoReviewSocCorpus(),
+      buildDxomarkCurrentBatteryCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
