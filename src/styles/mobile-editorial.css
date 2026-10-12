@@ -7,8 +7,8 @@
   .mobile-appbar{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;padding-inline:18px;min-height:calc(70px + env(safe-area-inset-top,0px));background:rgb(25 26 28 / .96);border-bottom:1px solid #ffffff09;backdrop-filter:blur(20px)}
   .mobile-app-brand{justify-content:center;gap:6px;min-width:0}
   .mobile-app-brand>span:last-child{display:block!important;font-size:18px;font-weight:800;letter-spacing:-.65px;color:#f3f0e9}
-  .mobile-app-brand .mobile-app-logo{position:relative;flex:none;display:block;width:36px;height:32px;overflow:hidden;border-radius:5px}
-  .mobile-app-logo img{position:absolute;width:64px;height:64px;max-width:none;left:-14px;top:-14px;object-fit:cover;filter:none}
+  .mobile-app-brand .mobile-app-logo{position:relative;flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:34px;overflow:visible}
+  .mobile-app-logo img{position:static;display:block;width:44px;height:auto;max-width:44px;max-height:32px;object-fit:contain;filter:none}
   .mobile-app-icon,.mobile-app-menu>summary{width:44px;height:44px;display:grid;place-items:center;color:#e9e7e1;text-decoration:none;border-radius:50%;cursor:pointer;list-style:none}
   .mobile-app-icon svg,.mobile-app-menu>summary svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .mobile-app-menu>summary::-webkit-details-marker{display:none}
@@ -140,7 +140,7 @@
  #main.home-page>.about-section p{font-size:14px;line-height:1.6}
  .pf-mobile-image-note{display:block;margin-top:12px;color:#bbc5c8;font-size:9px}
 }@media(max-width:760px){
- .mobile-app-brand .mobile-app-logo{width:36px!important;height:32px!important;overflow:hidden!important}
+ .mobile-app-brand .mobile-app-logo{width:44px!important;height:34px!important;overflow:visible!important}
  body:not(.product-mode) .mobile-tabbar,body:not(.product-mode) .mobile-tabbar[data-compact='true']{left:0;right:0;bottom:0;width:100%;border-radius:22px 22px 0 0;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
  .mobile-tabbar>a[aria-current=page]>svg{stroke:currentColor;filter:none}
 }
