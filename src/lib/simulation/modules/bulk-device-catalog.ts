@@ -2,6 +2,7 @@ import type {
   DeviceCorpus,
   DeviceCorpusRecord,
   CorpusSource,
+  CorpusSourceRole,
 } from './device-corpus';
 
 export const BULK_DEVICE_CATALOG_VERSION =
@@ -174,14 +175,29 @@ function dedupeDevices(
 export function buildBulkDeviceCatalogCorpus(
   file: BulkCatalogFile,
 ): DeviceCorpus {
+  const roleMap:
+    Record<
+      BulkCatalogEvidenceRole,
+      CorpusSourceRole
+    > = {
+      identity: 'catalog',
+      specification: 'catalog',
+      measurement: 'measurement-lab',
+      official: 'official',
+    };
+
   const sources: CorpusSource[] =
     dedupeSources(
       file.sources,
     ).map(
       ({
-        role: _role,
+        role,
         ...source
-      }) => source,
+      }) => ({
+        ...source,
+        sourceRole:
+          roleMap[role],
+      }),
     );
 
   const knownSourceIds =
