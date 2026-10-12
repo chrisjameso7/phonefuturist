@@ -42,6 +42,8 @@ export default function SimpleModePanel({
     useState('6.8');
   const [resolution, setResolution] =
     useState<SimpleResolutionPreset>('qhd');
+  const [customWidth, setCustomWidth] = useState('');
+  const [customHeight, setCustomHeight] = useState('');
   const [refreshRate, setRefreshRate] =
     useState('120');
   const [socVendor, setSocVendor] =
@@ -70,6 +72,11 @@ export default function SimpleModePanel({
       return;
     }
 
+    if (resolution === 'custom' && (!number(customWidth) || !number(customHeight))) {
+      setError('Enter both pixel dimensions for the custom display resolution.');
+      return;
+    }
+
     setError('');
 
     onRun({
@@ -86,6 +93,7 @@ export default function SimpleModePanel({
         : {}),
       displayDiagonalInches: diagonal,
       displayResolution: resolution,
+      ...(resolution === 'custom' ? { customResolutionWidthPx: number(customWidth), customResolutionHeightPx: number(customHeight) } : {}),
       refreshRateHz: hz,
       socVendor,
       ...(socName.trim()
@@ -214,10 +222,28 @@ export default function SimpleModePanel({
               )
             }
           >
-            <option value="fhd">FHD class</option>
-            <option value="qhd">QHD class</option>
+            <option value="hd">HD · 720 × 1600</option>
+            <option value="hd-plus">HD+ · 720 × 1650</option>
+            <option value="fhd">FHD · 1080 × 2400</option>
+            <option value="fhd-plus">FHD+ · 1080 × 2520</option>
+            <option value="1200p">1200p · 1200 × 2640</option>
+            <option value="1220p">1.5K · 1220 × 2712</option>
+            <option value="1260p">1260p · 1260 × 2800</option>
+            <option value="1280p">1280p · 1280 × 2856</option>
+            <option value="1344p">1344p · 1344 × 2992</option>
+            <option value="qhd">QHD · 1440 × 3200</option>
+            <option value="qhd-plus">QHD+ · 1440 × 3120</option>
+            <option value="4k">4K-class · 1644 × 3840</option>
+            <option value="custom">Custom pixel resolution</option>
           </select>
         </label>
+
+        {resolution === 'custom' && (
+          <div className="il-grid">
+            <label className="il-field"><span>Width (pixels)</span><input type="number" min="1" step="1" value={customWidth} onChange={event => setCustomWidth(event.currentTarget.value)} placeholder="1220" /></label>
+            <label className="il-field"><span>Height (pixels)</span><input type="number" min="1" step="1" value={customHeight} onChange={event => setCustomHeight(event.currentTarget.value)} placeholder="2712" /></label>
+          </div>
+        )}
 
         <label className="il-field">
           <span>Refresh rate</span>
