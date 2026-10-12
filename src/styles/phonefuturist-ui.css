@@ -361,3 +361,43 @@ body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px;
   .interactive-page.pf-ui .il-app[data-mode="simple"] .il-simple-grid .il-wide { grid-column:auto; }
   .interactive-page.pf-ui .il-app .il-share-card-metrics { grid-template-columns:minmax(0,1fr); }
 }
+
+/* Screenshot review 2026-10-12: fix hollow scroll header and hero oversized dead zone. */
+@media (min-width:761px) {
+  body:not(.product-mode) .site-header {
+    min-height:76px;
+    max-width:1480px;
+    padding:12px 18px;
+    border-radius:20px;
+    gap:20px;
+  }
+  body:not(.product-mode) .site-header[data-scrolled="true"] {
+    pointer-events:auto;
+  }
+  body:not(.product-mode) .site-header[data-scrolled="true"]::before,
+  body:not(.product-mode) .site-header[data-scrolled="true"]::after {
+    inset:0; left:auto; top:auto; width:auto; height:auto; border-radius:inherit;
+  }
+  body:not(.product-mode) .site-header[data-scrolled="true"] .desktop-nav {
+    transform:none;
+  }
+  body:not(.product-mode) .site-header[data-scrolled="true"] :is(.header-brand-row,.header-actions) {
+    opacity:1; visibility:visible; transform:none; pointer-events:auto;
+  }
+  .pf-home-v2 .pf-spotlight {
+    min-height:clamp(410px,38vw,540px);
+    align-items:center;
+    padding:clamp(32px,5vw,68px);
+  }
+  .pf-home-v2 .pf-spotlight__content { max-width:min(600px,62%); }
+  .pf-home-v2 .pf-spotlight h1 {
+    font-size:clamp(3.6rem,5.4vw,5.7rem);
+    line-height:1.02;
+    margin-bottom:18px;
+  }
+  .pf-home-v2 .pf-home-intro { padding:16px 8px; }
+}
+@media (max-width:760px) {
+  .pf-home-v2 .pf-spotlight { min-height:440px; }
+  .pf-home-v2 .pf-spotlight h1 { font-size:clamp(2.6rem,10vw,3.9rem); }
+}
