@@ -948,69 +948,97 @@ function DeterministicShareCard({
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Image export is unavailable in this browser.');
 
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const simple = mode === 'simple';
+      const accent = simple ? '#83e4ec' : '#b6acff';
+      const ink = '#f6f8fc';
+      const dim = '#a9b7c8';
+      ctx.fillStyle = '#080d15';
+      ctx.fillRect(0, 0, 1080, 1350);
+      ctx.fillStyle = simple ? '#10232d' : '#17192f';
+      ctx.fillRect(0, 0, 1080, simple ? 580 : 250);
+      ctx.fillStyle = accent;
+      ctx.fillRect(72, 65, 55, 7);
+      ctx.font = '700 31px Arial';
+      ctx.fillStyle = ink;
+      ctx.fillText('PhoneFuturist', 72, 120);
+      ctx.font = '700 19px Arial';
+      ctx.fillStyle = accent;
+      ctx.fillText(simple ? 'INTERACTIVE LEAKS  /  SIMPLE' : 'INTERACTIVE LEAKS  /  ADVANCED', 72, 175);
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '700 34px Arial';
-      ctx.fillText('PhoneFuturist', 72, 88);
-
-      ctx.fillStyle = '#8e9399';
-      ctx.font = '700 20px Arial';
-      ctx.fillText(mode === 'simple' ? 'INTERACTIVE LEAKS · SIMPLE OVERVIEW' : 'INTERACTIVE LEAKS · ADVANCED LAB', 72, 132);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = deviceName.length > 38 ? '700 48px Arial' : '700 62px Arial';
-      const words = deviceName.split(/\s+/);
-      let line = '';
-      let y = 242;
-      for (const word of words) {
-        const next = line ? line + ' ' + word : word;
-        if (ctx.measureText(next).width > 900 && line) {
-          ctx.fillText(line, 72, y);
-          y += 72;
-          line = word;
-        } else line = next;
+      // Keep device names within the poster instead of clipping long names.
+      function wrapTitle(title: string, fontSize: number, top: number, maxLines: number) {
+        ctx.font = '700 ' + fontSize + 'px Arial';
+        const words = title.split(/\\s+/);
+        let row = '';
+        let lineY = top;
+        let count = 0;
+        for (const word of words) {
+          const candidate = row ? row + ' ' + word : word;
+          if (ctx.measureText(candidate).width > 920 && row) {
+            ctx.fillText(row, 72, lineY);
+            lineY += fontSize * 1.16;
+            count++;
+            row = word;
+            if (count >= maxLines - 1) break;
+          } else row = candidate;
+        }
+        if (row) ctx.fillText(row, 72, lineY);
       }
-      ctx.fillText(line, 72, y);
-      y += 118;
 
-      const metrics = mode === 'simple' ? [
-        ['USE SCENARIO', usage],
-        ['ACTIVE-USE ESTIMATE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
-        ['FULL CHARGE ESTIMATE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
-        ['BATTERY CAPACITY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
-        ['DISPLAY SIZE', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(1) + ' in' : 'Unknown'],
+      ctx.fillStyle = ink;
+      wrapTitle(deviceName, simple ? 69 : 54, simple ? 290 : 238, simple ? 3 : 2);
+      const metrics: Array<[string, string]> = simple ? [
+        ['USAGE', usage],
+        ['ACTIVE USE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
+        ['FULL CHARGE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
+        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
       ] : [
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
         ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
-        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
-        ['ENERGY', battery?.totalEnergyWh !== undefined ? battery.totalEnergyWh.toFixed(2) + ' Wh' : 'Unknown'],
+        ['BATTERY ENERGY', battery?.totalEnergyWh !== undefined ? battery.totalEnergyWh.toFixed(2) + ' Wh' : 'Unknown'],
+        ['BATTERY CAPACITY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
         ['SCREEN / BODY', display?.screenToBodyRatio !== undefined ? display.screenToBodyRatio.toFixed(1) + '%' : 'Unknown'],
-        ['PACKAGING', packaging?.fitsAvailableVolume === undefined ? 'Unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'],
+        ['VOLUME CHECK', packaging?.fitsAvailableVolume === undefined ? 'Unresolved' : packaging.fitsAvailableVolume ? 'Pass' : 'Exceeded'],
       ];
-
-      for (let i = 0; i < metrics.length; i++) {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        const x = 72 + col * 468;
-        const boxY = y + row * 178;
-        ctx.fillStyle = '#0d0f12';
-        ctx.fillRect(x, boxY, 430, 148);
-        ctx.fillStyle = '#8e9399';
+      if (simple) {
+        ctx.fillStyle = dim;
+        ctx.font = '700 19px Arial';
+        ctx.fillText('YOUR CONCEPT, AT A GLANCE', 72, 530);
+      } else {
+        ctx.fillStyle = dim;
         ctx.font = '700 18px Arial';
-        ctx.fillText(metrics[i][0], x + 24, boxY + 34);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = metrics[i][1].length > 24 ? '700 28px Arial' : '700 36px Arial';
-        ctx.fillText(metrics[i][1], x + 24, boxY + 88);
+        ctx.fillText('SIMULATION SUMMARY', 72, 326);
       }
-
-      ctx.fillStyle = '#8e9399';
-      ctx.font = '400 20px Arial';
-      ctx.fillText(mode === 'simple' ? 'Illustrative active use, not time between charges.' : 'Engineering estimates, not verified physical measurements.', 72, 1185);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '700 22px Arial';
-      ctx.fillText('Engine v' + SIMULATION_ENGINE_VERSION + ' · phonefuturist', 72, 1240);
+      const baseY = simple ? 612 : 370;
+      const cellHeight = simple ? 205 : 194;
+      for (let i = 0; i < metrics.length; i++) {
+        const x = 72 + (i % 2) * 474;
+        const y = baseY + Math.floor(i / 2) * (cellHeight + 16);
+        ctx.fillStyle = '#15202e';
+        ctx.beginPath();
+        ctx.roundRect(x, y, 456, cellHeight, 20);
+        ctx.fill();
+        ctx.fillStyle = dim;
+        ctx.font = '700 18px Arial';
+        ctx.fillText(metrics[i][0], x + 26, y + 44);
+        ctx.fillStyle = ink;
+        const value = metrics[i][1];
+        ctx.font = '700 ' + (value.length > 18 ? 30 : value.length > 11 ? 40 : 53) + 'px Arial';
+        ctx.fillText(value, x + 26, y + 116, 407);
+      }
+      ctx.fillStyle = dim;
+      ctx.font = '20px Arial';
+      ctx.fillText(simple ? 'Estimated active use, not days per charge.' : 'Modelled results · Not laboratory measurements', 72, 1208);
+      ctx.fillStyle = accent;
+      ctx.fillRect(72, 1250, 936, 2);
+      ctx.fillStyle = ink;
+      ctx.font = '700 21px Arial';
+      ctx.fillText('ENGINE ' + SIMULATION_ENGINE_VERSION, 72, 1294);
+      ctx.fillStyle = dim;
+      ctx.font = '20px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText('phonefuturist', 1006, 1294);
+      ctx.textAlign = 'left';
 
       const blob = await new Promise<Blob>((resolve, reject) =>
         canvas.toBlob((value) => value ? resolve(value) : reject(new Error('PNG could not be generated.')), 'image/png'),
@@ -1053,7 +1081,7 @@ function DeterministicShareCard({
   }
 
   return (
-    <section className="il-share-card" aria-label="Share simulation result">
+    <section className={`il-share-card il-share-card--${mode}`} aria-label="Share simulation result">
       <div className="il-share-card-brand">
         <span>PhoneFuturist</span>
         <small>{mode === 'simple' ? 'Simple overview' : 'Advanced lab report'}</small>
