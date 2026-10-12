@@ -369,9 +369,6 @@ export function findGeekerwanBatteryResult(
 ): GeekerwanBatteryResult | undefined {
   const maker =
     normalize(manufacturer);
-  const target =
-    normalize(model);
-
   const manufacturerRows =
     snapshot.battery.devices.filter(
       (row) =>
