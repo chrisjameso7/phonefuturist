@@ -1292,6 +1292,13 @@ export default function InteractiveLeaksSimulator() {
           primary.refreshRateHz ??
             input.refreshRateHz,
         ),
+      // Scenario hours are configurable assumptions, not demographic averages.
+      // Keep them distinct from screen-on measurements and preserve Advanced inputs.
+      ...({
+        Light: { webHours: '0.75', videoHours: '0.75', gamingHours: '0.1' },
+        Typical: { webHours: '1.5', videoHours: '1.5', gamingHours: '0.5' },
+        Heavy: { webHours: '2.5', videoHours: '2.5', gamingHours: '1.5' },
+      } as const)[usage],
       batteryCapacityMah:
         String(input.batteryMah),
       zoomTargetEquivalentFocalLengthMm: '',
