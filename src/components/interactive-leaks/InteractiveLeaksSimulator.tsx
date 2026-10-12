@@ -171,6 +171,16 @@ import {
 } from '../../lib/simulation/modules/geekerwan-socpk-evidence';
 
 import {
+  PHONEARENA_BATTERY_EVIDENCE_VERSION,
+  findPhoneArenaChargingResult,
+} from '../../lib/simulation/modules/phonearena-battery-evidence';
+
+import {
+  CROSS_LAB_BATTERY_CONTEXT_VERSION,
+  buildCrossLabBatteryContext,
+} from '../../lib/simulation/modules/cross-lab-battery-context';
+
+import {
   CHARGING_INPUT_POWER_ESTIMATOR_VERSION,
   estimateLiveObservedChargingInputPower,
 } from '../../lib/simulation/modules/charging-input-power-estimator';
@@ -2276,6 +2286,24 @@ export default function InteractiveLeaksSimulator() {
         )
       : undefined;
 
+  const phoneArenaChargingResult =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? findPhoneArenaChargingResult(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
+  const crossLabBatteryContext =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? buildCrossLabBatteryContext(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -2476,6 +2504,8 @@ export default function InteractiveLeaksSimulator() {
     geekerwanCpuContext,
     geekerwanGpuContext,
     geekerwanBatteryResult,
+    phoneArenaChargingResult,
+    crossLabBatteryContext,
     batteryAging,
     batteryCycleExposure,
     batteryHealthForecast,
@@ -6908,6 +6938,189 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {crossLabBatteryContext &&
+              crossLabBatteryContext.status !==
+                'unresolved' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Cross-lab battery evidence ·{' '}
+                    {CROSS_LAB_BATTERY_CONTEXT_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.geekerwan
+                          ? `${format(
+                              crossLabBatteryContext.geekerwan
+                                .runtimeMinutes / 60,
+                              2,
+                            )} h`
+                          : 'No exact match'}
+                      </strong>
+                      <span>Geekerwan Battery Life 5.0</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.geekerwan
+                          ?.minutesPerWh !== undefined
+                          ? `${format(
+                              crossLabBatteryContext.geekerwan
+                                .minutesPerWh,
+                              1,
+                            )} min/Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Geekerwan energy-normalized runtime</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.phoneArena
+                          ? `${format(
+                              crossLabBatteryContext.phoneArena
+                                .browsingMinutes / 60,
+                              2,
+                            )} h`
+                          : 'No exact match'}
+                      </strong>
+                      <span>PhoneArena browsing</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.phoneArena
+                          ? `${format(
+                              crossLabBatteryContext.phoneArena
+                                .videoMinutes / 60,
+                              2,
+                            )} h`
+                          : 'No exact match'}
+                      </strong>
+                      <span>PhoneArena video</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.phoneArena
+                          ? `${format(
+                              crossLabBatteryContext.phoneArena
+                                .gamingMinutes / 60,
+                              2,
+                            )} h`
+                          : 'No exact match'}
+                      </strong>
+                      <span>PhoneArena gaming</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.phoneArena
+                          ? `${format(
+                              crossLabBatteryContext.phoneArena
+                                .gamingMinutesPer1000Mah,
+                              1,
+                            )} min/1000mAh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>PhoneArena gaming efficiency</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {crossLabBatteryContext.evidenceCount}
+                      </strong>
+                      <span>Independent lab protocols</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {crossLabBatteryContext.note}
+                  </p>
+
+                  {crossLabBatteryContext.warnings.map(
+                    (warning) => (
+                      <p
+                        className="il-help"
+                        key={warning}
+                      >
+                        {warning}
+                      </p>
+                    ),
+                  )}
+                </div>
+              ) : null}
+
+              {phoneArenaChargingResult ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    PhoneArena charging lab ·{' '}
+                    {PHONEARENA_BATTERY_EVIDENCE_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {phoneArenaChargingResult.wiredFullMinutes !==
+                        undefined
+                          ? `${format(
+                              phoneArenaChargingResult.wiredFullMinutes,
+                              0,
+                            )} min`
+                          : 'Untested'}
+                      </strong>
+                      <span>Measured wired full charge</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {phoneArenaChargingResult.wiredChargerWatts !==
+                        undefined
+                          ? `${format(
+                              phoneArenaChargingResult.wiredChargerWatts,
+                              0,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>PhoneArena charger class</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {phoneArenaChargingResult.wired30MinutePercent !==
+                        undefined
+                          ? `${format(
+                              phoneArenaChargingResult.wired30MinutePercent,
+                              0,
+                            )}%`
+                          : 'Untested'}
+                      </strong>
+                      <span>30-minute wired charge</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {phoneArenaChargingResult.wirelessFullMinutes !==
+                        undefined
+                          ? `${format(
+                              phoneArenaChargingResult.wirelessFullMinutes,
+                              0,
+                            )} min`
+                          : 'Untested'}
+                      </strong>
+                      <span>Measured wireless full charge</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    PhoneArena measurements remain a separate lab protocol.
+                    Charger class is not treated as sustained battery input
+                    power.
+                  </p>
+                </div>
+              ) : null}
 
               {(geekerwanCpuContext?.status ===
                 'resolved' ||
