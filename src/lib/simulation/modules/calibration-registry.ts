@@ -18,8 +18,10 @@ import { buildGeekerwanBatteryCorpus } from './geekerwan-battery-corpus';
 import { buildGeekerwanChargingCurveCorpus } from './geekerwan-charging-curve-corpus';
 import { buildNanoReviewSocCorpus } from './nanoreview-soc-corpus';
 import { buildDxomarkCurrentBatteryCorpus } from './dxomark-current-battery-corpus';
+import { buildTomsGuideCurrentBatteryCorpus } from './tomsguide-current-battery-corpus';
+import { buildNotebookcheckS26UltraCorpus } from './notebookcheck-s26-ultra-corpus';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.11.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.12.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -45,6 +47,8 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildGeekerwanChargingCurveCorpus(),
       buildNanoReviewSocCorpus(),
       buildDxomarkCurrentBatteryCorpus(),
+      buildTomsGuideCurrentBatteryCorpus(),
+      buildNotebookcheckS26UltraCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
