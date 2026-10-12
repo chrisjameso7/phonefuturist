@@ -109,6 +109,53 @@ function normalize(value: string) {
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9+()]/g, '');
 }
+function normalizeDeviceModel(
+  manufacturer: string,
+  model: string,
+) {
+  const maker =
+    manufacturer
+      .trim()
+      .toLowerCase();
+
+  let value =
+    model
+      .trim()
+      .toLowerCase();
+
+  if (
+    maker &&
+    value.startsWith(
+      `${maker} `,
+    )
+  ) {
+    value = value.slice(
+      maker.length + 1,
+    );
+  }
+
+  if (
+    maker === 'samsung' &&
+    value.startsWith('galaxy ')
+  ) {
+    value = value.slice(7);
+  }
+
+  if (
+    maker === 'google' &&
+    value.startsWith('google ')
+  ) {
+    value = value.slice(7);
+  }
+
+  return value
+    .replace(/\b5g\b/g, '')
+    .replace(/\+/g, ' plus ')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 function curvesFor(
   benchmark: GeekerwanCurveBenchmark,
@@ -325,14 +372,54 @@ export function findGeekerwanBatteryResult(
   const target =
     normalize(model);
 
-  return snapshot.battery.devices.find(
-    (row) =>
-      normalize(
-        row.manufacturer,
-      ) === maker &&
-      normalize(row.model) ===
-        target,
-  );
+  const manufacturerRows =
+    snapshot.battery.devices.filter(
+      (row) =>
+        normalize(
+          row.manufacturer,
+        ) === maker,
+    );
+
+  const deviceTarget =
+    normalizeDeviceModel(
+      manufacturer,
+      model,
+    );
+
+  const exact =
+    manufacturerRows.find(
+      (row) =>
+        normalizeDeviceModel(
+          row.manufacturer,
+          row.model,
+        ) === deviceTarget,
+    );
+
+  if (exact) return exact;
+
+  const partial =
+    manufacturerRows.filter(
+      (row) => {
+        const candidate =
+          normalizeDeviceModel(
+            row.manufacturer,
+            row.model,
+          );
+
+        return (
+          candidate.includes(
+            deviceTarget,
+          ) ||
+          deviceTarget.includes(
+            candidate,
+          )
+        );
+      },
+    );
+
+  return partial.length === 1
+    ? partial[0]
+    : undefined;
 }
 
 export function getGeekerwanDataVersions() {
