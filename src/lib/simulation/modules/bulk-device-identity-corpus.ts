@@ -164,6 +164,7 @@ export function buildBulkDeviceIdentityCorpus(
     publisher:
       file.source.publisher,
     url: file.source.url,
+    sourceRole: 'catalog',
     ...(file.source.protocol
       ? {
           protocol:
