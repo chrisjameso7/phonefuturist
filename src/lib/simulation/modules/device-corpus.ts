@@ -9,10 +9,18 @@ export type CorpusEvidenceKind =
   | 'reported'
   | 'inferred';
 
+export type CorpusSourceRole =
+  | 'catalog'
+  | 'measurement-lab'
+  | 'aggregated-benchmark'
+  | 'official'
+  | 'reference';
+
 export interface CorpusSource {
   id: string;
   publisher: string;
   url: string;
+  sourceRole?: CorpusSourceRole;
   protocol?: string;
   protocolVersion?: string;
   accessedDate?: string;
