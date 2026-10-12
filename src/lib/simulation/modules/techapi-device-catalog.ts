@@ -53,6 +53,10 @@ type TechApiFile = {
   license: string;
   selection: {
     selectedCount: number;
+    uniqueBaseModelCount?: number;
+    variantBackfillCount?: number;
+    maxEntriesPerBaseModel?: number;
+    years?: number[];
   };
   source: {
     id: string;
@@ -277,5 +281,28 @@ export function techApiCatalogCount() {
       file.selection.selectedCount,
     devices:
       file.devices.length,
+    uniqueBaseModels:
+      file.selection.uniqueBaseModelCount ??
+      new Set(
+        file.devices.map(
+          (device) =>
+            device.baseModelSlug,
+        ),
+      ).size,
+    variantBackfill:
+      file.selection.variantBackfillCount ??
+      (
+        file.devices.length -
+        new Set(
+          file.devices.map(
+            (device) =>
+              device.baseModelSlug,
+          ),
+        ).size
+      ),
+    maxEntriesPerBaseModel:
+      file.selection.maxEntriesPerBaseModel,
+    years:
+      file.selection.years ?? [],
   };
 }
