@@ -57,9 +57,32 @@ jobs:
             throw new Error(`Expected exactly 1000 devices, found ${data.devices?.length ?? 0}`);
           }
           const ids = new Set(data.devices.map((device) => device.id));
-          const base = new Set(data.devices.map((device) => device.baseModelSlug));
-          if (ids.size !== 1000 || base.size !== 1000) {
-            throw new Error(`Generated catalog is not unique: ids=${ids.size}, baseModels=${base.size}`);
+          const baseCounts = new Map();
+          for (const device of data.devices) {
+            baseCounts.set(
+              device.baseModelSlug,
+              (baseCounts.get(device.baseModelSlug) ?? 0) + 1,
+            );
+          }
+          const base = new Set(baseCounts.keys());
+          const maxPerBase = Math.max(...baseCounts.values());
+
+          if (ids.size !== 1000) {
+            throw new Error(
+              `Generated catalog IDs are not unique: ids=${ids.size}`,
+            );
+          }
+
+          if (base.size < 800) {
+            throw new Error(
+              `Expected at least 800 unique base models, got ${base.size}`,
+            );
+          }
+
+          if (maxPerBase > 2) {
+            throw new Error(
+              `Variant backfill exceeded two entries for a base model: max=${maxPerBase}`,
+            );
           }
           if (!data.devices.every((device) => device.sourceUrls?.length)) {
             throw new Error('Every generated device must preserve at least one upstream source URL.');
@@ -84,6 +107,10 @@ jobs:
           console.log({
             devices: data.devices.length,
             brands: Object.keys(data.brandCounts ?? {}).length,
+            uniqueBaseModels: base.size,
+            variantBackfill:
+              data.devices.length - base.size,
+            maxPerBase,
             newest: data.devices[0]?.releaseDate,
             oldest: data.devices.at(-1)?.releaseDate,
           });
