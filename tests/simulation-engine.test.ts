@@ -35,7 +35,7 @@ describe('simulation engine', () => {
       SIMULATION_ENGINE_VERSION,
     );
 
-    expect(result.engineVersion).toBe('0.4.0');
+    expect(result.engineVersion).toBe('0.6.0');
     expect(result.formFactor).toBe('phone');
 
     const display = result.displays.primary;

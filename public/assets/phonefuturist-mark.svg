@@ -1,0 +1,25 @@
+<svg width="160" height="72" viewBox="0 0 160 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">PhoneFuturist mark</title>
+<desc id="desc">A continuous PF loop mark representing technology moving into the future.</desc>
+<defs>
+  <linearGradient id="silver" x1="22" y1="12" x2="138" y2="60" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F8FBFF"/>
+    <stop offset=".45" stop-color="#AFC0D2"/>
+    <stop offset=".68" stop-color="#FFFFFF"/>
+    <stop offset="1" stop-color="#7E91A8"/>
+  </linearGradient>
+  <linearGradient id="blue" x1="30" y1="52" x2="130" y2="18" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#075BCF"/>
+    <stop offset=".55" stop-color="#128FFF"/>
+    <stop offset="1" stop-color="#22D8FF"/>
+  </linearGradient>
+  <filter id="glow" x="-30%" y="-50%" width="160%" height="200%">
+    <feGaussianBlur stdDeviation="2.4" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<path d="M35 56C19 56 9 45 9 33C9 20 19 10 34 10C47 10 58 17 69 30L82 45C91 55 99 60 111 60C128 60 151 49 151 32C151 17 139 8 124 8C109 8 98 15 86 29L74 43C64 54 54 56 43 56H35Z" stroke="url(#silver)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M33 48C22 48 17 41 17 33C17 25 23 18 34 18C43 18 50 23 59 33L73 49" stroke="url(#blue)" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
+<path d="M87 24C97 13 106 8 124 8" stroke="url(#blue)" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
+<path d="M67 34L85 34L74 48" stroke="url(#silver)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

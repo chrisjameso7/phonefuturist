@@ -1,7 +1,150 @@
 ---
 import Page from '../../layouts/Page.astro';
+import '../../styles/lab-simulator.css';
 const user=Astro.locals.user!;
 const access=Astro.locals.access!;
 const staff=access.roles.some(r=>['admin','writer','editor','publisher'].includes(r));
+let creatorProfile:any=null;
+if(Astro.locals.supabase){
+  const {data}=await Astro.locals.supabase.from('creator_profiles').select('handle,display_name,bio,avatar_url').eq('user_id',user.id).maybeSingle();
+  creatorProfile=data;
+}
+const displayName=creatorProfile?.display_name || user.email?.split('@')[0] || 'PhoneFuturist member';
+const initial=displayName.slice(0,1).toUpperCase();
 ---
-<Page title="Your account" privatePage><div class="account-shell"><aside class="account-sidebar"><nav aria-label="Account"><a href="/account" aria-current="page">⌂ Home</a><a href="/articles">The newsroom</a>{staff&&<a href="/studio">The Studio</a>}<a href="/account/security">Account security</a><a href="/account/password">Change password</a></nav></aside><div class="account-content"><p class="eyebrow">Your PhoneFuturist</p><h1>Welcome back.</h1><p class="account-email">{user.email}</p><div class="account-cards"><section class="account-feature"><p class="eyebrow">Technology, examined</p><h2>A closer look at what comes next.</h2><a class="button button-white" href="/articles">Explore the newsroom →</a></section><section class="panel"><h2>Your account</h2><p class="muted">Email: {access.verified?'Verified':'Verification required'}</p>{staff&&<p>Staff access: {access.roles.filter(r=>r!=='reader').join(', ')}</p>}<p><a href="/account/security">Manage authenticator →</a></p>{staff&&<p><a href="/studio">Open Studio →</a></p>}<form action="/auth/signout" method="post"><button class="secondary">Sign out</button></form></section></div></div></div></Page>
+
+<Page title="Your account" privatePage>
+  <div class="account-network">
+    <aside class="account-profile-card">
+      <div class="account-avatar">
+        {creatorProfile?.avatar_url ? <img src={creatorProfile.avatar_url} alt="" /> : <span>{initial}</span>}
+      </div>
+      <h1>{displayName}</h1>
+      {creatorProfile?.handle && <p class="account-handle">@{creatorProfile.handle}</p>}
+      <p class="account-email">{user.email}</p>
+
+      <nav aria-label="Account">
+        <a class="is-active" href="/account">Overview</a>
+        <a href="/articles">Newsroom</a>
+        {staff&&<a href="/studio">Studio</a>}
+        <a href="/account/security">Security</a>
+        <a href="/account/password">Password</a>
+      </nav>
+
+      <form action="/auth/signout" method="post">
+        <button class="account-signout secondary">Sign out</button>
+      </form>
+    </aside>
+
+    <main class="account-feed">
+      <header class="account-feed-head">
+        <p class="eyebrow">Your PhoneFuturist</p>
+        <h2>Overview</h2>
+        <p>One identity across the newsroom and publishing tools.</p>
+      </header>
+
+      <section class="account-status-grid">
+        <article>
+          <span>Account</span>
+          <strong>{access.verified?'Verified':'Verification required'}</strong>
+        </article>
+        <article>
+          <span>Creator</span>
+          <strong>{creatorProfile?'Active':'Not set up'}</strong>
+        </article>
+        <article>
+          <span>Access</span>
+          <strong>{staff?access.roles.filter(r=>r!=='reader').join(', '):'Member'}</strong>
+        </article>
+      </section>
+
+      <section class="account-creator-panel">
+        <div class="account-section-head">
+          <div>
+            <p class="eyebrow">Public identity</p>
+            <h2>Creator profile</h2>
+          </div>
+          {creatorProfile&&<a href={`/creator/${creatorProfile.handle}`}>View profile ↗</a>}
+        </div>
+        <p class="muted">This is how your public PhoneFuturist identity is presented.</p>
+        <form class="account-creator-form" action="/account/api/creator-profile" method="post">
+          <div class="account-form-grid">
+            <label><span>Display name</span><input name="display_name" maxlength="60" required value={creatorProfile?.display_name??''} placeholder="Your public name" /></label>
+            <label><span>Handle</span><input name="handle" maxlength="24" minlength="3" pattern="[a-z0-9_]{3,24}" required value={creatorProfile?.handle??''} placeholder="your_handle" /></label>
+          </div>
+          <label><span>Avatar URL</span><input name="avatar_url" type="url" value={creatorProfile?.avatar_url??''} placeholder="https://..." /></label>
+          <label><span>Bio</span><textarea name="bio" maxlength="240" rows="3" placeholder="What do you like predicting?">{creatorProfile?.bio??''}</textarea></label>
+          <button class="button" type="submit">{creatorProfile?'Update profile':'Create profile'}</button>
+        </form>
+      </section>
+    </main>
+  </div>
+</Page>
+
+<style>
+.account-network{width:min(100%,1180px);margin:0 auto;padding:28px 18px 80px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px}
+.account-profile-card{position:sticky;top:96px;align-self:start;padding:20px;border:1px solid #202c39;border-radius:16px;background:#0b121a}
+.account-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;display:grid;place-items:center;margin-bottom:14px;border:1px solid #2b3a49;background:linear-gradient(145deg,#142131,#0a0f16);color:#fff;font-size:1.6rem;font-weight:700}
+.account-avatar img{width:100%;height:100%;object-fit:cover}
+.account-profile-card h1{margin:0;font-size:1.4rem;letter-spacing:-.035em}
+.account-handle,.account-email{margin:3px 0 0;color:#728193;font-size:.68rem;overflow-wrap:anywhere}
+.account-profile-card nav{display:grid;gap:3px;margin-top:20px;padding-top:15px;border-top:1px solid #202c39}
+.account-profile-card nav a{padding:9px 10px;border-radius:8px;color:#8896a6;text-decoration:none;font-size:.72rem}
+.account-profile-card nav a:hover,.account-profile-card nav a.is-active{color:#fff;background:#101821}
+.account-profile-card nav a.is-active{box-shadow:inset 2px 0 #168cff}
+.account-signout{width:100%;margin-top:16px}
+.account-feed{min-width:0}
+.account-feed-head{padding:22px 4px}
+.account-feed-head h2{margin:4px 0 6px;font-size:clamp(2.8rem,5vw,5rem);letter-spacing:-.06em;font-weight:620}
+.account-feed-head>p:not(.eyebrow){margin:0;color:var(--muted)}
+.account-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.account-status-grid article{padding:16px;border:1px solid #202c39;border-radius:12px;background:#0b121a}
+.account-status-grid span{display:block;color:#6e7d8e;font-size:.58rem;text-transform:uppercase;letter-spacing:.09em}
+.account-status-grid strong{display:block;margin-top:5px;font-size:.82rem;text-transform:capitalize}
+.account-feature-card{display:flex;align-items:end;justify-content:space-between;gap:24px;padding:24px;border:1px solid #203141;border-radius:16px;background:linear-gradient(135deg,rgb(22 140 255/.1),transparent 52%),#0b121a}
+.account-feature-card h2{margin:5px 0 8px;font-size:2rem}
+.account-feature-card p:not(.eyebrow){margin:0;max-width:580px;color:var(--muted);font-size:.78rem;line-height:1.55}
+.account-creator-panel{margin-top:14px;padding:24px;border:1px solid #202c39;border-radius:16px;background:#0b121a}
+.account-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px}
+.account-section-head h2{margin:5px 0 0;font-size:1.7rem}
+.account-section-head a{color:#62cfff;text-decoration:none;font-size:.66rem}
+.account-creator-form{display:grid;gap:14px;margin-top:20px}
+.account-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.account-creator-form label span{display:block;margin-bottom:6px;color:#9cabb9;font-size:.68rem}
+.account-creator-form input,.account-creator-form textarea{background:#080d13;border-color:#293746}
+@media(max-width:850px){.account-network{grid-template-columns:1fr}.account-profile-card{position:static}.account-profile-card nav{grid-template-columns:repeat(3,minmax(0,1fr));}.account-profile-card nav a{text-align:center}.account-status-grid{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:600px){.account-status-grid,.account-form-grid{grid-template-columns:1fr}.account-feature-card{align-items:flex-start;flex-direction:column}.account-profile-card nav{display:flex;overflow-x:auto}.account-profile-card nav a{flex:0 0 auto}.account-feed-head h2{font-size:3rem}}
+</style>
+
+
+<style>
+@media(max-width:600px){
+  .account-network{width:100%;padding:10px 12px 92px!important;gap:12px!important}
+  .account-profile-card{
+    padding:18px!important;
+    border:1px solid #202b37!important;
+    border-radius:26px!important;
+    background:linear-gradient(155deg,rgb(22 140 255/.08),transparent 58%),#0b1118!important;
+  }
+  .account-avatar{width:64px;height:64px;margin-bottom:12px}
+  .account-profile-card h1{font-size:1.3rem}
+  .account-profile-card nav{gap:7px!important;margin-top:16px!important;padding-top:14px!important}
+  .account-profile-card nav a{min-height:38px!important;padding:0 13px!important;border:1px solid #202b37!important;border-radius:999px!important;background:#0d141c!important}
+  .account-profile-card nav a.is-active{background:rgb(22 140 255/.12)!important;box-shadow:none!important;border-color:rgb(44 217 255/.26)!important}
+  .account-signout{border-radius:999px}
+  .account-feed{padding:0!important}
+  .account-feed-head{padding:14px 6px 10px!important}
+  .account-feed-head h2{font-size:2.6rem!important;line-height:.94}
+  .account-status-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+  .account-status-grid article{padding:12px 10px;border-radius:18px}
+  .account-status-grid strong{font-size:.72rem}
+  .account-feature-card,.account-creator-panel{padding:18px!important;border-radius:24px!important}
+  .account-feature-card{min-height:230px;justify-content:flex-end;background:linear-gradient(180deg,transparent 10%,rgb(7 12 18/.92)),linear-gradient(135deg,rgb(22 140 255/.16),transparent 58%),#0b121a}
+  .account-feature-card h2{font-size:1.65rem!important}
+  .account-feature-card .button{border-radius:999px}
+  .account-creator-panel{margin-top:12px}
+  .account-form-grid{grid-template-columns:1fr!important}
+  .account-creator-form input,.account-creator-form textarea{border-radius:14px}
+  .account-creator-form .button{width:100%;border-radius:999px}
+}
+</style>

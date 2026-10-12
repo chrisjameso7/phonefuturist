@@ -1,0 +1,32 @@
+---
+import type {PublishedArticle} from '../lib/editorial';
+interface Props {articles:PublishedArticle[];unavailable:boolean}
+const {articles,unavailable}=Astro.props;
+function imageFor(article:PublishedArticle) {
+  const image=article.card_image??article.blocks.find(b=>b.type==='image');
+  if(!image?.url)return null;
+  try{return new URL(image.url).protocol==='https:'?image:null;}catch{return null;}
+}
+const lead=articles[0],leadImage=lead?imageFor(lead):null;
+const date=(s:string)=>new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
+---
+<div class="pf-mobile-editorial">
+  <header class="pf-mobile-feed-heading"><p>INDEPENDENT. INFORMED. AHEAD.</p><h1>What you should know<span>.</span></h1></header>
+  {lead?<article class:list={['pf-mobile-cover',{'has-image':!!leadImage}]}>
+    {leadImage&&<img src={leadImage.url} alt={leadImage.alt??''} width="720" height="900" fetchpriority="high"/>}
+    <div class="pf-mobile-cover-content"><span class="pf-mobile-kicker">{lead.section}</span><h2><a href={lead.canonical_path}>{lead.title}</a></h2>
+      <div class="pf-mobile-author"><span class="pf-mobile-author-monogram" aria-hidden="true">{lead.byline.trim().slice(0,1)}</span><span>{lead.byline}<time datetime={lead.published_at}>{date(lead.published_at)}</time></span><span aria-hidden="true">↗</span></div>
+    </div>
+  </article>:<section class="pf-mobile-cover has-image pf-mobile-lab-cover">
+    <img src="/assets/device-concept.png" alt="" width="1672" height="941" fetchpriority="high"/>
+    <div class="pf-mobile-cover-content"><span class="pf-mobile-kicker">INTERACTIVE LEAKS</span><h2>Don't just read<br/>what's next.<br/><em>Explore it.</em></h2><p>Turn hardware questions into virtual experiments.</p><a class="pf-mobile-cover-cta" href="/interactive-leaks">Discover the Lab <span aria-hidden="true">↗</span></a><small class="pf-mobile-image-note">Concept illustration · AI-generated</small></div>
+  </section>}
+  <section class="pf-mobile-more"><div class="pf-mobile-section-heading"><h2>Also good to know</h2><a href="/articles">All stories ↗</a></div>
+    {articles.length>1?<div class="pf-mobile-story-list">{articles.slice(1).map(article=>{const image=imageFor(article);return <article class="pf-mobile-story-row">
+      <a class="pf-mobile-story-thumb" href={article.canonical_path} tabindex="-1" aria-hidden="true">{image?<img src={image.url} alt="" width="160" height="160" loading="lazy"/>:<span>{article.section.slice(0,1).toUpperCase()}</span>}</a>
+      <div><span class="pf-mobile-kicker">{article.section}</span><h3><a href={article.canonical_path}>{article.title}</a></h3><p>{article.byline} <span>·</span> <time datetime={article.published_at}>{date(article.published_at)}</time></p></div>
+    </article>;})}</div>:<div class="pf-mobile-empty"><p>{unavailable?'The newsroom is temporarily unavailable.':'You’re up to date.'}</p><span>{unavailable?'Please check back shortly for the latest reporting.':'More original reporting will appear here as it is published.'}</span><a href="/articles">Visit the newsroom →</a></div>}
+  </section>
+  <section class="pf-mobile-destination"><div><span class="pf-mobile-kicker">BEYOND THE HEADLINES</span><h2>A place for<br/>the curious.</h2><p>Explore community simulations and the ideas behind them.</p><a href="/interactive-leaks/explore">Explore community builds <span aria-hidden="true">↗</span></a></div><img src="/assets/phonefuturist-official-logo.png" alt="" width="1024" height="1024" loading="lazy"/></section>
+  <a class="pf-mobile-newsroom-link" href="/articles">Read the whole story.<span>Go to the newsroom ↗</span></a>
+</div>

@@ -1,0 +1,193 @@
+{
+  "version": "current-generation-2026-10-08-0.1.0",
+  "cutoff": "2026-10-08",
+  "devices": [
+    {
+      "id": "apple-iphone-18-pro-max-5567",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "releaseDate": "2026-09-18",
+      "batteryMah": 5567,
+      "measurements": {
+        "combinedBatteryHours": 10.517,
+        "browsingHours": 29.633,
+        "videoHours": 12.067,
+        "gamingHours": 14.567
+      },
+      "display": {
+        "diagonalInches": 6.9,
+        "resolutionWidthPx": 1320,
+        "resolutionHeightPx": 2868,
+        "refreshRateHz": 120,
+        "panelTechnology": "OLED"
+      },
+      "sourceIds": [
+        "phonearena-battery-2026",
+        "official-apple-iphone18-pro-max-display"
+      ]
+    },
+    {
+      "id": "google-pixel-11-pro-xl-5115",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro XL",
+      "releaseDate": "2026-08-20",
+      "batteryMah": 5115,
+      "measurements": {
+        "combinedBatteryHours": 6.267,
+        "browsingHours": 12.283,
+        "videoHours": 11.333,
+        "gamingHours": 6.3
+      },
+      "charging": {
+        "wiredFullChargeMinutes": 69,
+        "advertisedWiredWatts": 45,
+        "advertisedWirelessWatts": 25,
+        "wiredThirtyMinutePercent": 70
+      },
+      "display": {
+        "diagonalInches": 6.8,
+        "resolutionWidthPx": 1344,
+        "resolutionHeightPx": 2992,
+        "refreshRateHz": 120,
+        "panelTechnology": "LTPO OLED"
+      },
+      "sourceIds": [
+        "phonearena-battery-2026",
+        "official-google-pixel11-pro-xl-display"
+      ]
+    },
+    {
+      "id": "huawei-mate-80-pro-5750",
+      "manufacturer": "Huawei",
+      "model": "Mate 80 Pro",
+      "releaseDate": "2026-02-26",
+      "batteryMah": 5750,
+      "measurements": {
+        "combinedBatteryHours": 10.383,
+        "browsingHours": 23.767,
+        "videoHours": 17.617,
+        "gamingHours": 8.35
+      }
+    },
+    {
+      "id": "poco-x8-pro-max-8500",
+      "manufacturer": "Poco",
+      "model": "X8 Pro Max",
+      "releaseDate": "2026-03-17",
+      "batteryMah": 8500,
+      "measurements": {
+        "combinedBatteryHours": 10.35,
+        "browsingHours": 26.1,
+        "videoHours": 15.433,
+        "gamingHours": 9.917
+      }
+    },
+    {
+      "id": "motorola-edge-70-pro-6500",
+      "manufacturer": "Motorola",
+      "model": "Edge 70 Pro",
+      "releaseDate": "2026-04-29",
+      "batteryMah": 6500,
+      "measurements": {
+        "combinedBatteryHours": 10.217,
+        "browsingHours": 22.433,
+        "videoHours": 15.967,
+        "gamingHours": 12.95
+      }
+    },
+    {
+      "id": "redmagic-11s-pro-7500",
+      "manufacturer": "RedMagic",
+      "model": "11S Pro",
+      "releaseDate": "2026-06-10",
+      "batteryMah": 7500,
+      "measurements": {
+        "combinedBatteryHours": 10.017,
+        "browsingHours": 22.2,
+        "videoHours": 16.217,
+        "gamingHours": 11.083
+      },
+      "charging": {
+        "wiredFullChargeMinutes": 59,
+        "advertisedWiredWatts": 80,
+        "advertisedWirelessWatts": 80,
+        "wiredThirtyMinutePercent": 61
+      }
+    },
+    {
+      "id": "xiaomi-redmi-note-15-pro-6500",
+      "manufacturer": "Xiaomi",
+      "model": "Redmi Note 15 Pro",
+      "releaseDate": "2026-01-06",
+      "batteryMah": 6500,
+      "measurements": {
+        "combinedBatteryHours": 9.65,
+        "browsingHours": 23.833,
+        "videoHours": 13.9,
+        "gamingHours": 11.333
+      }
+    },
+    {
+      "id": "xiaomi-redmi-note-15-5g-5520",
+      "manufacturer": "Xiaomi",
+      "model": "Redmi Note 15 5G",
+      "releaseDate": "2026-01-06",
+      "batteryMah": 5520,
+      "charging": {
+        "wiredFullChargeMinutes": 69,
+        "advertisedWiredWatts": 45,
+        "wiredThirtyMinutePercent": 53
+      }
+    },
+    {
+      "id": "motorola-moto-g-power-2026-5200",
+      "manufacturer": "Motorola",
+      "model": "Moto G Power (2026)",
+      "releaseDate": "2026-01-08",
+      "batteryMah": 5200,
+      "charging": {
+        "wiredFullChargeMinutes": 69,
+        "advertisedWiredWatts": 30,
+        "advertisedWirelessWatts": 15,
+        "wiredThirtyMinutePercent": 53
+      }
+    },
+    {
+      "id": "samsung-galaxy-a57-5g-5000",
+      "manufacturer": "Samsung",
+      "model": "Galaxy A57 5G",
+      "releaseDate": "2026-03-30",
+      "batteryMah": 5000,
+      "charging": {
+        "wiredFullChargeMinutes": 69,
+        "advertisedWiredWatts": 45,
+        "wiredThirtyMinutePercent": 62
+      }
+    }
+  ],
+  "notes": [
+    "This batch intentionally emphasizes devices released in 2026 before the October 8 cutoff.",
+    "More 2026 flagships and midrange models should be appended as protocol-compatible evidence is ingested.",
+    "Future October launches after October 8 must remain in the unreleased-prior dataset until their actual release date."
+  ],
+  "sources": [
+    {
+      "id": "phonearena-battery-2026",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "official-apple-iphone18-pro-max-display",
+      "publisher": "Apple",
+      "url": "https://support.apple.com/en-euro/148591",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-google-pixel11-pro-xl-display",
+      "publisher": "Google",
+      "url": "https://store.google.com/us/product/pixel_11_pro_specs?hl=en-US",
+      "protocol": "official product specification"
+    }
+  ]
+}

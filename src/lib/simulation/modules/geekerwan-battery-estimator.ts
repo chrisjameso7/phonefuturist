@@ -1,0 +1,487 @@
+import type {
+  DeviceCorpus,
+} from './device-corpus';
+import {
+  findComparableDevices,
+  normalizeSocFamily,
+} from './comparable-devices';
+import {
+  linkDeviceIdentities,
+} from './device-identity-linker';
+
+export const GEEKERWAN_BATTERY_ESTIMATOR_VERSION =
+  'geekerwan-battery-estimator-0.1.0';
+
+export interface GeekerwanBatteryEstimateInput {
+  batteryMah: number;
+  batteryEnergyWh?: number;
+  manufacturer?: string;
+  socVendor?: string;
+  socName?: string;
+  limit?: number;
+}
+
+export interface GeekerwanBatteryEstimateResult {
+  version: string;
+  status: 'resolved' | 'unresolved';
+  expectedHours?: number;
+  minHours?: number;
+  maxHours?: number;
+  expectedWhPerHour?: number;
+  expectedMahPerHour?: number;
+  referenceCount: number;
+  neighborIds: string[];
+  evidenceScope?:
+    | 'same-soc-family'
+    | 'same-soc-vendor'
+    | 'protocol-cohort';
+  sameSocFamilyReferences: number;
+  sameSocVendorReferences: number;
+  sourceIds: string[];
+  unresolvedReason?: string;
+  note: string;
+}
+
+function positive(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isFinite(value) &&
+    value > 0
+  );
+}
+
+function weightedMean(
+  rows: Array<{
+    value: number;
+    weight: number;
+  }>,
+) {
+  const total =
+    rows.reduce(
+      (sum, row) =>
+        sum + row.weight,
+      0,
+    );
+
+  return (
+    rows.reduce(
+      (sum, row) =>
+        sum +
+        row.value *
+          row.weight,
+      0,
+    ) /
+    Math.max(
+      total,
+      Number.EPSILON,
+    )
+  );
+}
+
+export function estimateGeekerwanBatteryLife(
+  corpus: DeviceCorpus,
+  input: GeekerwanBatteryEstimateInput,
+): GeekerwanBatteryEstimateResult {
+  if (!positive(input.batteryMah)) {
+    return {
+      version:
+        GEEKERWAN_BATTERY_ESTIMATOR_VERSION,
+      status: 'unresolved',
+      referenceCount: 0,
+      neighborIds: [],
+      sameSocFamilyReferences: 0,
+      sameSocVendorReferences: 0,
+      sourceIds: [],
+      unresolvedReason:
+        'Battery capacity is required.',
+      note:
+        'Geekerwan-protocol battery life remains unresolved without target battery capacity.',
+    };
+  }
+
+  const measurements =
+    corpus.measurements.filter(
+      (measurement) =>
+        measurement.metric ===
+          'geekerwan_battery_life_5_0_hours' &&
+        measurement.workload ===
+          'benchmark' &&
+        measurement.evidenceKind ===
+          'measured' &&
+        measurement.unit.toLowerCase() ===
+          'hours' &&
+        positive(measurement.value),
+    );
+
+  const eligibleIds =
+    new Set(
+      measurements.map(
+        (measurement) =>
+          measurement.deviceVariantId,
+      ),
+    );
+
+  const deviceById =
+    new Map(
+      corpus.devices.map(
+        (device) => [
+          device.variant.id,
+          device,
+        ],
+      ),
+    );
+
+  const canonicalById =
+    new Map<string, string>();
+
+  for (
+    const link of
+    linkDeviceIdentities(corpus)
+  ) {
+    for (
+      const linkedId of
+      link.linkedDeviceIds
+    ) {
+      canonicalById.set(
+        linkedId,
+        link.canonicalDeviceId,
+      );
+    }
+  }
+
+  const evidenceCorpus: DeviceCorpus = {
+    ...corpus,
+    devices:
+      corpus.devices
+        .filter(
+          (device) =>
+            eligibleIds.has(
+              device.variant.id,
+            ),
+        )
+        .map((device) => {
+          const canonicalId =
+            canonicalById.get(
+              device.variant.id,
+            ) ??
+            device.variant.id;
+
+          const canonical =
+            deviceById.get(
+              canonicalId,
+            );
+
+          if (
+            !canonical ||
+            canonical.variant.id ===
+              device.variant.id
+          ) {
+            return device;
+          }
+
+          return {
+            ...device,
+            variant: {
+              ...device.variant,
+              battery: {
+                ...canonical.variant
+                  .battery,
+                ...device.variant
+                  .battery,
+              },
+              soc:
+                device.variant.soc ??
+                canonical.variant.soc,
+            },
+          };
+        }),
+  };
+
+  const comparables =
+    findComparableDevices(
+      evidenceCorpus,
+      {
+        batteryMah:
+          input.batteryMah,
+        manufacturer:
+          input.manufacturer,
+        socVendor:
+          input.socVendor,
+        socName:
+          input.socName,
+        limit:
+          input.limit ?? 20,
+      },
+    );
+
+  const measurementByDevice =
+    new Map(
+      measurements.map(
+        (measurement) => [
+          measurement.deviceVariantId,
+          measurement,
+        ],
+      ),
+    );
+
+  const rows =
+    comparables.flatMap(
+      (match) => {
+        const measurement =
+          measurementByDevice.get(
+            match.device.variant.id,
+          );
+        if (!measurement) return [];
+
+        const battery =
+          match.device.variant
+            .battery;
+        const capacity =
+          battery?.capacityMah ??
+          battery?.typicalCapacityMah;
+        const energy =
+          battery?.typicalEnergyWh ??
+          battery?.ratedEnergyWh ??
+          (
+            positive(capacity) &&
+            positive(
+              battery
+                ?.nominalVoltageV,
+            )
+              ? (
+                  capacity *
+                  battery!
+                    .nominalVoltageV!
+                ) /
+                1000
+              : undefined
+          );
+
+        if (
+          !positive(capacity) &&
+          !positive(energy)
+        ) {
+          return [];
+        }
+
+        return [{
+          deviceVariantId:
+            match.device.variant.id,
+          hours:
+            measurement.value,
+          mahPerHour:
+            positive(capacity)
+              ? capacity /
+                measurement.value
+              : undefined,
+          whPerHour:
+            positive(energy)
+              ? energy /
+                measurement.value
+              : undefined,
+          weight:
+            Math.max(
+              match.score,
+              0.05,
+            ) ** 2,
+          socVendor:
+            match.device.variant
+              .soc?.vendor,
+          socName:
+            match.device.variant
+              .soc?.name,
+          sourceId:
+            measurement.sourceId,
+        }];
+      },
+    );
+
+  const sameFamily =
+    input.socName
+      ? rows.filter(
+          (row) =>
+            row.socName &&
+            normalizeSocFamily(
+              row.socName,
+            ) ===
+              normalizeSocFamily(
+                input.socName!,
+              ),
+        )
+      : [];
+
+  const sameVendor =
+    input.socVendor
+      ? rows.filter(
+          (row) =>
+            row.socVendor ===
+            input.socVendor,
+        )
+      : [];
+
+  const selected =
+    sameFamily.length >= 2
+      ? sameFamily
+      : sameVendor.length >= 2
+        ? sameVendor
+        : rows;
+
+  if (!selected.length) {
+    return {
+      version:
+        GEEKERWAN_BATTERY_ESTIMATOR_VERSION,
+      status: 'unresolved',
+      referenceCount: 0,
+      neighborIds: [],
+      sameSocFamilyReferences:
+        sameFamily.length,
+      sameSocVendorReferences:
+        sameVendor.length,
+      sourceIds: [],
+      unresolvedReason:
+        'No compatible Geekerwan Smartphone 5.0 references were found.',
+      note:
+        'The estimator fails closed rather than falling back to unrelated battery protocols.',
+    };
+  }
+
+  const evidenceScope =
+    selected === sameFamily
+      ? 'same-soc-family' as const
+      : selected === sameVendor
+        ? 'same-soc-vendor' as const
+        : 'protocol-cohort' as const;
+
+  const energyRows =
+    selected.filter(
+      (row) =>
+        positive(row.whPerHour),
+    );
+
+  const mahRows =
+    selected.filter(
+      (row) =>
+        positive(row.mahPerHour),
+    );
+
+  const useEnergy =
+    positive(
+      input.batteryEnergyWh,
+    ) &&
+    energyRows.length > 0;
+
+  const normalizedRows =
+    useEnergy
+      ? energyRows
+      : mahRows;
+
+  if (!normalizedRows.length) {
+    return {
+      version:
+        GEEKERWAN_BATTERY_ESTIMATOR_VERSION,
+      status: 'unresolved',
+      referenceCount: 0,
+      neighborIds: [],
+      sameSocFamilyReferences:
+        sameFamily.length,
+      sameSocVendorReferences:
+        sameVendor.length,
+      sourceIds: [],
+      unresolvedReason:
+        'Compatible Geekerwan references lack the battery energy/capacity basis required by the target.',
+      note:
+        'The estimator does not convert Wh and mAh without accepted voltage evidence.',
+    };
+  }
+
+  const expectedDrain =
+    useEnergy
+      ? weightedMean(
+          normalizedRows.map(
+            (row) => ({
+              value:
+                row.whPerHour!,
+              weight:
+                row.weight,
+            }),
+          ),
+        )
+      : weightedMean(
+          normalizedRows.map(
+            (row) => ({
+              value:
+                row.mahPerHour!,
+              weight:
+                row.weight,
+            }),
+          ),
+        );
+
+  const expectedHours =
+    useEnergy
+      ? input.batteryEnergyWh! /
+        expectedDrain
+      : input.batteryMah /
+        expectedDrain;
+
+  const perReferenceHours =
+    normalizedRows.map(
+      (row) =>
+        useEnergy
+          ? input.batteryEnergyWh! /
+            row.whPerHour!
+          : input.batteryMah /
+            row.mahPerHour!,
+    );
+
+  return {
+    version:
+      GEEKERWAN_BATTERY_ESTIMATOR_VERSION,
+    status: 'resolved',
+    expectedHours,
+    minHours:
+      Math.min(
+        ...perReferenceHours,
+      ),
+    maxHours:
+      Math.max(
+        ...perReferenceHours,
+      ),
+    ...(useEnergy
+      ? {
+          expectedWhPerHour:
+            expectedDrain,
+        }
+      : {
+          expectedMahPerHour:
+            expectedDrain,
+        }),
+    referenceCount:
+      normalizedRows.length,
+    neighborIds: [
+      ...new Set(
+        normalizedRows.map(
+          (row) =>
+            row.deviceVariantId,
+        ),
+      ),
+    ],
+    evidenceScope,
+    sameSocFamilyReferences:
+      sameFamily.length,
+    sameSocVendorReferences:
+      sameVendor.length,
+    sourceIds: [
+      ...new Set(
+        normalizedRows.map(
+          (row) =>
+            row.sourceId,
+        ),
+      ),
+    ],
+    note:
+      useEnergy
+        ? `Estimated Smartphone 5.0 battery life is energy-normalized in Wh/h using Geekerwan-only ${evidenceScope.replaceAll('-', ' ')} evidence. No PhoneArena or GSMArena runtime protocol is mixed into this estimate.`
+        : `Estimated Smartphone 5.0 battery life is capacity-normalized in mAh/h using Geekerwan-only ${evidenceScope.replaceAll('-', ' ')} evidence. Wh normalization is withheld because target or selected references lack accepted battery-energy evidence.`,
+  };
+}

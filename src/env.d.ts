@@ -6,3 +6,8 @@ declare namespace App {
     access: { active: boolean; verified: boolean; roles: string[]; aal: string; mfa_required: boolean; mfa_exception?: boolean; can_manage_mfa_exceptions?: boolean } | null;
   }
 }
+
+
+declare module 'cloudflare:workers' {
+  export const env: Record<string, unknown>;
+}

@@ -1,0 +1,207 @@
+{
+  "version": "brand-expansion-cohort-0.1.0",
+  "purpose": "Broaden the calibration corpus beyond the initial flagship set using protocol-tagged measurements and explicit regional variants.",
+  "sources": [
+    {
+      "id": "phonearena-battery",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/phones/benchmarks/battery",
+      "protocol": "Battery estimate + browsing + video + 3D gaming"
+    },
+    {
+      "id": "tomsguide-battery",
+      "publisher": "Tom's Guide",
+      "url": "https://www.tomsguide.com/us/smartphones-best-battery-life%2Creview-2857.html",
+      "protocol": "Controlled web-surfing battery test"
+    },
+    {
+      "id": "phonearena-honor-magic7-pro",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/honor-magic-7-pro-review_id6754",
+      "protocol": "Browsing + video + 3D gaming"
+    },
+    {
+      "id": "tomsguide-honor-magic7-pro",
+      "publisher": "Tom's Guide",
+      "url": "https://www.tomsguide.com/phones/android-phones/honor-magic7-pro-review-on-the-edge-of-excellence",
+      "protocol": "3-hour 1080p YouTube drain + charging claims"
+    },
+    {
+      "id": "phonearena-edge60pro",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/motorola-edge-60-pro-review_id7281",
+      "protocol": "Browsing + video + 3D gaming + charging"
+    }
+  ],
+  "devices": [
+    {
+      "id": "honor-magic7-pro-global-5270",
+      "manufacturer": "Honor",
+      "model": "Magic7 Pro",
+      "region": "Global/Europe",
+      "batteryMah": 5270,
+      "sourceIds": [
+        "phonearena-honor-magic7-pro",
+        "tomsguide-honor-magic7-pro"
+      ],
+      "measurements": {
+        "browsingHours": 21.433,
+        "videoHours": 8.1,
+        "gamingHours": 10.683,
+        "youtube3hDrainPercent": 20
+      }
+    },
+    {
+      "id": "honor-magic7-pro-cn-5850",
+      "manufacturer": "Honor",
+      "model": "Magic7 Pro",
+      "region": "China / selected markets",
+      "batteryMah": 5850,
+      "sourceIds": [
+        "phonearena-honor-magic7-pro",
+        "tomsguide-honor-magic7-pro"
+      ],
+      "notes": [
+        "Separate battery variant. Do not reuse global 5270 mAh test results without verified tested-unit identity."
+      ]
+    },
+    {
+      "id": "asus-rog-phone-9-pro-5800",
+      "manufacturer": "Asus",
+      "model": "ROG Phone 9 Pro",
+      "batteryMah": 5800,
+      "sourceIds": [
+        "phonearena-battery",
+        "tomsguide-battery"
+      ],
+      "measurements": {
+        "phonearenaBrowsingHours": 18.417,
+        "phonearenaVideoHours": 12.683,
+        "phonearenaGamingHours": 13.683,
+        "tomsguideWebHours": 20.567
+      }
+    },
+    {
+      "id": "motorola-edge-60-pro-6000",
+      "manufacturer": "Motorola",
+      "model": "Edge 60 Pro",
+      "batteryMah": 6000,
+      "sourceIds": [
+        "phonearena-battery",
+        "phonearena-edge60pro"
+      ],
+      "measurements": {
+        "browsingHours": 18.733,
+        "videoHours": 12.35,
+        "gamingHours": 13.667,
+        "wiredFullChargeMinutes": 49,
+        "wiredThirtyMinutePercent": 75
+      }
+    },
+    {
+      "id": "nothing-phone-3a-pro-5000",
+      "manufacturer": "Nothing",
+      "model": "Phone (3a) Pro",
+      "batteryMah": 5000,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 16.217,
+        "videoHours": 10.433,
+        "gamingHours": 11.1
+      }
+    },
+    {
+      "id": "sony-xperia-1-vi-5000",
+      "manufacturer": "Sony",
+      "model": "Xperia 1 VI",
+      "batteryMah": 5000,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 18.9,
+        "videoHours": 7.767,
+        "gamingHours": 14.05
+      }
+    },
+    {
+      "id": "nubia-z70-ultra-6150",
+      "manufacturer": "nubia",
+      "model": "Z70 Ultra",
+      "batteryMah": 6150,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 19.4,
+        "videoHours": 12.817,
+        "gamingHours": 13.333
+      }
+    },
+    {
+      "id": "redmagic-10s-pro-7050",
+      "manufacturer": "RedMagic",
+      "model": "10S Pro",
+      "batteryMah": 7050,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "charging": {
+        "wiredFullChargeMinutes": 38,
+        "advertisedWiredWatts": 80
+      }
+    },
+    {
+      "id": "huawei-mate-x7-5600",
+      "manufacturer": "Huawei",
+      "model": "Mate X7",
+      "batteryMah": 5600,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 13.533,
+        "videoHours": 13.217,
+        "gamingHours": 7.533
+      }
+    },
+    {
+      "id": "poco-f7-pro-6000",
+      "manufacturer": "Poco",
+      "model": "F7 Pro",
+      "batteryMah": 6000,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 17.65,
+        "videoHours": 12.9,
+        "gamingHours": 10.817,
+        "wiredFullChargeMinutes": 36,
+        "advertisedWiredWatts": 90
+      }
+    },
+    {
+      "id": "vivo-x300-ultra-6600",
+      "manufacturer": "vivo",
+      "model": "X300 Ultra",
+      "batteryMah": 6600,
+      "sourceIds": [
+        "phonearena-battery"
+      ],
+      "measurements": {
+        "browsingHours": 20.317,
+        "videoHours": 11.9,
+        "gamingHours": 11.5
+      }
+    }
+  ],
+  "rules": [
+    "Treat regional capacity variants as separate records.",
+    "Do not transfer a runtime result from one battery variant to another unless the tested unit is explicitly identified.",
+    "Preserve per-source protocol identity for every runtime and charging measurement.",
+    "Use broad single-source cohorts for ranking within a protocol, then validate patterns against independent sources where available."
+  ]
+}

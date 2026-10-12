@@ -9,6 +9,8 @@ export const POST: APIRoute = async ({ request, locals, params, redirect }) => {
   try {
     const form = await boundedForm(request);
     const email = (form.get('email') ?? '').trim(); const password = form.get('password') ?? '';
+    const requestedNext = (form.get('next') ?? '').trim();
+    const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/account';
     if (action === 'signout') { const { error } = await client.auth.signOut(); return error ? new Response('Sign-out failed. Please retry.', { status: 503 }) : redirect('/login', 303); }
     if (!email || email.length > 254 || !email.includes('@')) return redirect('/login?error=auth', 303);
     if (action === 'reset') {
@@ -22,7 +24,7 @@ export const POST: APIRoute = async ({ request, locals, params, redirect }) => {
     }
     if (action === 'login') {
       const { error } = await client.auth.signInWithPassword({ email, password });
-      return redirect(error ? '/login?error=auth' : '/account', 303);
+      return redirect(error ? '/login?error=auth' : next, 303);
     }
     return new Response('Not found.', { status: 404 });
   } catch { return new Response('Unable to process this request. Please retry.', { status: 400 }); }

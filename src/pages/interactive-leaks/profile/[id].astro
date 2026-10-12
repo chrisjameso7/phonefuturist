@@ -1,0 +1,125 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { serverClient, settings } from '../../../lib/supabase';
+import '../../../styles/lab-simulator.css';
+
+const id = Astro.params.id ?? '';
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let profile: any = null;
+let creator: any = null;
+let parent: any = null;
+let visibleForks = 0;
+
+if (uuid.test(id)) {
+  const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+  if (client) {
+    const { data } = await client.rpc('shared_simulation_profile', { p_id: id });
+    profile = data;
+
+    if (profile) {
+      const creatorPromise = client
+        .from('creator_profiles')
+        .select('handle,display_name,avatar_url')
+        .eq('user_id', profile.owner_id)
+        .maybeSingle();
+
+      const forksPromise = client
+        .from('simulation_profiles')
+        .select('id')
+        .eq('forked_from', profile.id);
+
+      const parentPromise = profile.forked_from
+        ? client
+            .from('simulation_profiles')
+            .select('id,name,owner_id')
+            .eq('id', profile.forked_from)
+            .maybeSingle()
+        : Promise.resolve({ data: null } as any);
+
+      const [{ data: creatorData }, { data: forkRows }, { data: parentData }] = await Promise.all([
+        creatorPromise,
+        forksPromise,
+        parentPromise,
+      ]);
+
+      creator = creatorData;
+      visibleForks = (forkRows ?? []).length;
+      parent = parentData;
+    }
+  }
+}
+---
+
+<Page
+  title={profile ? `${profile.name} - Interactive Leaks Profile` : 'Profile not available'}
+  description="A shared PhoneFuturist Interactive Leaks component profile."
+  productMode={true}
+>
+  <main class="il-share-page social-share-page">
+    {profile ? (
+      <>
+        <a class="il-back" href="/interactive-leaks/explore">← Explore community</a>
+        <div class="social-post-shell">
+          <div class="social-post-topbar">
+            <span>Reusable profile</span>
+            <a href="/interactive-leaks/explore">Explore more</a>
+          </div>
+        <div class="il-share-hero social-share-hero">
+          <div>
+            <div class="il-share-meta">
+              <span class="il-pill">{profile.profile_kind}</span>
+              <span>{visibleForks} visible forks</span>
+            </div>
+            <h1>{profile.name}</h1>
+            <p>{profile.component_key.replaceAll('_', ' ')} · {profile.visibility}</p>
+            {creator && (
+              <a class="il-creator-line" href={`/creator/${creator.handle}`}>
+                {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
+                <b>{creator.display_name}</b>
+                <small>@{creator.handle}</small>
+              </a>
+            )}
+            {parent && (
+              <p class="il-lineage">Forked from <a href={`/interactive-leaks/profile/${parent.id}`}>{parent.name}</a></p>
+            )}
+          </div>
+          <form method="post" action="/interactive-leaks/api/fork">
+            <input type="hidden" name="kind" value="profile" />
+            <input type="hidden" name="id" value={profile.id} />
+            <button class="il-primary" type="submit">Fork profile</button>
+          </form>
+        </div>
+
+        <section class="il-share-grid">
+          <article><span>Preset</span><strong>{profile.assumptions?.profilePreset || 'Custom'}</strong></article>
+          <article><span>CPU target</span><strong>{profile.assumptions?.customCpuTarget ?? profile.assumptions?.cpuLoad ?? 'Unknown'}%</strong></article>
+          <article><span>GPU target</span><strong>{profile.assumptions?.customGpuTarget ?? profile.assumptions?.gpuLoad ?? 'Unknown'}%</strong></article>
+          <article><span>Efficiency</span><strong>{profile.assumptions?.efficiencyAssumption ?? 0}%</strong></article>
+        </section>
+
+        <p class="il-share-note">Profiles package assumptions for reuse. They are not measured benchmark records unless explicitly labeled as such by PhoneFuturist.</p>
+        </div>
+      </>
+    ) : (
+      <section class="il-share-missing">
+        <h1>Profile not available.</h1>
+        <p>It may be private, deleted, or the link may be invalid.</p>
+        <a class="il-primary" href="/interactive-leaks/simulate">Open Interactive Leaks</a>
+      </section>
+    )}
+  </main>
+</Page>
+
+<style>
+.social-share-page{width:min(100%,860px)!important;margin:0 auto;padding:24px 18px 80px!important}
+.social-post-shell{margin-top:14px;border:1px solid #202c39;border-radius:18px;background:#0b121a;overflow:hidden}
+.social-post-topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #202c39;color:#718092;font-size:.6rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}
+.social-post-topbar a{color:#62cfff;text-decoration:none;font-size:.58rem}
+.social-share-hero{padding:24px!important;border-bottom:1px solid #202c39}
+.social-share-hero h1{font-size:clamp(2.5rem,6vw,5.5rem)!important;letter-spacing:-.065em!important;font-weight:620!important}
+.social-share-page .il-share-grid{margin:0!important;padding:16px 24px!important;grid-template-columns:repeat(4,1fr)!important;border-bottom:1px solid #202c39}
+.social-share-page .il-share-grid article{border:0!important;border-right:1px solid #202c39!important;border-radius:0!important;background:transparent!important}
+.social-share-page .il-share-grid article:last-child{border-right:0!important}
+.social-share-page .il-share-note{margin:0!important;padding:18px 24px!important;color:#718092!important;font-size:.68rem!important}
+@media(max-width:650px){.social-share-page .il-share-grid{grid-template-columns:1fr 1fr!important}.social-share-page .il-share-grid article:nth-child(2){border-right:0!important}.social-share-hero{padding:20px!important}}
+</style>

@@ -1,0 +1,267 @@
+{
+  "version": "device-variant-cohort-0.2.0",
+  "description": "Verified variant families for calibration. A family can contain multiple hardware variants under one marketing name. Unknown identifiers remain unknown.",
+  "samsungSplitSocFamilies": [
+    {
+      "family": "Galaxy S26",
+      "batteryMah": 4300,
+      "variants": [
+        {
+          "region": "North America and selected markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Elite Gen 5 for Galaxy"
+          }
+        },
+        {
+          "region": "most international markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2600"
+          }
+        }
+      ],
+      "pairedEvidence": {
+        "protocols": [
+          {
+            "source": "Tom's Guide",
+            "type": "Geekbench 6.6",
+            "snapdragon": {
+              "singleCore": 3531,
+              "multiCore": 10778
+            },
+            "exynos": {
+              "singleCore": 3197,
+              "multiCore": 11065
+            },
+            "interpretation": "Snapdragon leads single-core; Exynos narrowly leads this S26 multi-core run."
+          },
+          {
+            "source": "Android Authority",
+            "type": "3DMark Wild Life Extreme stress",
+            "snapdragonSustainabilityPercent": 53.8,
+            "exynosSustainabilityPercent": 74.9,
+            "interpretation": "Exynos retains a larger fraction of peak synthetic raster performance and converges with Snapdragon late in the run."
+          },
+          {
+            "source": "Android Authority",
+            "type": "3DMark Solar Bay stress",
+            "interpretation": "Exynos sustains peak ray-tracing performance longer and holds a slim lead late in the 20-minute run."
+          },
+          {
+            "source": "Android Addicts via SamMobile",
+            "type": "mixed battery drain",
+            "snapdragonRuntimeHours": 9.433,
+            "exynosRuntimeHours": 6.8,
+            "interpretation": "Snapdragon lasts substantially longer in this mixed-task test; treat as one protocol rather than universal battery truth."
+          },
+          {
+            "source": "Android Authority",
+            "type": "real-game thermal behavior",
+            "interpretation": "Exynos 2600 reaches its thermal ceiling sooner in demanding real games; Snapdragon-class comparison devices sustain higher frame rates and lower thermals in several titles."
+          }
+        ],
+        "conclusion": "No universal winner. Exynos 2600 is unusually competitive in sustained synthetic and ray-tracing workloads, while Snapdragon leads peak CPU, mainstream gaming consistency, thermals in real games, and the cited mixed-use battery test."
+      },
+      "sources": [
+        "https://www.tomsguide.com/phones/samsung-phones/galaxy-s26-performance-face-off-snapdragon-8-elite-gen-5-vs-exynos-2600",
+        "https://www.androidauthority.com/exynos-vs-snapdragon-galaxy-s26-benchmarks-3653459/",
+        "https://www.androidauthority.com/snapdragon-vs-exynos-gaming-test-2026-3677839/",
+        "https://www.sammobile.com/news/galaxy-s26-exynos-2600-vs-snapdragon-8-elite-gen-5-battery-test-reveals-massive-gap/"
+      ],
+      "use": "top-priority matched-family calibration across peak, sustained, thermal and battery domains"
+    },
+    {
+      "family": "Galaxy S24",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "most markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2400"
+          }
+        },
+        {
+          "region": "US/Canada/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 3"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s24-review-2663.php",
+      "use": "variant identity; later pairwise runtime fitting"
+    },
+    {
+      "family": "Galaxy S23 FE",
+      "batteryMah": 4500,
+      "variants": [
+        {
+          "region": "global",
+          "modelNumber": "SM-S711B",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2200"
+          }
+        },
+        {
+          "region": "North America",
+          "modelNumber": "SM-S711U1",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 1"
+          }
+        }
+      ],
+      "pairedEvidence": {
+        "protocol": "GSMArena Active Use",
+        "snapdragonActiveUseHours": 9.75,
+        "exynosActiveUseHours": 8.4667,
+        "snapdragonCpuStabilityPercent": 66,
+        "exynosCpuStabilityPercent": 58,
+        "snapdragonGpuStabilityPercent": 46,
+        "exynosGpuStabilityPercent": 50,
+        "note": "Same stated battery capacity and near-identical display/camera hardware make this a high-value natural experiment. Do not attribute the entire runtime gap to software."
+      },
+      "source": "https://www.gsmarena.com/galaxy_s23_fe_exynos_2200_vs_snapdragon_8_gen_1_review_battery_camera_price_compared-news-60961.php",
+      "use": "high-priority pairwise SoC/platform calibration"
+    },
+    {
+      "family": "Galaxy S22",
+      "batteryMah": 3700,
+      "variants": [
+        {
+          "region": "Europe",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2200"
+          }
+        },
+        {
+          "region": "most other markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 8 Gen 1"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s22-review-2396.php",
+      "use": "variant identity; seek matched protocol pair"
+    },
+    {
+      "family": "Galaxy S21 5G",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "rest of world",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 2100"
+          }
+        },
+        {
+          "region": "North America/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 888"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s21-review-2218.php",
+      "use": "variant identity; seek matched protocol pair"
+    },
+    {
+      "family": "Galaxy Note20 Ultra 5G",
+      "variants": [
+        {
+          "region": "Europe/India/Brazil/Australia and other Exynos markets",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 990"
+          }
+        },
+        {
+          "region": "North America/South Korea/Japan/China",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 865+"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_note20_ultra_5g-review-2149p4.php",
+      "use": "historical split-platform anchor"
+    },
+    {
+      "family": "Galaxy S20",
+      "batteryMah": 4000,
+      "variants": [
+        {
+          "region": "global",
+          "soc": {
+            "vendor": "Samsung",
+            "name": "Exynos 990"
+          }
+        },
+        {
+          "region": "USA and selected markets",
+          "soc": {
+            "vendor": "Qualcomm",
+            "name": "Snapdragon 865"
+          }
+        }
+      ],
+      "source": "https://www.gsmarena.com/samsung_galaxy_s20-10081.php",
+      "use": "historical split-platform anchor"
+    }
+  ],
+  "appleSimBatteryFamilies": [
+    {
+      "family": "iPhone 17 Pro",
+      "variants": [
+        {
+          "simConfiguration": "nano_sim_plus_esim",
+          "batteryMah": 3988,
+          "markets": "physical-SIM markets"
+        },
+        {
+          "simConfiguration": "esim_only",
+          "batteryMah": 4252,
+          "markets": "eSIM-only markets"
+        }
+      ],
+      "sources": [
+        "https://www.apple.com/newsroom/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/",
+        "https://www.macrumors.com/2025/09/19/iphone-17-and-17-pro-sim-esim-battery-capacities/"
+      ],
+      "note": "Apple explicitly states eSIM-only 17 Pro models use freed SIM-tray space for a larger battery."
+    },
+    {
+      "family": "iPhone 17 Pro Max",
+      "variants": [
+        {
+          "simConfiguration": "nano_sim_plus_esim",
+          "batteryMah": 4823,
+          "markets": "physical-SIM markets"
+        },
+        {
+          "simConfiguration": "esim_only",
+          "batteryMah": 5088,
+          "markets": "eSIM-only markets"
+        }
+      ],
+      "sources": [
+        "https://www.apple.com/newsroom/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/",
+        "https://www.macrumors.com/2025/09/19/iphone-17-and-17-pro-sim-esim-battery-capacities/"
+      ],
+      "note": "These variants must not share one battery-capacity record in runtime calibration."
+    }
+  ],
+  "modelingRules": [
+    "Prefer pairwise same-family comparisons when isolating SoC/platform effects.",
+    "A same-name device with a different SoC is a different hardware variant.",
+    "A same-name device with a different battery capacity is a different hardware variant.",
+    "Do not copy a runtime measurement from one regional variant to another unless the tested configuration is explicitly verified.",
+    "Separate SoC/platform residuals from OEM/software residuals whenever matched-family evidence permits."
+  ]
+}

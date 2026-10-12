@@ -1,0 +1,135 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { serverClient, settings } from '../../../lib/supabase';
+import '../../../styles/lab-simulator.css';
+
+const id = Astro.params.id ?? '';
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let simulation: any = null;
+let creator: any = null;
+let parent: any = null;
+let visibleForks = 0;
+
+if (uuid.test(id)) {
+  const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+  if (client) {
+    const { data } = await client.rpc('shared_simulation', { p_id: id });
+    simulation = data;
+
+    if (simulation) {
+      const creatorPromise = client
+        .from('creator_profiles')
+        .select('handle,display_name,avatar_url')
+        .eq('user_id', simulation.owner_id)
+        .maybeSingle();
+
+      const forksPromise = client
+        .from('simulations')
+        .select('id')
+        .eq('forked_from', simulation.id);
+
+      const parentPromise = simulation.forked_from
+        ? client
+            .from('simulations')
+            .select('id,name,owner_id')
+            .eq('id', simulation.forked_from)
+            .maybeSingle()
+        : Promise.resolve({ data: null } as any);
+
+      const [{ data: creatorData }, { data: forkRows }, { data: parentData }] = await Promise.all([
+        creatorPromise,
+        forksPromise,
+        parentPromise,
+      ]);
+
+      creator = creatorData;
+      visibleForks = (forkRows ?? []).length;
+      parent = parentData;
+    }
+  }
+}
+---
+
+<Page
+  title={simulation ? `${simulation.name} - Interactive Leaks` : 'Simulation not available'}
+  description="A shared PhoneFuturist Interactive Leaks simulation."
+  productMode={true}
+>
+  <main class="il-share-page social-share-page">
+    {simulation ? (
+      <>
+        <a class="il-back" href="/interactive-leaks/explore">← Explore community</a>
+        <div class="social-post-shell">
+          <div class="social-post-topbar">
+            <span>Simulation</span>
+            <a href="/interactive-leaks/explore">Explore more</a>
+          </div>
+        <div class="il-share-hero social-share-hero">
+          <div>
+            <div class="il-share-meta">
+              <span class="il-pill">{simulation.visibility}</span>
+              <span>{visibleForks} visible forks</span>
+            </div>
+            <h1>{simulation.name}</h1>
+            <p>{simulation.device_key.replaceAll('-', ' ')} · {simulation.configuration_source} configuration</p>
+            {creator && (
+              <a class="il-creator-line" href={`/creator/${creator.handle}`}>
+                {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
+                <b>{creator.display_name}</b>
+                <small>@{creator.handle}</small>
+              </a>
+            )}
+            {parent && (
+              <p class="il-lineage">Forked from <a href={`/interactive-leaks/simulation/${parent.id}`}>{parent.name}</a></p>
+            )}
+          </div>
+          <form method="post" action="/interactive-leaks/api/fork">
+            <input type="hidden" name="kind" value="simulation" />
+            <input type="hidden" name="id" value={simulation.id} />
+            <button class="il-primary" type="submit">Fork simulation</button>
+          </form>
+        </div>
+
+        <section class="il-share-grid">
+          <article><span>Processor</span><strong>{simulation.processor_key?.replaceAll('_', ' ') || 'Unknown'}</strong></article>
+          <article><span>Battery</span><strong>{simulation.state?.batteryCapacityMah ? `${simulation.state.batteryCapacityMah} mAh` : 'Unknown'}</strong></article>
+          <article><span>Profile</span><strong>{simulation.state?.processorProfile || 'Expected'}</strong></article>
+          <article><span>Usage</span><strong>{simulation.state?.experience?.preset || 'Unknown'}</strong></article>
+        </section>
+
+        {simulation.result_snapshot?.headline && (
+          <section class="il-shared-result">
+            <span class="eyebrow">Saved result</span>
+            <strong>{simulation.result_snapshot.headline}</strong>
+            <small>Engine {simulation.result_snapshot.engineVersion} · Battery model {simulation.result_snapshot.batteryModelVersion}</small>
+          </section>
+        )}
+
+        <p class="il-share-note">Shared simulations preserve the assumptions used at save time. Re-run the model after forking to evaluate any changes.</p>
+        </div>
+      </>
+    ) : (
+      <section class="il-share-missing">
+        <h1>Simulation not available.</h1>
+        <p>It may be private, deleted, or the link may be invalid.</p>
+        <a class="il-primary" href="/interactive-leaks/simulate">Open Interactive Leaks</a>
+      </section>
+    )}
+  </main>
+</Page>
+
+<style>
+.social-share-page{width:min(100%,860px)!important;margin:0 auto;padding:24px 18px 80px!important}
+.social-post-shell{margin-top:14px;border:1px solid #202c39;border-radius:18px;background:#0b121a;overflow:hidden}
+.social-post-topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #202c39;color:#718092;font-size:.6rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}
+.social-post-topbar a{color:#62cfff;text-decoration:none;font-size:.58rem}
+.social-share-hero{padding:24px!important;border-bottom:1px solid #202c39}
+.social-share-hero h1{font-size:clamp(2.5rem,6vw,5.5rem)!important;letter-spacing:-.065em!important;font-weight:620!important}
+.social-share-page .il-share-grid{margin:0!important;padding:16px 24px!important;grid-template-columns:repeat(4,1fr)!important;border-bottom:1px solid #202c39}
+.social-share-page .il-share-grid article{border:0!important;border-right:1px solid #202c39!important;border-radius:0!important;background:transparent!important}
+.social-share-page .il-share-grid article:last-child{border-right:0!important}
+.social-share-page .il-shared-result{margin:0!important;padding:28px 24px!important;border:0!important;border-bottom:1px solid #202c39!important;border-radius:0!important;background:linear-gradient(90deg,rgb(22 140 255/.07),transparent)!important}
+.social-share-page .il-share-note{margin:0!important;padding:18px 24px!important;color:#718092!important;font-size:.68rem!important}
+.social-share-page .il-creator-line{margin-top:16px!important}
+@media(max-width:650px){.social-share-page .il-share-grid{grid-template-columns:1fr 1fr!important}.social-share-page .il-share-grid article:nth-child(2){border-right:0!important}.social-share-hero{padding:20px!important}}
+</style>

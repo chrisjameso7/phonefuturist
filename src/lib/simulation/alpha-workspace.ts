@@ -4,12 +4,14 @@ import {POWER_EVIDENCE_VERSION, resolveEndurance, resolvePowerEvidence, workload
 export const USAGE_VERSION = 'daily-usage-1';
 export const ACTIVE_WORKLOADS = ['web_browsing','video_playback','gaming','camera_use'] as const;
 export type Usage = Record<typeof ACTIVE_WORKLOADS[number], string>;
-export type UsagePreset = 'Light'|'Typical'|'Heavy'|'Custom';
+export type UsagePreset = 'Light'|'Typical'|'Heavy'|'Gaming'|'Camera'|'Custom';
 // Editorial usage scenarios in minutes/day, never device measurements or power coefficients.
 export const USAGE_PRESETS: Record<Exclude<UsagePreset,'Custom'>, Usage> = {
   Light:{web_browsing:'60',video_playback:'30',gaming:'0',camera_use:'10'},
   Typical:{web_browsing:'120',video_playback:'90',gaming:'45',camera_use:'15'},
   Heavy:{web_browsing:'180',video_playback:'180',gaming:'120',camera_use:'30'},
+  Gaming:{web_browsing:'90',video_playback:'60',gaming:'240',camera_use:'10'},
+  Camera:{web_browsing:'90',video_playback:'60',gaming:'20',camera_use:'120'},
 };
 export type Experience = {mode:'simple'|'advanced';preset:UsagePreset;custom:Usage;useEnteredPower:boolean};
 export const INITIAL_EXPERIENCE:Experience={mode:'simple',preset:'Typical',custom:{...USAGE_PRESETS.Typical},useEnteredPower:false};

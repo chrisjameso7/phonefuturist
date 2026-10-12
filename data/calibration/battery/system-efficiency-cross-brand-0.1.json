@@ -1,0 +1,270 @@
+{
+  "version": "system-efficiency-research-0.1.0",
+  "purpose": "Cross-brand evidence for separating observed battery behaviour from raw capacity. Values from unlike protocols must never be averaged directly.",
+  "caveat": "Capacity-normalized drain is an observed system result, not a pure software coefficient. SoC, display, modem, thermal policy, battery voltage/usable window and test protocol remain confounders until controlled by later model stages.",
+  "sources": [
+    {
+      "id": "gsmarena",
+      "name": "GSMArena",
+      "protocol": "Active Use battery tests with separate web, video and gaming runtimes",
+      "urls": [
+        "https://www.gsmarena.com/apple_iphone_17_pro_max-review-2884p3.php",
+        "https://www.gsmarena.com/oneplus_13-review-2777p3.php",
+        "https://www.gsmarena.com/xiaomi_15_ultra-review-2802p3.php",
+        "https://www.gsmarena.com/vivo_x200_pro-review-2759p3.php",
+        "https://www.gsmarena.com/oppo_find_x8_pro-review-2766p3.php"
+      ]
+    },
+    {
+      "id": "notebookcheck",
+      "name": "Notebookcheck",
+      "protocol": "Wi-Fi browsing/video/load tests, generally display-normalized around 150 cd/m² for practical battery tests",
+      "urls": [
+        "https://www.notebookcheck.net/Samsung-Galaxy-S25-Ultra-review-The-AI-phone-relies-fully-on-artificial-intelligence-and-small-hardware-upgrades.968346.0.html",
+        "https://www.notebookcheck.net/Google-Pixel-10-Pro-XL-Smartphone-Review-Gorgeous-flagship-that-offers-a-great-Android-experience-with-one-Achilles-heel.1100253.0.html",
+        "https://www.notebookcheck.net/OnePlus-13-Smartphone-Review-Let-the-battery-revolution-begin.932327.0.html",
+        "https://www.notebookcheck.net/Xiaomi-15-Ultra-review-Leica-powered-powerhouse.975197.0.html",
+        "https://www.notebookcheck.net/The-best-photo-smartphone-of-2024-comes-with-Android-Vivo-X200-Pro-review.935687.0.html",
+        "https://www.notebookcheck.net/Oppo-Find-X8-Pro-smartphone-review-Attack-on-the-iPhone-with-innovative-battery-technology.924091.0.html"
+      ]
+    },
+    {
+      "id": "tomsguide",
+      "name": "Tom's Guide",
+      "protocol": "Web surfing battery test, generally 150 nits; some older OnePlus 13 result used an earlier test version",
+      "urls": [
+        "https://www.tomsguide.com/phones/iphones/iphone-17-battery-life-results-are-in-how-do-the-new-iphones-compare-to-other-flagships",
+        "https://www.tomsguide.com/phones/samsung-phones/samsung-galaxy-s25-ultra-battery-life-tested-theres-good-news-and-bad-news",
+        "https://www.tomsguide.com/phones/android-phones/oppo-find-x8-pro-review-the-phone-apple-and-samsung-should-fear",
+        "https://www.tomsguide.com/phones/android-phones/xiaomi-15-ultra-review-an-excellent-phone-you-probably-cant-buy"
+      ]
+    },
+    {
+      "id": "phonearena",
+      "name": "PhoneArena",
+      "protocol": "Separate browsing, video streaming and 3D gaming lab tests",
+      "urls": [
+        "https://www.phonearena.com/howdowerate/battery",
+        "https://www.phonearena.com/reviews/iphone-17-pro-max-review_id7690",
+        "https://www.phonearena.com/reviews/iphone-17-pro-max-vs-oneplus-13_id7267",
+        "https://www.phonearena.com/reviews/xiaomi-15-ultra-review_id6980"
+      ]
+    }
+  ],
+  "cohort": [
+    {
+      "device": "Apple iPhone 17 Pro Max",
+      "batteryMah": {
+        "gsmarena": 4823,
+        "tomsguide": 5088,
+        "phonearena": 5088
+      },
+      "gsmarena": {
+        "webHours": 15.55,
+        "videoHours": 25.683,
+        "gamingHours": 12.133,
+        "normalizedMahPerHour": {
+          "web": 310.2,
+          "video": 187.8,
+          "gaming": 397.5
+        }
+      },
+      "tomsguide": {
+        "webHours": 17.9
+      },
+      "phonearena": {
+        "browsingHours": 20.15,
+        "videoHours": 9.617,
+        "gamingHours": 11.567
+      }
+    },
+    {
+      "device": "Samsung Galaxy S25 Ultra",
+      "batteryMah": {
+        "gsmarena": 5000,
+        "notebookcheck": 5000,
+        "tomsguide": 5000,
+        "phonearena": 5000
+      },
+      "gsmarena": {
+        "webHours": 11.317,
+        "videoHours": 19.067,
+        "gamingHours": 10.1,
+        "normalizedMahPerHour": {
+          "web": 441.8,
+          "video": 262.2,
+          "gaming": 495
+        }
+      },
+      "notebookcheck": {
+        "webHours": 22.183,
+        "videoHours": 32.25,
+        "loadHours": 3.717
+      },
+      "tomsguide": {
+        "webHours": 17.233
+      },
+      "phonearena": {
+        "browsingHours": 20.817,
+        "videoHours": 8.9,
+        "gamingHours": 14.35
+      }
+    },
+    {
+      "device": "Google Pixel 10 Pro XL",
+      "batteryMah": {
+        "gsmarena": 5200,
+        "notebookcheck": 5200,
+        "tomsguide": 5200,
+        "phonearena": 5200
+      },
+      "gsmarena": {
+        "webHours": 13.933,
+        "videoHours": 19.717,
+        "gamingHours": 5.85,
+        "normalizedMahPerHour": {
+          "web": 373.2,
+          "video": 263.7,
+          "gaming": 888.9
+        }
+      },
+      "notebookcheck": {
+        "webHours": 19.183,
+        "videoHours": 23.833,
+        "loadHours": 3.9
+      },
+      "tomsguide": {
+        "webHours": 14.333
+      },
+      "phonearena": {
+        "browsingHours": 19.683,
+        "videoHours": 10,
+        "gamingHours": 4.583
+      }
+    },
+    {
+      "device": "OnePlus 13",
+      "batteryMah": {
+        "gsmarena": 6000,
+        "notebookcheck": 6000,
+        "tomsguide": 6000,
+        "phonearena": 6000
+      },
+      "gsmarena": {
+        "webHours": 14.783,
+        "videoHours": 23.417,
+        "gamingHours": 7.8,
+        "normalizedMahPerHour": {
+          "web": 405.9,
+          "video": 256.2,
+          "gaming": 769.2
+        }
+      },
+      "notebookcheck": {
+        "webHours": 22.483,
+        "videoHours": 38.683,
+        "loadHours": 4.017
+      },
+      "tomsguide": {
+        "webHours": 19.75,
+        "protocolNote": "Reported by Tom's Guide as produced under an older version of its test."
+      },
+      "phonearena": {
+        "browsingHours": 21.567,
+        "videoHours": 9.2,
+        "gamingHours": 8.2
+      }
+    },
+    {
+      "device": "Xiaomi 15 Ultra",
+      "batteryMah": {
+        "gsmarena": 5410,
+        "notebookcheck": 5410,
+        "phonearena": 6000
+      },
+      "gsmarena": {
+        "webHours": 13.3,
+        "videoHours": 19.417,
+        "gamingHours": 10.683,
+        "normalizedMahPerHour": {
+          "web": 406.8,
+          "video": 278.6,
+          "gaming": 506.4
+        }
+      },
+      "notebookcheck": {
+        "webHours": 21.167,
+        "videoHours": 27.5,
+        "loadHours": 3.483
+      },
+      "phonearena": {
+        "browsingHours": 16.65,
+        "videoHours": 10.183,
+        "gamingHours": 13.483,
+        "variantNote": "PhoneArena review prose identifies the global phone as 5410 mAh, while its battery-test widget reports 6000 mAh. Treat capacity as source-conflicted until the tested unit is resolved; do not use this row for residual fitting.",
+        "excludeFromResidualFit": true
+      }
+    },
+    {
+      "device": "vivo X200 Pro",
+      "batteryMah": {
+        "gsmarena": 6000,
+        "notebookcheck": 6000
+      },
+      "gsmarena": {
+        "webHours": 13.917,
+        "videoHours": 17.7,
+        "gamingHours": 9.617,
+        "normalizedMahPerHour": {
+          "web": 431.1,
+          "video": 339,
+          "gaming": 623.9
+        }
+      },
+      "notebookcheck": {
+        "webHours": 23.4
+      }
+    },
+    {
+      "device": "Oppo Find X8 Pro",
+      "batteryMah": {
+        "gsmarena": 5910,
+        "notebookcheck": 5910,
+        "tomsguide": 5910
+      },
+      "gsmarena": {
+        "webHours": 13.783,
+        "videoHours": 17.833,
+        "gamingHours": 10.467,
+        "normalizedMahPerHour": {
+          "web": 428.8,
+          "video": 331.4,
+          "gaming": 564.6
+        }
+      },
+      "notebookcheck": {
+        "webHours": 23.517,
+        "videoHours": 32.933,
+        "loadHours": 5.15
+      },
+      "tomsguide": {
+        "youtubeThreeHourDrainPercent": 14
+      }
+    }
+  ],
+  "initialFindings": [
+    "The same device can rank very differently across protocols, proving that protocol identity must be a first-class field.",
+    "The iPhone 17 Pro Max shows unusually low capacity-normalized GSMArena web/video drain despite its smaller battery, making it a strong residual-analysis candidate.",
+    "Samsung Galaxy S25 Ultra performs very strongly in Notebookcheck and Tom's Guide web-style tests despite 5000 mAh, but less strongly in GSMArena web, reinforcing the need for protocol-specific coefficients.",
+    "Pixel 10 Pro XL repeatedly shows weak heavy/gaming endurance relative to capacity in GSMArena and PhoneArena, so one global software multiplier would be misleading.",
+    "OnePlus 13 benefits materially from 6000 mAh capacity, but its gaming efficiency is less impressive than its web/video endurance.",
+    "Xiaomi 15 Ultra, vivo X200 Pro and Oppo Find X8 Pro show that large Si/C batteries alone do not explain ranking; workload behaviour differs substantially."
+  ],
+  "dataQualityRules": [
+    "Never average runtimes across different test protocols.",
+    "Key every measurement by device model, region/variant, software build when known, test source and protocol version.",
+    "Do not infer a software coefficient directly from capacity-normalized runtime.",
+    "Exclude measurements with unresolved battery-capacity or regional-variant conflicts from coefficient fitting.",
+    "Prefer within-source, same-protocol, same-era comparisons before cross-source synthesis."
+  ]
+}

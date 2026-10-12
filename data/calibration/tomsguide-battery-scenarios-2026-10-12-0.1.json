@@ -1,0 +1,90 @@
+{
+  "version": "tomsguide-battery-scenarios-2026-10-12-0.1",
+  "accessedDate": "2026-10-12",
+  "source": {
+    "publisher": "Tom's Guide",
+    "sourceRole": "measurement-lab",
+    "protocol": "Current 2026 Tom's Guide Battery Test: continuous web surfing over 5G at 150 nits until depletion.",
+    "methodologyUrl": "https://www.tomsguide.com/reference/how-toms-guide-tests-and-reviews-smartphones"
+  },
+  "baselineArticle": {
+    "url": "https://www.tomsguide.com/phones/samsung-phones/samsung-galaxy-s26-ultra-battery-life-tested-heres-how-it-stacks-up-to-iphone-17-pro-max-and-more",
+    "publishedDate": "2026-03-03",
+    "devices": [
+      {
+        "manufacturer": "Samsung",
+        "model": "Galaxy S26 Ultra",
+        "batteryMah": 5000,
+        "runtimeMinutes": 970
+      },
+      {
+        "manufacturer": "Apple",
+        "model": "iPhone 17 Pro Max",
+        "batteryMah": 5088,
+        "runtimeMinutes": 1074
+      },
+      {
+        "manufacturer": "OnePlus",
+        "model": "OnePlus 15",
+        "batteryMah": 7300,
+        "runtimeMinutes": 1513
+      },
+      {
+        "manufacturer": "Samsung",
+        "model": "Galaxy S25 Ultra",
+        "batteryMah": 5000,
+        "runtimeMinutes": 867,
+        "notes": [
+          "Article notes this S25 Ultra retest used a device after several months of use."
+        ]
+      },
+      {
+        "manufacturer": "Google",
+        "model": "Pixel 10 Pro XL",
+        "batteryMah": 5200,
+        "runtimeMinutes": 860
+      }
+    ]
+  },
+  "galaxyS26UltraDisplayScenarios": {
+    "url": "https://www.tomsguide.com/phones/samsung-phones/we-just-tested-the-battery-life-on-the-galaxy-s26-ultra-with-privacy-display-on-and-the-impact-isnt-what-i-expected",
+    "device": {
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "batteryMah": 5000
+    },
+    "scenarios": [
+      {
+        "id": "adaptive_privacy_off",
+        "refreshMode": "adaptive",
+        "privacyMode": "off",
+        "runtimeMinutes": 970
+      },
+      {
+        "id": "adaptive_privacy_on",
+        "refreshMode": "adaptive",
+        "privacyMode": "on",
+        "runtimeMinutes": 965
+      },
+      {
+        "id": "adaptive_privacy_maximum",
+        "refreshMode": "adaptive",
+        "privacyMode": "maximum",
+        "runtimeMinutes": 956
+      },
+      {
+        "id": "60hz_privacy_off",
+        "refreshMode": "60hz",
+        "privacyMode": "off",
+        "runtimeMinutes": 1000
+      },
+      {
+        "id": "60hz_privacy_on",
+        "refreshMode": "60hz",
+        "privacyMode": "on",
+        "runtimeMinutes": 1000
+      }
+    ],
+    "note": "Whole-device runtime scenario evidence only. Do not reinterpret these results as isolated display-panel watts."
+  }
+}
