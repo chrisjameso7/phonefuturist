@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildCalibrationRegistry,
   clearCalibrationRegistryCache,
@@ -8,14 +8,15 @@ import {
 } from '../src/lib/simulation/modules/geekerwan-charging-backtest';
 
 describe('external Geekerwan charging backtest', () => {
-  it('evaluates a meaningful set of Geekerwan phones without training on their curve metrics', () => {
+  // Build once: this holdout evaluation is expensive and deterministic.
+  // Assertions intentionally inspect the same independent validation result.
+  let result: ReturnType<typeof backtestAgainstGeekerwanCharging>;
+
+  beforeAll(() => {
     clearCalibrationRegistryCache();
-
-    const result =
-      backtestAgainstGeekerwanCharging(
-        buildCalibrationRegistry(),
-      );
-
+    result = backtestAgainstGeekerwanCharging(buildCalibrationRegistry());
+  }, 120_000);
+  it('evaluates a meaningful set of Geekerwan phones without training on their curve metrics', () => {
     expect(result.status).toBe('resolved');
 
     expect(
@@ -36,13 +37,6 @@ describe('external Geekerwan charging backtest', () => {
   });
 
   it('reports charger-class and manufacturer bias separately', () => {
-    clearCalibrationRegistryCache();
-
-    const result =
-      backtestAgainstGeekerwanCharging(
-        buildCalibrationRegistry(),
-      );
-
     expect(
       result.byWattageBand.length,
     ).toBeGreaterThanOrEqual(2);
@@ -57,13 +51,6 @@ describe('external Geekerwan charging backtest', () => {
   });
 
   it('does not evaluate Geekerwan curve metrics against themselves', () => {
-    clearCalibrationRegistryCache();
-
-    const result =
-      backtestAgainstGeekerwanCharging(
-        buildCalibrationRegistry(),
-      );
-
     expect(
       result.rows.every(
         (row) =>
