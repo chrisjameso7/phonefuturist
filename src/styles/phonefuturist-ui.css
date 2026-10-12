@@ -1,0 +1,52 @@
+/* PhoneFuturist UI foundation.
+   Component-level classes use existing brand variables so color themes remain intact.
+   Keep content, publication workflows and simulator math independent from styling. */
+:root {
+  --pf-space-1: 4px;
+  --pf-space-2: 8px;
+  --pf-space-3: 12px;
+  --pf-space-4: 16px;
+  --pf-space-5: 24px;
+  --pf-space-6: 32px;
+  --pf-space-7: 48px;
+  --pf-space-8: 64px;
+  --pf-radius-sm: 10px;
+  --pf-radius-md: 16px;
+  --pf-radius-lg: 24px;
+  --pf-radius-pill: 999px;
+  --pf-width-content: 1280px;
+  --pf-motion-fast: 140ms;
+  --pf-motion-base: 220ms;
+  --pf-focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+:where(.pf-ui) { color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+:where(.pf-ui) *, :where(.pf-ui) *::before, :where(.pf-ui) *::after { box-sizing: border-box; }
+.pf-ui__container { width: min(calc(100% - 2 * var(--pf-space-5)), var(--pf-width-content)); margin-inline: auto; }
+.pf-ui__stack { display: flex; flex-direction: column; gap: var(--pf-space-4); min-width: 0; }
+.pf-ui__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pf-space-3); min-width: 0; }
+.pf-ui__grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: var(--pf-space-4); }
+.pf-ui__surface { border: 1px solid var(--line); border-radius: var(--pf-radius-md); background: var(--surface); }
+.pf-ui__card { padding: var(--pf-space-5); border: 1px solid var(--line); border-radius: var(--pf-radius-lg); background: var(--surface); min-width: 0; }
+.pf-ui__eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.pf-ui__title { font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.07; letter-spacing: -.045em; font-weight: 750; text-wrap: balance; }
+.pf-ui__heading { font-size: clamp(1.5rem, 2.4vw, 2.3rem); line-height: 1.18; letter-spacing: -.035em; font-weight: 700; }
+.pf-ui__muted { color: var(--muted); }
+.pf-ui__button { display: inline-flex; align-items: center; justify-content: center; gap: var(--pf-space-2); min-height: 44px; padding: 11px 20px; border-radius: var(--pf-radius-pill); border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font: inherit; font-weight: 650; text-decoration: none; cursor: pointer; transition: background var(--pf-motion-fast), border-color var(--pf-motion-fast), transform var(--pf-motion-fast); }
+.pf-ui__button:hover { filter: brightness(1.07); transform: translateY(-1px); }
+.pf-ui__button--subtle { border-color: var(--line); background: var(--surface-raised); color: var(--ink); }
+.pf-ui__button--subtle:hover { background: var(--surface); }
+.pf-ui__button:focus-visible, .pf-ui__control:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; box-shadow: var(--pf-focus-ring); }
+.pf-ui__control { min-height: 44px; border: 1px solid var(--line); border-radius: var(--pf-radius-sm); padding: 10px 14px; background: var(--surface-deep); color: var(--ink); font: inherit; }
+.pf-ui__tab { display: inline-flex; min-height: 44px; padding: 10px 16px; align-items: center; border-radius: var(--pf-radius-pill); color: var(--muted); text-decoration: none; border: 1px solid transparent; }
+.pf-ui__tab[aria-current='page'], .pf-ui__tab[aria-selected='true'], .pf-ui__tab[data-active='true'] { color: var(--ink); background: var(--surface-raised); border-color: var(--line); }
+.pf-ui__sponsored { display: inline-flex; align-items: center; gap: 6px; font-size: .7rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 760px) {
+  .pf-ui__container { width: min(calc(100% - 32px), var(--pf-width-content)); }
+  .pf-ui__grid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--pf-space-3); }
+  .pf-ui__card { padding: var(--pf-space-4); border-radius: var(--pf-radius-md); }
+  .pf-ui__title { font-size: clamp(2rem, 9vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-ui__button { transition: none; }
+  .pf-ui__button:hover { transform: none; }
+}
