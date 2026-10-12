@@ -14,8 +14,9 @@ import { buildPhoneArenaCurrentBatteryCorpus } from './phonearena-current-batter
 import { buildPhoneArenaCurrentChargingCorpus } from './phonearena-current-charging-corpus';
 import { buildGsmaBatteryV2ReferenceCorpus } from './gsmarena-battery-v2-reference-corpus';
 import { buildGeekerwanSocCorpus } from './geekerwan-soc-corpus';
+import { buildNanoReviewSocCorpus } from './nanoreview-soc-corpus';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.7.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.8.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -37,6 +38,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildPhoneArenaCurrentChargingCorpus(),
       buildGsmaBatteryV2ReferenceCorpus(),
       buildGeekerwanSocCorpus(),
+      buildNanoReviewSocCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
