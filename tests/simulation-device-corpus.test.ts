@@ -49,6 +49,53 @@ describe('device corpus schema', () => {
     expect(validateDeviceCorpus(corpus)).toEqual([]);
   });
 
+  it('forbids catalog-only sources from becoming calibration measurements', () => {
+    const corpus: DeviceCorpus = {
+      version: 'test',
+      sources: [
+        {
+          id: 'catalog-1',
+          publisher: 'Example Catalog',
+          url: 'https://example.com/catalog',
+          sourceRole: 'catalog',
+        },
+      ],
+      devices: [
+        {
+          variant: {
+            id: 'device-a',
+            identity: {
+              manufacturer: 'Example',
+              family: 'Example',
+              modelName: 'Example Phone',
+            },
+          },
+          sourceIds: ['catalog-1'],
+        },
+      ],
+      measurements: [
+        {
+          id: 'catalog-measurement',
+          deviceVariantId: 'device-a',
+          workload: 'benchmark',
+          metric: 'score',
+          value: 123,
+          unit: 'points',
+          sourceId: 'catalog-1',
+          evidenceKind: 'reported',
+        },
+      ],
+    };
+
+    expect(
+      validateDeviceCorpus(corpus).some(
+        (issue) =>
+          issue.code ===
+          'CATALOG_SOURCE_MEASUREMENT',
+      ),
+    ).toBe(true);
+  });
+
   it('rejects measurements that cannot be joined to a known variant', () => {
     const corpus: DeviceCorpus = {
       version: 'test',
