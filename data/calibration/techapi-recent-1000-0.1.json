@@ -1,6 +1,6 @@
 {
   "version": "techapi-recent-1000-0.1.0",
-  "generatedAt": "2026-10-12T05:05:18.849Z",
+  "generatedAt": "2026-10-12T05:05:58.460Z",
   "license": "CC-BY-SA-4.0",
   "attribution": "Data from TechAPI (https://github.com/GetTechAPI/TechAPI)",
   "selection": {
@@ -17,7 +17,7 @@
     ],
     "uniqueBy": "TechAPI 2025-2026 records: verified/source-backed base models first, then source-backed unverified base models only as catalog fallback",
     "requireSourceUrls": true,
-    "excludeVerifiedFalse": true,
+    "verifiedFalsePolicy": "allowed only as source-backed catalog-only fallback after higher-trust entries",
     "order": "verified/source-backed unique base models first, then one verified variant per base if available, then source-backed unverified unique base models as catalog-only fallback",
     "brandDiversityFirstPassCap": 100
   },
