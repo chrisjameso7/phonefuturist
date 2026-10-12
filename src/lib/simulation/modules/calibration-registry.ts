@@ -20,8 +20,9 @@ import { buildNanoReviewSocCorpus } from './nanoreview-soc-corpus';
 import { buildDxomarkCurrentBatteryCorpus } from './dxomark-current-battery-corpus';
 import { buildTomsGuideCurrentBatteryCorpus } from './tomsguide-current-battery-corpus';
 import { buildNotebookcheckS26UltraCorpus } from './notebookcheck-s26-ultra-corpus';
+import { buildChargerLabIPhone17ProMaxCorpus } from './chargerlab-iphone17pm-corpus';
 
-export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.12.0';
+export const CALIBRATION_REGISTRY_VERSION = 'calibration-registry-0.13.0';
 
 let cached: DeviceCorpus | undefined;
 
@@ -49,6 +50,7 @@ export function buildCalibrationRegistry(): DeviceCorpus {
       buildDxomarkCurrentBatteryCorpus(),
       buildTomsGuideCurrentBatteryCorpus(),
       buildNotebookcheckS26UltraCorpus(),
+      buildChargerLabIPhone17ProMaxCorpus(),
     ],
     CALIBRATION_REGISTRY_VERSION,
   );
