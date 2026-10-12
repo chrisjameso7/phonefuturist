@@ -27,8 +27,6 @@ describe('expanded evidence coverage', () => {
           report.coverage.totalDeviceRecordCount,
         measurementBackedCanonicalDevices:
           report.coverage.measurementBackedCanonicalDevices,
-        measurementBackedDeviceRecords:
-          report.coverage.measurementBackedDeviceRecords,
         totalMeasurementCount:
           report.coverage.totalMeasurementCount,
       }),
