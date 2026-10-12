@@ -195,3 +195,73 @@ body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px;
  .interactive-page .il-app[data-mode="advanced"] :is(.il-builder,.il-results) { width:100%; }
 }
 @media(max-width:380px) { .interactive-page .il-app[data-mode="simple"] .il-simple-grid { grid-template-columns:1fr; } }
+
+/* Share surfaces mirror the two exported PNG treatments. */
+.interactive-page .il-share-card {
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:var(--pf-radius-lg);
+  padding:clamp(18px,3vw,32px);
+  background:var(--surface-deep);
+  color:var(--ink);
+}
+.interactive-page .il-share-card::before {
+  content:'';
+  position:absolute;
+  inset:0 0 auto;
+  height:5px;
+  background:var(--accent);
+}
+.interactive-page .il-share-card--advanced::before { background:#b6acff; }
+.interactive-page .il-share-card-brand {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:20px;
+}
+.interactive-page .il-share-card-brand>span { font-weight:800; letter-spacing:-.04em; }
+.interactive-page .il-share-card-brand small { color:var(--muted); font-size:.73rem; text-transform:uppercase; letter-spacing:.065em; }
+.interactive-page .il-share-card>strong {
+  display:block;
+  font-size:clamp(1.5rem,3vw,2.5rem);
+  letter-spacing:-.05em;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+  margin-bottom:22px;
+}
+.interactive-page .il-share-card-metrics {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:24px;
+}
+.interactive-page .il-share-card-metrics span {
+  display:flex;
+  align-items:center;
+  min-height:65px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:var(--pf-radius-sm);
+  background:var(--surface);
+  color:var(--ink);
+  font-weight:650;
+  line-height:1.35;
+}
+.interactive-page .il-share-card--advanced .il-share-card-metrics span { border-left:2px solid #b6acff; }
+.interactive-page .il-share-card-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.interactive-page .il-share-card-actions button {
+  min-height:46px; border-radius:var(--pf-radius-pill);
+  padding:11px 18px; font-weight:700;
+}
+.interactive-page .il-share-card-actions button+button {
+  background:transparent; color:var(--ink); border:1px solid var(--line);
+}
+.interactive-page .il-share-card [role="status"] { display:block; margin-top:12px; color:var(--muted); }
+@media(max-width:500px) {
+ .interactive-page .il-share-card-metrics { grid-template-columns:1fr 1fr; gap:8px; }
+ .interactive-page .il-share-card-metrics span { font-size:.82rem; min-height:70px; padding:11px; }
+ .interactive-page .il-share-card-actions button { flex:1 1 100%; }
+}
