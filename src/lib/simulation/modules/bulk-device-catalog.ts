@@ -41,7 +41,7 @@ export interface BulkCatalogDevice {
     | 'Google'
     | 'Huawei'
     | 'Unisoc'
-    | 'Other';
+    | 'other';
   socName?: string;
   display?: {
     diagonalInches?: number;
