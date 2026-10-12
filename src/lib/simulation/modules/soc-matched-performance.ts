@@ -39,7 +39,7 @@ export function compareSocsAtPerformance(
   if (!first || !second)
     return unresolved('Both processors require exact-generation measured curves using the same benchmark protocol.');
 
-  function powerAtScore(points: typeof first.points) {
+  function powerAtScore(points: ReadonlyArray<{ boardPowerW: number; benchmarkScore: number }>) {
     const ordered = [...points].sort((a, b) => a.benchmarkScore - b.benchmarkScore);
     if (targetScore < ordered[0].benchmarkScore || targetScore > ordered[ordered.length - 1].benchmarkScore)
       return undefined;
