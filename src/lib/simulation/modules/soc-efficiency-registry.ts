@@ -38,7 +38,7 @@ export interface SocOperatingPoint {
 }
 
 function canonical(value: string) {
-  return value.toLowerCase().replace(/\\bfor galaxy\\b/g, '').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\\s+/g, ' ');
+  return value.toLowerCase().replace(/\bfor galaxy\b/g, '').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
 }
 
 function rawCurves(protocol: SocEfficiencyProtocol): RawCurve[] {
