@@ -8,7 +8,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   title="Interactive Leaks"
   description="Build and test unreleased device concepts with PhoneFuturist's deterministic hardware simulation engine."
 >
-  <main class="interactive-page">
+  <div class="interactive-page pf-ui">
     <section class="interactive-hero">
       <div class="interactive-hero-copy">
         <p class="interactive-eyebrow">PhoneFuturist Intelligence</p>
@@ -19,19 +19,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
         </h1>
 
         <p class="interactive-intro">
-          Don't just read the specifications. Test them.
+          Build it. Test it.
         </p>
-
-        <p class="interactive-description">
-          Build an unreleased device from reported, estimated, or hypothetical
-          specifications and see what the numbers actually imply.
-        </p>
-
-        <div class="interactive-principles">
-          <span>Evidence in</span>
-          <span>Math applied</span>
-          <span>No invented specifications</span>
-        </div>
 
         <p class="interactive-community-link"><a class="workspace-jump" href="#simulator">Open workspace ↓</a>
           <a href="/interactive-leaks/explore">Explore community builds →</a>
@@ -56,35 +45,16 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
       </div>
     </section>
 
-    <section class="interactive-context">
-      <p class="interactive-section-label">
-        Interactive hardware modelling
-      </p>
-
-      <div>
-        <h2>
-          Turn leaked specifications into something testable.
-        </h2>
-
-        <p>
-          Interactive Leaks uses deterministic calculations rather than
-          generative guesses. Give the model what is known. Leave the rest
-          unknown. The engine calculates only what the supplied evidence
-          supports.
-        </p>
-      </div>
-    </section>
-
     <section class="interactive-workspace" id="simulator">
       <div class="interactive-workspace-header">
         <div>
           <p class="interactive-section-label">Simulator</p>
-          <h2>Device workspace</h2>
+          <h2>Build your device</h2>
         </div>
 
         <div class="interactive-engine-badge">
           <span class="interactive-engine-dot"></span>
-          Beta engine · v{SIMULATION_ENGINE_VERSION}
+          v{SIMULATION_ENGINE_VERSION}
         </div>
       </div>
 
@@ -93,6 +63,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
       </div>
     </section>
 
+    <details class="pf-simulation-method">
+      <summary>How it works</summary>
     <section class="interactive-methodology">
       <div class="interactive-methodology-heading">
         <p class="interactive-section-label">Methodology</p>
@@ -128,7 +100,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
         </article>
       </div>
     </section>
-  </main>
+
+    </details>
+  </div>
 </Page>
 
 <style is:global>
