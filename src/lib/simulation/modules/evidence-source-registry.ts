@@ -93,6 +93,63 @@ export const EVIDENCE_SOURCE_POLICIES:
     ],
   },
   {
+    id: 'geekerwan-charging',
+    publisher: 'Geekerwan',
+    homepage:
+      'https://www.geekerwan.com/',
+    domains: ['charging'],
+    evidenceClass: 'controlled-lab',
+    protocolFamily:
+      'geekerwan-charging-curves',
+    compatibleOnlyWithinProtocolFamily:
+      true,
+    priority: 'primary',
+    notes: [
+      'Measured charging curves preserve energy-versus-time samples, charger class and wall-input energy.',
+      'Curve-derived milestones are kept separate from advertised charging wattage.',
+    ],
+  },
+  {
+    id: 'dxomark-battery',
+    publisher: 'DXOMARK',
+    homepage:
+      'https://www.dxomark.com/',
+    domains: [
+      'battery-runtime',
+      'charging',
+    ],
+    evidenceClass: 'controlled-lab',
+    protocolFamily:
+      'dxomark-battery',
+    compatibleOnlyWithinProtocolFamily:
+      true,
+    priority: 'high',
+    notes: [
+      'DXOMARK Battery scores remain protocol-specific composite context and are never converted directly into runtime hours.',
+      'Measured wired and wireless charging milestones may be used only within compatible DXOMARK charging protocols.',
+    ],
+  },
+  {
+    id: 'nanoreview-soc',
+    publisher: 'NanoReview',
+    homepage:
+      'https://nanoreview.net/en/soc-list/rating',
+    domains: [
+      'cpu-performance',
+      'gpu-performance',
+    ],
+    evidenceClass: 'review-lab',
+    protocolFamily:
+      'nanoreview-aggregated-soc',
+    compatibleOnlyWithinProtocolFamily:
+      true,
+    priority: 'supporting',
+    notes: [
+      'NanoReview SoC values are aggregated benchmark context rather than a controlled retail-phone lab measurement.',
+      'Metrics are source-namespaced and never pooled directly with Geekerwan or Notebookcheck benchmark protocols.',
+    ],
+  },
+  {
     id: 'phonearena-battery',
     publisher: 'PhoneArena',
     homepage:
