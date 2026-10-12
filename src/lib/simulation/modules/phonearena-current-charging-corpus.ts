@@ -13,7 +13,7 @@ type ChargingRow = {
   releaseDate: string;
   wiredWatts: number;
   fullChargeMinutes: number;
-  charge30mPercent: number;
+  charge30mPercent?: number;
   wirelessWatts?: number;
   wirelessFullChargeMinutes?: number;
   wireless30mPercent?: number;
@@ -53,7 +53,7 @@ const ROWS: readonly ChargingRow[] = [
   { id: 'pa-charge-iphone17-pro-max', manufacturer: 'Apple', model: 'iPhone 17 Pro Max', batteryMah: 5088, releaseDate: '2025-09-19', wiredWatts: 40, fullChargeMinutes: 76, charge30mPercent: 64, wirelessWatts: 25, wirelessFullChargeMinutes: 128, wireless30mPercent: 31 },
   { id: 'pa-charge-iphone17-pro', manufacturer: 'Apple', model: 'iPhone 17 Pro', batteryMah: 4252, releaseDate: '2025-09-19', wiredWatts: 40, fullChargeMinutes: 76, charge30mPercent: 67, wirelessWatts: 25, wirelessFullChargeMinutes: 140, wireless30mPercent: 27 },
   { id: 'pa-charge-pixel10-pro-xl', manufacturer: 'Google', model: 'Pixel 10 Pro XL', batteryMah: 5200, releaseDate: '2025-08-28', wiredWatts: 45, fullChargeMinutes: 77, charge30mPercent: 63, wirelessWatts: 25 },,
-  { id: 'pa-charge-redmi-note14-pro-plus', manufacturer: 'Xiaomi', model: 'Redmi Note 14 Pro+ 5G', batteryMah: 5110, releaseDate: '2025-01-16', wiredWatts: 120, fullChargeMinutes: 25, charge30mPercent: 100 },
+  { id: 'pa-charge-redmi-note14-pro-plus', manufacturer: 'Xiaomi', model: 'Redmi Note 14 Pro+ 5G', batteryMah: 5110, releaseDate: '2025-01-16', wiredWatts: 120, fullChargeMinutes: 25 },
   { id: 'pa-charge-vivo-x300-pro', manufacturer: 'vivo', model: 'X300 Pro', batteryMah: 6510, releaseDate: '2025-10-17', wiredWatts: 90, fullChargeMinutes: 31, charge30mPercent: 98, wirelessWatts: 40 },
   { id: 'pa-charge-magic7-pro', manufacturer: 'Honor', model: 'Magic7 Pro', batteryMah: 5270, releaseDate: '2025-01-15', wiredWatts: 100, fullChargeMinutes: 31, charge30mPercent: 98, wirelessWatts: 80, wirelessFullChargeMinutes: 47, wireless30mPercent: 64 },
   { id: 'pa-charge-poco-f7-ultra', manufacturer: 'POCO', model: 'F7 Ultra', batteryMah: 5300, releaseDate: '2025-03-27', wiredWatts: 120, fullChargeMinutes: 32, charge30mPercent: 99, wirelessWatts: 50, wirelessFullChargeMinutes: 75, wireless30mPercent: 43 },
@@ -77,7 +77,7 @@ const ROWS: readonly ChargingRow[] = [
   { id: 'pa-charge-magic-v5', manufacturer: 'Honor', model: 'Magic V5', batteryMah: 5820, releaseDate: '2025-07-02', wiredWatts: 66, fullChargeMinutes: 47, charge30mPercent: 80, wirelessWatts: 50 },
   { id: 'pa-charge-edge60', manufacturer: 'Motorola', model: 'Edge 60', batteryMah: 5200, releaseDate: '2025-04-30', wiredWatts: 68, fullChargeMinutes: 47, charge30mPercent: 75 },
   { id: 'pa-charge-vivo-x200-ultra', manufacturer: 'vivo', model: 'X200 Ultra', batteryMah: 6000, releaseDate: '2025-04-29', wiredWatts: 90, fullChargeMinutes: 47, charge30mPercent: 64, wirelessWatts: 30 },
-  { id: 'pa-charge-redmagic-astra2', manufacturer: 'nubia', model: 'RedMagic Astra 2', batteryMah: 8300, releaseDate: '2026-07-17', wiredWatts: 75, fullChargeMinutes: 50, charge30mPercent: 60 },
+  { id: 'pa-charge-redmagic-astra2', manufacturer: 'nubia', model: 'RedMagic Astra 2', batteryMah: 8300, releaseDate: '2026-07-17', wiredWatts: 75, fullChargeMinutes: 50 },
   { id: 'pa-charge-xiaomi15t', manufacturer: 'Xiaomi', model: '15T', batteryMah: 5500, releaseDate: '2025-09-24', wiredWatts: 67, fullChargeMinutes: 50, charge30mPercent: 67 },
   { id: 'pa-charge-magic-v6', manufacturer: 'Honor', model: 'Magic V6', batteryMah: 6660, releaseDate: '2026-03-13', wiredWatts: 80, fullChargeMinutes: 52, charge30mPercent: 75, wirelessWatts: 66, wirelessFullChargeMinutes: 73, wireless30mPercent: 53 },
   { id: 'pa-charge-edge-2025', manufacturer: 'Motorola', model: 'Edge 2025', batteryMah: 5200, releaseDate: '2025-05-25', wiredWatts: 68, fullChargeMinutes: 53, charge30mPercent: 70, wirelessWatts: 15 },
@@ -196,7 +196,13 @@ export function buildPhoneArenaCurrentChargingCorpus(): DeviceCorpus {
             'PhoneArena measured wired full-charge time.',
           ],
         },
-        {
+      ];
+
+      if (
+        row.charge30mPercent !==
+        undefined
+      ) {
+        result.push({
           id:
             row.id +
             '-wired-30m',
@@ -215,8 +221,8 @@ export function buildPhoneArenaCurrentChargingCorpus(): DeviceCorpus {
           notes: [
             'PhoneArena measured percentage reached after 30 minutes of wired charging.',
           ],
-        },
-      ];
+        });
+      }
 
       if (
         row.wirelessFullChargeMinutes !==
