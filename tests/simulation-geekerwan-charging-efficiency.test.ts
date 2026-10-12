@@ -80,8 +80,9 @@ describe('Geekerwan charging efficiency pairing', () => {
     const row =
       result.rows.find(
         (candidate) =>
-          candidate.model ===
-          'OnePlus 15',
+          candidate.linkedDeviceIds.includes(
+            'geekerwan-charge-oneplus-15',
+          ),
       );
 
     expect(row).toBeDefined();
