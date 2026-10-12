@@ -1633,3 +1633,51 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     border-left:0;
   }
 </style>
+
+<style is:global>
+/* Advanced workspace palette: remove leftover graphite from legacy simulator styles. */
+.interactive-page .interactive-simulator-shell {
+  background:#091321;
+  border-color:#23374f;
+}
+.interactive-page .il-workspace,
+.interactive-page .il-builder,
+.interactive-page .il-results {
+  background:#0a1422;
+  border-color:#23374f;
+}
+.interactive-page .il-section,
+.interactive-page .il-simple-panel {
+  background:#0e1b2c;
+  border-color:#243b56;
+}
+.interactive-page .il-advanced,
+.interactive-page .il-result-empty,
+.interactive-page .il-sensitivity-card {
+  background:#0c1828;
+  border-color:#253b54;
+}
+.interactive-page .il-field input,
+.interactive-page .il-field select,
+.interactive-page .il-field textarea {
+  background:#080f1a;
+  border-color:#324762;
+  color:#f0f7ff;
+}
+.interactive-page .il-section details,
+.interactive-page .il-section details > summary {
+  background:transparent;
+}
+.interactive-page .il-section details > summary {
+  color:#85c6ff;
+  border-color:#253b54;
+}
+.interactive-page .il-section-heading p,
+.interactive-page .il-field > span,
+.interactive-page .il-engine {
+  color:#b1c5dd;
+}
+@media (max-width:760px) {
+  .interactive-page .il-section {background:#0e1b2c;}
+}
+</style>
