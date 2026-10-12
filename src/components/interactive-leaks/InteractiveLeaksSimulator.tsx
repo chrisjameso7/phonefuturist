@@ -967,22 +967,23 @@ function DeterministicShareCard({
 
       // Keep device names within the poster instead of clipping long names.
       function wrapTitle(title: string, fontSize: number, top: number, maxLines: number) {
-        ctx.font = '700 ' + fontSize + 'px Arial';
+        const titleContext = ctx!;
+        titleContext.font = '700 ' + fontSize + 'px Arial';
         const words = title.split(/\s+/);
         let row = '';
         let lineY = top;
         let count = 0;
         for (const word of words) {
           const candidate = row ? row + ' ' + word : word;
-          if (ctx.measureText(candidate).width > 920 && row) {
-            ctx.fillText(row, 72, lineY);
+          if (titleContext.measureText(candidate).width > 920 && row) {
+            titleContext.fillText(row, 72, lineY);
             lineY += fontSize * 1.16;
             count++;
             row = word;
             if (count >= maxLines - 1) break;
           } else row = candidate;
         }
-        if (row) ctx.fillText(row, 72, lineY);
+        if (row) titleContext.fillText(row, 72, lineY);
       }
 
       ctx.fillStyle = ink;
