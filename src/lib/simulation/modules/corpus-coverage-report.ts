@@ -23,6 +23,7 @@ export interface CorpusCoverageReport {
   }>;
   measurementBackedCanonicalDevices: number;
   multiSourceCanonicalDevices: number;
+  multiPublisherCanonicalDevices: number;
   batteryRuntimeCanonicalDevices: number;
   chargingCanonicalDevices: number;
   performanceCanonicalDevices: number;
@@ -293,6 +294,46 @@ export function buildCorpusCoverageReport(
       },
     ).length;
 
+  const multiPublisherCanonical =
+    links.filter(
+      (link) => {
+        const publishers =
+          new Set<string>();
+
+        for (
+          const deviceId of
+          link.linkedDeviceIds
+        ) {
+          const device =
+            corpus.devices.find(
+              (candidate) =>
+                candidate.variant.id ===
+                deviceId,
+            );
+
+          for (
+            const sourceId of
+            device?.sourceIds ?? []
+          ) {
+            const publisher =
+              sourceById.get(
+                sourceId,
+              )?.publisher;
+
+            if (publisher) {
+              publishers.add(
+                publisher
+                  .trim()
+                  .toLowerCase(),
+              );
+            }
+          }
+        }
+
+        return publishers.size > 1;
+      },
+    ).length;
+
   const sourceRoleCounts:
     Record<string, number> = {};
 
@@ -347,6 +388,8 @@ export function buildCorpusCoverageReport(
       measuredCanonical.size,
     multiSourceCanonicalDevices:
       multiSourceCanonical,
+    multiPublisherCanonicalDevices:
+      multiPublisherCanonical,
     batteryRuntimeCanonicalDevices:
       batteryRuntime.size,
     chargingCanonicalDevices:
@@ -361,6 +404,6 @@ export function buildCorpusCoverageReport(
       thermal.size,
     unresolvedLabRecords,
     note:
-      'Catalog breadth and laboratory calibration depth are reported separately. Source-specific device records are linked to canonical retail identities where manufacturer/model normalization is sufficiently strong; SoC-only reference records remain separate.',
+      'Catalog breadth and laboratory calibration depth are reported separately. Multi-source and multi-publisher counts are distinct so repeated pages from one publisher are not mistaken for independent corroboration. Source-specific device records are linked to canonical retail identities where manufacturer/model normalization is sufficiently strong; SoC-only reference records remain separate.',
   };
 }
