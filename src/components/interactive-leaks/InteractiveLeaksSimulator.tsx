@@ -968,7 +968,7 @@ function DeterministicShareCard({
       // Keep device names within the poster instead of clipping long names.
       function wrapTitle(title: string, fontSize: number, top: number, maxLines: number) {
         ctx.font = '700 ' + fontSize + 'px Arial';
-        const words = title.split(/\\s+/);
+        const words = title.split(/\s+/);
         let row = '';
         let lineY = top;
         let count = 0;
