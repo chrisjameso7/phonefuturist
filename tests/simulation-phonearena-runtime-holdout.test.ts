@@ -25,6 +25,28 @@ describe('external PhoneArena runtime holdout', () => {
       'resolved',
     );
 
+    console.info(
+      'PHONEARENA_RUNTIME_HOLDOUT',
+      JSON.stringify({
+        evaluatedRows:
+          result.evaluatedRows,
+        evaluatedDevices:
+          result.evaluatedDevices,
+        skippedRows:
+          result.skippedRows,
+        maeHours:
+          result.maeHours,
+        mapePercent:
+          result.mapePercent,
+        meanSignedErrorHours:
+          result.meanSignedErrorHours,
+        byWorkload:
+          result.byWorkload,
+      }),
+    );
+
+
+
     expect(
       result.evaluatedRows,
     ).toBeGreaterThanOrEqual(10);
