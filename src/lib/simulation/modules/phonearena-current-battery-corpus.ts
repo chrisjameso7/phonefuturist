@@ -604,6 +604,7 @@ export function buildPhoneArenaCurrentBatteryCorpus(): DeviceCorpus {
       {
         id: sourceId,
         publisher: 'PhoneArena',
+        sourceRole: 'measurement-lab',
         url:
           'https://www.phonearena.com/phones/benchmarks/battery?f%5By%5D=2026%2C2025',
         protocol:
