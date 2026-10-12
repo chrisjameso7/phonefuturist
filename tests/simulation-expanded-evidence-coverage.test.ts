@@ -16,6 +16,24 @@ describe('expanded evidence coverage', () => {
       report.calibrationMeasurements,
     ).toBeGreaterThan(0);
 
+    console.info(
+      'EXPANDED_CATALOG_COVERAGE',
+      JSON.stringify({
+        catalogDeviceCount:
+          report.coverage.catalogDeviceCount,
+        canonicalCatalogDeviceCount:
+          report.coverage.canonicalCatalogDeviceCount,
+        totalDeviceRecordCount:
+          report.coverage.totalDeviceRecordCount,
+        measurementBackedCanonicalDevices:
+          report.coverage.measurementBackedCanonicalDevices,
+        measurementBackedDeviceRecords:
+          report.coverage.measurementBackedDeviceRecords,
+        totalMeasurementCount:
+          report.coverage.totalMeasurementCount,
+      }),
+    );
+
     expect(
       report.coverage.catalogDeviceCount,
     ).toBeGreaterThanOrEqual(3000);
