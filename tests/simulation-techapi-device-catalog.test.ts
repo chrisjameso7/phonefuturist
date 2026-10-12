@@ -48,6 +48,13 @@ describe('TechAPI 1000-phone catalog', () => {
       count.maxEntriesPerBaseModel,
     ).toBe(2);
 
+    expect(
+      count.verifiedOrUnspecified,
+    ).toBeGreaterThanOrEqual(800);
+    expect(
+      count.sourceBackedUnverified,
+    ).toBeLessThanOrEqual(200);
+
     const corpus =
       buildTechApiDeviceCatalog();
 
