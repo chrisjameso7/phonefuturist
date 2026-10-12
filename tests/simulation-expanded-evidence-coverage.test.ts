@@ -23,6 +23,10 @@ describe('expanded evidence coverage', () => {
     expect(
       report.coverage.measurementBackedCanonicalDevices,
     ).toBeGreaterThan(0);
+
+    expect(
+      report.coverage.multiPublisherCanonicalDevices,
+    ).toBeGreaterThan(0);
   });
 
   it('reports multiple evidence publishers without converting catalog rows into measurements', () => {
