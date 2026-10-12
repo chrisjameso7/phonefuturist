@@ -1,3 +1,4 @@
+import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
 
@@ -1303,11 +1304,9 @@ export default function InteractiveLeaksSimulator() {
         ),
       // Scenario hours are configurable assumptions, not demographic averages.
       // Keep them distinct from screen-on measurements and preserve Advanced inputs.
-      ...({
-        Light: { webHours: '0.75', videoHours: '0.75', gamingHours: '0.1' },
-        Typical: { webHours: '1.5', videoHours: '1.5', gamingHours: '0.5' },
-        Heavy: { webHours: '2.5', videoHours: '2.5', gamingHours: '1.5' },
-      } as const)[usage],
+      webHours: SIMPLE_USAGE_SCENARIOS[usage].webHours,
+      videoHours: SIMPLE_USAGE_SCENARIOS[usage].videoHours,
+      gamingHours: SIMPLE_USAGE_SCENARIOS[usage].gamingHours,
       batteryCapacityMah:
         String(input.batteryMah),
       zoomTargetEquivalentFocalLengthMm: '',
@@ -9859,7 +9858,7 @@ export default function InteractiveLeaksSimulator() {
                 <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={workspaceMode === 'simple' ? batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge : undefined} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} />
               )}
 
-              {result.warnings.length > 0 && (
+              {workspaceMode === 'advanced' && result.warnings.length > 0 && (
                 <div className="il-warnings">
                   <span className="il-result-label">
                     Engine notes
@@ -9888,10 +9887,9 @@ export default function InteractiveLeaksSimulator() {
                 </strong>
 
                 <p>
-                  This result uses only the values
-                  supplied above and calculations
-                  supported by PhoneFuturist Engine
-                  v{SIMULATION_ENGINE_VERSION}.
+                  {workspaceMode === 'simple'
+                    ? 'This is an illustrative estimate, not a guaranteed real-world result. Unknown measurements remain unknown.'
+                    : `This result uses supplied values and supported calculations from PhoneFuturist Engine v${SIMULATION_ENGINE_VERSION}. Unknown inputs are not treated as measured facts.`}
                 </p>
               </div>
             </>
