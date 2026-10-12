@@ -185,7 +185,7 @@ for (const candidate of candidates) {
   }
 }
 
-const orderedCandidates = [...byBaseModel.values()]
+const orderedBaseCandidates = [...byBaseModel.values()]
   .sort((a, b) => {
     const date = String(b.row.release_date).localeCompare(String(a.row.release_date));
     if (date) return date;
@@ -198,10 +198,38 @@ const orderedCandidates = [...byBaseModel.values()]
 
 const BRAND_DIVERSITY_CAP = 100;
 const selected = [];
-const selectedKeys = new Set();
+const selectedSlugs = new Set();
+const selectedBaseModels = new Set();
 const selectedPerBrand = new Map();
+const selectedPerBaseModel = new Map();
 
-for (const candidate of orderedCandidates) {
+function selectCandidate(candidate) {
+  const slug = String(candidate.row.slug);
+  const baseKey =
+    String(
+      candidate.row.base_model_slug ||
+      candidate.row.slug,
+    );
+
+  selected.push(candidate);
+  selectedSlugs.add(slug);
+  selectedBaseModels.add(baseKey);
+  selectedPerBrand.set(
+    String(candidate.row.brand),
+    (selectedPerBrand.get(
+      String(candidate.row.brand),
+    ) ?? 0) + 1,
+  );
+  selectedPerBaseModel.set(
+    baseKey,
+    (selectedPerBaseModel.get(
+      baseKey,
+    ) ?? 0) + 1,
+  );
+}
+
+// Stage 1: maximize unique marketed/base models with broad brand coverage.
+for (const candidate of orderedBaseCandidates) {
   if (selected.length >= targetCount) break;
 
   const brand = String(candidate.row.brand);
@@ -209,28 +237,99 @@ for (const candidate of orderedCandidates) {
 
   if (used >= BRAND_DIVERSITY_CAP) continue;
 
-  const key = candidate.row.base_model_slug || candidate.row.slug;
-  selected.push(candidate);
-  selectedKeys.add(key);
-  selectedPerBrand.set(brand, used + 1);
+  selectCandidate(candidate);
 }
 
-// If broad brand coverage cannot fill the target, backfill the remaining
-// slots by recency/completeness. This keeps the target deterministic while
-// preventing the largest catalogs from dominating the first-pass selection.
-for (const candidate of orderedCandidates) {
+// Fill any remaining unique base models regardless of brand cap.
+for (const candidate of orderedBaseCandidates) {
   if (selected.length >= targetCount) break;
 
-  const key = candidate.row.base_model_slug || candidate.row.slug;
-  if (selectedKeys.has(key)) continue;
+  const slug = String(candidate.row.slug);
+  if (selectedSlugs.has(slug)) continue;
 
-  selected.push(candidate);
-  selectedKeys.add(key);
+  selectCandidate(candidate);
+}
+
+// Stage 2: if fewer than targetCount unique base models exist in 2025-2026,
+// backfill real verified/source-backed market/storage/region variants.
+// Allow at most one extra variant per base model, preventing families with
+// many SKUs from dominating the catalog.
+if (selected.length < targetCount) {
+  const variantCandidates = [...candidates]
+    .filter((candidate) => {
+      const slug = String(candidate.row.slug);
+      const baseKey =
+        String(
+          candidate.row.base_model_slug ||
+          candidate.row.slug,
+        );
+
+      return (
+        !selectedSlugs.has(slug) &&
+        selectedBaseModels.has(baseKey)
+      );
+    })
+    .sort((a, b) => {
+      const canonicalA =
+        a.row.slug ===
+        a.row.base_model_slug
+          ? 1
+          : 0;
+      const canonicalB =
+        b.row.slug ===
+        b.row.base_model_slug
+          ? 1
+          : 0;
+      if (canonicalA !== canonicalB) {
+        return canonicalB - canonicalA;
+      }
+
+      const date =
+        String(
+          b.row.release_date,
+        ).localeCompare(
+          String(a.row.release_date),
+        );
+      if (date) return date;
+
+      const score =
+        b.score - a.score;
+      if (score) return score;
+
+      return String(
+        a.row.slug,
+      ).localeCompare(
+        String(b.row.slug),
+      );
+    });
+
+  for (const candidate of variantCandidates) {
+    if (selected.length >= targetCount) break;
+
+    const slug =
+      String(candidate.row.slug);
+    const baseKey =
+      String(
+        candidate.row.base_model_slug ||
+        candidate.row.slug,
+      );
+
+    if (selectedSlugs.has(slug)) continue;
+
+    // One canonical/base entry + at most one additional variant.
+    if (
+      (selectedPerBaseModel.get(baseKey) ?? 0) >= 2
+    ) {
+      continue;
+    }
+
+    selectCandidate(candidate);
+  }
 }
 
 if (selected.length < targetCount) {
   throw new Error(
-    `Only ${selected.length} unique verified/source-backed 2025-2026 base models were available; target is ${targetCount}.`,
+    `Only ${selected.length} verified/source-backed 2025-2026 catalog entries were available after controlled variant backfill; target is ${targetCount}. Unique base models: ${selectedBaseModels.size}.`,
   );
 }
 
@@ -286,7 +385,7 @@ const devices = selected.map(({ row }) => {
   });
 
   return compactObject({
-    id: `techapi-${row.brand}-${row.base_model_slug || row.slug}`,
+    id: `techapi-${row.brand}-${row.slug}`,
     manufacturer: manufacturerName(row.brand),
     model: row.name,
     baseModelSlug: row.base_model_slug || row.slug,
@@ -320,11 +419,27 @@ const output = {
   selection: {
     targetCount,
     selectedCount: devices.length,
+    uniqueBaseModelCount:
+      new Set(
+        devices.map(
+          (device) =>
+            device.baseModelSlug,
+        ),
+      ).size,
+    variantBackfillCount:
+      devices.length -
+      new Set(
+        devices.map(
+          (device) =>
+            device.baseModelSlug,
+        ),
+      ).size,
+    maxEntriesPerBaseModel: 2,
     years: [2025, 2026],
     uniqueBy: 'TechAPI verified/source-backed 2025-2026 records deduplicated by base_model_slug; canonical base records preferred',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
-    order: 'brand-diversity first pass, then release_date desc and completeness desc',
+    order: 'unique base models first with brand diversity, then one verified variant per selected base model as needed',
     brandDiversityFirstPassCap: BRAND_DIVERSITY_CAP,
   },
   brandCounts,
