@@ -31,6 +31,46 @@ describe('TechAPI 1000-phone catalog', () => {
     );
   });
 
+  it('keeps the generated snapshot recent and limits variant backfill', () => {
+    const count =
+      techApiCatalogCount();
+
+    expect(
+      count.years,
+    ).toEqual([2025, 2026]);
+    expect(
+      count.uniqueBaseModels,
+    ).toBeGreaterThanOrEqual(800);
+    expect(
+      count.variantBackfill,
+    ).toBeLessThanOrEqual(200);
+    expect(
+      count.maxEntriesPerBaseModel,
+    ).toBe(2);
+
+    const corpus =
+      buildTechApiDeviceCatalog();
+
+    expect(
+      corpus.devices.every(
+        (device) => {
+          const year =
+            Number(
+              device.releaseDate?.slice(
+                0,
+                4,
+              ),
+            );
+
+          return (
+            year === 2025 ||
+            year === 2026
+          );
+        },
+      ),
+    ).toBe(true);
+  });
+
   it('keeps generated variant ids unique and source-backed', () => {
     const corpus =
       buildTechApiDeviceCatalog();
