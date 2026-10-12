@@ -161,15 +161,26 @@ for await (const file of walk(inputRoot)) {
 
   if (!row?.slug || !row?.name || !row?.brand) continue;
   if (!row?.release_date || !/^202[5-6]-\d{2}-\d{2}$/.test(row.release_date)) continue;
-  if (row.verified === false) continue;
   if (!Array.isArray(row.source_urls) || row.source_urls.length === 0) continue;
 
-  candidates.push({ row, file, score: completenessScore(row) });
+  candidates.push({
+    row,
+    file,
+    score: completenessScore(row),
+    verificationTier:
+      row.verified === false
+        ? 'source-backed-unverified'
+        : 'verified-or-unspecified',
+  });
 }
 
 const byBaseModel = new Map();
 
-for (const candidate of candidates) {
+for (const candidate of candidates.filter(
+  (candidate) =>
+    candidate.verificationTier ===
+    'verified-or-unspecified',
+)) {
   const key = candidate.row.base_model_slug || candidate.row.slug;
   const current = byBaseModel.get(key);
 
@@ -327,9 +338,99 @@ if (selected.length < targetCount) {
   }
 }
 
+// Stage 3: catalog-only fallback. If TechAPI does not have 1000
+// verified/unspecified 2025-2026 records, use source-backed rows explicitly
+// marked verified:false only as low-trust catalog metadata. These rows remain
+// in a sourceRole='catalog' corpus and therefore cannot become calibration
+// measurements.
+if (selected.length < targetCount) {
+  const unverifiedByBaseModel = new Map();
+
+  for (const candidate of candidates.filter(
+    (candidate) =>
+      candidate.verificationTier ===
+      'source-backed-unverified',
+  )) {
+    const baseKey =
+      String(
+        candidate.row.base_model_slug ||
+        candidate.row.slug,
+      );
+
+    if (selectedBaseModels.has(baseKey)) {
+      continue;
+    }
+
+    const current =
+      unverifiedByBaseModel.get(
+        baseKey,
+      );
+
+    if (
+      !current ||
+      candidate.score >
+        current.score ||
+      (
+        candidate.score ===
+          current.score &&
+        String(
+          candidate.row.release_date,
+        ) >
+          String(
+            current.row.release_date,
+          )
+      )
+    ) {
+      unverifiedByBaseModel.set(
+        baseKey,
+        candidate,
+      );
+    }
+  }
+
+  const unverifiedBaseCandidates =
+    [...unverifiedByBaseModel.values()]
+      .sort((a, b) => {
+        const date =
+          String(
+            b.row.release_date,
+          ).localeCompare(
+            String(
+              a.row.release_date,
+            ),
+          );
+        if (date) return date;
+
+        const score =
+          b.score - a.score;
+        if (score) return score;
+
+        return String(
+          a.row.name,
+        ).localeCompare(
+          String(b.row.name),
+        );
+      });
+
+  for (
+    const candidate of
+    unverifiedBaseCandidates
+  ) {
+    if (selected.length >= targetCount) break;
+
+    const slug =
+      String(candidate.row.slug);
+    if (selectedSlugs.has(slug)) {
+      continue;
+    }
+
+    selectCandidate(candidate);
+  }
+}
+
 if (selected.length < targetCount) {
   throw new Error(
-    `Only ${selected.length} verified/source-backed 2025-2026 catalog entries were available after controlled variant backfill; target is ${targetCount}. Unique base models: ${selectedBaseModels.size}.`,
+    `Only ${selected.length} source-backed 2025-2026 catalog entries were available after verified-first and low-trust catalog backfill; target is ${targetCount}. Unique base models: ${selectedBaseModels.size}.`,
   );
 }
 
@@ -398,6 +499,10 @@ const devices = selected.map(({ row }) => {
     cameras,
     charging,
     verified: row.verified === true,
+    catalogTrust:
+      row.verified === false
+        ? 'source-backed-unverified'
+        : 'verified-or-unspecified',
     sourceUrls: row.source_urls.slice(0, 6),
   });
 });
@@ -434,12 +539,24 @@ const output = {
             device.baseModelSlug,
         ),
       ).size,
+    verifiedOrUnspecifiedCount:
+      devices.filter(
+        (device) =>
+          device.catalogTrust ===
+          'verified-or-unspecified',
+      ).length,
+    sourceBackedUnverifiedCount:
+      devices.filter(
+        (device) =>
+          device.catalogTrust ===
+          'source-backed-unverified',
+      ).length,
     maxEntriesPerBaseModel: 2,
     years: [2025, 2026],
-    uniqueBy: 'TechAPI verified/source-backed 2025-2026 records deduplicated by base_model_slug; canonical base records preferred',
+    uniqueBy: 'TechAPI 2025-2026 records: verified/source-backed base models first, then source-backed unverified base models only as catalog fallback',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
-    order: 'unique base models first with brand diversity, then one verified variant per selected base model as needed',
+    order: 'verified/source-backed unique base models first, then one verified variant per base if available, then source-backed unverified unique base models as catalog-only fallback',
     brandDiversityFirstPassCap: BRAND_DIVERSITY_CAP,
   },
   brandCounts,
