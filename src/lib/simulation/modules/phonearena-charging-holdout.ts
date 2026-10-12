@@ -202,16 +202,6 @@ export function backtestAgainstPhoneArenaCharging(
         ),
     );
 
-  const deviceById =
-    new Map(
-      phoneArenaDevices.map(
-        (device) => [
-          device.variant.id,
-          device,
-        ],
-      ),
-    );
-
   const phoneArenaMeasurements =
     corpus.measurements.filter(
       (measurement) =>
