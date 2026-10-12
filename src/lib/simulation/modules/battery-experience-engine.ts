@@ -13,7 +13,7 @@ export interface BatteryExperienceInput {
   socName?: string;
   region?: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   wiredWatts?: number;
   wirelessWatts?: number;
   wiredChargingStandard?: string;
