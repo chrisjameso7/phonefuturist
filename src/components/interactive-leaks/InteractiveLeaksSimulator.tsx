@@ -187,6 +187,11 @@ import {
 } from '../../lib/simulation/modules/charging-input-power-estimator';
 
 import {
+  CHARGERLAB_PEAK_INPUT_CONTEXT_VERSION,
+  estimateChargerLabPeakInputContext,
+} from '../../lib/simulation/modules/chargerlab-peak-input-context';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1749,6 +1754,15 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const chargerLabPeakInputContext =
+    form.manufacturer.trim() &&
+    numeric(form.wiredChargeW) !== undefined
+      ? estimateChargerLabPeakInputContext(
+          form.manufacturer.trim(),
+          numeric(form.wiredChargeW)!,
+        )
+      : undefined;
+
   const targetSocPowerW = numeric(form.targetSocPowerW);
   const ambientTemperatureC = numeric(form.ambientTemperatureC);
   const thermalResistanceCPerW = numeric(
@@ -2502,6 +2516,7 @@ export default function InteractiveLeaksSimulator() {
     battery: batteryExperience,
     observedChargingInput,
     geekerwanChargingContext,
+    chargerLabPeakInputContext,
     geekerwanCpuContext,
     geekerwanGpuContext,
     geekerwanBatteryResult,
@@ -6590,6 +6605,92 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {chargerLabPeakInputContext?.status ===
+              'resolved' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    ChargerLAB peak-input sanity ·{' '}
+                    {CHARGERLAB_PEAK_INPUT_CONTEXT_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {format(
+                          chargerLabPeakInputContext
+                            .advertisedWiredWatts,
+                          0,
+                        )} W
+                      </strong>
+                      <span>Advertised charger class</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {chargerLabPeakInputContext
+                          .observedPeakExpectedW !==
+                        undefined
+                          ? `${format(
+                              chargerLabPeakInputContext
+                                .observedPeakExpectedW,
+                              1,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Measured-peer peak context</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {chargerLabPeakInputContext
+                          .observedPeakMinW !==
+                          undefined &&
+                        chargerLabPeakInputContext
+                          .observedPeakMaxW !==
+                          undefined
+                          ? `${format(
+                              chargerLabPeakInputContext
+                                .observedPeakMinW,
+                              1,
+                            )}–${format(
+                              chargerLabPeakInputContext
+                                .observedPeakMaxW,
+                              1,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Recent same-brand peak range</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {chargerLabPeakInputContext
+                          .utilizationExpectedPercent !==
+                        undefined
+                          ? `${format(
+                              chargerLabPeakInputContext
+                                .utilizationExpectedPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Advertised-to-observed peak ratio</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {chargerLabPeakInputContext.referenceCount}
+                      </strong>
+                      <span>ChargerLAB same-brand references</span>
+                    </div>
+                  </div>
+
+                  <p className="il-help">
+                    {chargerLabPeakInputContext.note}
+                  </p>
+                </div>
+              ) : null}
 
               {geekerwanChargingContext?.status ===
               'resolved' ? (
