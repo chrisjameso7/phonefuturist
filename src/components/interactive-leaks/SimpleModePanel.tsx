@@ -42,6 +42,7 @@ export default function SimpleModePanel({
     useState('6.8');
   const [resolution, setResolution] =
     useState<SimpleResolutionPreset>('qhd');
+  const [renderingScale, setRenderingScale] = useState<100 | 75 | 50>(100);
   const [customWidth, setCustomWidth] = useState('');
   const [customHeight, setCustomHeight] = useState('');
   const [refreshRate, setRefreshRate] =
@@ -93,6 +94,7 @@ export default function SimpleModePanel({
         : {}),
       displayDiagonalInches: diagonal,
       displayResolution: resolution,
+      renderingScalePercent: renderingScale,
       ...(resolution === 'custom' ? { customResolutionWidthPx: number(customWidth), customResolutionHeightPx: number(customHeight) } : {}),
       refreshRateHz: hz,
       socVendor,
@@ -244,6 +246,16 @@ export default function SimpleModePanel({
             <label className="il-field"><span>Height (pixels)</span><input type="number" min="1" step="1" value={customHeight} onChange={event => setCustomHeight(event.currentTarget.value)} placeholder="2712" /></label>
           </div>
         )}
+
+        <label className="il-field">
+          <span>GPU rendering resolution</span>
+          <select value={renderingScale} onChange={event => setRenderingScale(Number(event.currentTarget.value) as 100 | 75 | 50)}>
+            <option value={100}>Native (100% per dimension)</option>
+            <option value={75}>Scaled (75% per dimension)</option>
+            <option value={50}>Scaled (50% per dimension)</option>
+          </select>
+          <small>The physical panel stays at its native resolution. Scaling changes rendered pixel count, not measured battery life; real savings depend on GPU workload and display electronics.</small>
+        </label>
 
         <label className="il-field">
           <span>Refresh rate</span>
