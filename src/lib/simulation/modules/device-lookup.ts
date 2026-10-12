@@ -10,6 +10,20 @@ function norm(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
+function catalogTrustRank(
+  device: DeviceCorpusRecord,
+) {
+  switch (device.catalogTrust) {
+    case 'verified-or-unspecified':
+      return 2;
+    case 'source-backed-unverified':
+      return 0;
+    default:
+      // Measured/reference corpora generally do not carry catalogTrust.
+      return 1;
+  }
+}
+
 export function findDeviceByName(
   corpus: DeviceCorpus,
   query: string,
@@ -60,9 +74,23 @@ export function findDeviceByName(
         }
       }
 
+      if (
+        device.catalogTrust ===
+        'source-backed-unverified'
+      ) {
+        reasons.push(
+          'lower-trust catalog metadata',
+        );
+      }
+
       return { device, score, reasons };
     })
     .filter((match) => match.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        catalogTrustRank(b.device) -
+          catalogTrustRank(a.device),
+    )
     .slice(0, Math.max(1, limit));
 }
