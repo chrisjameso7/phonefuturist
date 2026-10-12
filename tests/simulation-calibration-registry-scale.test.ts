@@ -56,6 +56,32 @@ describe('calibration registry scale and source integrity', () => {
     expect(
       publishers.has('Geekerwan'),
     ).toBe(true);
+    expect(
+      publishers.has('NanoReview'),
+    ).toBe(true);
+
+    const roles =
+      new Map(
+        registry.sources.map(
+          (source) => [
+            source.publisher,
+            source.sourceRole,
+          ],
+        ),
+      );
+
+    expect(
+      roles.get('TechAPI'),
+    ).toBe('catalog');
+    expect(
+      roles.get('PhoneArena'),
+    ).toBe('measurement-lab');
+    expect(
+      roles.get('Geekerwan'),
+    ).toBe('measurement-lab');
+    expect(
+      roles.get('NanoReview'),
+    ).toBe('aggregated-benchmark');
   });
 
   it('does not turn TechAPI catalog rows into measured calibration evidence', () => {
