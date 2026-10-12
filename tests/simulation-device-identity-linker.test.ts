@@ -44,6 +44,26 @@ const corpus: DeviceCorpus = {
     },
     {
       variant: {
+        id: 'techapi-samsung-galaxy-s26-ultra',
+        identity: {
+          manufacturer: 'Samsung',
+          family: 'Galaxy S26 Ultra',
+          modelName: 'Galaxy S26 Ultra',
+        },
+      },
+    },
+    {
+      variant: {
+        id: 'techapi-samsung-sm-s948u-galaxy-s26-ultra-uw-5g-us-1tb',
+        identity: {
+          manufacturer: 'Samsung',
+          family: 'Samsung SM-S948U Galaxy S26 Ultra UW 5G US 1TB',
+          modelName: 'Samsung SM-S948U Galaxy S26 Ultra UW 5G US 1TB',
+        },
+      },
+    },
+    {
+      variant: {
         id: 'geekerwan-soc-snapdragon-8-elite',
         identity: {
           manufacturer: 'Geekerwan SoC Reference',
@@ -78,6 +98,17 @@ describe('cross-source device identity linker', () => {
         'phonearena-galaxy-s25-ultra-5000',
         'pa-charge-s25-ultra',
       ]),
+    );
+  });
+
+  it('collapses a regional SKU onto the clean catalog phone identity', () => {
+    expect(
+      resolveCanonicalDeviceId(
+        corpus,
+        'techapi-samsung-sm-s948u-galaxy-s26-ultra-uw-5g-us-1tb',
+      ),
+    ).toBe(
+      'techapi-samsung-galaxy-s26-ultra',
     );
   });
 
