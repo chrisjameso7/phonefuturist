@@ -1,4 +1,5 @@
 import batchAJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-a.json';
+import batchBJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-b.json';
 import {
   buildBulkDeviceIdentityCorpus,
   type BulkDeviceIdentityFile,
@@ -9,7 +10,23 @@ export const GSM_ARENA_CURRENT_IDENTITY_VERSION =
   'gsmarena-current-identity-0.1.0';
 
 export function buildGsmArenaCurrentIdentityCorpus(): DeviceCorpus {
-  return buildBulkDeviceIdentityCorpus(
-    batchAJson as unknown as BulkDeviceIdentityFile,
+  const corpora = [
+    batchAJson,
+    batchBJson,
+  ].map((batch) =>
+    buildBulkDeviceIdentityCorpus(
+      batch as unknown as BulkDeviceIdentityFile,
+    ),
   );
+
+  return {
+    version: GSM_ARENA_CURRENT_IDENTITY_VERSION,
+    sources: corpora.flatMap(
+      (corpus) => corpus.sources,
+    ),
+    devices: corpora.flatMap(
+      (corpus) => corpus.devices,
+    ),
+    measurements: [],
+  };
 }
