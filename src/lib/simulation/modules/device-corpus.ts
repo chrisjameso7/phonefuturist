@@ -56,6 +56,9 @@ export interface CorpusMeasurement {
 
 export interface DeviceCorpusRecord {
   variant: DeviceVariantRecord;
+  catalogTrust?:
+    | 'verified-or-unspecified'
+    | 'source-backed-unverified';
   releaseDate?: string;
   display?: {
     diagonalInches?: number;
