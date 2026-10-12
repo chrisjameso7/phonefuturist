@@ -5560,6 +5560,7 @@ export default function InteractiveLeaksSimulator() {
                   <span className="il-result-label">Simple overview</span>
                   <div className="il-metrics">
                     <div><strong>{usagePreset}</strong><span>Daily usage scenario</span></div>
+                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>Rendered pixels versus native panel</span><small>Pixel workload comparison only, not a measured GPU power or battery-saving percentage.</small></div>}
                     <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Preset active use per day</span></div>
                     <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} h` : 'Not enough evidence'}</strong><span>Estimated active-use-only runtime</span><small>Presets change daily activity mix and usage duration, not processor load intensity. Similar hour estimates can be expected until workload-intensity calibration is added.</small></div>
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
