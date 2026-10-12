@@ -5558,16 +5558,21 @@ export default function InteractiveLeaksSimulator() {
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
                   <span className="il-result-label">Simple overview</span>
+                  <div className="il-simple-battery-readout">
+                    <span className="il-result-label">Active-use endurance · one charge</span>
+                    <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Not enough evidence'}</strong>
+                    <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
+                    <small>Standby, background tasks and overnight drain are excluded. This is a modeled estimate, not a measured result for this concept phone.</small>
+                  </div>
                   <div className="il-metrics">
-                    <div><strong>{usagePreset}</strong><span>Daily usage scenario</span></div>
-                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>Rendered pixels versus native panel</span><small>Pixel workload comparison only, not a measured GPU power or battery-saving percentage.</small></div>}
-                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Preset active use per day</span></div>
-                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} h` : 'Not enough evidence'}</strong><span>Estimated active-use-only runtime</span><small>Presets change daily activity mix and usage duration, not processor load intensity. Similar hour estimates can be expected until workload-intensity calibration is added.</small></div>
+                    <div><strong>{usagePreset}</strong><span>Selected usage mix</span></div>
+                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Daily active-use assumption (not battery endurance)</span></div>
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
                     <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
-                    <div><strong>{chargingResult?.status === 'resolved' ? formatDurationMinutes(chargingResult.estimate?.timeTo100Minutes?.expected) : 'Not enough evidence'}</strong><span>Estimated full charge</span></div>
+                    <div><strong>{chargingResult?.status === 'resolved' ? formatDurationMinutes(chargingResult.estimate?.timeTo100Minutes?.expected) : 'Not enough evidence'}</strong><span>Estimated charging time · 0–100%</span></div>
+                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Not a measured battery-saving percentage.</small></div>}
                   </div>
-                  <p className="il-help">Usage presets drive the same battery model used in Advanced. Runtime is an active-use-only estimate, not a promise of hours between charges. Idle drain and screen-off time are not included. Unknown measurements remain unknown.</p>
+                  <p className="il-help">Light, Typical and Heavy currently change the usage mix and hours per day, but do not calibrate processor load intensity. Similar endurance predictions across presets are therefore expected. Do not interpret active-use hours divided by hours/day as actual days between charges.</p>
                 </div>
               ) : (
               <>
