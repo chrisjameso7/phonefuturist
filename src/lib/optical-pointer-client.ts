@@ -22,10 +22,7 @@ export function enhanceOpticalPointer() {
   const lens = document.createElement('div');
   lens.className = 'optical-pointer__lens';
 
-  const dot = document.createElement('div');
-  dot.className = 'optical-pointer__dot';
-
-  pointer.append(lens, dot);
+  pointer.append(lens);
   document.body.append(pointer);
 
   let x = -100;
