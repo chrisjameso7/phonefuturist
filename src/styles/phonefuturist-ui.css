@@ -525,3 +525,46 @@ body:not(.product-mode) .mobile-app-brand {
     transform:none!important;
   }
 }
+
+/* PhoneFuturist Motion v1: interactions that communicate hierarchy, not decoration. */
+@keyframes pf-enter {from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:translateZ(0)}}
+@keyframes pf-reveal {from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:translateZ(0)}}
+@keyframes pf-accent-breathe {0%,100%{box-shadow:0 0 0 rgb(22 140 255 / 0)}50%{box-shadow:0 0 22px rgb(22 140 255 / .14)}}
+@media (prefers-reduced-motion:no-preference) {
+  .pf-home-v2 .pf-spotlight {animation:pf-enter 650ms cubic-bezier(.2,.8,.2,1) both;}
+  .pf-home-v2 .pf-spotlight__content > * {animation:pf-reveal 650ms cubic-bezier(.2,.8,.2,1) both;}
+  .pf-home-v2 .pf-spotlight__content > :nth-child(2){animation-delay:90ms}
+  .pf-home-v2 .pf-spotlight__content > :nth-child(3){animation-delay:150ms}
+  .pf-home-v2 .pf-spotlight__content > :nth-child(4){animation-delay:210ms}
+  .pf-home-v2 .pf-home-path,.article-card,.newsroom-index .article-card {
+    transition:transform 260ms cubic-bezier(.22,.75,.25,1),border-color 220ms ease,background-color 220ms ease,box-shadow 260ms ease;
+  }
+  @media (hover:hover) and (pointer:fine) {
+    .pf-home-v2 .pf-home-path:hover,.article-card:hover {
+      transform:translateY(-4px);
+      border-color:rgb(50 153 255 / .45);
+      box-shadow:0 14px 36px rgb(0 0 0 / .18);
+    }
+    .pf-home-v2 .pf-spotlight__cta:hover,.pf-ui__button:hover {
+      transform:translateY(-2px);
+    }
+  }
+  .interactive-page .il-section,.interactive-page .il-result-group {
+    transition:border-color 240ms ease,background-color 240ms ease,box-shadow 240ms ease;
+  }
+  .interactive-page .il-section:focus-within {border-color:rgb(48 148 255 / .55);box-shadow:0 0 0 1px rgb(48 148 255 / .08);}
+  .interactive-page .il-field :is(input,select,textarea) {
+    transition:border-color 180ms ease,box-shadow 180ms ease,background-color 180ms ease;
+  }
+  .interactive-page :is(button,.il-mode-switch button,summary),
+  .mobile-tabbar > a,.desktop-nav a {
+    transition:color 180ms ease,background-color 180ms ease,border-color 180ms ease,transform 180ms ease;
+  }
+  .interactive-page details[open] > :not(summary){animation:pf-reveal 220ms ease-out both;}
+  .interactive-page .il-results :is(.il-metrics,.il-result-group,.il-warning){animation:pf-reveal 300ms ease-out both;}
+  .mobile-tabbar > a[aria-current='page'] .mobile-lab-orb {animation:pf-accent-breathe 3200ms ease-in-out infinite;}
+}
+@media (prefers-reduced-motion:reduce) {
+ .pf-home-v2 .pf-spotlight,.pf-home-v2 .pf-spotlight__content > *, .interactive-page .il-results :is(.il-metrics,.il-result-group,.il-warning) {animation:none!important;}
+ .pf-home-v2 .pf-home-path,.article-card,.interactive-page .il-section,.interactive-page .il-field :is(input,select,textarea),.mobile-tabbar > a {transition:none!important;}
+}
