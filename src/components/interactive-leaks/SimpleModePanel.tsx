@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import type {
   SimpleCoolingPreset,
   SimpleModeInput,
@@ -121,15 +120,11 @@ export default function SimpleModePanel({
           <strong>Simple Mode</strong>
           <span>Beta · free</span>
         </div>
-        <p>
-          Pick the headline specs. PhoneFuturist
-          translates them into the same simulation engine
-          used by Advanced Lab.
-        </p>
+
       </div>
 
       <fieldset className="il-simple-usage" aria-label="Daily usage profile">
-        <legend>How do you use your phone?</legend>
+        <legend>Usage</legend>
         <div className="il-mode-switch">
           {(['Light', 'Typical', 'Heavy'] as const).map((preset) => (
             <button key={preset} type="button" className={usage === preset ? 'active' : ''}
@@ -138,10 +133,7 @@ export default function SimpleModePanel({
             </button>
           ))}
         </div>
-        <p className="il-help">
-          {SIMPLE_USAGE_SCENARIOS[usage].description}
-          {' '}{SIMPLE_USAGE_SCENARIOS[usage].disclaimer}
-        </p>
+
       </fieldset>
       <div className="il-simple-grid">
         <label className="il-field il-wide">
@@ -348,15 +340,10 @@ export default function SimpleModePanel({
         className="il-simple-run"
         onClick={submit}
       >
-        Simulate device
+        Run simulation
       </button>
 
-      <p className="il-simple-note">
-        Simple Mode uses documented presets for resolution
-        and cooling classes. It does not invent thermal
-        resistance, thermal mass or other hidden engineering
-        values.
-      </p>
+
     </div>
   );
 }
