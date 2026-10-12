@@ -48,6 +48,9 @@ export interface DisplayInput {
   diagonalInches?: number;
   resolutionWidthPx?: number;
   resolutionHeightPx?: number;
+  /** Logical resolution drawn by the GPU before panel scaling. */
+  renderingWidthPx?: number;
+  renderingHeightPx?: number;
   refreshRateHz?: number;
 
   /**
@@ -117,6 +120,9 @@ export interface SimulationInput {
 }
 
 export interface CalculatedDisplay {
+  renderingPixelCount?: number;
+  nativePixelCount?: number;
+  renderingPixelRatio?: number;
   widthMm?: number;
   heightMm?: number;
   areaMm2?: number;
