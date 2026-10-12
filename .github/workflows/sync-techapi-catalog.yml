@@ -64,6 +64,23 @@ jobs:
           if (!data.devices.every((device) => device.sourceUrls?.length)) {
             throw new Error('Every generated device must preserve at least one upstream source URL.');
           }
+          const invalidYears = data.devices.filter((device) => {
+            const year = String(device.releaseDate ?? '').slice(0, 4);
+            return year !== '2025' && year !== '2026';
+          });
+          if (invalidYears.length) {
+            throw new Error(
+              `Expected only 2025-2026 devices, found ${invalidYears.length} outside range.`,
+            );
+          }
+          if (
+            JSON.stringify(data.selection?.years) !==
+            JSON.stringify([2025, 2026])
+          ) {
+            throw new Error(
+              `Snapshot selection years must be [2025, 2026], got ${JSON.stringify(data.selection?.years)}`,
+            );
+          }
           console.log({
             devices: data.devices.length,
             brands: Object.keys(data.brandCounts ?? {}).length,
