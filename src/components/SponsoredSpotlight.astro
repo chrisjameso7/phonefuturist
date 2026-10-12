@@ -24,5 +24,5 @@ const action = campaign?.cta ?? 'Explore Interactive Leaks';
     {description && <p class="pf-spotlight__description">{description}</p>}
     <a class="pf-ui__button pf-spotlight__cta" href={href} rel={sponsored ? 'sponsored noopener noreferrer' : undefined}>{action} <span aria-hidden="true">↗</span></a>
   </div>
-  <span class="pf-spotlight__index" aria-hidden="true">PF / 01</span>
+  {sponsored ? <span class="pf-spotlight__index">Advertisement</span> : <span class="pf-spotlight__index" aria-hidden="true">PF / 01</span>}
 </section>
