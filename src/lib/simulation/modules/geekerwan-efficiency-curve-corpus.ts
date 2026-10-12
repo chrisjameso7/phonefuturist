@@ -210,6 +210,8 @@ function appendCurve(
           id +
           '-' +
           benchmark +
+          '-series-' +
+          String(curve.id) +
           '-curve-' +
           String(index + 1)
             .padStart(3, '0'),
