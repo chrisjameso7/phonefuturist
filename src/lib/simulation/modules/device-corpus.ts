@@ -48,6 +48,11 @@ export interface CorpusMeasurement {
   testChargerWatts?: number;
   chargingStandard?: string;
   measuredPeakWatts?: number;
+  /**
+   * Electrical/board power associated with a benchmark curve point.
+   * This is separate from charging power.
+   */
+  benchmarkPowerW?: number;
   cameraRole?: string;
   cameraSensorName?: string;
   cameraCaptureMode?: string;
