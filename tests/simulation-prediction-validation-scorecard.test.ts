@@ -177,6 +177,33 @@ describe('prediction validation scorecard', () => {
     );
   });
 
+
+  it('requires 99 of 100 predictions within one percent before reporting the accuracy target met', () => {
+    const makeRows = (misses: number) => Array.from({ length: 100 }, (_, index) => {
+      const percent = index < misses ? 5 : 0.5;
+      return {
+        key: 'charge_time',
+        label: 'Charging time',
+        unit: 'minutes',
+        predicted: 100 + percent,
+        actual: 100,
+        signedError: percent,
+        absoluteError: percent,
+        signedPercentError: percent,
+        absolutePercentError: percent,
+        direction: 'neutral' as const,
+        outcome: 'overpredicted' as const,
+        predictionProvenance: 'measured-calibrated' as const,
+      };
+    });
+    const passing = buildPredictionValidationScorecard([validation('passing', makeRows(1))]);
+    const failing = buildPredictionValidationScorecard([validation('failing', makeRows(2))]);
+    expect(passing.metricRows[0].withinOnePercentCount).toBe(99);
+    expect(passing.metricRows[0].withinOnePercentRate).toBe(99);
+    expect(passing.metricRows[0].accuracyTargetStatus).toBe('met');
+    expect(failing.metricRows[0].accuracyTargetStatus).toBe('not-met');
+  });
+
   it('stays unresolved without validated rows', () => {
     const scorecard =
       buildPredictionValidationScorecard(
