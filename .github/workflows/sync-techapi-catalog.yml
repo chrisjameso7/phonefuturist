@@ -84,6 +84,27 @@ jobs:
               `Variant backfill exceeded two entries for a base model: max=${maxPerBase}`,
             );
           }
+
+          const lowTrust = data.devices.filter(
+            (device) =>
+              device.catalogTrust ===
+              'source-backed-unverified',
+          ).length;
+          const higherTrust =
+            data.devices.length -
+            lowTrust;
+
+          if (higherTrust < 800) {
+            throw new Error(
+              `Expected at least 800 verified/unspecified source-backed entries, got ${higherTrust}`,
+            );
+          }
+
+          if (lowTrust > 200) {
+            throw new Error(
+              `Low-trust catalog fallback exceeded 200 entries: ${lowTrust}`,
+            );
+          }
           if (!data.devices.every((device) => device.sourceUrls?.length)) {
             throw new Error('Every generated device must preserve at least one upstream source URL.');
           }
@@ -111,6 +132,8 @@ jobs:
             variantBackfill:
               data.devices.length - base.size,
             maxPerBase,
+            higherTrust,
+            lowTrust,
             newest: data.devices[0]?.releaseDate,
             oldest: data.devices.at(-1)?.releaseDate,
           });
