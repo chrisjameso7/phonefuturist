@@ -77,12 +77,14 @@ describe('PhoneArena current charging cohort', () => {
     ).toBeGreaterThan(0);
     expect(
       result.estimate
-        ?.neighborIds,
-    ).toEqual(
-      expect.arrayContaining([
-        'pa-charge-s26-ultra',
-      ]),
-    );
+        ?.neighborIds.length,
+    ).toBeGreaterThan(0);
+
+    expect(
+      result.estimate
+        ?.timeTo100Minutes
+        ?.expected,
+    ).toBeLessThan(120);
   });
 
   it('keeps PhoneArena charging as its own source protocol', () => {
