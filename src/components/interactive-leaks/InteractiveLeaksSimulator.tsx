@@ -165,6 +165,11 @@ import {
 } from '../../lib/simulation/modules/geekerwan-charging-context';
 
 import {
+  CHARGING_INPUT_POWER_ESTIMATOR_VERSION,
+  estimateLiveObservedChargingInputPower,
+} from '../../lib/simulation/modules/charging-input-power-estimator';
+
+import {
   buildPredictionSnapshot,
 } from '../../lib/simulation/modules/prediction-snapshot-builder';
 
@@ -1693,6 +1698,21 @@ export default function InteractiveLeaksSimulator() {
       : undefined;
 
   const chargingResult = batteryExperience?.charging;
+
+  const observedChargingInput =
+    chargingWatts !== undefined
+      ? estimateLiveObservedChargingInputPower({
+          advertisedWatts:
+            chargingWatts,
+          manufacturer:
+            form.manufacturer.trim() ||
+            undefined,
+          chargingStandard:
+            form.chargingStandard.trim() ||
+            undefined,
+        })
+      : undefined;
+
   const wirelessChargingResult =
     batteryExperience?.wirelessCharging;
 
@@ -2417,6 +2437,7 @@ export default function InteractiveLeaksSimulator() {
     display: displayExperience,
     displayRefreshProfile,
     battery: batteryExperience,
+    observedChargingInput,
     geekerwanChargingContext,
     batteryAging,
     batteryCycleExposure,
@@ -6309,6 +6330,52 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
+                          {chargingWatts !== undefined
+                            ? `${format(
+                                chargingWatts,
+                                0,
+                              )} W`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Advertised / supported class</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {observedChargingInput?.status ===
+                            'resolved' &&
+                          observedChargingInput
+                            .expectedObservedPeakWatts !==
+                            undefined
+                            ? `${format(
+                                observedChargingInput
+                                  .expectedObservedPeakWatts,
+                                1,
+                              )} W`
+                            : 'Unresolved'}
+                        </strong>
+                        <span>Estimated observed peak input</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {observedChargingInput?.status ===
+                            'resolved' &&
+                          observedChargingInput
+                            .expectedUtilizationPercent !==
+                            undefined
+                            ? `${format(
+                                observedChargingInput
+                                  .expectedUtilizationPercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Observed / advertised utilization</span>
+                      </div>
+
+                      <div>
+                        <strong>
                           {chargingResult.estimate.confidenceGrade}
                         </strong>
                         <span>Evidence confidence</span>
@@ -6397,6 +6464,14 @@ export default function InteractiveLeaksSimulator() {
                         </span>
                       </div>
                     </div>
+
+                    {observedChargingInput?.status ===
+                    'resolved' ? (
+                      <p className="il-help">
+                        {CHARGING_INPUT_POWER_ESTIMATOR_VERSION} ·{' '}
+                        {observedChargingInput.note}
+                      </p>
+                    ) : null}
 
                     {chargingResult.estimate.thermalResponse ? (
                       <p className="il-help">
