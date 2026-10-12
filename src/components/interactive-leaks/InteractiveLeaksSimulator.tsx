@@ -2908,11 +2908,11 @@ export default function InteractiveLeaksSimulator() {
     ) : null;
 
   return (
-    <div className="il-app">
+    <div className="il-app" data-mode={workspaceMode}>
       <div className="il-toolbar">
         <div>
           <span className="il-status">
-            Simulation workspace
+            Interactive Leaks
           </span>
 
           <span className="il-engine">
@@ -2925,6 +2925,7 @@ export default function InteractiveLeaksSimulator() {
             <button
               type="button"
               className={workspaceMode === 'simple' ? 'active' : ''}
+              aria-pressed={workspaceMode === 'simple'}
               onClick={() => { setWorkspaceMode('simple'); setHasSimulated(false); }}
             >
               Simple
@@ -2932,6 +2933,7 @@ export default function InteractiveLeaksSimulator() {
             <button
               type="button"
               className={workspaceMode === 'advanced' ? 'active' : ''}
+              aria-pressed={workspaceMode === 'advanced'}
               onClick={() => { setWorkspaceMode('advanced'); setHasSimulated(false); }}
             >
               Advanced
@@ -5394,13 +5396,9 @@ export default function InteractiveLeaksSimulator() {
                 <span />
               </div>
 
-              <h2>Nothing simulated yet.</h2>
+              <h2>Ready to simulate</h2>
 
-              <p>
-                Enter the specifications you know, or
-                load the reference example, then run
-                the model.
-              </p>
+              
             </div>
           ) : (
             <>
