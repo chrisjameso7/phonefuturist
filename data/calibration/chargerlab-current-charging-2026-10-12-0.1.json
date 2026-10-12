@@ -1,0 +1,120 @@
+{
+  "version": "chargerlab-current-charging-2026-10-12-0.1",
+  "accessedDate": "2026-10-12",
+  "source": {
+    "publisher": "ChargerLAB",
+    "homepage": "https://www.chargerlab.com/",
+    "sourceRole": "measurement-lab",
+    "protocol": "POWER-Z measured charging compatibility and full-charge reviews. Full-charge tests use explicit charger/cable setups; reviewed 2025 devices below were tested in a 25°C thermotank where stated."
+  },
+  "devices": [
+    {
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "batteryMah": 5000,
+      "advertisedWiredWatts": 60,
+      "observedInputPowerW": 51.54,
+      "observationKind": "single measured charger/phone input point",
+      "sourceUrl": "https://www.chargerlab.com/teardown-of-samsung-60w-low-standby-gan-charger-ep-t6010",
+      "notes": [
+        "Measured while charging Galaxy S26 Ultra with Samsung 60W EP-T6010 charger.",
+        "No full-charge curve is inferred from this single power point."
+      ]
+    },
+    {
+      "manufacturer": "Samsung",
+      "model": "Galaxy S25 Ultra",
+      "batteryMah": 5000,
+      "advertisedWiredWatts": 45,
+      "compatibilityOriginalChargerPowerW": 40.24,
+      "compatibilityObservedMaxPowerW": 41.77,
+      "fullChargeTestPeakPowerW": 41,
+      "fullChargeTestPeakDurationSeconds": 480,
+      "fiftyPercentMinutes": 21,
+      "eightyPercentMinutes": 37,
+      "fullChargeMinutes": 82,
+      "ambientTemperatureC": 25,
+      "maximumObservedTemperatureC": 40.3,
+      "sourceUrl": "https://www.chargerlab.com/45w-5000mah-charging-review-of-samsung-galaxy-s25-ultra",
+      "notes": [
+        "Full-charge test used Samsung 65W three-port charger with original 3A cable.",
+        "Curve steps reported around 41W initially, then 34W, 14W, 30W and 22W before taper."
+      ]
+    },
+    {
+      "manufacturer": "OnePlus",
+      "model": "OnePlus 13T",
+      "batteryMah": 6260,
+      "advertisedWiredWatts": 80,
+      "compatibilityObservedMaxPowerW": 69.06,
+      "fullChargeTestPeakPowerW": 67,
+      "fullChargeTestPeakDurationSeconds": 38,
+      "fiftyPercentMinutes": 21,
+      "eightyPercentMinutes": 35,
+      "fullChargeMinutes": 61,
+      "ambientTemperatureC": 25,
+      "maximumObservedTemperatureC": 39.1,
+      "sourceUrl": "https://www.chargerlab.com/6260mah80w-charging-review-of-oneplus-13t",
+      "notes": [
+        "Original charger review reports about 67W during the initial peak stage.",
+        "Separate compatibility testing observed about 69W with official OnePlus/OPPO charging."
+      ]
+    },
+    {
+      "manufacturer": "iQOO",
+      "model": "iQOO Neo10 Pro+",
+      "batteryMah": 6800,
+      "advertisedWiredWatts": 120,
+      "compatibilityObservedMaxPowerW": 99.75,
+      "fullChargeTestPeakPowerW": 99,
+      "fullChargeTestPeakDurationSeconds": 42,
+      "eightyPercentMinutes": 26,
+      "fullChargeMinutes": 42,
+      "ambientTemperatureC": 25,
+      "maximumObservedTemperatureC": 36.5,
+      "sourceUrl": "https://www.chargerlab.com/120w-6800mah-charging-review-of-iqoo-neo10-pro",
+      "notes": [
+        "Detailed full-charge curve reports 50% at 16 minutes, while the article summary later says 26 minutes. PhoneFuturist intentionally omits the ambiguous 50% milestone.",
+        "Detailed curve reports 80% at 26 minutes and full charge at 42 minutes."
+      ]
+    },
+    {
+      "manufacturer": "Honor",
+      "model": "Honor Power",
+      "batteryMah": 8000,
+      "advertisedWiredWatts": 66,
+      "compatibilityOriginalChargerPowerW": 60.02,
+      "fullChargeTestPeakPowerW": 59,
+      "fullChargeTestPeakDurationSeconds": 60,
+      "fiftyPercentMinutes": 31,
+      "eightyPercentMinutes": 52,
+      "fullChargeMinutes": 98,
+      "ambientTemperatureC": 25,
+      "maximumObservedTemperatureC": 41,
+      "sourceUrl": "https://www.chargerlab.com/8000mah-66w-charging-review-of-honor-power",
+      "notes": [
+        "Full-charge test used original charger in a 25°C thermotank."
+      ]
+    },
+    {
+      "manufacturer": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "advertisedWiredWatts": 40,
+      "compatibilityOriginalChargerPowerW": 36.73,
+      "compatibilityObservedMaxPowerW": 37.36,
+      "fullChargeTestPeakPowerW": 37,
+      "fullChargeTestPeakDurationSeconds": 480,
+      "fiftyPercentMinutes": 20,
+      "seventyPercentMinutes": 30,
+      "eightyPercentMinutes": 41,
+      "fullChargeMinutes": 91,
+      "ambientTemperatureC": 25,
+      "maximumObservedTemperatureC": 39.5,
+      "sourceUrl": "https://www.chargerlab.com/charging-review-of-iphone-17-pro-max",
+      "notes": [
+        "Full-charge curve used Apple 40W Dynamic Adapter.",
+        "70W and 140W Apple chargers produced nearly overlapping charge curves, supporting a phone-side power limit around the high-30W range."
+      ]
+    }
+  ]
+}
