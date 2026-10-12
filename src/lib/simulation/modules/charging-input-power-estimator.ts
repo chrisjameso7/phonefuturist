@@ -307,8 +307,80 @@ export function estimateObservedChargingInputPower(
     };
   }
 
+  // When no protocol is requested, a phone may have been tested with many
+  // weaker fallback adapters. Those are useful compatibility measurements,
+  // but they must not become separate votes when estimating that phone's
+  // peak input capability. Keep only the highest observed peak per device.
+  const peakCandidates =
+    query.chargingStandard
+      ? candidates
+      : [
+          ...candidates.reduce(
+            (
+              byDevice,
+              candidate,
+            ) => {
+              const existing =
+                byDevice.get(
+                  candidate.deviceVariantId,
+                );
+
+              if (
+                !existing ||
+                candidate.observedPeakWatts >
+                  existing.observedPeakWatts
+              ) {
+                byDevice.set(
+                  candidate.deviceVariantId,
+                  candidate,
+                );
+              }
+
+              return byDevice;
+            },
+            new Map<
+              string,
+              ChargingInputPowerReference
+            >(),
+          ).values(),
+        ];
+
+  const requestedManufacturer =
+    normalize(
+      query.manufacturer,
+    );
+
+  const sameManufacturer =
+    requestedManufacturer
+      ? peakCandidates.filter(
+          (candidate) =>
+            normalize(
+              candidate.manufacturer,
+            ) ===
+            requestedManufacturer,
+        )
+      : [];
+
+  const localSameManufacturer =
+    sameManufacturer.filter(
+      (candidate) =>
+        Math.abs(
+          candidate.advertisedWatts -
+            query.advertisedWatts,
+        ) /
+          query.advertisedWatts <=
+        0.35,
+    );
+
+  const candidatePool =
+    localSameManufacturer.length >= 2
+      ? localSameManufacturer
+      : sameManufacturer.length >= 2
+        ? sameManufacturer
+        : peakCandidates;
+
   const selected =
-    candidates
+    candidatePool
       .sort(
         (a, b) =>
           b.weight -
