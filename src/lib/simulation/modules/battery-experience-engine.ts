@@ -251,6 +251,19 @@ export function simulateBatteryExperience(
     };
   });
 
+  if (input.socName?.trim()) {
+    const fallbackScopes = [...new Set(
+      runtimes
+        .filter((runtime) => runtime.status === 'resolved' && runtime.evidenceScope !== 'same-soc-family')
+        .map((runtime) => runtime.evidenceScope),
+    )];
+    if (fallbackScopes.length) {
+      warnings.push(
+        `Chip-specific battery efficiency is not validated for "${input.socName}". Some runtime estimates use ${fallbackScopes.map((scope) => scope === 'same-soc-vendor' ? 'other chips from the same SoC vendor' : 'a wider device cohort').join(' and ')}. Different generations may produce nearly identical results; do not use these estimates to rank SoCs.`,
+      );
+    }
+  }
+
   let mixedUse: MixedUseBatteryEstimate | undefined;
 
   if (input.dailyUseHours) {
