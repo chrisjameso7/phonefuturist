@@ -165,6 +165,12 @@ import {
 } from '../../lib/simulation/modules/geekerwan-charging-context';
 
 import {
+  GEEKERWAN_SOCPK_EVIDENCE_VERSION,
+  findGeekerwanBatteryResult,
+  summarizeGeekerwanSocCurve,
+} from '../../lib/simulation/modules/geekerwan-socpk-evidence';
+
+import {
   CHARGING_INPUT_POWER_ESTIMATOR_VERSION,
   estimateLiveObservedChargingInputPower,
 } from '../../lib/simulation/modules/charging-input-power-estimator';
@@ -2242,6 +2248,34 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const geekerwanCpuContext =
+    form.socName.trim()
+      ? summarizeGeekerwanSocCurve(
+          form.socName.trim(),
+          'geekbench6_multi',
+          numeric(form.targetSocPowerW),
+        )
+      : undefined;
+
+  const geekerwanGpuContext =
+    form.socName.trim()
+      ? summarizeGeekerwanSocCurve(
+          form.socName.trim(),
+          '3dmark_steel_nomad_light',
+          numeric(form.gpuPeakPowerW) ??
+            numeric(form.targetSocPowerW),
+        )
+      : undefined;
+
+  const geekerwanBatteryResult =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? findGeekerwanBatteryResult(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
   const knownCameraVolumeMm3 =
     result?.cameras
       ?.map((camera) => camera.moduleVolumeMm3)
@@ -2439,6 +2473,9 @@ export default function InteractiveLeaksSimulator() {
     battery: batteryExperience,
     observedChargingInput,
     geekerwanChargingContext,
+    geekerwanCpuContext,
+    geekerwanGpuContext,
+    geekerwanBatteryResult,
     batteryAging,
     batteryCycleExposure,
     batteryHealthForecast,
@@ -6872,6 +6909,188 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                 )}
               </div>
+
+              {(geekerwanCpuContext?.status ===
+                'resolved' ||
+                geekerwanGpuContext?.status ===
+                  'resolved' ||
+                geekerwanBatteryResult) ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Geekerwan / SoCPK lab context ·{' '}
+                    {GEEKERWAN_SOCPK_EVIDENCE_VERSION}
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {geekerwanCpuContext?.status ===
+                          'resolved'
+                          ? `${format(
+                              geekerwanCpuContext.minPowerW,
+                              2,
+                            )}–${format(
+                              geekerwanCpuContext.maxPowerW,
+                              2,
+                            )} W`
+                          : 'No exact curve'}
+                      </strong>
+                      <span>GB6 board-power range</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanCpuContext?.status ===
+                          'resolved'
+                          ? format(
+                              geekerwanCpuContext.maxScore,
+                              0,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>GB6 published-curve max</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanCpuContext?.status ===
+                          'resolved'
+                          ? `${format(
+                              geekerwanCpuContext.peakEfficiencyScorePerW,
+                              0,
+                            )} score/W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>GB6 peak curve efficiency</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanCpuContext?.selectedPoint
+                          ? `${format(
+                              geekerwanCpuContext.selectedPoint
+                                .score,
+                              0,
+                            )} @ ${format(
+                              geekerwanCpuContext.selectedPoint
+                                .powerW,
+                              2,
+                            )} W`
+                          : 'No power target'}
+                      </strong>
+                      <span>Nearest published GB6 point</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanGpuContext?.status ===
+                          'resolved'
+                          ? `${format(
+                              geekerwanGpuContext.minPowerW,
+                              2,
+                            )}–${format(
+                              geekerwanGpuContext.maxPowerW,
+                              2,
+                            )} W`
+                          : 'No exact curve'}
+                      </strong>
+                      <span>Steel Nomad Light power range</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanGpuContext?.status ===
+                          'resolved'
+                          ? format(
+                              geekerwanGpuContext.maxScore,
+                              0,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>Steel Nomad Light curve max</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanGpuContext?.selectedPoint
+                          ? `${format(
+                              geekerwanGpuContext.selectedPoint
+                                .score,
+                              0,
+                            )} @ ${format(
+                              geekerwanGpuContext.selectedPoint
+                                .powerW,
+                              2,
+                            )} W`
+                          : 'No power target'}
+                      </strong>
+                      <span>Nearest published GPU point</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanBatteryResult
+                          ? `${format(
+                              geekerwanBatteryResult.runtimeMinutes /
+                                60,
+                              2,
+                            )} h`
+                          : 'No exact phone match'}
+                      </strong>
+                      <span>Battery Life 5.0 runtime</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanBatteryResult?.ratedEnergyWh !==
+                        undefined
+                          ? `${format(
+                              geekerwanBatteryResult.ratedEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Tested phone rated energy</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanBatteryResult?.averagePowerW !==
+                        undefined
+                          ? `${format(
+                              geekerwanBatteryResult.averagePowerW,
+                              2,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Battery 5.0 average device power</span>
+                    </div>
+                  </div>
+
+                  {geekerwanCpuContext?.status ===
+                  'resolved' ? (
+                    <p className="il-help">
+                      CPU: {geekerwanCpuContext.note}
+                    </p>
+                  ) : null}
+
+                  {geekerwanGpuContext?.status ===
+                  'resolved' ? (
+                    <p className="il-help">
+                      GPU: {geekerwanGpuContext.note}
+                    </p>
+                  ) : null}
+
+                  {geekerwanBatteryResult ? (
+                    <p className="il-help">
+                      Battery Life 5.0 ·{' '}
+                      {geekerwanBatteryResult.systemVersion}
+                      {' · '}
+                      {geekerwanBatteryResult.videoUrl}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
 
               {gpuArchitecture ? (
                 <div className="il-result-group">
