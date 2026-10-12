@@ -3,7 +3,6 @@ import batchBJson from '../../../../data/calibration/gsmarena-current-catalog-20
 import batchCJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-c.json';
 import batchDJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-d.json';
 import batchEJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-e.json';
-import batchEJson from '../../../../data/calibration/gsmarena-current-catalog-2026-10-batch-e.json';
 import {
   buildBulkDeviceIdentityCorpus,
   type BulkDeviceIdentityFile,
@@ -19,7 +18,6 @@ export function buildGsmArenaCurrentIdentityCorpus(): DeviceCorpus {
     batchBJson,
     batchCJson,
     batchDJson,
-    batchEJson,
     batchEJson,
   ].map((batch) =>
     buildBulkDeviceIdentityCorpus(
