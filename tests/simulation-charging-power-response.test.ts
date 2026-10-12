@@ -35,6 +35,66 @@ describe('charging power response', () => {
     expect(response.elasticity).toBeLessThan(1);
   });
 
+  it('does not learn fake adapter-rating elasticity when measured phone peak power is unchanged', () => {
+    const corpus = {
+      version: 'measured-peak-test',
+      sources: [
+        {
+          id: 'lab',
+          publisher: 'Lab',
+          url: 'https://example.com',
+          sourceRole: 'measurement-lab' as const,
+        },
+      ],
+      devices: [
+        {
+          variant: {
+            id: 'phone',
+            identity: {
+              manufacturer: 'Example',
+              family: 'Phone',
+              modelName: 'Phone',
+            },
+          },
+          sourceIds: ['lab'],
+        },
+      ],
+      measurements: [
+        {
+          id: '40w-full',
+          deviceVariantId: 'phone',
+          workload: 'charging' as const,
+          metric: 'fullChargeMinutes',
+          value: 91,
+          unit: 'minutes',
+          sourceId: 'lab',
+          evidenceKind: 'measured' as const,
+          testChargerWatts: 40,
+          measuredPeakWatts: 36.7,
+        },
+        {
+          id: '140w-full',
+          deviceVariantId: 'phone',
+          workload: 'charging' as const,
+          metric: 'fullChargeMinutes',
+          value: 89,
+          unit: 'minutes',
+          sourceId: 'lab',
+          evidenceKind: 'measured' as const,
+          testChargerWatts: 140,
+          measuredPeakWatts: 37,
+        },
+      ],
+    };
+
+    const evidence =
+      collectChargingPowerResponseEvidence(
+        corpus,
+      );
+
+    expect(evidence).toEqual([]);
+  });
+
   it('does not treat a doubling of watts as a halving of time', () => {
     const scale = chargingTimePowerScale(60, 120, 0.35);
     expect(scale).toBeGreaterThan(0.5);
