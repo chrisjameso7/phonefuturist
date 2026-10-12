@@ -1,44 +1,14 @@
-/* PhoneFuturist arrow pointer. Desktop mouse only; touch/native text controls stay native. */
+/* Small native SVG cursor: browser tracks the hotspot, no JS follower lag. */
 @media (hover:hover) and (pointer:fine) {
-  .optical-pointer {
-    position:fixed;top:0;left:0;width:26px;height:32px;
-    z-index:2147483647;pointer-events:none;opacity:0;
-    transform:translate3d(-100px,-100px,0);will-change:transform;
-    transition:opacity 110ms ease;contain:layout style paint;
-    --arrow-scale:1;
+  :root {
+    --pf-arrow-cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' viewBox='0 0 20 24'%3E%3Cpath d='M1.5 1.5V20l4.8-4.5 3.9 7 3.4-1.8-3.9-7L17 13Z' fill='%23e7f4ff' stroke='%230a1626' stroke-width='1.4' stroke-linejoin='round'/%3E%3Cpath d='M3.6 4.9v10.6l2.9-2.8 4.4 7.9' fill='none' stroke='%2341baff' stroke-width='1.1'/%3E%3C/svg%3E") 1 1, auto;
   }
-  .optical-pointer[data-visible='true'] {opacity:1;}
-  .optical-pointer__lens {
-    position:absolute;inset:0;transform-origin:2px 2px;
-    transform:scale(var(--arrow-scale));
-    background:#f0f8ff;
-    clip-path:polygon(0 0,0 30px,7.8px 23.5px,13.2px 32px,19px 28.8px,13.6px 20px,24.5px 18px);
-    filter:drop-shadow(0 2px 3px rgb(0 0 0 / .4));
-    transition:transform 130ms cubic-bezier(.2,.8,.2,1);
-  }
-  .optical-pointer__lens::after {
-    content:'';position:absolute;inset:2px;
-    background:linear-gradient(140deg,#81dfff 4%,#208eff 65%,#0b55ac 100%);
-    clip-path:polygon(0 0,0 25px,7px 20px,12px 29px,16px 27px,11px 18px,21px 16px);
-  }
-  .optical-pointer__dot{display:none;}
-  .optical-pointer[data-variant='link'], .optical-pointer[data-variant='action'] {--arrow-scale:1.09;}
-  .optical-pointer[data-variant='glass'] {--arrow-scale:1;}
-  .optical-pointer[data-pressed='true'] {--arrow-scale:.89;}
-  .optical-pointer[data-variant='native'] {opacity:0;}
-  html[data-optical-pointer='ready'] body,
-  html[data-optical-pointer='ready'] a,
-  html[data-optical-pointer='ready'] button,
-  html[data-optical-pointer='ready'] summary,
-  html[data-optical-pointer='ready'] [role='button'] {cursor:none;}
-  html[data-optical-pointer-native='true'] body,
-  html[data-optical-pointer-native='true'] input,
-  html[data-optical-pointer-native='true'] textarea,
-  html[data-optical-pointer-native='true'] select,
-  html[data-optical-pointer-native='true'] [contenteditable='true'] {cursor:auto;}
+  html, body, a, button, summary, [role='button'], .button { cursor:var(--pf-arrow-cursor); }
+  input, textarea, [contenteditable='true'] {cursor:text;}
+  select {cursor:default;}
+  .optical-pointer {display:none!important;}
 }
 @media (prefers-reduced-motion:reduce),(forced-colors:active) {
-  .optical-pointer{display:none!important;}
-  html,body,a,button,summary,input,textarea,select {cursor:auto!important;}
+  html,body,a,button,summary,[role='button'],.button {cursor:auto!important;}
+  input,textarea,[contenteditable='true'] {cursor:text!important;}
 }
-@media (hover:none),(pointer:coarse) {.optical-pointer{display:none!important;}}
