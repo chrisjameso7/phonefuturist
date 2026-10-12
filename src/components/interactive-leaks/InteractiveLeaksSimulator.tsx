@@ -5603,7 +5603,7 @@ export default function InteractiveLeaksSimulator() {
 
                     <p className="il-help">
                       Electrical panel power:{' '}
-                      {displayExperience.note}
+                      {publicEvidenceText(displayExperience.note)}
                     </p>
 
                     {displayRefreshProfile ? (
@@ -5675,13 +5675,13 @@ export default function InteractiveLeaksSimulator() {
                           </div>
 
                           <p className="il-help">
-                            {displayRefreshProfile.note}
+                            {publicEvidenceText(displayRefreshProfile.note)}
                           </p>
                         </div>
                       ) : (
                         <p className="il-help">
                           Adaptive refresh unresolved:{' '}
-                          {displayRefreshProfile.unresolvedReason}
+                          {publicEvidenceText(displayRefreshProfile.unresolvedReason)}
                         </p>
                       )
                     ) : null}
@@ -5805,7 +5805,7 @@ export default function InteractiveLeaksSimulator() {
                         </div>
 
                         <p className="il-help">
-                          {displayRuntimeSensitivity.note}
+                          {publicEvidenceText(displayRuntimeSensitivity.note)}
                         </p>
                       </div>
                     ) : displayRuntimeSensitivity?.status ===
@@ -5878,7 +5878,7 @@ export default function InteractiveLeaksSimulator() {
                     ) : null}
 
                     <p className="il-help">
-                      {displayExperience.note} Brightness is not yet
+                      {publicEvidenceText(displayExperience.note)} Brightness is not yet
                       propagated into battery life because the current runtime
                       evidence does not consistently record test luminance.
                     </p>
@@ -6122,13 +6122,13 @@ export default function InteractiveLeaksSimulator() {
 
                         <p className="il-help">
                           {BATTERY_HEALTH_FORECAST_VERSION} ·{' '}
-                          {batteryHealthForecast.note}
+                          {publicEvidenceText(batteryHealthForecast.note)}
                         </p>
                       </>
                     ) : (
                       <p className="il-help">
                         Health threshold unresolved:{' '}
-                        {batteryHealthForecast.unresolvedReason}
+                        {publicEvidenceText(batteryHealthForecast.unresolvedReason)}
                       </p>
                     )
                   ) : null}
@@ -6139,12 +6139,12 @@ export default function InteractiveLeaksSimulator() {
                     'resolved' ? (
                     <p className="il-help">
                       {BATTERY_CYCLE_EXPOSURE_VERSION} ·{' '}
-                      {batteryCycleExposure.note}
+                      {publicEvidenceText(batteryCycleExposure.note)}
                     </p>
                   ) : null}
 
                   <p className="il-help">
-                    {batteryAging.note}
+                    {publicEvidenceText(batteryAging.note)}
                   </p>
                 </div>
               ) : null}
@@ -6537,7 +6537,7 @@ export default function InteractiveLeaksSimulator() {
                     'resolved' ? (
                       <p className="il-help">
                         {CHARGING_INPUT_POWER_ESTIMATOR_VERSION} ·{' '}
-                        {observedChargingInput.note}
+                        {publicEvidenceText(observedChargingInput.note)}
                       </p>
                     ) : null}
 
@@ -6554,7 +6554,7 @@ export default function InteractiveLeaksSimulator() {
                             )}% slower across ${chargingResult.estimate.thermalResponse.adjustedReferenceModes} measured mode${chargingResult.estimate.thermalResponse.adjustedReferenceModes === 1 ? '' : 's'}`
                           : 'not applied'}
                         {' · '}
-                        {chargingResult.estimate.thermalResponse.note}
+                        {publicEvidenceText(chargingResult.estimate.thermalResponse.note)}
                       </p>
                     ) : null}
 
@@ -6715,7 +6715,7 @@ export default function InteractiveLeaksSimulator() {
                     </div>
 
                     <p className="il-help">
-                      {wirelessChargingResult.note}
+                      {publicEvidenceText(wirelessChargingResult.note)}
                     </p>
                   </>
                 ) : (
@@ -6825,7 +6825,7 @@ export default function InteractiveLeaksSimulator() {
                     </div>
 
                     <p className="il-help">
-                      {socArchitecture.note}
+                      {publicEvidenceText(socArchitecture.note)}
                     </p>
                   </>
                 ) : (
@@ -6922,7 +6922,7 @@ export default function InteractiveLeaksSimulator() {
                     </div>
 
                     <p className="il-help">
-                      {peakPerformanceEstimate.note}
+                      {publicEvidenceText(peakPerformanceEstimate.note)}
                     </p>
                   </>
                 ) : (
@@ -6933,7 +6933,7 @@ export default function InteractiveLeaksSimulator() {
                     </p>
                     {peakPerformanceEstimate?.note ? (
                       <p className="il-help">
-                        {peakPerformanceEstimate.note}
+                        {publicEvidenceText(peakPerformanceEstimate.note)}
                       </p>
                     ) : null}
                   </div>
@@ -7064,7 +7064,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <p className="il-help">
-                    {crossLabBatteryContext.note}
+                    {publicEvidenceText(crossLabBatteryContext.note)}
                   </p>
 
                   {crossLabBatteryContext.warnings.map(
@@ -7407,7 +7407,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <p className="il-help">
-                    {gpuArchitecture.note}
+                    {publicEvidenceText(gpuArchitecture.note)}
                   </p>
 
                   {gpuPowerEnvelope ? (
@@ -7488,7 +7488,7 @@ export default function InteractiveLeaksSimulator() {
 
                       <p className="il-help">
                         {GPU_POWER_ENVELOPE_VERSION} ·{' '}
-                        {gpuPowerEnvelope.note}
+                        {publicEvidenceText(gpuPowerEnvelope.note)}
                       </p>
                     </>
                   ) : null}
@@ -7669,7 +7669,7 @@ export default function InteractiveLeaksSimulator() {
 
                       <p className="il-help">
                         {GAMING_DISPLAY_ENVELOPE_VERSION} ·{' '}
-                        {gamingDisplayEnvelope.note}
+                        {publicEvidenceText(gamingDisplayEnvelope.note)}
                       </p>
                     </>
                   ) : null}
@@ -7716,7 +7716,7 @@ export default function InteractiveLeaksSimulator() {
 
                       <p className="il-help">
                         {GAMING_SESSION_ENVELOPE_VERSION} ·{' '}
-                        {gamingSessionEnvelope.note}
+                        {publicEvidenceText(gamingSessionEnvelope.note)}
                       </p>
                     </>
                   ) : null}
@@ -7724,12 +7724,12 @@ export default function InteractiveLeaksSimulator() {
                   {gpuWorkloadDemand ? (
                     <p className="il-help">
                       {GPU_WORKLOAD_DEMAND_VERSION} ·{' '}
-                      {gpuWorkloadDemand.note}
+                      {publicEvidenceText(gpuWorkloadDemand.note)}
                     </p>
                   ) : null}
 
                   <p className="il-help">
-                    {gpuWorkloadResponse.note}
+                    {publicEvidenceText(gpuWorkloadResponse.note)}
                   </p>
 
                   {gpuWorkloadResponse.bottleneckSignals.map(
@@ -7787,7 +7787,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <p className="il-help">
-                    {performanceContext.note}
+                    {publicEvidenceText(performanceContext.note)}
                   </p>
 
                   {performanceContext.warnings.map(
@@ -7873,7 +7873,7 @@ export default function InteractiveLeaksSimulator() {
                       </div>
 
                       <p className="il-help">
-                        {sustainedBenchmarkEnvelope.note}
+                        {publicEvidenceText(sustainedBenchmarkEnvelope.note)}
                       </p>
                     </>
                   ) : (
@@ -7882,7 +7882,7 @@ export default function InteractiveLeaksSimulator() {
                         {sustainedBenchmarkEnvelope.reason}
                       </p>
                       <p className="il-help">
-                        {sustainedBenchmarkEnvelope.note}
+                        {publicEvidenceText(sustainedBenchmarkEnvelope.note)}
                       </p>
                     </div>
                   )}
@@ -8002,7 +8002,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <p className="il-help">
-                    {connectivityWorkload.note}
+                    {publicEvidenceText(connectivityWorkload.note)}
                   </p>
                 </div>
               ) : null}
@@ -8344,7 +8344,7 @@ export default function InteractiveLeaksSimulator() {
                     ) : null}
 
                     <p className="il-help">
-                      {thermalResult.note}
+                      {publicEvidenceText(thermalResult.note)}
                     </p>
                   </>
                 ) : sustainedPerformanceEstimate?.status ===
@@ -8548,7 +8548,7 @@ export default function InteractiveLeaksSimulator() {
                         </div>
 
                         <p className="il-help">
-                          {cameraZoomHandoff.note}
+                          {publicEvidenceText(cameraZoomHandoff.note)}
                         </p>
                       </>
                     ) : (
