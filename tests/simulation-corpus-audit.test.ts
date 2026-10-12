@@ -43,7 +43,7 @@ describe('calibration corpus audit', () => {
     expect(
       audit.measuredDevicesByPublisher
         .Geekerwan,
-    ).toBeGreaterThanOrEqual(78);
+    ).toBeGreaterThanOrEqual(80);
   });
 
   it('does not pretend source-specific duplicate records are unique semantic phone identities', () => {
