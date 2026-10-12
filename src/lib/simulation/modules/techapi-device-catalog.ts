@@ -44,6 +44,9 @@ type TechApiDevice = {
     advertisedWirelessWatts?: number;
   };
   verified?: boolean;
+  catalogTrust?:
+    | 'verified-or-unspecified'
+    | 'source-backed-unverified';
   sourceUrls: string[];
 };
 
@@ -56,6 +59,8 @@ type TechApiFile = {
     uniqueBaseModelCount?: number;
     variantBackfillCount?: number;
     maxEntriesPerBaseModel?: number;
+    verifiedOrUnspecifiedCount?: number;
+    sourceBackedUnverifiedCount?: number;
     years?: number[];
   };
   source: {
@@ -149,7 +154,15 @@ export function buildTechApiDeviceCatalog(): DeviceCorpus {
             'TechAPI verified: ' +
               (row.verified === true
                 ? 'yes'
-                : 'unspecified'),
+                : row.catalogTrust ===
+                    'source-backed-unverified'
+                  ? 'no'
+                  : 'unspecified'),
+            'Catalog trust: ' +
+              (row.catalogTrust ??
+                (row.verified === true
+                  ? 'verified-or-unspecified'
+                  : 'unspecified')),
             'Catalog evidence only; no PhoneFuturist measurement is created from this record.',
             'Attribution: ' +
               file.attribution +
@@ -302,6 +315,20 @@ export function techApiCatalogCount() {
       ),
     maxEntriesPerBaseModel:
       file.selection.maxEntriesPerBaseModel,
+    verifiedOrUnspecified:
+      file.selection.verifiedOrUnspecifiedCount ??
+      file.devices.filter(
+        (device) =>
+          device.catalogTrust !==
+          'source-backed-unverified',
+      ).length,
+    sourceBackedUnverified:
+      file.selection.sourceBackedUnverifiedCount ??
+      file.devices.filter(
+        (device) =>
+          device.catalogTrust ===
+          'source-backed-unverified',
+      ).length,
     years:
       file.selection.years ?? [],
   };
