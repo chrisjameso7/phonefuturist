@@ -1,4 +1,5 @@
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
+import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
 
@@ -6344,6 +6345,27 @@ export default function InteractiveLeaksSimulator() {
                     </div>
 
                     <div className="il-runtime-evidence">
+                      {form.socName.trim() ? (
+                        <div className="il-sensitivity-card" style={{ marginBottom: 16 }}>
+                          <strong>Processor efficiency evidence</strong>
+                          {(['geekbench6', 'steelNomadLight'] as const).map(protocol => {
+                            const curve = getSocEfficiencyCurve(form.socName.trim(), protocol);
+                            if (!curve) return (
+                              <small key={protocol}>
+                                {protocol === 'geekbench6' ? 'CPU' : 'GPU'}: no exact-chip measured efficiency curve.
+                              </small>
+                            );
+                            const point = curve.points[Math.floor(curve.points.length / 2)];
+                            const observation = evaluateSocAtBoardPower(curve.soc, protocol, point.boardPowerW);
+                            return (
+                              <small key={protocol}>
+                                {protocol === 'geekbench6' ? 'CPU / Geekbench 6' : 'GPU / Steel Nomad Light'}: {format(observation.scorePerWatt, 0)} points/W at {format(point.boardPowerW, 2)}W board power ({curve.points.length} curve points, {curve.source})
+                              </small>
+                            );
+                          })}
+                          <small>Benchmark power excludes screen consumption and is not directly interchangeable with full-device battery drain.</small>
+                        </div>
+                      ) : null}
                       <span className="il-result-label">
                         Runtime evidence quality
                       </span>
