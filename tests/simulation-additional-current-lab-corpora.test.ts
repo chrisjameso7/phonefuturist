@@ -64,5 +64,17 @@ describe('additional current lab corpora', () => {
             'hours',
       ),
     ).toBe(true);
+
+    expect(
+      corpus.devices.length,
+    ).toBeGreaterThanOrEqual(6);
+
+    expect(
+      corpus.measurements.filter(
+        (measurement) =>
+          measurement.metric ===
+          'wifiWebRuntimeHours',
+      ).length,
+    ).toBeGreaterThanOrEqual(6);
   });
 });
