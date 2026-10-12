@@ -104,7 +104,7 @@ describe('large corpus expansion quality gate', () => {
 
     expect(
       labs.size,
-    ).toBeGreaterThanOrEqual(4);
+    ).toBeGreaterThanOrEqual(5);
 
     expect(
       [...labs],
@@ -114,6 +114,7 @@ describe('large corpus expansion quality gate', () => {
         'PhoneArena',
         'GSMArena',
         'Notebookcheck',
+        'DXOMARK',
       ]),
     );
   });
