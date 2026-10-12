@@ -921,9 +921,13 @@ type DeterministicResult = ReturnType<typeof simulateDevice>;
 function DeterministicShareCard({
   input,
   result,
+  mode,
+  usage,
 }: {
   input: SimulationInput;
   result: DeterministicResult;
+  mode: 'simple' | 'advanced';
+  usage: 'Light' | 'Typical' | 'Heavy';
 }) {
   const [shareMessage, setShareMessage] = useState('');
   const display = result.displays.primary;
@@ -948,7 +952,7 @@ function DeterministicShareCard({
 
       ctx.fillStyle = '#8e9399';
       ctx.font = '700 20px Arial';
-      ctx.fillText('INTERACTIVE LEAKS · SIMULATION RESULT', 72, 132);
+      ctx.fillText(mode === 'simple' ? 'INTERACTIVE LEAKS · SIMPLE OVERVIEW' : 'INTERACTIVE LEAKS · ADVANCED LAB', 72, 132);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = deviceName.length > 38 ? '700 48px Arial' : '700 62px Arial';
@@ -966,7 +970,11 @@ function DeterministicShareCard({
       ctx.fillText(line, 72, y);
       y += 118;
 
-      const metrics = [
+      const metrics = mode === 'simple' ? [
+        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
+        ['SCREEN', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(1) + ' in' : 'Unknown'],
+        ['USAGE', usage],
+      ] : [
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
         ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
@@ -1016,6 +1024,7 @@ function DeterministicShareCard({
     const text = [
       deviceName,
       battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
+      ...(mode === 'simple' ? [usage + ' usage scenario'] : []),
       display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
       packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded',
       'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
@@ -1039,13 +1048,15 @@ function DeterministicShareCard({
     <section className="il-share-card" aria-label="Share simulation result">
       <div className="il-share-card-brand">
         <span>PhoneFuturist</span>
-        <small>Interactive Leaks</small>
+        <small>{mode === 'simple' ? 'Simple overview' : 'Advanced lab report'}</small>
       </div>
       <strong>{deviceName}</strong>
       <div className="il-share-card-metrics">
         <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
-        <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
-        <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
+        {mode === 'simple' ? <span>{usage} usage scenario</span> : <>
+          <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
+          <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
+        </>}
       </div>
       <div className="il-share-card-actions">
         <button type="button" onClick={downloadCard}>Download share card</button>
@@ -1072,6 +1083,8 @@ export default function InteractiveLeaksSimulator() {
 
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
+  const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
+  const [lastRunMode, setLastRunMode] = useState<'simple' | 'advanced'>('simple');
 
   const [predictionSaveState, setPredictionSaveState] =
     useState<
@@ -1249,7 +1262,9 @@ export default function InteractiveLeaksSimulator() {
     };
   }
 
-  function runSimpleMode(input: SimpleModeInput) {
+  function runSimpleMode(input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') {
+    setUsagePreset(usage);
+    setLastRunMode('simple');
     const expansion = expandSimpleMode(input);
     const primary =
       expansion.simulationInput.displays.primary;
@@ -1381,6 +1396,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function simulate() {
+    setLastRunMode('advanced');
     setPredictionSaveState({ status: 'idle' });
     setSimulationInput(buildInput());
     setHasSimulated(true);
@@ -5387,6 +5403,19 @@ export default function InteractiveLeaksSimulator() {
                 </h2>
               </div>
 
+              {workspaceMode === 'simple' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">Simple overview</span>
+                  <div className="il-metrics">
+                    <div><strong>{usagePreset}</strong><span>Daily usage scenario</span></div>
+                    <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
+                    <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
+                    <div><strong>{chargingResult?.status === 'resolved' ? formatDurationMinutes(chargingResult.estimate?.timeTo100Minutes?.expected) : 'Not enough evidence'}</strong><span>Estimated full charge</span></div>
+                  </div>
+                  <p className="il-help">This is a simplified overview. The usage preset is a scenario description; battery endurance is not shown without a validated, usage-aware estimate. Switch to Advanced to inspect engineering details.</p>
+                </div>
+              ) : (
+              <>
               <div className="il-result-group">
                 <span className="il-result-label">
                   Display
@@ -9810,8 +9839,10 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               )}
 
+              </>
+              )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} />
               )}
 
               {result.warnings.length > 0 && (
