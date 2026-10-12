@@ -5412,11 +5412,12 @@ export default function InteractiveLeaksSimulator() {
                   <span className="il-result-label">Simple overview</span>
                   <div className="il-metrics">
                     <div><strong>{usagePreset}</strong><span>Daily usage scenario</span></div>
+                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} h` : 'Not enough evidence'}</strong><span>Estimated active-use-only runtime</span></div>
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
                     <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
                     <div><strong>{chargingResult?.status === 'resolved' ? formatDurationMinutes(chargingResult.estimate?.timeTo100Minutes?.expected) : 'Not enough evidence'}</strong><span>Estimated full charge</span></div>
                   </div>
-                  <p className="il-help">This is a simplified overview. The usage preset is a scenario description; battery endurance is not shown without a validated, usage-aware estimate. Switch to Advanced to inspect engineering details.</p>
+                  <p className="il-help">Usage presets drive the same battery model used in Advanced. Runtime is an active-use-only estimate, not a promise of hours between charges. Idle drain and screen-off time are not included. Unknown measurements remain unknown.</p>
                 </div>
               ) : (
               <>
