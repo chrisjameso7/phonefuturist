@@ -329,3 +329,35 @@ body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px;
   .interactive-page .il-toolbar .il-mode-switch button,
   .interactive-page .il-share-card { transition:none!important; }
 }
+
+/* Visual QA: ensure responsive composition survives legacy page styles. */
+#main.home-page .pf-home-v2 { min-width:0; }
+#main.home-page .pf-home-v2 .latest-section,
+#main.home-page .pf-home-v2 .about-section { color:var(--ink); }
+#main.home-page .pf-home-v2 .latest-section { display:grid; grid-template-columns:minmax(0,1fr) minmax(240px,.35fr); gap:24px; }
+#main.home-page .pf-home-v2 :is(.latest-main,.news-rail) { min-width:0; }
+#main.home-page .pf-home-v2 .section-heading { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:12px; }
+#main.home-page .pf-home-v2 .about-section { margin-top:48px; }
+.interactive-page.pf-ui .il-app :is(input,select,textarea) { max-width:100%; }
+.interactive-page.pf-ui .il-app :is(input,select,textarea):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.interactive-page.pf-ui .il-app[data-mode="advanced"] .il-workspace { min-width:0; }
+.interactive-page.pf-ui .il-app[data-mode="advanced"] :is(.il-results,.il-builder) { overflow-wrap:anywhere; }
+.interactive-page.pf-ui .il-app .il-share-card { max-width:100%; }
+.interactive-page.pf-ui .il-app .il-share-card button { cursor:pointer; }
+.interactive-page.pf-ui .il-app .il-share-card button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+@media(max-width:900px) {
+  #main.home-page .pf-home-v2 .latest-section { grid-template-columns:minmax(0,1fr); }
+}
+@media(max-width:760px) {
+  #main.home-page .pf-home-v2 { width:100%; padding:0 16px 34px; margin:0 auto; }
+  #main.home-page .pf-home-v2 .latest-section { display:grid!important; grid-template-columns:minmax(0,1fr); margin-top:32px; }
+  #main.home-page .pf-home-v2 .about-section { display:grid!important; margin-top:30px; }
+  .interactive-page.pf-ui .il-app .il-toolbar-actions { width:100%; }
+  .interactive-page.pf-ui .il-app .il-toolbar .il-mode-switch { flex:1 1 100%; min-width:0; }
+  .interactive-page.pf-ui .il-app .il-share-card-metrics { min-width:0; }
+}
+@media(max-width:460px) {
+  .interactive-page.pf-ui .il-app[data-mode="simple"] .il-simple-grid { grid-template-columns:minmax(0,1fr); }
+  .interactive-page.pf-ui .il-app[data-mode="simple"] .il-simple-grid .il-wide { grid-column:auto; }
+  .interactive-page.pf-ui .il-app .il-share-card-metrics { grid-template-columns:minmax(0,1fr); }
+}
