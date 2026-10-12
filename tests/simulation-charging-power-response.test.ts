@@ -15,8 +15,8 @@ describe('charging power response', () => {
       evidence.some(
         (row) =>
           row.deviceVariantId === 'oppo-find-x9-pro-global-7500' &&
-          row.lowWatts === 55 &&
-          row.highWatts === 80 &&
+          row.lowWatts === 43 &&
+          row.highWatts === 67 &&
           row.lowFullChargeMinutes === 80 &&
           row.highFullChargeMinutes === 67,
       ),
