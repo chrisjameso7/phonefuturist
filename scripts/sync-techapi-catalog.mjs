@@ -145,11 +145,11 @@ for await (const file of walk(inputRoot)) {
   const relative = path.relative(inputRoot, file).split(path.sep);
   const year = Number(relative[1]);
 
-  // TechAPI's curated canonical smartphone records live directly at
-  // brand/year/slug.json. Nested directories contain market/storage/SKU
-  // expansions that are useful for device catalogs but would overweight
-  // one marketed phone family in PhoneFuturist calibration.
-  if (relative.length !== 3) continue;
+  // Accept both canonical base-model records and nested market/storage/SKU
+  // variants, but only when TechAPI marks them verified and source-backed.
+  // Selection below still deduplicates by base_model_slug and strongly
+  // prefers canonical base records, so variants cannot overweight a model.
+  if (relative.length < 3) continue;
   if (!Number.isInteger(year) || year < YEAR_MIN || year > YEAR_MAX) continue;
 
   let row;
@@ -321,7 +321,7 @@ const output = {
     targetCount,
     selectedCount: devices.length,
     years: [2025, 2026],
-    uniqueBy: 'TechAPI canonical brand/year/slug.json records, then base_model_slug',
+    uniqueBy: 'TechAPI verified/source-backed 2025-2026 records deduplicated by base_model_slug; canonical base records preferred',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
     order: 'brand-diversity first pass, then release_date desc and completeness desc',
