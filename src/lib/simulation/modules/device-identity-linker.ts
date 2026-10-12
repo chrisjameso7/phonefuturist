@@ -76,6 +76,120 @@ function normalizeModel(
     .trim();
 }
 
+function modelTokens(
+  value: string,
+) {
+  return normalizeModel(value)
+    .split(' ')
+    .filter(Boolean);
+}
+
+function containsOrderedModel(
+  candidate: string,
+  cleanModel: string,
+) {
+  const candidateTokens =
+    modelTokens(candidate);
+  const cleanTokens =
+    modelTokens(cleanModel);
+
+  if (!cleanTokens.length) {
+    return false;
+  }
+
+  let cursor = 0;
+
+  for (const token of candidateTokens) {
+    if (
+      token ===
+      cleanTokens[cursor]
+    ) {
+      cursor += 1;
+
+      if (
+        cursor ===
+        cleanTokens.length
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function cleanCatalogCandidates(
+  corpus: DeviceCorpus,
+) {
+  return corpus.devices
+    .filter(
+      (device) =>
+        device.variant.id.startsWith(
+          'techapi-',
+        ),
+    )
+    .filter((device) => {
+      const model =
+        device.variant.identity
+          .modelName;
+
+      const normalized =
+        normalizeModel(model);
+
+      return (
+        normalized.length > 0 &&
+        !/\b(sm-|a\d{4}|gb\b|tb\b|dual sim|td lte|global|uw)\b/i.test(
+          model,
+        )
+      );
+    });
+}
+
+function canonicalCatalogMatch(
+  corpus: DeviceCorpus,
+  device: DeviceCorpusRecord,
+) {
+  const manufacturer =
+    normalizeManufacturer(
+      device.variant.identity
+        .manufacturer,
+    );
+
+  const candidates =
+    cleanCatalogCandidates(
+      corpus,
+    )
+      .filter(
+        (candidate) =>
+          normalizeManufacturer(
+            candidate.variant.identity
+              .manufacturer,
+          ) === manufacturer,
+      )
+      .filter(
+        (candidate) =>
+          containsOrderedModel(
+            device.variant.identity
+              .modelName,
+            candidate.variant.identity
+              .modelName,
+          ),
+      )
+      .sort(
+        (a, b) =>
+          normalizeModel(
+            b.variant.identity
+              .modelName,
+          ).length -
+          normalizeModel(
+            a.variant.identity
+              .modelName,
+          ).length,
+      );
+
+  return candidates[0];
+}
+
 function identityKey(
   device: DeviceCorpusRecord,
 ) {
@@ -143,8 +257,20 @@ export function linkDeviceIdentities(
       continue;
     }
 
+    const catalogMatch =
+      canonicalCatalogMatch(
+        corpus,
+        device,
+      );
+
     const key =
-      identityKey(device);
+      catalogMatch
+        ? identityKey(
+            catalogMatch,
+          )
+        : identityKey(
+            device,
+          );
 
     const group =
       groups.get(key) ?? [];
