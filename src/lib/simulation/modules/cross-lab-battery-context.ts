@@ -7,9 +7,13 @@ import {
   phoneArenaBatteryEfficiency,
   type PhoneArenaBatteryResult,
 } from './phonearena-battery-evidence';
+import {
+  findTomsGuideBatteryResult,
+  type TomsGuideBatteryResult,
+} from './tomsguide-battery-evidence';
 
 export const CROSS_LAB_BATTERY_CONTEXT_VERSION =
-  'cross-lab-battery-context-0.1.0';
+  'cross-lab-battery-context-0.2.0';
 
 export interface CrossLabBatteryContext {
   version: string;
@@ -35,6 +39,12 @@ export interface CrossLabBatteryContext {
     videoMinutesPer1000Mah: number;
     gamingMinutesPer1000Mah: number;
     url: string;
+  };
+  tomsGuide?: {
+    batteryMah: number;
+    runtimeMinutes: number;
+    minutesPer1000Mah: number;
+    notes?: string[];
   };
   evidenceCount: number;
   labAgreement:
@@ -76,6 +86,27 @@ function geekerwanView(
   };
 }
 
+function tomsGuideView(
+  result: TomsGuideBatteryResult,
+) {
+  return {
+    batteryMah:
+      result.batteryMah,
+    runtimeMinutes:
+      result.runtimeMinutes,
+    minutesPer1000Mah:
+      result.runtimeMinutes /
+      (result.batteryMah / 1000),
+    ...(result.notes
+      ? {
+          notes: [
+            ...result.notes,
+          ],
+        }
+      : {}),
+  };
+}
+
 function phoneArenaView(
   result: PhoneArenaBatteryResult,
 ) {
@@ -114,9 +145,16 @@ export function buildCrossLabBatteryContext(
       model,
     );
 
+  const tomsGuide =
+    findTomsGuideBatteryResult(
+      manufacturer,
+      model,
+    );
+
   const evidenceCount =
     Number(Boolean(geekerwan)) +
-    Number(Boolean(phoneArena));
+    Number(Boolean(phoneArena)) +
+    Number(Boolean(tomsGuide));
 
   if (!evidenceCount) {
     return {
@@ -136,14 +174,16 @@ export function buildCrossLabBatteryContext(
 
   const warnings: string[] = [];
 
+  if (evidenceCount >= 2) {
+    warnings.push(
+      'Independent battery labs use different workloads, brightness, network conditions and test versions. Raw runtime hours must not be averaged or treated as interchangeable.',
+    );
+  }
+
   if (
     geekerwan &&
     phoneArena
   ) {
-    warnings.push(
-      'Geekerwan Battery Life 5.0 and PhoneArena battery workloads are different protocols. Their raw runtime hours must not be averaged or treated as interchangeable.',
-    );
-
     if (
       geekerwan.ratedEnergyWh !==
       undefined
@@ -158,7 +198,7 @@ export function buildCrossLabBatteryContext(
     version:
       CROSS_LAB_BATTERY_CONTEXT_VERSION,
     status:
-      evidenceCount === 2
+      evidenceCount >= 2
         ? 'resolved'
         : 'partial',
     manufacturer,
@@ -179,15 +219,23 @@ export function buildCrossLabBatteryContext(
             ),
         }
       : {}),
+    ...(tomsGuide
+      ? {
+          tomsGuide:
+            tomsGuideView(
+              tomsGuide,
+            ),
+        }
+      : {}),
     evidenceCount,
     labAgreement:
-      evidenceCount === 2
+      evidenceCount >= 2
         ? 'cross-lab-context'
         : 'single-lab',
     warnings,
     note:
-      evidenceCount === 2
-        ? 'Two independent lab protocols are available for this exact phone. PhoneFuturist preserves them side by side to reveal protocol sensitivity instead of collapsing them into one synthetic runtime.'
+      evidenceCount >= 2
+        ? `${evidenceCount} independent lab protocols are available for this exact phone. PhoneFuturist preserves them side by side to reveal protocol sensitivity instead of collapsing them into one synthetic runtime.`
         : 'One independent lab protocol is available for this exact phone; no cross-lab agreement claim is made.',
   };
 }
