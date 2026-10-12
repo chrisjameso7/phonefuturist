@@ -97,6 +97,7 @@ export function buildTechApiDeviceCatalog(): DeviceCorpus {
     publisher:
       file.source.publisher,
     url: file.source.url,
+    sourceRole: 'catalog',
     protocol:
       file.source.protocol,
     ...(file.source.accessedDate
