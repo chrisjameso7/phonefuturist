@@ -965,29 +965,49 @@ function DeterministicShareCard({
       ctx.fillStyle = accent;
       ctx.fillText(simple ? 'INTERACTIVE LEAKS  /  SIMPLE' : 'INTERACTIVE LEAKS  /  ADVANCED', 72, 175);
 
-      // Keep device names within the poster instead of clipping long names.
+      // Wrap safely for PNG, truncate with an ellipsis if the reserved area is exceeded.
       function wrapTitle(title: string, fontSize: number, top: number, maxLines: number) {
-        const titleContext = ctx!;
-        titleContext.font = '700 ' + fontSize + 'px Arial';
-        const words = title.split(/\s+/);
-        let row = '';
-        let lineY = top;
-        let count = 0;
+        const drawingContext = ctx!;
+        drawingContext.font = '700 ' + fontSize + 'px Arial';
+        const maxWidth = 920;
+        const words = title.trim().split(/\s+/).filter(Boolean);
+        const lines: string[] = [];
+        let current = '';
         for (const word of words) {
-          const candidate = row ? row + ' ' + word : word;
-          if (titleContext.measureText(candidate).width > 920 && row) {
-            titleContext.fillText(row, 72, lineY);
-            lineY += fontSize * 1.16;
-            count++;
-            row = word;
-            if (count >= maxLines - 1) break;
-          } else row = candidate;
+          const candidate = current ? current + ' ' + word : word;
+          if (drawingContext.measureText(candidate).width <= maxWidth) {
+            current = candidate;
+          } else {
+            if (current) lines.push(current);
+            current = word;
+          }
         }
-        if (row) titleContext.fillText(row, 72, lineY);
+        if (current) lines.push(current);
+        if (!lines.length) lines.push('Untitled concept');
+
+        // A single oversized word must never overflow its card.
+        const fit = (value: string, ellipsis: boolean) => {
+          const suffix = ellipsis ? '…' : '';
+          let output = value;
+          while (output.length > 0 && drawingContext.measureText(output + suffix).width > maxWidth) {
+            output = output.slice(0, -1);
+          }
+          return output + suffix;
+        };
+        lines.slice(0, maxLines).forEach((line, index) => {
+          const isLast = index === maxLines - 1;
+          const remaining = lines.length > maxLines;
+          drawingContext.fillText(
+            fit(line, isLast && remaining),
+            72,
+            top + index * fontSize * 1.16,
+            maxWidth,
+          );
+        });
       }
 
       ctx.fillStyle = ink;
-      wrapTitle(deviceName, simple ? 69 : 54, simple ? 290 : 238, simple ? 3 : 2);
+      wrapTitle(deviceName, simple ? 69 : 54, simple ? 290 : 238, simple ? 3 : 1);
       const metrics: Array<[string, string]> = simple ? [
         ['USAGE', usage],
         ['ACTIVE USE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
