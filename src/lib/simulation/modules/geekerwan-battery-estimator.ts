@@ -5,6 +5,9 @@ import {
   findComparableDevices,
   normalizeSocFamily,
 } from './comparable-devices';
+import {
+  resolveCanonicalDeviceId,
+} from './device-identity-linker';
 
 export const GEEKERWAN_BATTERY_ESTIMATOR_VERSION =
   'geekerwan-battery-estimator-0.1.0';
@@ -118,15 +121,62 @@ export function estimateGeekerwanBatteryLife(
       ),
     );
 
+  const deviceById =
+    new Map(
+      corpus.devices.map(
+        (device) => [
+          device.variant.id,
+          device,
+        ],
+      ),
+    );
+
   const evidenceCorpus: DeviceCorpus = {
     ...corpus,
     devices:
-      corpus.devices.filter(
-        (device) =>
-          eligibleIds.has(
-            device.variant.id,
-          ),
-      ),
+      corpus.devices
+        .filter(
+          (device) =>
+            eligibleIds.has(
+              device.variant.id,
+            ),
+        )
+        .map((device) => {
+          const canonicalId =
+            resolveCanonicalDeviceId(
+              corpus,
+              device.variant.id,
+            );
+
+          const canonical =
+            deviceById.get(
+              canonicalId,
+            );
+
+          if (
+            !canonical ||
+            canonical.variant.id ===
+              device.variant.id
+          ) {
+            return device;
+          }
+
+          return {
+            ...device,
+            variant: {
+              ...device.variant,
+              battery: {
+                ...canonical.variant
+                  .battery,
+                ...device.variant
+                  .battery,
+              },
+              soc:
+                device.variant.soc ??
+                canonical.variant.soc,
+            },
+          };
+        }),
   };
 
   const comparables =
@@ -189,7 +239,10 @@ export function estimateGeekerwanBatteryLife(
               : undefined
           );
 
-        if (!positive(capacity)) {
+        if (
+          !positive(capacity) &&
+          !positive(energy)
+        ) {
           return [];
         }
 
@@ -199,8 +252,10 @@ export function estimateGeekerwanBatteryLife(
           hours:
             measurement.value,
           mahPerHour:
-            capacity /
-            measurement.value,
+            positive(capacity)
+              ? capacity /
+                measurement.value
+              : undefined,
           whPerHour:
             positive(energy)
               ? energy /
@@ -279,19 +334,52 @@ export function estimateGeekerwanBatteryLife(
         ? 'same-soc-vendor' as const
         : 'protocol-cohort' as const;
 
-  const allHaveEnergy =
-    positive(
-      input.batteryEnergyWh,
-    ) &&
-    selected.every(
+  const energyRows =
+    selected.filter(
       (row) =>
         positive(row.whPerHour),
     );
 
+  const mahRows =
+    selected.filter(
+      (row) =>
+        positive(row.mahPerHour),
+    );
+
+  const useEnergy =
+    positive(
+      input.batteryEnergyWh,
+    ) &&
+    energyRows.length > 0;
+
+  const normalizedRows =
+    useEnergy
+      ? energyRows
+      : mahRows;
+
+  if (!normalizedRows.length) {
+    return {
+      version:
+        GEEKERWAN_BATTERY_ESTIMATOR_VERSION,
+      status: 'unresolved',
+      referenceCount: 0,
+      neighborIds: [],
+      sameSocFamilyReferences:
+        sameFamily.length,
+      sameSocVendorReferences:
+        sameVendor.length,
+      sourceIds: [],
+      unresolvedReason:
+        'Compatible Geekerwan references lack the battery energy/capacity basis required by the target.',
+      note:
+        'The estimator does not convert Wh and mAh without accepted voltage evidence.',
+    };
+  }
+
   const expectedDrain =
-    allHaveEnergy
+    useEnergy
       ? weightedMean(
-          selected.map(
+          normalizedRows.map(
             (row) => ({
               value:
                 row.whPerHour!,
@@ -301,10 +389,10 @@ export function estimateGeekerwanBatteryLife(
           ),
         )
       : weightedMean(
-          selected.map(
+          normalizedRows.map(
             (row) => ({
               value:
-                row.mahPerHour,
+                row.mahPerHour!,
               weight:
                 row.weight,
             }),
@@ -312,20 +400,20 @@ export function estimateGeekerwanBatteryLife(
         );
 
   const expectedHours =
-    allHaveEnergy
+    useEnergy
       ? input.batteryEnergyWh! /
         expectedDrain
       : input.batteryMah /
         expectedDrain;
 
   const perReferenceHours =
-    selected.map(
+    normalizedRows.map(
       (row) =>
-        allHaveEnergy
+        useEnergy
           ? input.batteryEnergyWh! /
             row.whPerHour!
           : input.batteryMah /
-            row.mahPerHour,
+            row.mahPerHour!,
     );
 
   return {
@@ -341,7 +429,7 @@ export function estimateGeekerwanBatteryLife(
       Math.max(
         ...perReferenceHours,
       ),
-    ...(allHaveEnergy
+    ...(useEnergy
       ? {
           expectedWhPerHour:
             expectedDrain,
@@ -351,10 +439,10 @@ export function estimateGeekerwanBatteryLife(
             expectedDrain,
         }),
     referenceCount:
-      selected.length,
+      normalizedRows.length,
     neighborIds: [
       ...new Set(
-        selected.map(
+        normalizedRows.map(
           (row) =>
             row.deviceVariantId,
         ),
@@ -367,14 +455,14 @@ export function estimateGeekerwanBatteryLife(
       sameVendor.length,
     sourceIds: [
       ...new Set(
-        selected.map(
+        normalizedRows.map(
           (row) =>
             row.sourceId,
         ),
       ),
     ],
     note:
-      allHaveEnergy
+      useEnergy
         ? `Estimated Smartphone 5.0 battery life is energy-normalized in Wh/h using Geekerwan-only ${evidenceScope.replaceAll('-', ' ')} evidence. No PhoneArena or GSMArena runtime protocol is mixed into this estimate.`
         : `Estimated Smartphone 5.0 battery life is capacity-normalized in mAh/h using Geekerwan-only ${evidenceScope.replaceAll('-', ' ')} evidence. Wh normalization is withheld because target or selected references lack accepted battery-energy evidence.`,
   };
