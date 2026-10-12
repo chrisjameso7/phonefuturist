@@ -12,6 +12,7 @@ export const CORPUS_COVERAGE_REPORT_VERSION =
 export interface CorpusCoverageReport {
   version: string;
   catalogDeviceCount: number;
+  canonicalCatalogDeviceCount: number;
   totalDeviceRecordCount: number;
   totalMeasurementCount: number;
   publisherCount: number;
@@ -176,6 +177,16 @@ export function buildCorpusCoverageReport(
       deviceId,
     ) ??
     deviceId;
+
+  const canonicalCatalogDevices =
+    new Set(
+      catalogDevices.map(
+        (device) =>
+          canonical(
+            device.variant.id,
+          ),
+      ),
+    );
 
   const measuredCanonical =
     new Set<string>();
@@ -355,6 +366,8 @@ export function buildCorpusCoverageReport(
       CORPUS_COVERAGE_REPORT_VERSION,
     catalogDeviceCount:
       catalogDevices.length,
+    canonicalCatalogDeviceCount:
+      canonicalCatalogDevices.size,
     totalDeviceRecordCount:
       corpus.devices.length,
     totalMeasurementCount:
@@ -404,6 +417,6 @@ export function buildCorpusCoverageReport(
       thermal.size,
     unresolvedLabRecords,
     note:
-      'Catalog breadth and laboratory calibration depth are reported separately. Multi-source and multi-publisher counts are distinct so repeated pages from one publisher are not mistaken for independent corroboration. Source-specific device records are linked to canonical retail identities where manufacturer/model normalization is sufficiently strong; SoC-only reference records remain separate.',
+      'Catalog breadth and laboratory calibration depth are reported separately. Raw catalog record count is distinct from canonical catalog device count so duplicate source records are not mistaken for unique phones. Multi-source and multi-publisher counts are distinct so repeated pages from one publisher are not mistaken for independent corroboration. Source-specific device records are linked to canonical retail identities where manufacturer/model normalization is sufficiently strong; SoC-only reference records remain separate.',
   };
 }
