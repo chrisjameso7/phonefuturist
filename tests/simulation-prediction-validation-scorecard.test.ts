@@ -116,6 +116,8 @@ describe('prediction validation scorecard', () => {
       );
 
     expect(hours?.observations).toBe(2);
+    expect(hours?.accuracyTargetStatus).toBe('insufficient-data');
+    expect(hours?.withinOnePercentRate).toBe(0);
     expect(hours?.mae).toBeCloseTo(
       1.5,
       8,
