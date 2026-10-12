@@ -94,7 +94,7 @@ export interface DeviceCorpusRecord {
      */
     referenceWiredWatts?: number;
     advertisedWirelessWatts?: number;
-    cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+    cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   };
   cooling?: {
     class?: 'passive-graphite' | 'vapor-chamber' | 'large-vapor-chamber' | 'active-fan' | 'other';
