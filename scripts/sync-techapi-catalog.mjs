@@ -9,7 +9,7 @@ if (!inputRoot) {
   throw new Error('Usage: node scripts/sync-techapi-catalog.mjs <TechAPI data/smartphone dir> [output] [count]');
 }
 
-const YEAR_MIN = 2022;
+const YEAR_MIN = 2025;
 const YEAR_MAX = 2026;
 
 const BRAND_NAMES = new Map([
@@ -160,7 +160,7 @@ for await (const file of walk(inputRoot)) {
   }
 
   if (!row?.slug || !row?.name || !row?.brand) continue;
-  if (!row?.release_date || !/^202[4-6]-\d{2}-\d{2}$/.test(row.release_date)) continue;
+  if (!row?.release_date || !/^202[5-6]-\d{2}-\d{2}$/.test(row.release_date)) continue;
   if (row.verified === false) continue;
   if (!Array.isArray(row.source_urls) || row.source_urls.length === 0) continue;
 
@@ -230,7 +230,7 @@ for (const candidate of orderedCandidates) {
 
 if (selected.length < targetCount) {
   throw new Error(
-    `Only ${selected.length} unique verified/source-backed 2024-2026 base models were available; target is ${targetCount}.`,
+    `Only ${selected.length} unique verified/source-backed 2025-2026 base models were available; target is ${targetCount}.`,
   );
 }
 
@@ -320,7 +320,7 @@ const output = {
   selection: {
     targetCount,
     selectedCount: devices.length,
-    years: [2022, 2023, 2024, 2025, 2026],
+    years: [2025, 2026],
     uniqueBy: 'TechAPI canonical brand/year/slug.json records, then base_model_slug',
     requireSourceUrls: true,
     excludeVerifiedFalse: true,
