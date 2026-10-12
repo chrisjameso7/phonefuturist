@@ -121,6 +121,12 @@ export function buildTechApiDeviceCatalog(): DeviceCorpus {
     DeviceCorpusRecord[] =
     file.devices.map(
       (row) => ({
+        ...(row.catalogTrust
+          ? {
+              catalogTrust:
+                row.catalogTrust,
+            }
+          : {}),
         variant: {
           id: row.id,
           identity: {
