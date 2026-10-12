@@ -9,8 +9,7 @@ export const SIMPLE_MODE_VERSION =
   'simple-mode-0.1.0';
 
 export type SimpleResolutionPreset =
-  | 'fhd'
-  | 'qhd';
+  | 'hd' | 'hd-plus' | 'fhd' | 'fhd-plus' | '1200p' | '1220p' | '1260p' | '1280p' | '1344p' | 'qhd' | 'qhd-plus' | '4k' | 'custom';
 
 export type SimpleCoolingPreset =
   | 'basic'
@@ -32,6 +31,8 @@ export interface SimpleModeInput {
 
   displayDiagonalInches: number;
   displayResolution: SimpleResolutionPreset;
+  customResolutionWidthPx?: number;
+  customResolutionHeightPx?: number;
   refreshRateHz: number;
 
   socVendor?: SocVendor;
@@ -91,20 +92,20 @@ export interface SimpleModeExpansion {
   assumptions: SimpleModeAssumption[];
 }
 
-const RESOLUTION_PRESETS: Record<
-  SimpleResolutionPreset,
-  { width: number; height: number; label: string }
-> = {
-  fhd: {
-    width: 1080,
-    height: 2400,
-    label: '1080-class',
-  },
-  qhd: {
-    width: 1440,
-    height: 3200,
-    label: '1440-class',
-  },
+const RESOLUTION_PRESETS: Record<Exclude<SimpleResolutionPreset, 'custom'>,
+  { width: number; height: number; label: string }> = {
+  hd: { width: 720, height: 1600, label: 'HD' },
+  'hd-plus': { width: 720, height: 1650, label: 'HD+' },
+  fhd: { width: 1080, height: 2400, label: 'FHD' },
+  'fhd-plus': { width: 1080, height: 2520, label: 'FHD+' },
+  '1200p': { width: 1200, height: 2640, label: '1200p' },
+  '1220p': { width: 1220, height: 2712, label: '1220p / 1.5K' },
+  '1260p': { width: 1260, height: 2800, label: '1260p' },
+  '1280p': { width: 1280, height: 2856, label: '1280p' },
+  '1344p': { width: 1344, height: 2992, label: '1344p' },
+  qhd: { width: 1440, height: 3200, label: 'QHD' },
+  'qhd-plus': { width: 1440, height: 3120, label: 'QHD+' },
+  '4k': { width: 1644, height: 3840, label: '4K-class' },
 };
 
 const COOLING_PRESETS: Record<
@@ -180,8 +181,12 @@ export function expandSimpleMode(
     );
   }
 
-  const resolution =
-    RESOLUTION_PRESETS[input.displayResolution];
+  const resolution = input.displayResolution === 'custom'
+    ? { width: input.customResolutionWidthPx ?? 0, height: input.customResolutionHeightPx ?? 0, label: 'Custom' }
+    : RESOLUTION_PRESETS[input.displayResolution];
+  if (!positive(resolution.width) || !positive(resolution.height)) {
+    throw new Error('A custom display resolution requires positive width and height.');
+  }
 
   const cameras: CameraInput[] = [];
 
@@ -218,8 +223,8 @@ export function expandSimpleMode(
         resolutionWidthPx: resolution.width,
         resolutionHeightPx: resolution.height,
         refreshRateHz: input.refreshRateHz,
-        aspectWidth: 9,
-        aspectHeight: 20,
+        aspectWidth: resolution.width,
+        aspectHeight: resolution.height,
       },
     },
     battery: {
