@@ -1152,6 +1152,7 @@ export default function InteractiveLeaksSimulator() {
 
   const [hasSimulated, setHasSimulated] =
     useState(false);
+  const [resultRevision, setResultRevision] = useState(0);
 
   const [simulationInput, setSimulationInput] =
     useState<SimulationInput | null>(null);
@@ -1477,6 +1478,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function simulate() {
+    setResultRevision(current => current + 1);
     setPredictionSaveState({ status: 'idle' });
     setSimulationInput(buildInput());
     setHasSimulated(true);
@@ -5513,6 +5515,7 @@ export default function InteractiveLeaksSimulator() {
         </section>
 
         <aside
+          key={resultRevision}
           className="il-results"
           aria-live="polite"
           aria-label="Simulation results"
