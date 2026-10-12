@@ -1,3 +1,4 @@
+import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
@@ -5733,7 +5734,7 @@ export default function InteractiveLeaksSimulator() {
                         </div>
 
                         <p className="il-help">
-                          {displayExperience.load.note}
+                          {publicEvidenceText(displayExperience.load.note)}
                         </p>
                       </div>
                     ) : null}
@@ -6579,7 +6580,7 @@ export default function InteractiveLeaksSimulator() {
                     ) : null}
 
                     <p className="il-help">
-                      {chargingResult.estimate.note}
+                      {publicEvidenceText(chargingResult.estimate.note)}
                     </p>
                   </>
                 ) : (
