@@ -442,3 +442,54 @@ body:not(.product-mode) .site-header {
   }
   body:not(.product-mode) .mobile-app-menu-panel { background:#101b2b!important; }
 }
+
+/* Screenshot-led corrections: logo fidelity, editorial rhythm and surface consistency. */
+body:not(.product-mode) .site-header .brand-lockup,
+body:not(.product-mode) footer .brand-lockup {
+  display:inline-flex; align-items:center; gap:8px;
+}
+body:not(.product-mode) .site-header .brand-mark,
+body:not(.product-mode) footer .brand-mark {
+  display:block; width:46px; height:29px; flex:0 0 46px; object-fit:contain;
+  background:transparent; border:0; border-radius:0;
+}
+body:not(.product-mode) .site-header .brand-word,
+body:not(.product-mode) footer .brand-word {
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  font-weight:800; font-size:1.04rem; letter-spacing:-.045em; color:var(--ink);
+}
+body:not(.product-mode) .mobile-app-logo {
+  display:flex; justify-content:center; align-items:center; background:transparent;
+  overflow:visible;
+}
+body:not(.product-mode) .mobile-app-logo img {
+  display:block; width:44px; height:26px; object-fit:contain;
+  border-radius:0; background:none;
+}
+body:not(.product-mode) .mobile-app-brand {
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  font-weight:800; letter-spacing:-.045em;
+}
+#main.home-page .pf-home-v2 .pf-spotlight { margin-top:0; }
+#main.home-page .pf-home-v2 { padding-top:0; }
+#main.home-page .pf-home-v2 .latest-section {
+  border-radius:0; background:transparent; border:0;
+}
+#main.home-page .pf-home-v2 .latest-main,
+#main.home-page .pf-home-v2 .news-rail { background:transparent; }
+#main.home-page .pf-home-v2 .about-section {
+  background:transparent; border-radius:0; min-height:0;
+}
+@media(min-width:761px) {
+  #main.home-page { padding-top:12px; }
+  #main.home-page .pf-home-v2 .pf-spotlight { min-height:clamp(390px,37vw,520px); }
+  #main.home-page .pf-home-v2 .about-section { padding-block:52px; margin-top:32px; }
+  body:not(.product-mode) footer { margin-top:28px; }
+}
+@media(max-width:760px) {
+  #main.home-page .pf-home-v2 { padding-top:12px; }
+  #main.home-page .pf-home-v2 .about-section { padding:30px 4px!important; }
+  #main.home-page .pf-home-v2 .latest-section { background:transparent!important; }
+  body:not(.product-mode) .mobile-app-logo img { width:43px!important; height:27px!important; }
+  body:not(.product-mode) .mobile-app-brand > span:last-child { font-weight:800; }
+}
