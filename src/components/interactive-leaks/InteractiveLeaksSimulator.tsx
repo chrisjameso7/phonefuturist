@@ -4001,21 +4001,31 @@ export default function InteractiveLeaksSimulator() {
 
               <label className="il-field">
                 <span>SoC vendor</span>
-                <input
-                  type="text"
+                <select
                   value={form.socVendor}
-                  placeholder="Qualcomm"
-                  onChange={(event) =>
-                    update('socVendor', event.currentTarget.value)
-                  }
-                />
+                  onChange={(event) => update('socVendor', event.currentTarget.value)}
+                >
+                  <option value="">Select SoC vendor</option>
+                  {['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].map(vendor => <option key={vendor} value={vendor}>{vendor}</option>)}
+                  {form.socVendor && !['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].includes(form.socVendor) && <option value={form.socVendor}>{form.socVendor}</option>}
+                </select>
               </label>
 
               <label className="il-field">
                 <span>SoC model</span>
                 <select
                   value={form.socName}
-                  onChange={(event) => update('socName', event.currentTarget.value)}
+                  onChange={(event) => {
+                    const chip = event.currentTarget.value;
+                    const vendor = /^Snapdragon/.test(chip) ? 'Qualcomm'
+                      : /^Exynos/.test(chip) ? 'Samsung'
+                      : /^Dimensity/.test(chip) ? 'MediaTek'
+                      : /^A\\d/.test(chip) ? 'Apple'
+                      : /^Tensor/.test(chip) ? 'Google'
+                      : /^Kirin/.test(chip) ? 'Huawei'
+                      : form.socVendor;
+                    setForm(current => ({ ...current, socName: chip, socVendor: vendor }));
+                  }}
                 >
                   <option value="">Select processor</option>
                   {([
