@@ -4020,7 +4020,7 @@ export default function InteractiveLeaksSimulator() {
                     const vendor = /^Snapdragon/.test(chip) ? 'Qualcomm'
                       : /^Exynos/.test(chip) ? 'Samsung'
                       : /^Dimensity/.test(chip) ? 'MediaTek'
-                      : /^A\\d/.test(chip) ? 'Apple'
+                      : /^A\d/.test(chip) ? 'Apple'
                       : /^Tensor/.test(chip) ? 'Google'
                       : /^Kirin/.test(chip) ? 'Huawei'
                       : form.socVendor;
