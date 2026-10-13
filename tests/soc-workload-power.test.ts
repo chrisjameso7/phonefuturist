@@ -29,6 +29,16 @@ describe('SoC workload scenario composition',()=>{
   it('does not inherit previous Exynos generation for unreleased models',()=>{
     expect(estimateSocWorkloadPower({...base,socName:'Exynos 2700'}).status).toBe('unresolved');
   });
+  it('accepts the exact lowest and highest measured operating points',()=>{
+    const lowest=[...curve.points].sort((a,b)=>a.benchmarkScore-b.benchmarkScore)[0];
+    const highest=[...curve.points].sort((a,b)=>a.benchmarkScore-b.benchmarkScore).at(-1)!;
+    for (const point of [lowest,highest]) {
+      const result=estimateSocWorkloadPower({...base,targetBenchmarkScore:point.benchmarkScore});
+      expect(result.status).toBe('scenario');
+      if (result.status === 'scenario')
+        expect(result.benchmarkBoardPowerW).toBeGreaterThan(0);
+    }
+  });
   it('rejects missing assumptions and score extrapolation',()=>{
     expect(estimateSocWorkloadPower({...base,displayPowerW:-1}).status).toBe('unresolved');
     expect(estimateSocWorkloadPower({...base,activeDutyFraction:2}).status).toBe('unresolved');
