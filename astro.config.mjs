@@ -19,6 +19,18 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              { name: 'react-runtime', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 20 },
+              { name: 'simulation-modules', test: /src[\\/]lib[\\/]simulation[\\/]/, minSize: 40000, maxSize: 240000, priority: 10 },
+            ],
+          },
+        },
+      },
+    },
     optimizeDeps: {
       include: [
         'astro/assets/services/noop',
