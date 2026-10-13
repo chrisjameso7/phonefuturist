@@ -1,7 +1,7 @@
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
-import { suggestLiveDeviceComparisons } from '../../lib/simulation/modules/live-device-comparison-suggestions';
+import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
 
@@ -2035,6 +2035,15 @@ export default function InteractiveLeaksSimulator() {
 
   const suggestedComparisons = simulationInput && result && form.name.trim()
     ? suggestLiveDeviceComparisons(form.name.trim())
+    : [];
+
+  const competingDevices = simulationInput && result && workspaceMode === 'simple'
+    ? suggestLiveCompetingDevices({
+        manufacturer: form.manufacturer.trim() || undefined,
+        batteryMah: result.battery?.totalCapacityMah,
+        displayInches: simulationInput.displays.primary.diagonalInches,
+        limit: 3,
+      })
     : [];
 
   const simpleCpuScores = workspaceMode === 'simple' && simulationInput && result
@@ -5631,6 +5640,21 @@ export default function InteractiveLeaksSimulator() {
                             {item.released?.wiredWatts !== undefined && <small>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
                             {item.released?.socName && <small>Predecessor chip: {item.released.socName}</small>}
                             {item.released?.catalogUnverified && <small>Catalog specifications are not independently verified.</small>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {competingDevices.length > 0 && (
+                    <div className="il-sensitivity-card">
+                      <strong>Other phones to compare</strong>
+                      <div className="il-metrics">
+                        {competingDevices.map(device=>(
+                          <div key={device.deviceId}>
+                            <strong>{device.label}</strong>
+                            <span>{device.released?.socName ?? 'Processor unspecified'}</span>
+                            {device.released?.batteryMah !== undefined && <small>{format(device.released.batteryMah,0)} mAh</small>}
+                            {device.released?.displayInches !== undefined && <small>{format(device.released.displayInches,2)}″ display</small>}
                           </div>
                         ))}
                       </div>
