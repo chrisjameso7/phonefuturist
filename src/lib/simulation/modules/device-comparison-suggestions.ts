@@ -7,6 +7,7 @@ export type SuggestedComparison = {
   status: 'found' | 'not-in-catalog';
   deviceId?: string;
   label: string;
+  released?: { batteryMah?: number; displayInches?: number; refreshRateHz?: number; wiredWatts?: number; socName?: string; region?: string; catalogUnverified: boolean };
 };
 
 /** Generation-aware suggestions; only confirm released devices that actually exist in the corpus. */
@@ -32,6 +33,15 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
     });
     return {query,role,status:exact?'found' as const:'not-in-catalog' as const,
       ...(exact?{deviceId:exact.device.variant.id}:{}),
-      label:exact?`${exact.device.variant.identity.manufacturer} ${exact.device.variant.identity.modelName}`:query};
+      label:exact?`${exact.device.variant.identity.manufacturer} ${exact.device.variant.identity.modelName}`:query,
+      ...(exact ? {released:{
+        batteryMah:exact.device.variant.battery?.typicalCapacityMah ?? exact.device.variant.battery?.capacityMah,
+        displayInches:exact.device.display?.diagonalInches,
+        refreshRateHz:exact.device.display?.refreshRateHz,
+        wiredWatts:exact.device.charging?.advertisedWiredWatts,
+        socName:exact.device.variant.soc?.name,
+        region:exact.device.variant.identity.region,
+        catalogUnverified:exact.device.catalogTrust === 'source-backed-unverified',
+      }} : {})};
   });
 }
