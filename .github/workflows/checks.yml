@@ -19,7 +19,11 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - name: Install dependencies with diagnostics
+        shell: bash
+        run: |
+          set -o pipefail
+          npm ci 2>&1 | tee install.log
       - name: Verify with diagnostic output
         shell: bash
         run: |
@@ -30,6 +34,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: verify-log-${{ github.run_id }}
-          path: verify.log
+          path: |
+            install.log
+            verify.log
           if-no-files-found: ignore
           retention-days: 7
