@@ -350,6 +350,17 @@ export function simulateBatteryExperience(
       // Thermal headroom alters sustained CPU/GPU duty cycle rather than
       // applying a flat battery bonus to browsing and video playback.
       const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
+      // Preserve raw measured-corpus arithmetic when no lab scenario is selected.
+      // Hardware extrapolations are opt-in and must not silently alter baseline tests.
+      const useDisplayScenario = input.usageIntensity !== undefined ||
+        input.brightnessNits !== undefined || input.socName !== undefined ||
+        input.coolingClass !== undefined || input.targetSocPowerW !== undefined;
+      const scenarioFactor = (workload: typeof selected[number]['workload']) =>
+        useDisplayScenario
+          ? (workload === 'gaming' ? gamingThermalFactor : 1) *
+            projectedDisplayPowerFactor(input.simulation.displays.primary, workload) *
+            projectedBrightnessPowerFactor(input.brightnessNits)
+          : 1;
 
       const useWh =
         packEnergyWh !== undefined &&
@@ -366,7 +377,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -375,7 +386,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.minDrainMahPerHour,
             0,
           );
@@ -384,7 +395,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -393,7 +404,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -402,7 +413,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -411,7 +422,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
                 row.maxDrainWhPerHour!,
             0,
           )
