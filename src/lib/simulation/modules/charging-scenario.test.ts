@@ -12,4 +12,10 @@ describe('tapered charging lab scenario', () => {
     expect(projectTaperedChargingMinutes({ energyWh: 0, ratedWatts: 60 })).toBeUndefined();
     expect(projectTaperedChargingMinutes({ energyWh: 21, ratedWatts: 0 })).toBeUndefined();
   });
+  it('uses selected charging protocol and multi-cell structure in projected taper', () => {
+    const baseline = projectTaperedChargingMinutes({ energyWh: 22, ratedWatts: 80, chargingStandard: 'USB PD', cellArchitecture: 'single-cell' })!;
+    const rapid = projectTaperedChargingMinutes({ energyWh: 22, ratedWatts: 80, chargingStandard: 'OPPO SUPERVOOC', cellArchitecture: 'dual-cell' })!;
+    expect(rapid).toBeLessThan(baseline);
+  });
+
 });
