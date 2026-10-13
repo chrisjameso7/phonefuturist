@@ -949,6 +949,8 @@ function DeterministicShareCard({
   experimentalScores = false,
   socName,
   wiredWatts,
+  chargingStandard,
+  cellArchitecture,
 }: {
   input: SimulationInput;
   result: DeterministicResult;
@@ -961,6 +963,8 @@ function DeterministicShareCard({
   experimentalScores?: boolean;
   socName?: string;
   wiredWatts?: number;
+  chargingStandard?: string;
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
 }) {
   const [shareMessage, setShareMessage] = useState('');
   const display = result.displays.primary;
@@ -976,7 +980,7 @@ function DeterministicShareCard({
   const assumedVoltage = battery?.totalEnergyWh === undefined && assumedEnergyWh !== undefined;
   const chargingScenarioMinutes = chargeMinutes === undefined &&
     assumedEnergyWh !== undefined && wiredWatts !== undefined
-      ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts })
+      ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts, chargingStandard, cellArchitecture })
       : undefined;
   const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
   const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
@@ -10243,7 +10247,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
               )}
 
               {workspaceMode === 'advanced' && result.warnings.length > 0 && (
