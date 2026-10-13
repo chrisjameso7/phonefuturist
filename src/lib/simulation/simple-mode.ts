@@ -237,8 +237,8 @@ export function expandSimpleMode(
         renderingWidthPx: Math.max(1, Math.round(resolution.width * renderScale / 100)),
         renderingHeightPx: Math.max(1, Math.round(resolution.height * renderScale / 100)),
         refreshRateHz: input.refreshRateHz,
-        aspectWidth: input.aspectRatioWidth ?? resolution.width,
-        aspectHeight: input.aspectRatioHeight ?? resolution.height,
+        aspectWidth: input.aspectRatioWidth ?? 9,
+        aspectHeight: input.aspectRatioHeight ?? 20,
       },
     },
     battery: {
