@@ -973,9 +973,18 @@ function DeterministicShareCard({
       ctx.fillRect(0, 0, 1080, simple ? 580 : 250);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 65, 55, 7);
+      // Use the exact SVG asset rendered by the site's header and mobile navigation.
+      // Reject export if it cannot be loaded rather than producing a card with incorrect branding.
+      const brandLogo = new Image();
+      await new Promise<void>((resolve, reject) => {
+        brandLogo.onload = () => resolve();
+        brandLogo.onerror = () => reject(new Error('PhoneFuturist logo could not be loaded for export.'));
+        brandLogo.src = '/assets/phonefuturist-mark.svg';
+      });
+      ctx.drawImage(brandLogo, 72, 74, 91, 41);
       ctx.font = '700 31px Arial';
       ctx.fillStyle = ink;
-      ctx.fillText('PhoneFuturist', 72, 120);
+      ctx.fillText('PhoneFuturist', 177, 108);
       ctx.font = '700 19px Arial';
       ctx.fillStyle = accent;
       ctx.fillText(simple ? 'INTERACTIVE LEAKS  /  SIMPLE' : 'INTERACTIVE LEAKS  /  ADVANCED', 72, 175);
@@ -1127,7 +1136,10 @@ function DeterministicShareCard({
   return (
     <section className={`il-share-card il-share-card--${mode}`} aria-label="Share simulation result">
       <div className="il-share-card-brand">
-        <span>PhoneFuturist</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/assets/phonefuturist-mark.svg" alt="" width="48" height="24" style={{ objectFit: 'contain' }} />
+          PhoneFuturist
+        </span>
         <small>{mode === 'simple' ? 'Simple overview' : 'Advanced lab report'}</small>
       </div>
       <strong>{deviceName}</strong>
