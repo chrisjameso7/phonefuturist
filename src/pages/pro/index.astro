@@ -19,7 +19,7 @@ const annually = (PRO_PRICING.annualCents / 100).toFixed(2);
       <section class="pf-pricing-plan pf-pricing-pro" aria-label="Pro plan">
         <h2>Pro</h2>
         <p class="pf-pricing-price">${monthly} USD <small>/ month</small></p>
-        <p>Or $ {annually} USD per year, billed annually.</p>
+        <p>Or ${annually} USD per year, billed annually.</p>
         <ul><li>Everything in Free</li><li>Advanced simulations and efficiency analysis</li><li>Up to five-device comparisons</li><li>Detailed camera insights and technical reports</li></ul>
         {CHECKOUT_ENABLED ? <p>Subscription checkout will be available here.</p> : <p class="pf-pricing-notice" role="status">Coming soon. Payments are not being accepted yet.</p>}
       </section>
