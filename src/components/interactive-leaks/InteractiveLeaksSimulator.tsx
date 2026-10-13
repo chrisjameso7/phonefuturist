@@ -1465,6 +1465,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function runSimpleMode(input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') {
+    setResultRevision(current => current + 1);
     setUsagePreset(usage);
     const expansion = expandSimpleMode(input);
     const primary =
