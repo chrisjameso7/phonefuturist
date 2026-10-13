@@ -14,7 +14,7 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
   const text = concept.trim().replace(/\s+concept$/i, '').trim();
   // Product families frequently put their generation before a multiword tier.
   // Keep the tier exactly as written, including "Pro XL" and "Pro Max".
-  const match = text.match(/^(.*?)(\\d{1,3})(\\s*(?:Pro\\s+Max|Pro\\s+XL|Ultra|Pro|Plus|FE|Edge|Mini|Air|Max|XL|Fold|Flip|e)?)$/i);
+  const match = text.match(/^(.*?)(\d{1,3})(\s*(?:Pro\s+Max|Pro\s+XL|Ultra|Pro|Plus|FE|Edge|Mini|Air|Max|XL|Fold|Flip|e)?)$/i);
   if (!match) return [];
   const [, prefix, generation, suffix] = match;
   const n = Number(generation);
@@ -36,7 +36,7 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
       return model===normalized(query) ||
         normalized(identity.manufacturer+' '+identity.modelName)===normalized(query);
     }).filter(device=>!device.releaseDate ||
-      /^\\d{4}-\\d{2}-\\d{2}$/.test(device.releaseDate) && device.releaseDate<=today)
+      /^\d{4}-\d{2}-\d{2}$/.test(device.releaseDate) && device.releaseDate<=today)
       .sort((a,b)=>trustRank(b.catalogTrust)-trustRank(a.catalogTrust) ||
         a.variant.id.localeCompare(b.variant.id))[0];
     return {query,role,status:exact?'found' as const:'not-in-catalog' as const,
