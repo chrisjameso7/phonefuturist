@@ -64,6 +64,23 @@ describe('external PhoneArena runtime holdout', () => {
     ).toBeGreaterThanOrEqual(0);
   });
 
+  it('compares a spec-enriched holdout without reintroducing PhoneArena measurements', () => {
+    const enriched = backtestAgainstPhoneArenaRuntime(
+      buildCalibrationRegistry(),
+      'spec-enriched',
+    );
+    expect(enriched.status).toBe('resolved');
+    expect(enriched.evaluatedRows).toBeGreaterThan(10);
+    expect(enriched.rows.every(row => Number.isFinite(row.predictedHours) && row.predictedHours > 0)).toBe(true);
+    console.info('PHONEARENA_RUNTIME_SPEC_ENRICHED', JSON.stringify({
+      sparseMapePercent: result.mapePercent,
+      enrichedMapePercent: enriched.mapePercent,
+      sparseMaeHours: result.maeHours,
+      enrichedMaeHours: enriched.maeHours,
+      byWorkload: enriched.byWorkload,
+    }));
+  }, 120_000);
+
   it('reports browsing, video and gaming error separately', () => {
     const keys =
       result.byWorkload.map(
