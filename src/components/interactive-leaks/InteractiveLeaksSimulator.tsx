@@ -1,3 +1,4 @@
+import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-catalog';
 import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
@@ -4166,37 +4167,12 @@ export default function InteractiveLeaksSimulator() {
               <label className="il-field">
                 <span>SoC model</span>
                 <select
-                  value={form.socName}
-                  onChange={(event) => {
-                    const chip = event.currentTarget.value;
-                    const vendor = /^Snapdragon/.test(chip) ? 'Qualcomm'
-                      : /^Exynos/.test(chip) ? 'Samsung'
-                      : /^Dimensity/.test(chip) ? 'MediaTek'
-                      : /^A\d/.test(chip) ? 'Apple'
-                      : /^Tensor/.test(chip) ? 'Google'
-                      : /^Kirin/.test(chip) ? 'Huawei'
-                      : form.socVendor;
-                    setForm(current => ({ ...current, socName: chip, socVendor: vendor }));
-                  }}
+                  value={isSelectableSoc(form.socVendor, form.socName) ? form.socName : ''}
+                  onChange={(event) => update('socName', event.currentTarget.value)}
                 >
                   <option value="">Select processor</option>
-                  {([
-                    ['Qualcomm', ['Snapdragon 8 Elite Gen 5', 'Snapdragon 8 Elite', 'Snapdragon 8 Gen 5', 'Snapdragon 8 Gen 3', 'Snapdragon 8 Gen 2', 'Snapdragon 8 Elite Gen 6', 'Snapdragon 8 Elite Extreme Gen 6']],
-                    ['Samsung', ['Exynos 2600', 'Exynos 2500', 'Exynos 2400', 'Exynos 2200', 'Exynos 2700']],
-                    ['MediaTek', ['Dimensity 9500', 'Dimensity 9400', 'Dimensity 9300', 'Dimensity 9200']],
-                    ['Apple', ['A20 Pro', 'A19 Pro', 'A19', 'A18 Pro', 'A18', 'A17 Pro']],
-                    ['Google', ['Tensor G5', 'Tensor G4', 'Tensor G3']],
-                    ['Huawei', ['Kirin 9030', 'Kirin 9020', 'Kirin 9010']],
-                  ] as Array<[string, string[]]>).map(([vendor, chips]) => (
-                    <optgroup key={vendor} label={vendor}>
-                      {chips.map(chip => <option key={chip} value={chip}>{chip}</option>)}
-                    </optgroup>
-                  ))}
-                  {form.socName && ![
-                    'Snapdragon 8 Elite Gen 5','Snapdragon 8 Elite','Snapdragon 8 Gen 5','Snapdragon 8 Gen 3','Snapdragon 8 Gen 2','Snapdragon 8 Elite Gen 6','Snapdragon 8 Elite Extreme Gen 6',
-                    'Exynos 2600','Exynos 2500','Exynos 2400','Exynos 2200','Exynos 2700','Dimensity 9500','Dimensity 9400','Dimensity 9300','Dimensity 9200',
-                    'A20 Pro','A19 Pro','A19','A18 Pro','A18','A17 Pro','Tensor G5','Tensor G4','Tensor G3','Kirin 9030','Kirin 9020','Kirin 9010'
-                  ].includes(form.socName) && <option value={form.socName}>{form.socName} (saved selection)</option>}
+                  {(SOC_MODELS[form.socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)}
+                  {(SOC_MODELS[form.socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}
                 </select>
               </label>
 
