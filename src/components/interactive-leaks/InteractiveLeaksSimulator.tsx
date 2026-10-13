@@ -1,3 +1,4 @@
+import { projectedSustainedGpuRetention } from '../../lib/simulation/modules/sustained-gpu-scenario';
 import { projectedSustainedCpuScore } from '../../lib/simulation/modules/sustained-cpu-scenario';
 import { projectTaperedChargingMinutes } from '../../lib/simulation/modules/charging-scenario';
 import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-catalog';
@@ -5758,6 +5759,17 @@ export default function InteractiveLeaksSimulator() {
                         <small>{experimental2700Scores ? 'Experimental scenario · not a real Geekbench run' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
                       </div>
                     ))}
+                  </div>
+                  <div className="il-metrics" aria-label="GPU thermal scenario">
+                    <div>
+                      <strong>{projectedSustainedGpuRetention({
+                        coolingClass: form.coolingClass,
+                        socPowerW: numeric(form.targetSocPowerW),
+                        durationMinutes: 15,
+                      })}%</strong>
+                      <span>GPU retention · 15-minute stress scenario</span>
+                      <small>Experimental model · not a measured 3DMark result</small>
+                    </div>
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
                     {simpleCpuScores.map(({domain, estimate}) => {
