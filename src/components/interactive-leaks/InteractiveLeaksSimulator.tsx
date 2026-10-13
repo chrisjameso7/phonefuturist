@@ -6491,7 +6491,7 @@ export default function InteractiveLeaksSimulator() {
                             const observation = evaluateSocAtBoardPower(curve.soc, protocol, point.boardPowerW);
                             return (
                               <small key={protocol}>
-                                {protocol === 'geekbench6' ? 'CPU / Geekbench 6' : 'GPU / Steel Nomad Light'}: {format(observation.scorePerWatt, 0)} points/W at {format(point.boardPowerW, 2)}W board power ({curve.points.length} curve points, {curve.source})
+                                {protocol === 'geekbench6' ? 'CPU · Geekbench 6' : 'GPU · Steel Nomad Light'}: {format(point.benchmarkScore, 0)} points · {format(point.boardPowerW, 2)} W · {format(observation.scorePerWatt, 0)} points/W
                               </small>
                             );
                           })}
