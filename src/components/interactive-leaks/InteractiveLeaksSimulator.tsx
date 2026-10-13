@@ -2155,7 +2155,7 @@ export default function InteractiveLeaksSimulator() {
     geekbench6_multi: 13000 + ((resultRevision * 397 + 1139) % 1501),
   } : null;
 
-  const simpleCpuScores = workspaceMode === 'simple' && simulationInput && result
+  const simpleCpuScores = simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
         domain,
         estimate: estimateLivePeakPerformance({
