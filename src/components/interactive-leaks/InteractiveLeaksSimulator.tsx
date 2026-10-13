@@ -3,7 +3,7 @@ import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } fro
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
 import SimpleModePanel from './SimpleModePanel';
@@ -1164,6 +1164,7 @@ function DeterministicShareCard({
 }
 
 export default function InteractiveLeaksSimulator() {
+  const [simulationPending, startSimulationTransition] = useTransition();
   const [form, setForm] =
     useState<FormState>(initialForm);
 
@@ -1493,17 +1494,20 @@ export default function InteractiveLeaksSimulator() {
         : [],
     );
 
-    setSimulationInput(
-      expansion.simulationInput,
-    );
-    setHasSimulated(true);
+    startSimulationTransition(() => {
+      setSimulationInput(expansion.simulationInput);
+      setHasSimulated(true);
+    });
   }
 
   function simulate() {
     setResultRevision(current => current + 1);
     setPredictionSaveState({ status: 'idle' });
-    setSimulationInput(buildInput());
-    setHasSimulated(true);
+    const nextInput = buildInput();
+    startSimulationTransition(() => {
+      setSimulationInput(nextInput);
+      setHasSimulated(true);
+    });
   }
 
   function loadExample() {
@@ -5576,12 +5580,15 @@ export default function InteractiveLeaksSimulator() {
           </div>
 
           <div className="il-run">
+            {simulationPending && <p role="status" aria-live="polite">Simulating device performance. Results are being calculated…</p>}
             <button
               type="button"
               className="il-simulate"
               onClick={simulate}
+              disabled={simulationPending}
+              aria-busy={simulationPending}
             >
-              Run simulation →
+              {simulationPending ? 'Simulating…' : 'Run simulation →'}
             </button>
 
             <p>
