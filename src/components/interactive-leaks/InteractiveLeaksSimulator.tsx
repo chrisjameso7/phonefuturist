@@ -1525,9 +1525,9 @@ export default function InteractiveLeaksSimulator() {
                       mainCamera.apertureFNumber,
                     )
                   : '',
-              variableAperture: mainCamera.variableApertureWide !== undefined && mainCamera.variableApertureNarrow !== undefined,
-              variableApertureWide: mainCamera.variableApertureWide !== undefined ? String(mainCamera.variableApertureWide) : '',
-              variableApertureNarrow: mainCamera.variableApertureNarrow !== undefined ? String(mainCamera.variableApertureNarrow) : '',
+              variableAperture: false,
+              variableApertureWide: '',
+              variableApertureNarrow: '',
               exposureTimeSeconds: '',
               sensorReadoutTimeSeconds: '',
               videoFrameRateFps: '',
