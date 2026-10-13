@@ -1748,6 +1748,7 @@ export default function InteractiveLeaksSimulator() {
             video_playback: numeric(form.videoHours) ?? 0,
             gaming: numeric(form.gamingHours) ?? 0,
           },
+          usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
         })
       : undefined;
 
