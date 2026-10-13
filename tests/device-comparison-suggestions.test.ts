@@ -25,6 +25,25 @@ describe('predecessor suggestions',()=>{
     expect(predecessor.released).toMatchObject({batteryMah:5000,displayInches:6.9,refreshRateHz:120,
       wiredWatts:60,catalogUnverified:true});
   });
+  it('handles a multiword Pro XL tier and compact e suffix',()=>{
+    expect(suggestDeviceComparisons(empty,'Pixel 11 Pro XL')[0].query).toBe('Pixel 10 Pro XL');
+    expect(suggestDeviceComparisons(empty,'iPhone 18e')[0].query).toBe('iPhone 17e');
+  });
+  it('prefers a trusted predecessor over an unverified duplicate',()=>{
+    const devices=[
+      {variant:{id:'unverified',identity:{manufacturer:'Samsung',modelName:'Galaxy S26 Ultra'}},catalogTrust:'source-backed-unverified'},
+      {variant:{id:'verified',identity:{manufacturer:'Samsung',modelName:'Galaxy S26 Ultra'}},catalogTrust:'verified-or-unspecified'},
+    ];
+    const corpus={...empty,devices} as unknown as DeviceCorpus;
+    expect(suggestDeviceComparisons(corpus,'Galaxy S27 Ultra')[0].deviceId).toBe('verified');
+  });
+  it('does not claim an unreleased catalog predecessor is released',()=>{
+    const corpus={...empty,devices:[{
+      variant:{id:'future',identity:{manufacturer:'Samsung',modelName:'Galaxy S26 Ultra'}},
+      releaseDate:'2099-01-01',
+    }]} as unknown as DeviceCorpus;
+    expect(suggestDeviceComparisons(corpus,'Galaxy S27 Ultra')[0].status).toBe('not-in-catalog');
+  });
   it('does not claim generations for arbitrary names',()=>{
     expect(suggestDeviceComparisons(empty,'Future Device')).toEqual([]);
   });
