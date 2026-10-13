@@ -174,13 +174,15 @@ export function simulateBatteryExperience(
     'gaming',
   ] as const;
 
-  // Future chip names do not constitute measured battery-efficiency evidence.
-  // Use the neutral comparison cohort until matching device measurements exist.
-  const {
-    experimental: previewChip,
-    socVendor: comparableSocVendor,
-    socName: comparableSocName,
-  } = batterySocEvidenceContext(input.socVendor, input.socName);
+  // A model name or SoC vendor alone is not a measured device power curve.
+  // Keep the endurance cohort neutral across SoC choices until we can calibrate
+  // a controlled, same-device workload power delta for each specific chip.
+  // This prevents chip-name switching from producing multi-hour gains.
+  const comparableSocVendor: string | undefined = undefined;
+  const comparableSocName: string | undefined = undefined;
+  if (input.socName?.trim()) {
+    warnings.push('SoC efficiency is not independently calibrated. Battery runtime uses a neutral device cohort; chip selection alone does not increase endurance.');
+  }
 
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
     const band = resolveCorpusRuntimeBand(
@@ -263,23 +265,6 @@ export function simulateBatteryExperience(
       note: band.estimate.note,
     };
   });
-
-  if (input.socName?.trim()) {
-    const fallbackScopes = [...new Set(
-      runtimes
-        .filter((runtime) => runtime.status === 'resolved' && runtime.evidenceScope !== 'same-soc-family')
-        .map((runtime) => runtime.evidenceScope),
-    )];
-    if (fallbackScopes.length) {
-      warnings.push(
-        `Chip-specific battery efficiency is not validated for "${input.socName}". Some runtime estimates use ${fallbackScopes.map((scope) => scope === 'same-soc-vendor' ? 'other chips from the same SoC vendor' : 'a wider device cohort').join(' and ')}. Different generations may produce nearly identical results; do not use these estimates to rank SoCs.`,
-      );
-    }
-  }
-
-  if (previewChip) {
-    warnings.push('Upcoming SoC battery efficiency is unmeasured. Endurance uses a neutral device cohort, not a chip-specific advantage.');
-  }
 
   let mixedUse: MixedUseBatteryEstimate | undefined;
 
