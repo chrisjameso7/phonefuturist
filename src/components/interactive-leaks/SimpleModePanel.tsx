@@ -42,6 +42,9 @@ export default function SimpleModePanel({
     useState('6.8');
   const [resolution, setResolution] =
     useState<SimpleResolutionPreset>('qhd');
+  const [aspectRatio, setAspectRatio] = useState('9:20');
+  const [customAspectWidth, setCustomAspectWidth] = useState('');
+  const [customAspectHeight, setCustomAspectHeight] = useState('');
   const [renderingScale, setRenderingScale] = useState<100 | 75 | 50>(100);
   const [customWidth, setCustomWidth] = useState('');
   const [customHeight, setCustomHeight] = useState('');
@@ -78,6 +81,11 @@ export default function SimpleModePanel({
       return;
     }
 
+    if (aspectRatio === 'custom' && (!number(customAspectWidth) || !number(customAspectHeight))) {
+      setError('Enter both dimensions of the custom aspect ratio.');
+      return;
+    }
+
     setError('');
 
     onRun({
@@ -94,6 +102,8 @@ export default function SimpleModePanel({
         : {}),
       displayDiagonalInches: diagonal,
       displayResolution: resolution,
+      aspectRatioWidth: aspectRatio === 'custom' ? number(customAspectWidth) : Number(aspectRatio.split(':')[0]),
+      aspectRatioHeight: aspectRatio === 'custom' ? number(customAspectHeight) : Number(aspectRatio.split(':')[1]),
       renderingScalePercent: renderingScale,
       ...(resolution === 'custom' ? { customResolutionWidthPx: number(customWidth), customResolutionHeightPx: number(customHeight) } : {}),
       refreshRateHz: hz,
@@ -247,6 +257,34 @@ export default function SimpleModePanel({
           </div>
         )}
 
+        <label className="il-field">
+          <span>Aspect ratio · portrait</span>
+          <select value={aspectRatio} onChange={event => setAspectRatio(event.currentTarget.value)}>
+            <optgroup label="Portrait phone">
+              <option value="9:21">21:9</option>
+              <option value="9:20.5">20.5:9</option>
+              <option value="9:20">20:9</option>
+              <option value="9:19.5">19.5:9</option>
+              <option value="9:19">19:9</option>
+              <option value="9:18.5">18.5:9</option>
+              <option value="9:18">18:9</option>
+              <option value="9:17">17:9</option>
+            </optgroup>
+            <optgroup label="Wide portrait and foldables">
+              <option value="9.5:16">16:9.5 · Huawei Pura X View</option>
+              <option value="10:16">16:10 · Huawei Pura X</option>
+              <option value="3:4">4:3</option>
+              <option value="1:1">1:1</option>
+            </optgroup>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+        {aspectRatio === 'custom' && (
+          <div className="il-grid">
+            <label className="il-field"><span>Ratio width</span><input type="number" min="0.1" step="0.1" value={customAspectWidth} onChange={event => setCustomAspectWidth(event.currentTarget.value)} /></label>
+            <label className="il-field"><span>Ratio height</span><input type="number" min="0.1" step="0.1" value={customAspectHeight} onChange={event => setCustomAspectHeight(event.currentTarget.value)} /></label>
+          </div>
+        )}
         <label className="il-field">
           <span>GPU rendering resolution</span>
           <select value={renderingScale} onChange={event => setRenderingScale(Number(event.currentTarget.value) as 100 | 75 | 50)}>
