@@ -26,6 +26,8 @@ export interface BatteryExperienceInput {
     'web_browsing' | 'video_playback' | 'gaming',
     number
   >>;
+  /** Experimental use intensity: power multiplier vs neutral measured mixed-workload evidence. */
+  usageIntensity?: 'Light' | 'Typical' | 'Heavy';
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -337,6 +339,11 @@ export function simulateBatteryExperience(
     );
 
     if (activeHoursPerDay > 0 && selected.length > 0) {
+      // An interactive scenario, not a correction to lab measurements.
+      // Represents brightness, background load, radios and gaming intensity.
+      const intensityFactor = input.usageIntensity === 'Light' ? 0.78
+        : input.usageIntensity === 'Heavy' ? 1.40 : 1;
+
       const useWh =
         packEnergyWh !== undefined &&
         selected.every(
@@ -352,7 +359,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -361,7 +368,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.minDrainMahPerHour,
             0,
           );
@@ -370,7 +377,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -379,7 +386,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -388,7 +395,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -397,7 +404,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay *
+              row.hoursPerDay * intensityFactor *
                 row.maxDrainWhPerHour!,
             0,
           )
