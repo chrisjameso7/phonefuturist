@@ -52,19 +52,34 @@ export function suggestCompetingDevices(
   options: {manufacturer?: string; batteryMah?: number; displayInches?: number; limit?: number},
 ): SuggestedComparison[] {
   const normalize=(v:string)=>v.trim().toLowerCase();
+  const targetManufacturer=normalize(options.manufacturer ?? '');
+  const targetBattery=options.batteryMah && Number.isFinite(options.batteryMah) && options.batteryMah>0
+    ? options.batteryMah : undefined;
+  const targetDisplay=options.displayInches && Number.isFinite(options.displayInches) && options.displayInches>0
+    ? options.displayInches : undefined;
+  // Without a comparable target dimension this would be a random phone recommendation.
+  if (!targetBattery && !targetDisplay) return [];
+  const today=new Date().toISOString().slice(0,10);
   const candidates=corpus.devices.filter(device=>
-    device.variant.identity.modelName &&
-    normalize(device.variant.identity.manufacturer) !== normalize(options.manufacturer ?? '') &&
+    Boolean(device.variant.identity.modelName) &&
+    (!targetManufacturer || normalize(device.variant.identity.manufacturer) !== targetManufacturer) &&
     device.catalogTrust !== 'source-backed-unverified' &&
-    (device.releaseDate === undefined || device.releaseDate <= new Date().toISOString().slice(0,10))
+    (device.releaseDate === undefined || /^\d{4}-\d{2}-\d{2}$/.test(device.releaseDate) && device.releaseDate<=today)
   );
-  const scored=candidates.map(device=>{
+  const scored=candidates.flatMap(device=>{
     const capacity=device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah;
     const diagonal=device.display?.diagonalInches;
-    const batteryPenalty=options.batteryMah && capacity ? Math.abs(capacity-options.batteryMah)/options.batteryMah : 0.4;
-    const sizePenalty=options.displayInches && diagonal ? Math.abs(diagonal-options.displayInches)/options.displayInches : 0.4;
-    return {device,score:batteryPenalty+sizePenalty};
-  }).filter(entry=>entry.score<0.6).sort((a,b)=>a.score-b.score);
+    // Never pretend a missing or invalid catalog field is a measured similarity.
+    if (targetBattery && (!capacity || !Number.isFinite(capacity) || capacity<=0)) return [];
+    if (targetDisplay && (!diagonal || !Number.isFinite(diagonal) || diagonal<=0)) return [];
+    const batteryPenalty=targetBattery && capacity ? Math.abs(capacity-targetBattery)/targetBattery : 0;
+    const sizePenalty=targetDisplay && diagonal ? Math.abs(diagonal-targetDisplay)/targetDisplay : 0;
+    return [{device,score:batteryPenalty+sizePenalty}];
+  }).filter(entry=>entry.score<0.6).sort((a,b)=>
+    a.score-b.score ||
+    (a.device.variant.identity.manufacturer+' '+a.device.variant.identity.modelName)
+      .localeCompare(b.device.variant.identity.manufacturer+' '+b.device.variant.identity.modelName)
+  );
   const seen=new Set<string>();
   return scored.filter(({device})=>{
     const key=normalize(device.variant.identity.manufacturer+' '+device.variant.identity.modelName);
