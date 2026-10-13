@@ -1,3 +1,4 @@
+import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
@@ -3219,17 +3220,7 @@ export default function InteractiveLeaksSimulator() {
               <label className="il-field">
                 <span>Manufacturer</span>
 
-                <input
-                  type="text"
-                  value={form.manufacturer}
-                  placeholder="Samsung"
-                  onChange={(event) =>
-                    update(
-                      'manufacturer',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                <BrandSelect value={form.manufacturer} onChange={(value) => update('manufacturer', value)} />
               </label>
 
               <label className="il-field">
