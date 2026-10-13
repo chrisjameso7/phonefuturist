@@ -18,6 +18,8 @@ describe('Pro entitlements', () => {
     expect(resolveEntitlement({...subscription,status:'canceled'}, 'user-1', now)).toBe('free');
     expect(resolveEntitlement({...subscription,currentPeriodEnd:'2026-10-01T00:00:00Z'}, 'user-1', now)).toBe('free');
     expect(resolveEntitlement({...subscription,currentPeriodEnd:'invalid'}, 'user-1', now)).toBe('free');
+    expect(resolveEntitlement({...subscription,currentPeriodEnd:null}, 'user-1', now)).toBe('free');
+    expect(resolveEntitlement({...subscription,currentPeriodEnd:undefined}, 'user-1', now)).toBe('free');
   });
   it('grants exactly 14 days of trial access from trusted timestamps', () => {
     const trial = {
