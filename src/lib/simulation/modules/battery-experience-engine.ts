@@ -1,4 +1,4 @@
-import { batterySocEvidenceContext } from '../soc-model-catalog';
+import { projectedSocPowerFactor } from '../soc-model-catalog';
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
@@ -183,7 +183,7 @@ export function simulateBatteryExperience(
   const comparableSocVendor: string | undefined = undefined;
   const comparableSocName: string | undefined = undefined;
   if (input.socName?.trim()) {
-    warnings.push('SoC efficiency is not independently calibrated. Battery runtime uses a neutral device cohort; chip selection alone does not increase endurance.');
+    warnings.push('SoC power variation is an experimental assumption, not a measured device efficiency result.');
   }
 
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
@@ -341,8 +341,8 @@ export function simulateBatteryExperience(
     if (activeHoursPerDay > 0 && selected.length > 0) {
       // An interactive scenario, not a correction to lab measurements.
       // Represents brightness, background load, radios and gaming intensity.
-      const intensityFactor = input.usageIntensity === 'Light' ? 0.78
-        : input.usageIntensity === 'Heavy' ? 1.40 : 1;
+      const intensityFactor = (input.usageIntensity === 'Light' ? 0.78
+        : input.usageIntensity === 'Heavy' ? 1.40 : 1) * projectedSocPowerFactor(input.socName);
 
       const useWh =
         packEnergyWh !== undefined &&
