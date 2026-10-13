@@ -1645,6 +1645,8 @@ export default function InteractiveLeaksSimulator() {
           operatingRefreshRateHz:
             numeric(form.operatingRefreshRateHz),
           brightnessNits: numeric(form.brightnessNits),
+          targetSocPowerW: numeric(form.targetSocPowerW),
+          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
           averagePictureLevelPercent:
             numeric(form.averagePictureLevelPercent),
           panelTechnology:
