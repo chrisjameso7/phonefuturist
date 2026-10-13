@@ -1,3 +1,4 @@
+import BrandSelect from './BrandSelect';
 import { useState } from 'react';
 import type {
   SimpleCoolingPreset,
@@ -169,15 +170,7 @@ export default function SimpleModePanel({
 
         <label className="il-field">
           <span>Brand</span>
-          <input
-            value={manufacturer}
-            placeholder="Samsung"
-            onChange={(event) =>
-              setManufacturer(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <BrandSelect value={manufacturer} onChange={setManufacturer} />
         </label>
 
         <label className="il-field">
