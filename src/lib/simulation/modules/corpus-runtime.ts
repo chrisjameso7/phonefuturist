@@ -352,10 +352,15 @@ export function resolveCorpusRuntimeBand(
   const familyProtocolGroup = rankedGroups.find(
     (group) => sameFamilyRows(group).length >= 2,
   );
-  // Vendor-only battery evidence is not an SoC efficiency calibration.
-  // When a chip family has no matching measurements, use the protocol cohort.
+  // Preserve the measured-protocol boundary while preferring at least
+  // two same-vendor references when a same-family cohort is unavailable.
+  // Selection of similar peers is not itself a claim of efficiency gain.
+  const vendorProtocolGroup = rankedGroups.find(
+    (group) => sameVendorRows(group).length >= 2,
+  );
   const protocolValues =
     familyProtocolGroup ??
+    vendorProtocolGroup ??
     rankedGroups[0] ??
     [];
 
