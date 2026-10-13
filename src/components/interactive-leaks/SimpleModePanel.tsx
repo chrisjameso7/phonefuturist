@@ -312,10 +312,10 @@ export default function SimpleModePanel({
           <span>SoC vendor</span>
           <select
             value={socVendor}
-            onChange={(event) =>
+            onChange={(event) => {
               setSocVendor(event.currentTarget.value as SocVendor);
-              setSocName('')
-            }
+              setSocName('');
+            }}
           >
             {vendors.map((vendor) => (
               <option key={vendor} value={vendor}>
