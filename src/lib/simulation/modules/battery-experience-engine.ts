@@ -30,6 +30,8 @@ export interface BatteryExperienceInput {
   /** Experimental use intensity: power multiplier vs neutral measured mixed-workload evidence. */
   usageIntensity?: 'Light' | 'Typical' | 'Heavy';
   brightnessNits?: number;
+  /** Scenario SoC thermal design power, watts. */
+  targetSocPowerW?: number;
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -345,6 +347,9 @@ export function simulateBatteryExperience(
       // Represents brightness, background load, radios and gaming intensity.
       const intensityFactor = (input.usageIntensity === 'Light' ? 0.78
         : input.usageIntensity === 'Heavy' ? 1.40 : 1) * projectedSocPowerFactor(input.socName);
+      // Thermal headroom alters sustained CPU/GPU duty cycle rather than
+      // applying a flat battery bonus to browsing and video playback.
+      const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
 
       const useWh =
         packEnergyWh !== undefined &&
@@ -361,7 +366,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -370,7 +375,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.minDrainMahPerHour,
             0,
           );
@@ -379,7 +384,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -388,7 +393,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -397,7 +402,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -406,7 +411,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
+              row.hoursPerDay * intensityFactor * (row.workload === 'gaming' ? gamingThermalFactor : 1) * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.maxDrainWhPerHour!,
             0,
           )
@@ -596,4 +601,21 @@ export function simulateBatteryExperience(
     ...(wirelessCharging ? { wirelessCharging } : {}),
     warnings,
   };
+}
+
+/** Experimental sustained gaming draw, bounded to avoid implausible jumps. */
+export function projectedGamingThermalPowerFactor(
+  coolingClass?: BatteryExperienceInput['coolingClass'],
+  targetSocPowerW?: number,
+): number {
+  const cooling: Record<NonNullable<BatteryExperienceInput['coolingClass']>, number> = {
+    'passive-graphite': 0.90,
+    'vapor-chamber': 1,
+    'large-vapor-chamber': 1.05,
+    'active-fan': 1.10,
+    'other': 1,
+  };
+  const power = targetSocPowerW === undefined || !Number.isFinite(targetSocPowerW)
+    ? 1 : Math.max(0.82, Math.min(1.18, 1 + (targetSocPowerW - 7) * 0.025));
+  return Math.max(0.75, Math.min(1.30, (coolingClass ? cooling[coolingClass] : 1) * power));
 }
