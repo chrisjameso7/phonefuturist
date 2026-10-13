@@ -32,6 +32,8 @@ export interface SimpleModeInput {
   displayDiagonalInches: number;
   displayResolution: SimpleResolutionPreset;
   renderingScalePercent?: 100 | 75 | 50;
+  aspectRatioWidth?: number;
+  aspectRatioHeight?: number;
   customResolutionWidthPx?: number;
   customResolutionHeightPx?: number;
   refreshRateHz: number;
@@ -194,6 +196,10 @@ export function expandSimpleMode(
     throw new Error('Rendering scale must be 100%, 75%, or 50%.');
   }
 
+  if ((input.aspectRatioWidth !== undefined || input.aspectRatioHeight !== undefined) &&
+      (!positive(input.aspectRatioWidth) || !positive(input.aspectRatioHeight))) {
+    throw new Error('Both custom aspect ratio dimensions must be positive.');
+  }
   const cameras: CameraInput[] = [];
 
   const main = cameraFromSimple(
@@ -231,8 +237,8 @@ export function expandSimpleMode(
         renderingWidthPx: Math.max(1, Math.round(resolution.width * renderScale / 100)),
         renderingHeightPx: Math.max(1, Math.round(resolution.height * renderScale / 100)),
         refreshRateHz: input.refreshRateHz,
-        aspectWidth: resolution.width,
-        aspectHeight: resolution.height,
+        aspectWidth: input.aspectRatioWidth ?? resolution.width,
+        aspectHeight: input.aspectRatioHeight ?? resolution.height,
       },
     },
     battery: {
