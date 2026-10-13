@@ -2032,6 +2032,22 @@ export default function InteractiveLeaksSimulator() {
         })
       : undefined;
 
+  const simpleCpuScores = workspaceMode === 'simple' && simulationInput && result
+    ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
+        domain,
+        estimate: estimateLivePeakPerformance({
+          domain,
+          manufacturer: form.manufacturer.trim() || undefined,
+          socVendor: form.socVendor.trim() || undefined,
+          socName: form.socName.trim() || undefined,
+          batteryMah: result.battery?.totalCapacityMah,
+          displayDiagonalInches: simulationInput.displays.primary.diagonalInches,
+          refreshRateHz: simulationInput.displays.primary.refreshRateHz,
+          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
+        }),
+      }))
+    : [];
+
   const peakPerformanceEstimate =
     simulationInput && result
       ? estimateLivePeakPerformance({
@@ -5585,6 +5601,17 @@ export default function InteractiveLeaksSimulator() {
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
                   <span className="il-result-label">Simple overview</span>
+                  <div className="il-metrics" aria-label="CPU benchmark scores">
+                    {simpleCpuScores.map(({domain, estimate}) => (
+                      <div key={domain}>
+                        <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
+                          ? format(estimate.adjustedExpected, 0)
+                          : 'Not enough evidence'}</strong>
+                        <span>{domain === 'geekbench6_single' ? 'Geekbench 6 · Single-core' : 'Geekbench 6 · Multi-core'}</span>
+                        <small>{estimate.status === 'resolved' ? (estimate.evidenceScope === 'same-soc-family' ? 'Same-chip-family reference estimate' : 'Comparable-device estimate') : 'No defensible score available'}</small>
+                      </div>
+                    ))}
+                  </div>
                   <div className="il-simple-battery-readout">
                     <span className="il-result-label">Active-use endurance · one charge</span>
                     <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Not enough evidence'}</strong>
