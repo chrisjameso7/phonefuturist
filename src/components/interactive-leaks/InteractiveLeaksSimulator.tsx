@@ -968,9 +968,14 @@ function DeterministicShareCard({
   const deviceName = input.name || 'Untitled concept';
   // A 0–100% estimate is only defensible as a coarse scenario if no curve exists.
   // Do not pretend that advertised peak wattage is sustained charging power.
+  const assumedEnergyWh = battery?.totalEnergyWh ??
+    (mode === 'simple' && battery?.totalCapacityMah !== undefined
+      ? battery.totalCapacityMah * 3.85 / 1000
+      : undefined);
+  const assumedVoltage = battery?.totalEnergyWh === undefined && assumedEnergyWh !== undefined;
   const chargingScenarioMinutes = chargeMinutes === undefined &&
-    battery?.totalEnergyWh !== undefined && wiredWatts !== undefined && wiredWatts > 0
-      ? Math.ceil((battery.totalEnergyWh / (wiredWatts * 0.5 * 0.85)) * 60)
+    assumedEnergyWh !== undefined && wiredWatts !== undefined && wiredWatts > 0
+      ? Math.ceil((assumedEnergyWh / (wiredWatts * 0.5 * 0.85)) * 60)
       : undefined;
   const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
   const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
@@ -1171,7 +1176,7 @@ function DeterministicShareCard({
       <strong>{deviceName}</strong>
       {socName && <small>{socName}</small>}
       {experimentalScores && <small>Experimental synthetic benchmarks, not measured scores</small>}
-      {chargingIsScenario && <small>Charging scenario assumes 50% average rated power and 85% conversion efficiency, not a validated charging curve.</small>}
+      {chargingIsScenario && <small>Charging scenario assumes 50% average rated power, 85% conversion efficiency{assumedVoltage ? ', and 3.85 V nominal battery voltage' : ''}. Not a validated charging curve.</small>}
       <div className="il-share-card-metrics">
         <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
         <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
