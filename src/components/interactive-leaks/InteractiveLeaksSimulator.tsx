@@ -1,6 +1,7 @@
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
+import { suggestLiveDeviceComparisons } from '../../lib/simulation/modules/live-device-comparison-suggestions';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
 import { useMemo, useState } from 'react';
 
@@ -2031,6 +2032,10 @@ export default function InteractiveLeaksSimulator() {
               : form.coolingClass,
         })
       : undefined;
+
+  const suggestedComparisons = simulationInput && result && form.name.trim()
+    ? suggestLiveDeviceComparisons(form.name.trim())
+    : [];
 
   const simpleCpuScores = workspaceMode === 'simple' && simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
@@ -5612,6 +5617,19 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     ))}
                   </div>
+                  {suggestedComparisons.some(item=>item.status==='found') && (
+                    <div className="il-sensitivity-card">
+                      <strong>Compare generations</strong>
+                      <div className="il-metrics">
+                        {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
+                          <div key={item.query}>
+                            <strong>{item.label}</strong>
+                            <span>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="il-simple-battery-readout">
                     <span className="il-result-label">Active-use endurance · one charge</span>
                     <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Not enough evidence'}</strong>
