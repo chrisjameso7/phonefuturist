@@ -1082,8 +1082,11 @@ function DeterministicShareCard({
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'phonefuturist-' + deviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) + '-simulation.png';
+      const slug = deviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled-concept';
+      link.download = 'phonefuturist-' + slug + '-simulation.png';
+      document.body.appendChild(link);
       link.click();
+      link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
       setShareMessage('Share card downloaded.');
     } catch (error) {
@@ -1106,9 +1109,14 @@ function DeterministicShareCard({
       if (navigator.share) {
         await navigator.share({ title: deviceName + ' · Interactive Leaks', text });
         setShareMessage('Shared.');
-      } else {
+      } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
         setShareMessage('Result summary copied.');
+      } else {
+        // Clipboard APIs can be unavailable in embedded or non-secure contexts.
+        // The read-only prompt keeps the text accessible rather than losing the result.
+        window.prompt('Copy your simulation summary:', text);
+        setShareMessage('Summary ready to copy.');
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') return;
