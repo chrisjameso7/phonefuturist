@@ -14,6 +14,7 @@
     "verify": "npm run check && npm test && npm run check:calibration && npm run build",
     "check:calibration": "node data/calibration/battery/validate.mjs && tsx scripts/check-charging-calibration.ts && tsx scripts/check-camera-calibration.ts && tsx scripts/check-display-calibration.ts && tsx scripts/check-performance-calibration.ts",
     "preview": "astro preview",
+    "smoke:staging": "node scripts/smoke-public-release.mjs",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
