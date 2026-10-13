@@ -1160,6 +1160,7 @@ export default function InteractiveLeaksSimulator() {
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
   const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
+  const [benchmarkLoad, setBenchmarkLoad] = useState<'low' | 'medium' | 'high'>('medium');
 
   const [predictionSaveState, setPredictionSaveState] =
     useState<
@@ -6471,6 +6472,14 @@ export default function InteractiveLeaksSimulator() {
                       {form.socName.trim() ? (
                         <div className="il-sensitivity-card" style={{ marginBottom: 16 }}>
                           <strong>Processor efficiency evidence</strong>
+                          <label className="il-field">
+                            <span>Measured benchmark operating point</span>
+                            <select value={benchmarkLoad} onChange={event=>setBenchmarkLoad(event.currentTarget.value as 'low'|'medium'|'high')}>
+                              <option value="low">Lower measured load</option>
+                              <option value="medium">Middle measured load</option>
+                              <option value="high">Higher measured load</option>
+                            </select>
+                          </label>
                           {(['geekbench6', 'steelNomadLight'] as const).map(protocol => {
                             const curve = getSocEfficiencyCurve(form.socName.trim(), protocol);
                             if (!curve) return (
@@ -6478,7 +6487,7 @@ export default function InteractiveLeaksSimulator() {
                                 {protocol === 'geekbench6' ? 'CPU' : 'GPU'}: no exact-chip measured efficiency curve.
                               </small>
                             );
-                            const point = curve.points[Math.floor(curve.points.length / 2)];
+                            const point = curve.points[benchmarkLoad === 'low' ? 0 : benchmarkLoad === 'high' ? curve.points.length - 1 : Math.floor(curve.points.length / 2)];
                             const observation = evaluateSocAtBoardPower(curve.soc, protocol, point.boardPowerW);
                             return (
                               <small key={protocol}>
@@ -6486,7 +6495,7 @@ export default function InteractiveLeaksSimulator() {
                               </small>
                             );
                           })}
-                          <small>Benchmark power excludes screen consumption and is not directly interchangeable with full-device battery drain.</small>
+                          <small>Chip-specific measured benchmark load only. Full-phone runtime requires measured display, idle and workload duty-cycle data.</small>
                         </div>
                       ) : null}
                       <span className="il-result-label">
