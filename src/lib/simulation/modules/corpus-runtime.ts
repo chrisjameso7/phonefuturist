@@ -352,15 +352,10 @@ export function resolveCorpusRuntimeBand(
   const familyProtocolGroup = rankedGroups.find(
     (group) => sameFamilyRows(group).length >= 2,
   );
-  const vendorProtocolGroup = familyProtocolGroup
-    ? undefined
-    : rankedGroups.find(
-        (group) => sameVendorRows(group).length >= 2,
-      );
-
+  // Vendor-only battery evidence is not an SoC efficiency calibration.
+  // When a chip family has no matching measurements, use the protocol cohort.
   const protocolValues =
     familyProtocolGroup ??
-    vendorProtocolGroup ??
     rankedGroups[0] ??
     [];
 
@@ -377,22 +372,13 @@ export function resolveCorpusRuntimeBand(
   const sameFamily = sameFamilyRows(protocolValues);
   const sameVendor = sameVendorRows(protocolValues);
 
-  const values =
-    sameFamily.length >= 2
-      ? sameFamily
-      : sameVendor.length >= 2
-        ? sameVendor
-        : protocolValues;
+  const values = sameFamily.length >= 2 ? sameFamily : protocolValues;
 
   const evidenceScope:
     | 'same-soc-family'
     | 'same-soc-vendor'
     | 'protocol-cohort' =
-    values === sameFamily
-      ? 'same-soc-family'
-      : values === sameVendor
-        ? 'same-soc-vendor'
-        : 'protocol-cohort';
+    values === sameFamily ? 'same-soc-family' : 'protocol-cohort';
 
   const drains = values.map((item) => item.value);
   const whValues = values.filter(
