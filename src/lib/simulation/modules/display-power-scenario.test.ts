@@ -15,4 +15,11 @@ describe('experimental display power model', () => {
     const scaled = { ...native, renderingWidthPx: 1080, renderingHeightPx: 2400 };
     expect(projectedDisplayPowerFactor(scaled, 'gaming')).toBeLessThan(projectedDisplayPowerFactor(native, 'gaming'));
   });
+  it('keeps extreme refresh rates and resolutions finite and bounded', () => {
+    const pathological = { diagonalInches: 20, refreshRateHz: 10000, renderingWidthPx: 20000, renderingHeightPx: 20000 };
+    const factor = projectedDisplayPowerFactor(pathological, 'gaming');
+    expect(Number.isFinite(factor)).toBe(true);
+    expect(factor).toBeLessThanOrEqual(1.4);
+  });
+
 });
