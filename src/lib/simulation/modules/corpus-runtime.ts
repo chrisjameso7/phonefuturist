@@ -233,15 +233,21 @@ export function resolveCorpusRuntimeBand(
     },
   );
 
+  // Index eligible measurements once: avoid rescanning the full calibration
+  // corpus for every comparable phone during holdout validation.
+  const measurementsByVariant = new Map<string, typeof corpus.measurements>();
+  for (const measurement of corpus.measurements) {
+    if (measurement.workload !== workload ||
+        measurement.evidenceKind !== 'measured' ||
+        measurement.unit.toLowerCase() !== 'hours' ||
+        !positive(measurement.value)) continue;
+    const rows = measurementsByVariant.get(measurement.deviceVariantId) ?? [];
+    rows.push(measurement);
+    measurementsByVariant.set(measurement.deviceVariantId, rows);
+  }
+
   const rawValues = comparables.flatMap((match) => {
-    const measurements = corpus.measurements.filter(
-      (measurement) =>
-        measurement.deviceVariantId === match.device.variant.id &&
-        measurement.workload === workload &&
-        measurement.evidenceKind === 'measured' &&
-        measurement.unit.toLowerCase() === 'hours' &&
-        positive(measurement.value),
-    );
+    const measurements = measurementsByVariant.get(match.device.variant.id) ?? [];
 
     const refCapacity =
       match.device.variant.battery?.capacityMah ??
