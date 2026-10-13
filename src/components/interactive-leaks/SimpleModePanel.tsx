@@ -64,8 +64,6 @@ export default function SimpleModePanel({
     useState('1.3');
   const [aperture, setAperture] =
     useState('1.8');
-  const [variableAperture, setVariableAperture] = useState(false);
-  const [narrowAperture, setNarrowAperture] = useState('2.8');
   const [error, setError] = useState('');
   const [usage, setUsage] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
 
@@ -88,11 +86,6 @@ export default function SimpleModePanel({
 
     if (aspectRatio === 'custom' && (!number(customAspectWidth) || !number(customAspectHeight))) {
       setError('Enter both dimensions of the custom aspect ratio.');
-      return;
-    }
-
-    if (variableAperture && (!aperture || !narrowAperture || Number(narrowAperture) < Number(aperture))) {
-      setError('Choose a widest and narrowest aperture, with the narrowest f-number greater than or equal to the widest.');
       return;
     }
 
@@ -139,7 +132,6 @@ export default function SimpleModePanel({
             }
           : {}),
         equivalentFocalLengthMm: 24,
-        ...(variableAperture ? { variableApertureWide: number(aperture), variableApertureNarrow: number(narrowAperture) } : {}),
       },
     }, usage);
   }
@@ -383,27 +375,12 @@ export default function SimpleModePanel({
         </label>
 
         <label className="il-field">
-          <span>Aperture type</span>
-          <select value={variableAperture ? 'variable' : 'fixed'} onChange={event => setVariableAperture(event.currentTarget.value === 'variable')}>
-            <option value="fixed">Fixed aperture</option>
-            <option value="variable">Variable aperture</option>
-          </select>
-        </label>
-        <label className="il-field">
-          <span>{variableAperture ? 'Widest aperture' : 'Main aperture'}</span>
-          <select value={aperture} onChange={event => setAperture(event.currentTarget.value)}>
+          <span>Main aperture</span>
+          <select value={aperture} onChange={(event) => setAperture(event.currentTarget.value)}>
             <option value="">Select aperture</option>
             {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
           </select>
-        </label>
-        {variableAperture && <label className="il-field">
-          <span>Narrowest aperture</span>
-          <select value={narrowAperture} onChange={event => setNarrowAperture(event.currentTarget.value)}>
-            <option value="">Select narrowest aperture</option>
-            {CAMERA_APERTURES.filter(value => value >= Number(aperture || 0)).map(value => <option key={value} value={String(value)}>f/{value}</option>)}
-          </select>
         </label>}
-        {variableAperture && <small className="il-help">The simulation calculates light capture at the widest setting. The selectable range is retained when switching to Advanced Mode.</small>}
       </div>
 
       {error ? (
