@@ -9,3 +9,10 @@ export function projectedDisplayPowerFactor(display: DisplayInput, workload: 'we
   const share = workload === 'gaming' ? 0.34 : workload === 'video_playback' ? 0.24 : 0.29;
   return Math.max(0.7, Math.min(1.4, 1 + share * (size * refresh * (0.75 + 0.25 * resolution) - 1)));
 }
+
+/** Brightness changes only the estimated display share of total workload draw. */
+export function projectedBrightnessPowerFactor(brightnessNits?: number): number {
+  if (brightnessNits === undefined || !Number.isFinite(brightnessNits) || brightnessNits <= 0) return 1;
+  const relative = Math.sqrt(Math.min(2000, Math.max(100, brightnessNits)) / 400);
+  return Math.max(0.8, Math.min(1.3, 1 + 0.22 * (relative - 1)));
+}
