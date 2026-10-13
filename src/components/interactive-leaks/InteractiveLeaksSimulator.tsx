@@ -966,6 +966,17 @@ function DeterministicShareCard({
   const battery = result.battery;
   const packaging = result.packaging;
   const deviceName = input.name || 'Untitled concept';
+  // A 0–100% estimate is only defensible as a coarse scenario if no curve exists.
+  // Do not pretend that advertised peak wattage is sustained charging power.
+  const chargingScenarioMinutes = chargeMinutes === undefined &&
+    battery?.totalEnergyWh !== undefined && wiredWatts !== undefined && wiredWatts > 0
+      ? Math.ceil((battery.totalEnergyWh / (wiredWatts * 0.5 * 0.85)) * 60)
+      : undefined;
+  const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
+  const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
+  const scoreLabel = experimentalScores ? 'SYNTHETIC' : 'ESTIMATED';
+
+
 
   async function downloadCard() {
     try {
@@ -1045,10 +1056,10 @@ function DeterministicShareCard({
       ctx.fillStyle = ink;
       wrapTitle(deviceName, 55, 255, 2);
       const metrics: Array<[string, string]> = [
-        ['GEEKBENCH 6 SINGLE', singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'],
-        ['GEEKBENCH 6 MULTI', multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'],
-        ['BATTERY LIFE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
-        ['CHARGING 0–100%', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
+        ['GB6 SINGLE · ' + scoreLabel, singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'No estimate'],
+        ['GB6 MULTI · ' + scoreLabel, multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'No estimate'],
+        ['BATTERY LIFE · EST.', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
+        ['CHARGING 0–100%', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
         ['WIRED CHARGING', wiredWatts !== undefined ? Math.round(wiredWatts) + ' W' : 'Unknown'],
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
@@ -1083,7 +1094,7 @@ function DeterministicShareCard({
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
       ctx.font = '18px Arial';
-      ctx.fillText(experimentalScores ? 'SYNTHETIC SOC SCENARIO · NOT A GEEKBENCH TEST' : 'MODELED ESTIMATES · NOT VERIFIED LAB RESULTS', 72, 1195, 935);
+      ctx.fillText(experimentalScores ? 'SYNTHETIC SOC SCORES · NOT REAL BENCHMARKS' : 'MODEL ESTIMATES · NOT MEASURED TEST RESULTS', 72, 1195, 935);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 1250, 936, 2);
       ctx.fillStyle = ink;
@@ -1123,7 +1134,7 @@ function DeterministicShareCard({
       wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
       experimentalScores ? 'Synthetic scores, not tested Geekbench results' : 'Modelled estimates, not measured results',
       ...(mode === 'simple'
-        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, chargeMinutes !== undefined ? 'Full-charge estimate: ' + Math.round(chargeMinutes) + ' min' : null, 'Illustrative scenario; not time between charges']
+        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Illustrative scenario; not time between charges']
         : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
            packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded']),
       'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
@@ -1160,6 +1171,7 @@ function DeterministicShareCard({
       <strong>{deviceName}</strong>
       {socName && <small>{socName}</small>}
       {experimentalScores && <small>Experimental synthetic benchmarks, not measured scores</small>}
+      {chargingIsScenario && <small>Charging scenario assumes 50% average rated power and 85% conversion efficiency, not a validated charging curve.</small>}
       <div className="il-share-card-metrics">
         <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
         <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
@@ -1168,7 +1180,7 @@ function DeterministicShareCard({
         {mode === 'simple' ? <>
           <span>{usage} usage scenario</span>
           <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h estimated active use' : 'Active use unresolved'}</span>
-          <span>{chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min estimated full charge' : 'Charging unresolved'}</span>
+          <span>{shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min ' + (chargingIsScenario ? 'charging scenario' : 'charging estimate') : 'Charging not modeled'}</span>
         </> : <>
           <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
           <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
