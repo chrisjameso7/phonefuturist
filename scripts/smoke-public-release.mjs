@@ -17,7 +17,7 @@ const cases = [
   {path:'/',expected:200,contains:'PhoneFuturist'},
   {path:'/articles',expected:200,contains:'PhoneFuturist'},
   {path:'/interactive-leaks',expected:200,contains:'Interactive'},
-  {path:'/pro',expected:200,contains:'14-day free trial'},
+  {path:'/pro',expected:200,contains:'14-day free trial',alsoContains:['$4.99','39.99','payments are coming soon']},
   {path:'/assets/phonefuturist-mark.svg',expected:200,contains:'<svg'},
   {path:'/interactive-leaks/simulate',expected:302,location:'/interactive-leaks'},
 ];
@@ -33,7 +33,8 @@ for (const check of cases) {
     const body = await response.text();
     const actualLocation = response.headers.get('location');
     const redirectOk = !check.location || (actualLocation && new URL(actualLocation,url).pathname === check.location);
-    const bodyOk = !check.contains || body.toLowerCase().includes(check.contains.toLowerCase());
+    const bodyOk = (!check.contains || body.toLowerCase().includes(check.contains.toLowerCase())) &&
+      (!check.alsoContains || check.alsoContains.every(value => body.toLowerCase().includes(value.toLowerCase())));
     const securityOk = check.path.startsWith('/assets/') || (response.headers.get('x-content-type-options') === 'nosniff' && response.headers.get('x-frame-options') === 'DENY');
     const ok = response.status === check.expected && redirectOk && bodyOk && securityOk;
     console.log(`${ok?'PASS':'FAIL'} ${check.path}: HTTP ${response.status}${actualLocation?' -> '+actualLocation:''}`);
