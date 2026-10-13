@@ -943,6 +943,11 @@ function DeterministicShareCard({
   usage,
   activeUseHours,
   chargeMinutes,
+  singleScore,
+  multiScore,
+  experimentalScores = false,
+  socName,
+  wiredWatts,
 }: {
   input: SimulationInput;
   result: DeterministicResult;
@@ -950,6 +955,11 @@ function DeterministicShareCard({
   usage: 'Light' | 'Typical' | 'Heavy';
   activeUseHours?: number;
   chargeMinutes?: number;
+  singleScore?: number;
+  multiScore?: number;
+  experimentalScores?: boolean;
+  socName?: string;
+  wiredWatts?: number;
 }) {
   const [shareMessage, setShareMessage] = useState('');
   const display = result.displays.primary;
@@ -972,7 +982,7 @@ function DeterministicShareCard({
       ctx.fillStyle = '#080d15';
       ctx.fillRect(0, 0, 1080, 1350);
       ctx.fillStyle = simple ? '#10232d' : '#17192f';
-      ctx.fillRect(0, 0, 1080, simple ? 580 : 250);
+      ctx.fillRect(0, 0, 1080, 290);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 65, 55, 7);
       // Use the exact SVG asset rendered by the site's header and mobile navigation.
@@ -1033,49 +1043,47 @@ function DeterministicShareCard({
       }
 
       ctx.fillStyle = ink;
-      wrapTitle(deviceName, simple ? 69 : 54, simple ? 290 : 238, simple ? 3 : 1);
-      const metrics: Array<[string, string]> = simple ? [
-        ['USAGE', usage],
-        ['ACTIVE USE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
-        ['FULL CHARGE', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
-        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
-      ] : [
+      wrapTitle(deviceName, 55, 255, 2);
+      const metrics: Array<[string, string]> = [
+        ['GEEKBENCH 6 SINGLE', singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'],
+        ['GEEKBENCH 6 MULTI', multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'],
+        ['BATTERY LIFE', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'Unresolved'],
+        ['CHARGING 0–100%', chargeMinutes !== undefined ? Math.round(chargeMinutes) + ' min' : 'Unresolved'],
+        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
+        ['WIRED CHARGING', wiredWatts !== undefined ? Math.round(wiredWatts) + ' W' : 'Unknown'],
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
-        ['PIXEL DENSITY', display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'Unknown'],
-        ['BATTERY ENERGY', battery?.totalEnergyWh !== undefined ? battery.totalEnergyWh.toFixed(2) + ' Wh' : 'Unknown'],
-        ['BATTERY CAPACITY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Unknown'],
-        ['SCREEN / BODY', display?.screenToBodyRatio !== undefined ? display.screenToBodyRatio.toFixed(1) + '%' : 'Unknown'],
-        ['VOLUME CHECK', packaging?.fitsAvailableVolume === undefined ? 'Unresolved' : packaging.fitsAvailableVolume ? 'Pass' : 'Exceeded'],
+        ['REFRESH RATE', input.displays.primary.refreshRateHz !== undefined ? Math.round(input.displays.primary.refreshRateHz) + ' Hz' : 'Unknown'],
       ];
       if (simple) {
         ctx.fillStyle = dim;
         ctx.font = '700 19px Arial';
-        ctx.fillText('YOUR CONCEPT, AT A GLANCE', 72, 530);
+        ctx.fillText(socName ? 'SOC  /  ' + socName.slice(0, 48) : 'YOUR CONCEPT, AT A GLANCE', 72, 430, 930);
       } else {
         ctx.fillStyle = dim;
         ctx.font = '700 18px Arial';
-        ctx.fillText('SIMULATION SUMMARY', 72, 326);
+        ctx.fillText(socName ? 'SOC  /  ' + socName.slice(0, 48) : 'SIMULATION SUMMARY', 72, 430, 930);
       }
-      const baseY = simple ? 612 : 370;
-      const cellHeight = simple ? 205 : 194;
+      const baseY = 460;
+      const cellHeight = 163;
       for (let i = 0; i < metrics.length; i++) {
         const x = 72 + (i % 2) * 474;
-        const y = baseY + Math.floor(i / 2) * (cellHeight + 16);
+        const y = baseY + Math.floor(i / 2) * (cellHeight + 12);
         ctx.fillStyle = '#15202e';
         ctx.beginPath();
         ctx.roundRect(x, y, 456, cellHeight, 20);
         ctx.fill();
         ctx.fillStyle = dim;
         ctx.font = '700 18px Arial';
-        ctx.fillText(metrics[i][0], x + 26, y + 44);
+        ctx.fillText(metrics[i][0], x + 22, y + 38);
         ctx.fillStyle = ink;
         const value = metrics[i][1];
         ctx.font = '700 ' + (value.length > 18 ? 30 : value.length > 11 ? 40 : 53) + 'px Arial';
-        ctx.fillText(value, x + 26, y + 116, 407);
+        ctx.fillText(value, x + 22, y + 103, 407);
       }
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
-      ctx.fillText(simple ? 'Estimated active use, not days per charge.' : 'Modelled results · Not laboratory measurements', 72, 1208);
+      ctx.font = '18px Arial';
+      ctx.fillText(experimentalScores ? 'SYNTHETIC SOC SCENARIO · NOT A GEEKBENCH TEST' : 'MODELED ESTIMATES · NOT VERIFIED LAB RESULTS', 72, 1195, 935);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 1250, 936, 2);
       ctx.fillStyle = ink;
@@ -1109,6 +1117,11 @@ function DeterministicShareCard({
     const text = [
       deviceName,
       battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
+      socName ? 'SoC: ' + socName : null,
+      singleScore !== undefined ? 'GB6 single: ' + Math.round(singleScore).toLocaleString('en-US') : null,
+      multiScore !== undefined ? 'GB6 multi: ' + Math.round(multiScore).toLocaleString('en-US') : null,
+      wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
+      experimentalScores ? 'Synthetic scores, not tested Geekbench results' : 'Modelled estimates, not measured results',
       ...(mode === 'simple'
         ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, chargeMinutes !== undefined ? 'Full-charge estimate: ' + Math.round(chargeMinutes) + ' min' : null, 'Illustrative scenario; not time between charges']
         : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
@@ -1145,8 +1158,13 @@ function DeterministicShareCard({
         <small>{mode === 'simple' ? 'Simple overview' : 'Advanced lab report'}</small>
       </div>
       <strong>{deviceName}</strong>
+      {socName && <small>{socName}</small>}
+      {experimentalScores && <small>Experimental synthetic benchmarks, not measured scores</small>}
       <div className="il-share-card-metrics">
+        <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
+        <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
         <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
+        {wiredWatts !== undefined && <span>{Math.round(wiredWatts)} W wired</span>}
         {mode === 'simple' ? <>
           <span>{usage} usage scenario</span>
           <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h estimated active use' : 'Active use unresolved'}</span>
@@ -10201,7 +10219,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={workspaceMode === 'simple' ? batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge : undefined} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
               )}
 
               {workspaceMode === 'advanced' && result.warnings.length > 0 && (
