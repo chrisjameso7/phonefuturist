@@ -1749,6 +1749,7 @@ export default function InteractiveLeaksSimulator() {
             gaming: numeric(form.gamingHours) ?? 0,
           },
           usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
+          brightnessNits: numeric(form.brightnessNits),
         })
       : undefined;
 
