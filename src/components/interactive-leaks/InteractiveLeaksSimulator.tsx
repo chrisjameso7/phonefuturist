@@ -5626,8 +5626,8 @@ export default function InteractiveLeaksSimulator() {
                             <strong>{item.label}</strong>
                             <span>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
                             {item.released?.batteryMah !== undefined && <small>Battery: {format(item.released.batteryMah, 0)} mAh · Concept: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
-                            {item.released?.displayInches !== undefined && <small>Display: {format(item.released.displayInches, 2)}″ · Concept: {format(simulationInput.displays.primary.diagonalInches, 2)}″</small>}
-                            {item.released?.refreshRateHz !== undefined && <small>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput.displays.primary.refreshRateHz, 0)} Hz</small>}
+                            {item.released?.displayInches !== undefined && <small>Display: {format(item.released.displayInches, 2)}″ · Concept: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
+                            {item.released?.refreshRateHz !== undefined && <small>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
                             {item.released?.wiredWatts !== undefined && <small>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
                             {item.released?.socName && <small>Predecessor chip: {item.released.socName}</small>}
                             {item.released?.catalogUnverified && <small>Catalog specifications are not independently verified.</small>}
