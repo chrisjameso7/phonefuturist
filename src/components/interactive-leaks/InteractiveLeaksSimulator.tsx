@@ -4156,7 +4156,7 @@ export default function InteractiveLeaksSimulator() {
                 <span>SoC vendor</span>
                 <select
                   value={form.socVendor}
-                  onChange={(event) => update('socVendor', event.currentTarget.value)}
+                  onChange={(event) => setForm(current => ({ ...current, socVendor: event.currentTarget.value, socName: '' }))}
                 >
                   <option value="">Select SoC vendor</option>
                   {['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].map(vendor => <option key={vendor} value={vendor}>{vendor}</option>)}
