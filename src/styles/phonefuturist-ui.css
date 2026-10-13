@@ -583,3 +583,49 @@ body:not(.product-mode) .mobile-app-brand {
 .il-simple-battery-readout p b {color:#fff;font-weight:600;}
 .il-simple-battery-readout small {line-height:1.5;color:#a3b7c9;}
 @media(max-width:760px){.il-simple-battery-readout{padding:18px 16px;}}
+
+/* Editorial latest: two readable story columns, rather than four cramped cards. */
+@media (min-width: 900px) {
+  #main.home-page .pf-home-v2 .latest-section .latest-main {min-width:0;width:100%;}
+  #main.home-page .pf-home-v2 .latest-section .article-grid,
+  #main.home-page .pf-home-v2 .latest-section .article-grid[data-count='1'],
+  #main.home-page .pf-home-v2 .latest-section .article-grid[data-count='2'],
+  #main.home-page .pf-home-v2 .latest-section .article-grid[data-count='3'],
+  #main.home-page .pf-home-v2 .latest-section .article-grid[data-count='4'] {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:26px!important;
+  }
+  #main.home-page .pf-home-v2 .latest-section .article-card {
+    min-width:0!important;
+    height:auto!important;
+    border-radius:18px!important;
+    overflow:hidden;
+  }
+  #main.home-page .pf-home-v2 .latest-section .article-card .card-image {
+    aspect-ratio:16/9!important;
+    height:auto!important;
+  }
+  #main.home-page .pf-home-v2 .latest-section .article-card .card-content {
+    min-height:0!important;
+    padding:22px 24px 25px!important;
+  }
+  #main.home-page .pf-home-v2 .latest-section .article-card h3 {
+    font-size:clamp(1.3rem,1.65vw,1.75rem)!important;
+    line-height:1.25!important;
+    letter-spacing:-.025em;
+    max-width:34ch;
+  }
+  #main.home-page .pf-home-v2 .latest-section .article-card p {
+    font-size:.95rem!important;
+    line-height:1.6!important;
+    max-width:56ch;
+    display:-webkit-box!important;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden!important;
+  }
+}
+@media (min-width:600px) and (max-width:899px) {
+  #main.home-page .pf-home-v2 .latest-section .article-grid {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;}
+}
