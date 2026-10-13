@@ -5695,13 +5695,13 @@ export default function InteractiveLeaksSimulator() {
                         {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
                           <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}> 
                             <strong>{item.label}</strong>
-                            <span>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
-                            {item.released?.batteryMah !== undefined && <small>Battery: {format(item.released.batteryMah, 0)} mAh · Concept: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
-                            {item.released?.displayInches !== undefined && <small>Display: {format(item.released.displayInches, 2)}″ · Concept: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
-                            {item.released?.refreshRateHz !== undefined && <small>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
-                            {item.released?.wiredWatts !== undefined && <small>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
-                            {item.released?.socName && <small>Predecessor chip: {item.released.socName}</small>}
-                            {item.released?.catalogUnverified && <small>Catalog specifications are not independently verified.</small>}
+                            <span style={{display:'block',marginTop:'0.35rem'}}>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
+                            {item.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Battery: {format(item.released.batteryMah, 0)} mAh · Concept: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
+                            {item.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Display: {format(item.released.displayInches, 2)}″ · Concept: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
+                            {item.released?.refreshRateHz !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
+                            {item.released?.wiredWatts !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
+                            {item.released?.socName && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Predecessor chip: {item.released.socName}</small>}
+                            {item.released?.catalogUnverified && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Catalog specifications are not independently verified.</small>}
                           </div>
                         ))}
                       </div>
@@ -5714,9 +5714,9 @@ export default function InteractiveLeaksSimulator() {
                         {competingDevices.map(device=>(
                           <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
                             <strong>{device.label}</strong>
-                            <span>{device.released?.socName ?? 'Processor unspecified'}</span>
-                            {device.released?.batteryMah !== undefined && <small>{format(device.released.batteryMah,0)} mAh</small>}
-                            {device.released?.displayInches !== undefined && <small>{format(device.released.displayInches,2)}″ display</small>}
+                            <span style={{display:'block',marginTop:'0.35rem'}}>{device.released?.socName ?? 'Processor unspecified'}</span>
+                            {device.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.batteryMah,0)} mAh</small>}
+                            {device.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.displayInches,2)}″ display</small>}
                           </div>
                         ))}
                       </div>
