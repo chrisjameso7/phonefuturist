@@ -1,6 +1,7 @@
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
+import { estimateDailyBatteryBudget, type DailyBatteryBudgetResult } from './battery-daily-budget';
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
 import { estimateWirelessChargingFromCorpus } from './wireless-charging-estimator';
 
@@ -11,6 +12,8 @@ export interface BatteryExperienceInput {
   manufacturer?: string;
   socVendor?: string;
   socName?: string;
+  /** Independently measured average screen-off draw, in watts. */
+  standbyPowerW?: number;
   region?: string;
   batteryChemistry?: string;
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
@@ -93,6 +96,7 @@ export interface BatteryExperienceResult {
   energyWh?: number;
   runtimes: BatteryRuntimeExperience[];
   mixedUse?: MixedUseBatteryEstimate;
+  calendarEndurance?: DailyBatteryBudgetResult;
   charging?: ReturnType<typeof estimateChargingFromCorpus>;
   wirelessCharging?: ReturnType<typeof estimateWirelessChargingFromCorpus>;
   warnings: string[];
@@ -547,6 +551,11 @@ export function simulateBatteryExperience(
     }
   }
 
+  const calendarEndurance = input.standbyPowerW !== undefined && mixedUse && packEnergyWh !== undefined && mixedUse.expectedDrainWhPerDay !== undefined
+    ? estimateDailyBatteryBudget({ usableEnergyWh: packEnergyWh, activeHoursPerDay: mixedUse.activeHoursPerDay,
+        activeEnergyWhPerDay: mixedUse.expectedDrainWhPerDay, standbyPowerW: input.standbyPowerW })
+    : undefined;
+
   const runtimeResolved = runtimes.filter(
     (runtime) => runtime.status === 'resolved',
   ).length;
@@ -575,6 +584,7 @@ export function simulateBatteryExperience(
       : {}),
     runtimes,
     ...(mixedUse ? { mixedUse } : {}),
+    ...(calendarEndurance ? { calendarEndurance } : {}),
     ...(charging ? { charging } : {}),
     ...(wirelessCharging ? { wirelessCharging } : {}),
     warnings,
