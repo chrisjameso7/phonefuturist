@@ -10,6 +10,8 @@ export const PRO_PRICING = {
   annualCents: 3999,
 } as const;
 
+export const PRO_TRIAL_DAYS = 14;
+
 export type Plan = 'free' | 'pro';
 export type PaidFeature =
   | 'advanced-simulations'
@@ -25,12 +27,23 @@ export interface TrustedSubscription {
   userId: string;
   status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | 'incomplete' | 'incomplete_expired' | 'paused';
   currentPeriodEnd?: string | null;
+  trialStart?: string | null;
+  trialEnd?: string | null;
 }
 
 /** Current access requires active/trialing server-verified state and an unexpired period when given. */
 export function resolveEntitlement(subscription: TrustedSubscription | null, userId: string, now = new Date()): Plan {
   if (!subscription || !userId || subscription.userId !== userId) return 'free';
   if (subscription.status !== 'active' && subscription.status !== 'trialing') return 'free';
+  if (subscription.status === 'trialing') {
+    // A trial must have trusted start/end timestamps, never just a trialing flag.
+    if (!subscription.trialStart || !subscription.trialEnd) return 'free';
+    const start = new Date(subscription.trialStart);
+    const end = new Date(subscription.trialEnd);
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) return 'free';
+    if (start.getTime() > now.getTime() || end.getTime() <= now.getTime()) return 'free';
+    if (end.getTime() - start.getTime() > PRO_TRIAL_DAYS * 86400000) return 'free';
+  }
   if (subscription.currentPeriodEnd) {
     const end = new Date(subscription.currentPeriodEnd);
     if (!Number.isFinite(end.getTime()) || end.getTime() <= now.getTime()) return 'free';
