@@ -31,7 +31,7 @@ export interface TrustedSubscription {
   trialEnd?: string | null;
 }
 
-/** Current access requires active/trialing server-verified state and an unexpired period when given. */
+/** Grant access only with trusted, unexpired billing or trial timestamps. */
 export function resolveEntitlement(subscription: TrustedSubscription | null, userId: string, now = new Date()): Plan {
   if (!subscription || !userId || subscription.userId !== userId) return 'free';
   if (subscription.status !== 'active' && subscription.status !== 'trialing') return 'free';
@@ -44,6 +44,7 @@ export function resolveEntitlement(subscription: TrustedSubscription | null, use
     if (start.getTime() > now.getTime() || end.getTime() <= now.getTime()) return 'free';
     if (end.getTime() - start.getTime() > PRO_TRIAL_DAYS * 86400000) return 'free';
   }
+  if (subscription.status === 'active' && !subscription.currentPeriodEnd) return 'free';
   if (subscription.currentPeriodEnd) {
     const end = new Date(subscription.currentPeriodEnd);
     if (!Number.isFinite(end.getTime()) || end.getTime() <= now.getTime()) return 'free';
