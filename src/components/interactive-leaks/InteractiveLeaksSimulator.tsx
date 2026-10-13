@@ -3238,23 +3238,49 @@ export default function InteractiveLeaksSimulator() {
                 }
               />
 
-              <NumericField
-                label="Aspect width"
-                value={form.aspectWidth}
-                placeholder="9"
-                onChange={(value) =>
-                  update('aspectWidth', value)
-                }
-              />
-
-              <NumericField
-                label="Aspect height"
-                value={form.aspectHeight}
-                placeholder="20"
-                onChange={(value) =>
-                  update('aspectHeight', value)
-                }
-              />
+              <label className="il-field">
+                <span>Display aspect ratio · portrait</span>
+                <select
+                  value={(() => {
+                    const w = Number(form.aspectWidth), h = Number(form.aspectHeight);
+                    if (!w || !h) return 'custom';
+                    const ratio = w / h;
+                    const options = ['9:21','9:20.5','9:20','9:19.5','9:19','9:18.5','9:18','9:17','10:19','10:18','9.5:16','10:16','3:4','1:1'];
+                    return options.find(value => {
+                      const [width,height] = value.split(':').map(Number);
+                      return Math.abs(width/height-ratio)<0.00001;
+                    }) ?? 'custom';
+                  })()}
+                  onChange={event => {
+                    if (event.currentTarget.value === 'custom') return;
+                    const [width,height] = event.currentTarget.value.split(':');
+                    update('aspectWidth', width);
+                    update('aspectHeight', height);
+                  }}
+                >
+                  <optgroup label="Portrait phone">
+                    <option value="9:21">21:9 · tall</option>
+                    <option value="9:20.5">20.5:9</option>
+                    <option value="9:20">20:9</option>
+                    <option value="9:19.5">19.5:9</option>
+                    <option value="9:19">19:9</option>
+                    <option value="9:18.5">18.5:9</option>
+                    <option value="9:18">18:9</option>
+                    <option value="9:17">17:9</option>
+                    <option value="10:19">19:10</option>
+                    <option value="10:18">18:10</option>
+                  </optgroup>
+                  <optgroup label="Wide portrait and foldables">
+                    <option value="9.5:16">16:9.5 · Huawei Pura X View</option>
+                    <option value="10:16">16:10 · Huawei Pura X</option>
+                    <option value="3:4">4:3</option>
+                    <option value="1:1">1:1 · square</option>
+                  </optgroup>
+                  <option value="custom">Custom ratio</option>
+                </select>
+              </label>
+              <label className="il-field"><span>Portrait width</span><input type="number" min="0.1" step="0.1" value={form.aspectWidth} onChange={event=>update('aspectWidth',event.currentTarget.value)} /></label>
+              <label className="il-field"><span>Portrait height</span><input type="number" min="0.1" step="0.1" value={form.aspectHeight} onChange={event=>update('aspectHeight',event.currentTarget.value)} /></label>
             </div>
 
             <div className="il-grid">
