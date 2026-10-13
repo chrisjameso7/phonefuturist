@@ -1,4 +1,5 @@
 import BrandSelect from './BrandSelect';
+import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES } from '../../lib/simulation/camera-option-catalog';
 import { useState } from 'react';
 import type {
   SimpleCoolingPreset,
@@ -369,32 +370,18 @@ export default function SimpleModePanel({
 
         <label className="il-field">
           <span>Sensor format</span>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            value={sensorDenominator}
-            onChange={(event) =>
-              setSensorDenominator(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <select value={sensorDenominator} onChange={(event) => setSensorDenominator(event.currentTarget.value)}>
+            <option value="">Select sensor format</option>
+            {CAMERA_SENSOR_FORMATS.map(value => <option key={value} value={String(value)}>1/{value}″ type</option>)}
+          </select>
         </label>
 
         <label className="il-field">
           <span>Main aperture</span>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            value={aperture}
-            onChange={(event) =>
-              setAperture(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <select value={aperture} onChange={(event) => setAperture(event.currentTarget.value)}>
+            <option value="">Select aperture</option>
+            {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+          </select>
         </label>
       </div>
 
