@@ -123,6 +123,7 @@ function aggregate(
 
 export function backtestAgainstPhoneArenaRuntime(
   corpus: DeviceCorpus,
+  mode: 'sparse' | 'spec-enriched' = 'sparse',
 ): PhoneArenaRuntimeHoldoutResult {
   const phoneArenaMeasurements =
     corpus.measurements.filter(
@@ -218,13 +219,19 @@ export function backtestAgainstPhoneArenaRuntime(
       SimulationInput = {
       formFactor: 'phone',
       displays: {
-        primary: {},
+        primary: mode === 'spec-enriched' ? {
+          diagonalInches: device.display?.diagonalInches,
+          resolutionWidthPx: device.display?.resolutionWidthPx,
+          resolutionHeightPx: device.display?.resolutionHeightPx,
+          refreshRateHz: device.display?.refreshRateHz,
+        } : {},
       },
       battery: {
         cells: [
           {
             capacityMah:
               batteryMah,
+            ...(mode === 'spec-enriched' && device.variant.battery?.nominalVoltageV ? { nominalVoltageV: device.variant.battery.nominalVoltageV } : {}),
           },
         ],
       },
@@ -240,6 +247,10 @@ export function backtestAgainstPhoneArenaRuntime(
           manufacturer:
             device.variant.identity
               .manufacturer,
+          ...(mode === 'spec-enriched' ? {
+            socVendor: device.variant.soc?.vendor,
+            socName: device.variant.soc?.name,
+          } : {}),
         },
       );
 
@@ -381,6 +392,8 @@ export function backtestAgainstPhoneArenaRuntime(
         )
         .slice(0, 10),
     note:
-      'PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.',
+      mode === 'sparse'
+        ? 'PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.'
+        : 'PhoneArena runtime measurements remain fully excluded from calibration. This diagnostic adds the held-out device display and processor specifications to compare accuracy against the sparse-spec fallback; it is not an independent laboratory protocol match.',
   };
 }
