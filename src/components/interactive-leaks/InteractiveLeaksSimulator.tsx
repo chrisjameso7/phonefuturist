@@ -3885,17 +3885,14 @@ export default function InteractiveLeaksSimulator() {
 
               <label className="il-field">
                 <span>Battery chemistry</span>
-                <input
-                  type="text"
-                  value={form.batteryChemistry}
-                  placeholder="silicon-carbon"
-                  onChange={(event) =>
-                    update(
-                      'batteryChemistry',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                <select value={form.batteryChemistry} onChange={(event) => update('batteryChemistry', event.currentTarget.value)}>
+                  <option value="">Select battery chemistry</option>
+                  <option value="Lithium-ion">Lithium-ion</option>
+                  <option value="Lithium-polymer">Lithium-polymer</option>
+                  <option value="silicon-carbon">silicon-carbon</option>
+                  <option value="solid-state (experimental)">solid-state (experimental)</option>
+                  {form.batteryChemistry && !["Lithium-ion","Lithium-polymer","silicon-carbon","solid-state (experimental)"].includes(form.batteryChemistry) && <option value={form.batteryChemistry}>{form.batteryChemistry (saved)}</option>}
+                </select>
               </label>
 
               <label className="il-field">
@@ -3928,32 +3925,39 @@ export default function InteractiveLeaksSimulator() {
 
               <label className="il-field">
                 <span>Charging standard</span>
-                <input
-                  type="text"
-                  value={form.chargingStandard}
-                  placeholder="USB PD/PPS"
-                  onChange={(event) =>
-                    update(
-                      'chargingStandard',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                <select value={form.chargingStandard} onChange={(event) => update('chargingStandard', event.currentTarget.value)}>
+                  <option value="">Select charging standard</option>
+                  <option value="USB PD">USB PD</option>
+                  <option value="USB PD/PPS">USB PD/PPS</option>
+                  <option value="USB PD 3.1 EPR">USB PD 3.1 EPR</option>
+                  <option value="Qualcomm Quick Charge">Qualcomm Quick Charge</option>
+                  <option value="Samsung Super Fast Charging">Samsung Super Fast Charging</option>
+                  <option value="OPPO SUPERVOOC">OPPO SUPERVOOC</option>
+                  <option value="OnePlus SUPERVOOC">OnePlus SUPERVOOC</option>
+                  <option value="vivo FlashCharge">vivo FlashCharge</option>
+                  <option value="Xiaomi HyperCharge">Xiaomi HyperCharge</option>
+                  <option value="Huawei SuperCharge">Huawei SuperCharge</option>
+                  <option value="Motorola TurboPower">Motorola TurboPower</option>
+                  <option value="Apple USB-C PD">Apple USB-C PD</option>
+                  <option value="Proprietary / other">Proprietary / other</option>
+                  {form.chargingStandard && !["USB PD","USB PD/PPS","USB PD 3.1 EPR","Qualcomm Quick Charge","Samsung Super Fast Charging","OPPO SUPERVOOC","OnePlus SUPERVOOC","vivo FlashCharge","Xiaomi HyperCharge","Huawei SuperCharge","Motorola TurboPower","Apple USB-C PD","Proprietary / other"].includes(form.chargingStandard) && <option value={form.chargingStandard}>{form.chargingStandard (saved)}</option>}
+                </select>
               </label>
 
               <label className="il-field">
                 <span>Wireless standard</span>
-                <input
-                  type="text"
-                  value={form.wirelessChargingStandard}
-                  placeholder="Qi2"
-                  onChange={(event) =>
-                    update(
-                      'wirelessChargingStandard',
-                      event.currentTarget.value,
-                    )
-                  }
-                />
+                <select value={form.wirelessChargingStandard} onChange={(event) => update('wirelessChargingStandard', event.currentTarget.value)}>
+                  <option value="">Select wireless standard</option>
+                  <option value="Qi">Qi</option>
+                  <option value="Qi2">Qi2</option>
+                  <option value="Qi2 Magnetic Power Profile">Qi2 Magnetic Power Profile</option>
+                  <option value="MagSafe">MagSafe</option>
+                  <option value="Samsung Fast Wireless Charging">Samsung Fast Wireless Charging</option>
+                  <option value="AirVOOC">AirVOOC</option>
+                  <option value="Huawei Wireless SuperCharge">Huawei Wireless SuperCharge</option>
+                  <option value="Proprietary / other">Proprietary / other</option>
+                  {form.wirelessChargingStandard && !["Qi","Qi2","Qi2 Magnetic Power Profile","MagSafe","Samsung Fast Wireless Charging","AirVOOC","Huawei Wireless SuperCharge","Proprietary / other"].includes(form.wirelessChargingStandard) && <option value={form.wirelessChargingStandard}>{form.wirelessChargingStandard (saved)}</option>}
+                </select>
               </label>
             </div>
 
