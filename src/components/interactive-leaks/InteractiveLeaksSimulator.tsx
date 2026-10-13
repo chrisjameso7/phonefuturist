@@ -1656,8 +1656,6 @@ export default function InteractiveLeaksSimulator() {
           operatingRefreshRateHz:
             numeric(form.operatingRefreshRateHz),
           brightnessNits: numeric(form.brightnessNits),
-          targetSocPowerW: numeric(form.targetSocPowerW),
-          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
           averagePictureLevelPercent:
             numeric(form.averagePictureLevelPercent),
           panelTechnology:
@@ -1768,6 +1766,8 @@ export default function InteractiveLeaksSimulator() {
           },
           usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
           brightnessNits: numeric(form.brightnessNits),
+          targetSocPowerW: numeric(form.targetSocPowerW),
+          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
         })
       : undefined;
 
@@ -3922,7 +3922,7 @@ export default function InteractiveLeaksSimulator() {
                   <option value="Lithium-polymer">Lithium-polymer</option>
                   <option value="silicon-carbon">silicon-carbon</option>
                   <option value="solid-state (experimental)">solid-state (experimental)</option>
-                  {form.batteryChemistry && !["Lithium-ion","Lithium-polymer","silicon-carbon","solid-state (experimental)"].includes(form.batteryChemistry) && <option value={form.batteryChemistry}>{form.batteryChemistry (saved)}</option>}
+                  {form.batteryChemistry && !["Lithium-ion","Lithium-polymer","silicon-carbon","solid-state (experimental)"].includes(form.batteryChemistry) && <option value={form.batteryChemistry}>{form.batteryChemistry} (saved)</option>}
                 </select>
               </label>
 
@@ -3971,7 +3971,7 @@ export default function InteractiveLeaksSimulator() {
                   <option value="Motorola TurboPower">Motorola TurboPower</option>
                   <option value="Apple USB-C PD">Apple USB-C PD</option>
                   <option value="Proprietary / other">Proprietary / other</option>
-                  {form.chargingStandard && !["USB PD","USB PD/PPS","USB PD 3.1 EPR","Qualcomm Quick Charge","Samsung Super Fast Charging","OPPO SUPERVOOC","OnePlus SUPERVOOC","vivo FlashCharge","Xiaomi HyperCharge","Huawei SuperCharge","Motorola TurboPower","Apple USB-C PD","Proprietary / other"].includes(form.chargingStandard) && <option value={form.chargingStandard}>{form.chargingStandard (saved)}</option>}
+                  {form.chargingStandard && !["USB PD","USB PD/PPS","USB PD 3.1 EPR","Qualcomm Quick Charge","Samsung Super Fast Charging","OPPO SUPERVOOC","OnePlus SUPERVOOC","vivo FlashCharge","Xiaomi HyperCharge","Huawei SuperCharge","Motorola TurboPower","Apple USB-C PD","Proprietary / other"].includes(form.chargingStandard) && <option value={form.chargingStandard}>{form.chargingStandard} (saved)</option>}
                 </select>
               </label>
 
@@ -3987,7 +3987,7 @@ export default function InteractiveLeaksSimulator() {
                   <option value="AirVOOC">AirVOOC</option>
                   <option value="Huawei Wireless SuperCharge">Huawei Wireless SuperCharge</option>
                   <option value="Proprietary / other">Proprietary / other</option>
-                  {form.wirelessChargingStandard && !["Qi","Qi2","Qi2 Magnetic Power Profile","MagSafe","Samsung Fast Wireless Charging","AirVOOC","Huawei Wireless SuperCharge","Proprietary / other"].includes(form.wirelessChargingStandard) && <option value={form.wirelessChargingStandard}>{form.wirelessChargingStandard (saved)}</option>}
+                  {form.wirelessChargingStandard && !["Qi","Qi2","Qi2 Magnetic Power Profile","MagSafe","Samsung Fast Wireless Charging","AirVOOC","Huawei Wireless SuperCharge","Proprietary / other"].includes(form.wirelessChargingStandard) && <option value={form.wirelessChargingStandard}>{form.wirelessChargingStandard} (saved)</option>}
                 </select>
               </label>
             </div>
