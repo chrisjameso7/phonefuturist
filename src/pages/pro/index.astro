@@ -1,6 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
-import { PRO_PRICING, CHECKOUT_ENABLED } from '../../lib/billing/entitlements';
+import { PRO_PRICING, PRO_TRIAL_DAYS, CHECKOUT_ENABLED } from '../../lib/billing/entitlements';
 const monthly = (PRO_PRICING.monthlyCents / 100).toFixed(2);
 const annually = (PRO_PRICING.annualCents / 100).toFixed(2);
 ---
@@ -18,10 +18,11 @@ const annually = (PRO_PRICING.annualCents / 100).toFixed(2);
       </section>
       <section class="pf-pricing-plan pf-pricing-pro" aria-label="Pro plan">
         <h2>Pro</h2>
+        <p class="pf-pricing-trial">{PRO_TRIAL_DAYS}-day free trial planned</p>
         <p class="pf-pricing-price">${monthly} USD <small>/ month</small></p>
         <p>Or ${annually} USD per year, billed annually.</p>
         <ul><li>Everything in Free</li><li>Advanced simulations and efficiency analysis</li><li>Up to five-device comparisons</li><li>Detailed camera insights and technical reports</li></ul>
-        {CHECKOUT_ENABLED ? <p>Subscription checkout will be available here.</p> : <p class="pf-pricing-notice" role="status">Coming soon. Payments are not being accepted yet.</p>}
+        {CHECKOUT_ENABLED ? <p>Subscription checkout will be available here.</p> : <p class="pf-pricing-notice" role="status">Trial activation and payments are coming soon. No card is being collected and no subscription will start automatically.</p>}
       </section>
     </div>
     <p class="pf-pricing-note">Experimental simulation outputs are estimates, not laboratory measurements. Pro does not guarantee prediction accuracy.</p>
