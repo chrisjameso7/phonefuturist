@@ -1,13 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildExpandedEvidenceCoverage,
 } from '../src/lib/simulation/modules/expanded-evidence-coverage';
 
 describe('expanded evidence coverage', () => {
+  let report: ReturnType<typeof buildExpandedEvidenceCoverage>;
+  beforeAll(() => { report = buildExpandedEvidenceCoverage(); }, 30_000);
   it('keeps catalog breadth above two thousand records while preserving measurement depth separately', () => {
-    const report =
-      buildExpandedEvidenceCoverage();
-
     expect(
       report.rawExpandedCatalogRecords,
     ).toBeGreaterThanOrEqual(3000);
@@ -56,9 +55,6 @@ describe('expanded evidence coverage', () => {
   });
 
   it('reports multiple evidence publishers without converting catalog rows into measurements', () => {
-    const report =
-      buildExpandedEvidenceCoverage();
-
     expect(
       report.coverage.publisherCount,
     ).toBeGreaterThanOrEqual(5);
