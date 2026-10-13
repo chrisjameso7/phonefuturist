@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projectedDisplayPowerFactor } from './display-power-scenario';
+import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 
 describe('experimental display power model', () => {
   it('uses a neutral reference panel', () => {
@@ -22,4 +22,14 @@ describe('experimental display power model', () => {
     expect(factor).toBeLessThanOrEqual(1.4);
   });
 
+});
+
+describe('experimental display brightness factor', () => {
+  it('makes brighter scenes more power-hungry without extreme jumps', () => {
+    expect(projectedBrightnessPowerFactor(1000)).toBeGreaterThan(projectedBrightnessPowerFactor(250));
+    expect(projectedBrightnessPowerFactor(1000)).toBeLessThanOrEqual(1.3);
+  });
+  it('keeps unspecified brightness neutral', () => {
+    expect(projectedBrightnessPowerFactor()).toBe(1);
+  });
 });
