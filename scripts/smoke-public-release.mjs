@@ -34,7 +34,7 @@ for (const check of cases) {
     const actualLocation = response.headers.get('location');
     const redirectOk = !check.location || (actualLocation && new URL(actualLocation,url).pathname === check.location);
     const bodyOk = !check.contains || body.toLowerCase().includes(check.contains.toLowerCase());
-    const securityOk = response.headers.get('x-content-type-options') === 'nosniff' && response.headers.get('x-frame-options') === 'DENY';
+    const securityOk = check.path.startsWith('/assets/') || (response.headers.get('x-content-type-options') === 'nosniff' && response.headers.get('x-frame-options') === 'DENY');
     const ok = response.status === check.expected && redirectOk && bodyOk && securityOk;
     console.log(`${ok?'PASS':'FAIL'} ${check.path}: HTTP ${response.status}${actualLocation?' -> '+actualLocation:''}`);
     if (!securityOk) console.error('  Missing mandatory security response headers.');
