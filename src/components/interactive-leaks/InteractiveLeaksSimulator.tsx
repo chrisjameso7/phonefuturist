@@ -3,7 +3,7 @@ import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } fro
 import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
 import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
 import SimpleModePanel from './SimpleModePanel';
@@ -1164,7 +1164,11 @@ function DeterministicShareCard({
 }
 
 export default function InteractiveLeaksSimulator() {
-  const [simulationPending, startSimulationTransition] = useTransition();
+  const [simulationPending, setSimulationPending] = useState(false);
+  const [simulationError, setSimulationError] = useState('');
+  const [simulationResult, setSimulationResult] = useState<ReturnType<typeof simulateDevice> | null>(null);
+  const activeWorker = useRef<Worker | null>(null);
+  const jobNumber = useRef(0);
   const [form, setForm] =
     useState<FormState>(initialForm);
 
@@ -1192,13 +1196,61 @@ export default function InteractiveLeaksSimulator() {
       | { status: 'error'; message: string }
     >({ status: 'idle' });
 
-  const result = useMemo(
-    () =>
-      simulationInput
-        ? simulateDevice(simulationInput)
-        : null,
-    [simulationInput],
-  );
+  const result = simulationResult;
+
+  useEffect(() => () => {
+    jobNumber.current++;
+    activeWorker.current?.terminate();
+  }, []);
+
+  function calculateInWorker(input: SimulationInput) {
+    const job = ++jobNumber.current;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(true);
+    setSimulationError('');
+    setSimulationResult(null);
+    setSimulationInput(null);
+
+    const finish = (nextResult: ReturnType<typeof simulateDevice>) => {
+      if (job !== jobNumber.current) return;
+      setSimulationInput(input);
+      setSimulationResult(nextResult);
+      setHasSimulated(true);
+      setSimulationPending(false);
+    };
+
+    try {
+      if (typeof Worker === 'undefined') throw new Error('Web Workers unavailable');
+      const worker = new Worker(new URL('./simulation.worker.ts', import.meta.url), { type: 'module' });
+      activeWorker.current = worker;
+      worker.onmessage = (event: MessageEvent<{ id: number; result?: ReturnType<typeof simulateDevice>; error?: string }>) => {
+        if (job !== jobNumber.current || event.data.id !== job) return;
+        worker.terminate();
+        activeWorker.current = null;
+        if (event.data.result) finish(event.data.result);
+        else {
+          setSimulationPending(false);
+          setSimulationError(event.data.error || 'Simulation could not be completed.');
+        }
+      };
+      worker.onerror = () => {
+        if (job !== jobNumber.current) return;
+        worker.terminate();
+        activeWorker.current = null;
+        setSimulationPending(false);
+        setSimulationError('Simulation worker failed. Try running it again.');
+      };
+      worker.postMessage({ id: job, input });
+    } catch {
+      // Compatibility fallback is synchronous but preserves the deterministic engine.
+      try { finish(simulateDevice(input)); }
+      catch (error) {
+        setSimulationPending(false);
+        setSimulationError(error instanceof Error ? error.message : 'Simulation failed.');
+      }
+    }
+  }
 
   function update<K extends keyof FormState>(
     key: K,
@@ -1494,23 +1546,23 @@ export default function InteractiveLeaksSimulator() {
         : [],
     );
 
-    startSimulationTransition(() => {
-      setSimulationInput(expansion.simulationInput);
-      setHasSimulated(true);
-    });
+    calculateInWorker(expansion.simulationInput);
   }
 
   function simulate() {
     setResultRevision(current => current + 1);
     setPredictionSaveState({ status: 'idle' });
     const nextInput = buildInput();
-    startSimulationTransition(() => {
-      setSimulationInput(nextInput);
-      setHasSimulated(true);
-    });
+    calculateInWorker(nextInput);
   }
 
   function loadExample() {
+    jobNumber.current++;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(false);
+    setSimulationError('');
+    setSimulationResult(null);
     setPredictionSaveState({ status: 'idle' });
     setForm(flagshipExample);
     setCameras(flagshipCameras);
@@ -1519,6 +1571,12 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function clearSimulation() {
+    jobNumber.current++;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(false);
+    setSimulationError('');
+    setSimulationResult(null);
     setPredictionSaveState({ status: 'idle' });
     setForm(initialForm);
     setCameras([]);
@@ -5580,7 +5638,8 @@ export default function InteractiveLeaksSimulator() {
           </div>
 
           <div className="il-run">
-            {simulationPending && <p role="status" aria-live="polite">Simulating device performance. Results are being calculated…</p>}
+            {simulationPending && <p role="status" aria-live="polite">Simulating device performance in the background…</p>}
+            {simulationError && <p role="alert">{simulationError}</p>}
             <button
               type="button"
               className="il-simulate"
