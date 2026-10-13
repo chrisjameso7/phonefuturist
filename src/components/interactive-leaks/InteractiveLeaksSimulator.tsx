@@ -1,3 +1,4 @@
+import { projectTaperedChargingMinutes } from '../../lib/simulation/modules/charging-scenario';
 import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-catalog';
 import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
@@ -974,8 +975,8 @@ function DeterministicShareCard({
       : undefined);
   const assumedVoltage = battery?.totalEnergyWh === undefined && assumedEnergyWh !== undefined;
   const chargingScenarioMinutes = chargeMinutes === undefined &&
-    assumedEnergyWh !== undefined && wiredWatts !== undefined && wiredWatts > 0
-      ? Math.ceil((assumedEnergyWh / (wiredWatts * 0.5 * 0.85)) * 60)
+    assumedEnergyWh !== undefined && wiredWatts !== undefined
+      ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts })
       : undefined;
   const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
   const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
@@ -1176,7 +1177,7 @@ function DeterministicShareCard({
       <strong>{deviceName}</strong>
       {socName && <small>{socName}</small>}
       {experimentalScores && <small>Experimental synthetic benchmarks, not measured scores</small>}
-      {chargingIsScenario && <small>Charging scenario assumes 50% average rated power, 85% conversion efficiency{assumedVoltage ? ', and 3.85 V nominal battery voltage' : ''}. Not a validated charging curve.</small>}
+      {chargingIsScenario && <small>Charging scenario models high-charge taper and 85% conversion efficiency{assumedVoltage ? ', with assumed 3.85 V battery voltage' : ''}. Not a validated charging curve.</small>}
       <div className="il-share-card-metrics">
         <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
         <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
