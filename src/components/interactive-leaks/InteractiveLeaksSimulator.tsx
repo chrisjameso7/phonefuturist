@@ -5788,6 +5788,23 @@ export default function InteractiveLeaksSimulator() {
                             <strong>{item.label}</strong>
                             <span style={{display:'block',marginTop:'0.35rem'}}>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
                             {item.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Battery: {format(item.released.batteryMah, 0)} mAh · Concept: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
+                            {item.released?.batteryMah !== undefined && result.battery?.totalCapacityMah !== undefined && item.released.batteryMah > 0 && (
+                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
+                                Battery delta: {result.battery.totalCapacityMah >= item.released.batteryMah ? '+' : ''}{format((result.battery.totalCapacityMah / item.released.batteryMah - 1) * 100, 1)}%
+                              </small>
+                            )}
+                            {item.released?.wiredWatts !== undefined && numeric(form.wiredChargeW) !== undefined && item.released.wiredWatts > 0 && (
+                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
+                                Rated charging delta: {numeric(form.wiredChargeW)! >= item.released.wiredWatts ? '+' : ''}{format((numeric(form.wiredChargeW)! / item.released.wiredWatts - 1) * 100, 1)}% · not a charging-time delta
+                              </small>
+                            )}
+                            <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
+                              Concept sustained CPU scenario: {(() => {
+                                const peak = experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(row => row.domain === 'geekbench6_multi')?.estimate.adjustedExpected;
+                                const projected = peak === undefined ? undefined : projectedSustainedCpuScore({peakScore:peak, coolingClass:form.coolingClass, socPowerW:numeric(form.targetSocPowerW), durationMinutes:15});
+                                return projected !== undefined ? format(projected,0) + ' · 15 min simulated multi-core' : 'No projection';
+                              })()} · predecessor sustained score unavailable
+                            </small>
                             {item.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Display: {format(item.released.displayInches, 2)}″ · Concept: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
                             {item.released?.refreshRateHz !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
                             {item.released?.wiredWatts !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
