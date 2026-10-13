@@ -46,8 +46,6 @@ export interface SimpleModeInput {
     sensorFormatDenominator?: number;
     resolutionMp?: number;
     apertureFNumber?: number;
-    variableApertureWide?: number;
-    variableApertureNarrow?: number;
     equivalentFocalLengthMm?: number;
   };
 
