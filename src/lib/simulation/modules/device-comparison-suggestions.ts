@@ -45,3 +45,46 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
       }} : {})};
   });
 }
+
+/** Select comparable released phones from other manufacturers using published catalog specifications. */
+export function suggestCompetingDevices(
+  corpus: DeviceCorpus,
+  options: {manufacturer?: string; batteryMah?: number; displayInches?: number; limit?: number},
+): SuggestedComparison[] {
+  const normalize=(v:string)=>v.trim().toLowerCase();
+  const candidates=corpus.devices.filter(device=>
+    device.variant.identity.modelName &&
+    normalize(device.variant.identity.manufacturer) !== normalize(options.manufacturer ?? '') &&
+    device.catalogTrust !== 'source-backed-unverified' &&
+    (device.releaseDate === undefined || device.releaseDate <= new Date().toISOString().slice(0,10))
+  );
+  const scored=candidates.map(device=>{
+    const capacity=device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah;
+    const diagonal=device.display?.diagonalInches;
+    const batteryPenalty=options.batteryMah && capacity ? Math.abs(capacity-options.batteryMah)/options.batteryMah : 0.4;
+    const sizePenalty=options.displayInches && diagonal ? Math.abs(diagonal-options.displayInches)/options.displayInches : 0.4;
+    return {device,score:batteryPenalty+sizePenalty};
+  }).filter(entry=>entry.score<0.6).sort((a,b)=>a.score-b.score);
+  const seen=new Set<string>();
+  return scored.filter(({device})=>{
+    const key=normalize(device.variant.identity.manufacturer+' '+device.variant.identity.modelName);
+    if(seen.has(key))return false;
+    seen.add(key);
+    return true;
+  }).slice(0,Math.min(Math.max(options.limit ?? 3,1),5)).map(({device})=>({
+    query:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+    role:'related-model' as const,
+    status:'found' as const,
+    label:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+    deviceId:device.variant.id,
+    released:{
+      batteryMah:device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah,
+      displayInches:device.display?.diagonalInches,
+      refreshRateHz:device.display?.refreshRateHz,
+      wiredWatts:device.charging?.advertisedWiredWatts,
+      socName:device.variant.soc?.name,
+      region:device.variant.identity.region,
+      catalogUnverified:false,
+    },
+  }));
+}
