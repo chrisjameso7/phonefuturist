@@ -68,8 +68,9 @@ export function estimateSocWorkloadPower(input: SocWorkloadPowerInput): SocWorkl
   const score = input.targetBenchmarkScore;
   if (score < points[0].benchmarkScore || score > points[points.length-1].benchmarkScore)
     return fail('Target workload performance lies outside the measured efficiency curve.');
-  let benchmarkBoardPowerW: number | undefined;
-  for (let i=1;i<points.length;i++) {
+  let benchmarkBoardPowerW: number | undefined = score === points[0].benchmarkScore
+    ? points[0].boardPowerW : undefined;
+  for (let i=1;benchmarkBoardPowerW === undefined && i<points.length;i++) {
     const left=points[i-1], right=points[i];
     if(score > right.benchmarkScore) continue;
     const delta=right.benchmarkScore-left.benchmarkScore;
