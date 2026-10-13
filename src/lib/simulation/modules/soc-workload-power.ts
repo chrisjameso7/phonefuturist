@@ -66,19 +66,25 @@ export function estimateSocWorkloadPower(input: SocWorkloadPowerInput): SocWorkl
   if (!curve) return fail('No exact-generation measured SoC curve exists for the requested protocol.');
   const points = [...curve.points].sort((a,b) => a.benchmarkScore - b.benchmarkScore);
   const score = input.targetBenchmarkScore;
-  if (score < points[0].benchmarkScore || score > points[points.length-1].benchmarkScore)
+  if (score < points[0].benchmarkScore || score > points[points.length - 1].benchmarkScore)
     return fail('Target workload performance lies outside the measured efficiency curve.');
-  let benchmarkBoardPowerW: number | undefined = score === points[0].benchmarkScore
-    ? points[0].boardPowerW : undefined;
-  for (let i=1;benchmarkBoardPowerW === undefined && i<points.length;i++) {
-    const left=points[i-1], right=points[i];
-    if(score > right.benchmarkScore) continue;
-    const delta=right.benchmarkScore-left.benchmarkScore;
-    const fraction=delta>0 ? (score-left.benchmarkScore)/delta : 0;
-    benchmarkBoardPowerW=left.boardPowerW+(right.boardPowerW-left.boardPowerW)*fraction;
-    break;
+
+  // A benchmark can report the same score at different power points.
+  // Resolve exact measurements conservatively to the lowest observed board power,
+  // and interpolate only between two distinct measured scores.
+  const exact = points.filter(point => point.benchmarkScore === score);
+  let benchmarkBoardPowerW: number | undefined = exact.length
+    ? Math.min(...exact.map(point => point.boardPowerW))
+    : undefined;
+  for (let i = 1; benchmarkBoardPowerW === undefined && i < points.length; i++) {
+    const left = points[i - 1], right = points[i];
+    if (score < left.benchmarkScore || score > right.benchmarkScore) continue;
+    const delta = right.benchmarkScore - left.benchmarkScore;
+    if (delta <= 0) continue;
+    const fraction = (score - left.benchmarkScore) / delta;
+    benchmarkBoardPowerW = left.boardPowerW + (right.boardPowerW - left.boardPowerW) * fraction;
   }
-  if (benchmarkBoardPowerW === undefined) return fail('Insufficient interpolation evidence.');
+  if (benchmarkBoardPowerW === undefined) return fail('Insufficient distinct measured scores for interpolation.');
   // The load fraction is user-entered, not inferred from browser/gaming session length.
   const averageBoardPowerW = input.activeDutyFraction*benchmarkBoardPowerW +
     (1-input.activeDutyFraction)*input.inactiveBoardPowerW;
