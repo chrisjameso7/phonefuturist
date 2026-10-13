@@ -27,3 +27,27 @@ export function batterySocEvidenceContext(vendor?: string, model?: string) {
     socName: experimental ? undefined : model,
   };
 }
+
+/**
+ * Explicit sandbox power-draw assumptions relative to a neutral reference.
+ * These are NOT measured chip efficiency rankings. Keep differences deliberately
+ * modest until controlled measurements support stronger claims.
+ */
+export function projectedSocPowerFactor(model?: string): number {
+  if (!model) return 1;
+  const name = model.trim().toLowerCase();
+  const overrides: Record<string, number> = {
+    'exynos 2700': 1.02,
+    'exynos 2600': 1.03,
+    'exynos 2500': 1.05,
+    'exynos 2400': 1.06,
+    'snapdragon 8 elite gen 6': 0.98,
+    'snapdragon 8 elite extreme gen 6': 1.01,
+    'snapdragon 8 elite gen 5': 1,
+    'snapdragon 8 elite': 1.02,
+    'dimensity 9600': 0.99,
+    'dimensity 9600 pro': 1.01,
+    'dimensity 9500': 1,
+  };
+  return overrides[name] ?? 1;
+}
