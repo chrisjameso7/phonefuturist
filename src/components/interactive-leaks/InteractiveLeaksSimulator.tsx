@@ -1946,6 +1946,24 @@ export default function InteractiveLeaksSimulator() {
       : undefined;
 
   const chargingResult = batteryExperience?.charging;
+  const projectedChargingEnergyWh = result?.battery?.totalEnergyWh ??
+    (result?.battery?.totalCapacityMah !== undefined
+      ? result.battery.totalCapacityMah * 3.85 / 1000
+      : undefined);
+  const chargingScenarioMinutes = chargingResult?.status === 'resolved'
+    ? undefined
+    : projectedChargingEnergyWh !== undefined && chargingWatts !== undefined
+      ? projectTaperedChargingMinutes({
+          energyWh: projectedChargingEnergyWh,
+          ratedWatts: chargingWatts,
+          chargingStandard: form.chargingStandard,
+          cellArchitecture: form.cellArchitecture,
+        })
+      : undefined;
+  const predictedChargeMinutes = chargingResult?.status === 'resolved'
+    ? chargingResult.estimate?.timeTo100Minutes?.expected
+    : chargingScenarioMinutes;
+
 
   const observedChargingInput =
     chargingWatts !== undefined
@@ -2905,11 +2923,7 @@ export default function InteractiveLeaksSimulator() {
           row.status === 'resolved',
       )?.expectedHours;
 
-    const fullChargeMinutes =
-      chargingResult?.status === 'resolved'
-        ? chargingResult.estimate
-            ?.timeTo100Minutes?.expected
-        : undefined;
+    const fullChargeMinutes = predictedChargeMinutes;
 
     const peakScore =
       peakPerformanceEstimate?.status === 'resolved'
@@ -5779,7 +5793,7 @@ export default function InteractiveLeaksSimulator() {
                     <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Daily active-use assumption (not battery endurance)</span></div>
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
                     <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
-                    <div><strong>{chargingResult?.status === 'resolved' ? formatDurationMinutes(chargingResult.estimate?.timeTo100Minutes?.expected) : 'Not enough evidence'}</strong><span>Estimated charging time · 0–100%</span></div>
+                    <div><strong>{predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : 'No charging power'}</strong><span>Estimated charging time · 0–100%</span></div>
                     {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Not a measured battery-saving percentage.</small></div>}
                   </div>
                   <p className="il-help">Light, Typical and Heavy currently change the usage mix and hours per day, but do not calibrate processor load intensity. Similar endurance predictions across presets are therefore expected. Do not interpret active-use hours divided by hours/day as actual days between charges.</p>
@@ -6801,6 +6815,23 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Wired charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
+
+                {chargingScenarioMinutes !== undefined && (
+                  <div className="il-metrics">
+                    <div>
+                      <strong>{formatDurationMinutes(chargingScenarioMinutes)}</strong>
+                      <span>Projected 0–100% · experimental taper</span>
+                    </div>
+                    <div>
+                      <strong>{form.chargingStandard || 'Generic charging'}</strong>
+                      <span>Selected charging standard</span>
+                    </div>
+                    <div>
+                      <strong>{form.cellArchitecture === 'unknown' ? 'Unspecified' : form.cellArchitecture}</strong>
+                      <span>Battery cell configuration</span>
+                    </div>
+                  </div>
+                )}
 
                 {chargingResult?.status === 'resolved' &&
                 chargingResult.estimate ? (
@@ -10247,7 +10278,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={predictedChargeMinutes} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
               )}
 
               {workspaceMode === 'advanced' && result.warnings.length > 0 && (
