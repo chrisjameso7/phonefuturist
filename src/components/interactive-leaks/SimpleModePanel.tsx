@@ -380,7 +380,7 @@ export default function SimpleModePanel({
             <option value="">Select aperture</option>
             {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
           </select>
-        </label>}
+        </label>
       </div>
 
       {error ? (
