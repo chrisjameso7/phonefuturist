@@ -1,5 +1,5 @@
 import { projectedSocPowerFactor } from '../soc-model-catalog';
-import { projectedDisplayPowerFactor } from './display-power-scenario';
+import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
@@ -29,6 +29,7 @@ export interface BatteryExperienceInput {
   >>;
   /** Experimental use intensity: power multiplier vs neutral measured mixed-workload evidence. */
   usageIntensity?: 'Light' | 'Typical' | 'Heavy';
+  brightnessNits?: number;
   coolingClass?:
     | 'passive-graphite'
     | 'vapor-chamber'
@@ -360,7 +361,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -369,7 +370,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.minDrainMahPerHour,
             0,
           );
@@ -378,7 +379,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -387,7 +388,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -396,7 +397,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -405,7 +406,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) *
+              row.hoursPerDay * intensityFactor * projectedDisplayPowerFactor(input.simulation.displays.primary, row.workload) * projectedBrightnessPowerFactor(input.brightnessNits) *
                 row.maxDrainWhPerHour!,
             0,
           )
