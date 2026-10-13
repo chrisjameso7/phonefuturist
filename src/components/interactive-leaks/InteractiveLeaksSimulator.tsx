@@ -947,6 +947,8 @@ function DeterministicShareCard({
   chargeMinutes,
   singleScore,
   multiScore,
+  sustainedSingleScore,
+  sustainedMultiScore,
   experimentalScores = false,
   socName,
   wiredWatts,
@@ -961,6 +963,8 @@ function DeterministicShareCard({
   chargeMinutes?: number;
   singleScore?: number;
   multiScore?: number;
+  sustainedSingleScore?: number;
+  sustainedMultiScore?: number;
   experimentalScores?: boolean;
   socName?: string;
   wiredWatts?: number;
@@ -1069,6 +1073,8 @@ function DeterministicShareCard({
       const metrics: Array<[string, string]> = [
         ['GB6 SINGLE · ' + scoreLabel, singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'No estimate'],
         ['GB6 MULTI · ' + scoreLabel, multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'No estimate'],
+        ['15-MIN SINGLE · SIM', sustainedSingleScore !== undefined ? Math.round(sustainedSingleScore).toLocaleString('en-US') : 'No estimate'],
+        ['15-MIN MULTI · SIM', sustainedMultiScore !== undefined ? Math.round(sustainedMultiScore).toLocaleString('en-US') : 'No estimate'],
         ['BATTERY LIFE · EST.', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
         ['CHARGING 0–100%', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
@@ -1085,22 +1091,22 @@ function DeterministicShareCard({
         ctx.font = '700 18px Arial';
         ctx.fillText(socName ? 'SOC  /  ' + socName.slice(0, 48) : 'SIMULATION SUMMARY', 72, 430, 930);
       }
-      const baseY = 460;
-      const cellHeight = 163;
+      const baseY = 452;
+      const cellHeight = 132;
       for (let i = 0; i < metrics.length; i++) {
         const x = 72 + (i % 2) * 474;
-        const y = baseY + Math.floor(i / 2) * (cellHeight + 12);
+        const y = baseY + Math.floor(i / 2) * (cellHeight + 9);
         ctx.fillStyle = '#15202e';
         ctx.beginPath();
         ctx.roundRect(x, y, 456, cellHeight, 20);
         ctx.fill();
         ctx.fillStyle = dim;
         ctx.font = '700 18px Arial';
-        ctx.fillText(metrics[i][0], x + 22, y + 38);
+        ctx.fillText(metrics[i][0], x + 22, y + 32);
         ctx.fillStyle = ink;
         const value = metrics[i][1];
         ctx.font = '700 ' + (value.length > 18 ? 30 : value.length > 11 ? 40 : 53) + 'px Arial';
-        ctx.fillText(value, x + 22, y + 103, 407);
+        ctx.fillText(value, x + 22, y + 92, 407);
       }
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
@@ -1142,6 +1148,8 @@ function DeterministicShareCard({
       socName ? 'SoC: ' + socName : null,
       singleScore !== undefined ? 'GB6 single: ' + Math.round(singleScore).toLocaleString('en-US') : null,
       multiScore !== undefined ? 'GB6 multi: ' + Math.round(multiScore).toLocaleString('en-US') : null,
+      sustainedSingleScore !== undefined ? '15-min simulated single: ' + Math.round(sustainedSingleScore).toLocaleString('en-US') : null,
+      sustainedMultiScore !== undefined ? '15-min simulated multi: ' + Math.round(sustainedMultiScore).toLocaleString('en-US') : null,
       wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
       experimentalScores ? 'Synthetic scores, not tested Geekbench results' : 'Modelled estimates, not measured results',
       ...(mode === 'simple'
@@ -10301,7 +10309,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} experimentalScores={!!experimental2700Scores} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={!!experimental2700Scores} />
               )}
 
               {workspaceMode === 'advanced' && result.warnings.length > 0 && (
