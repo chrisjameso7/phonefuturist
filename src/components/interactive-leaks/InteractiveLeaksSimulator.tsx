@@ -1,3 +1,4 @@
+import { projectedSustainedCpuScore } from '../../lib/simulation/modules/sustained-cpu-scenario';
 import { projectTaperedChargingMinutes } from '../../lib/simulation/modules/charging-scenario';
 import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-catalog';
 import BrandSelect from './BrandSelect';
@@ -5749,6 +5750,26 @@ export default function InteractiveLeaksSimulator() {
                         <small>{experimental2700Scores ? 'Experimental scenario · not a real Geekbench run' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
                       </div>
                     ))}
+                  </div>
+                  <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
+                    {simpleCpuScores.map(({domain, estimate}) => {
+                      const peak = experimental2700Scores?.[domain] ?? estimate.adjustedExpected;
+                      const sustained = peak !== undefined
+                        ? projectedSustainedCpuScore({
+                            peakScore: peak,
+                            coolingClass: form.coolingClass,
+                            socPowerW: numeric(form.targetSocPowerW),
+                            durationMinutes: 15,
+                          })
+                        : undefined;
+                      return (
+                        <div key={domain}>
+                          <strong>{sustained !== undefined ? format(sustained, 0) : 'No projection'}</strong>
+                          <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
+                          <small>Experimental thermal scenario · not a Geekbench measurement</small>
+                        </div>
+                      );
+                    })}
                   </div>
                   {suggestedComparisons.some(item=>item.status==='found') && (
                     <div className="il-sensitivity-card">
