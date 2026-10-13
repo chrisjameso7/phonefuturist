@@ -16,3 +16,14 @@ export function isSelectableSoc(vendor: string, model: string): boolean {
   const group = SOC_MODELS[vendor];
   return !!group && [...group.released, ...group.preview].includes(model);
 }
+
+
+/** A future chip with no device battery tests cannot borrow vendor efficiency gains. */
+export function batterySocEvidenceContext(vendor?: string, model?: string) {
+  const experimental = !!model && Object.values(SOC_MODELS).some(group => group.preview.includes(model));
+  return {
+    experimental,
+    socVendor: experimental ? undefined : vendor,
+    socName: experimental ? undefined : model,
+  };
+}
