@@ -2130,6 +2130,13 @@ export default function InteractiveLeaksSimulator() {
       })
     : [];
 
+  // Exploratory user-defined ranges only, never represented as benchmark measurements.
+  const experimental2700 = workspaceMode === 'simple' && simulationInput && form.socName.trim().toLowerCase() === 'exynos 2700';
+  const experimental2700Scores = experimental2700 ? {
+    geekbench6_single: 3800 + ((resultRevision * 173 + 317) % 601),
+    geekbench6_multi: 13000 + ((resultRevision * 397 + 1139) % 1501),
+  } : null;
+
   const simpleCpuScores = workspaceMode === 'simple' && simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
         domain,
@@ -5667,15 +5674,17 @@ export default function InteractiveLeaksSimulator() {
 
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
-                  <span className="il-result-label">Simple overview</span>
+                  <span className="il-result-label">CPU performance {experimental2700Scores ? '· experimental' : '· estimated'}</span>
+                  {experimental2700Scores && <small>Exynos 2700 concept ranges: single 3,800–4,400 · multi 13,000–14,500. Synthetic samples vary each run; they are not leaks, test results, or validated predictions.</small>}
                   <div className="il-metrics" aria-label="CPU benchmark scores">
                     {simpleCpuScores.map(({domain, estimate}) => (
                       <div key={domain}>
-                        <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
-                          ? format(estimate.adjustedExpected, 0)
-                          : 'Not enough evidence'}</strong>
-                        <span>{domain === 'geekbench6_single' ? 'Geekbench 6 · Single-core' : 'Geekbench 6 · Multi-core'}</span>
-                        <small>{estimate.status === 'resolved' ? (estimate.evidenceScope === 'same-soc-family' ? 'Same-chip-family reference estimate' : 'Comparable-device estimate') : 'No defensible score available'}</small>
+                        <strong>{experimental2700Scores
+                          ? format(experimental2700Scores[domain], 0)
+                          : estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
+                            ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
+                        <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
+                        <small>{experimental2700Scores ? 'Experimental scenario · not a real Geekbench run' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
                       </div>
                     ))}
                   </div>
@@ -5684,7 +5693,7 @@ export default function InteractiveLeaksSimulator() {
                       <strong>Compare generations</strong>
                       <div className="il-metrics">
                         {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
-                          <div key={item.query}>
+                          <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}> 
                             <strong>{item.label}</strong>
                             <span>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
                             {item.released?.batteryMah !== undefined && <small>Battery: {format(item.released.batteryMah, 0)} mAh · Concept: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
@@ -5703,7 +5712,7 @@ export default function InteractiveLeaksSimulator() {
                       <strong>Other phones to compare</strong>
                       <div className="il-metrics">
                         {competingDevices.map(device=>(
-                          <div key={device.deviceId}>
+                          <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
                             <strong>{device.label}</strong>
                             <span>{device.released?.socName ?? 'Processor unspecified'}</span>
                             {device.released?.batteryMah !== undefined && <small>{format(device.released.batteryMah,0)} mAh</small>}
