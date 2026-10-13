@@ -1,7 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
 import ArticleCards from '../../components/ArticleCards.astro';
-import MobileTopics from '../../components/MobileTopics.astro';
 import {publishedArticles} from '../../lib/publication';
 import {sections} from '../../lib/editorial';
 const section=Astro.url.searchParams.get('section');
@@ -14,7 +13,6 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
 ---
 <Page title={validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}>
   <section class="publication-index newsroom-index">
-    <MobileTopics/>
     <header class="newsroom-head">
       <p class="eyebrow">PhoneFuturist Newsroom</p>
       <h1>{validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}</h1>
@@ -70,5 +68,103 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
   .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
   .newsroom-index .article-card{border:1px solid #202b37!important;border-radius:22px!important;background:#0b1118!important;overflow:hidden}
   .newsroom-pagination{padding:20px 16px 0}
+}
+</style>
+
+<style is:global>
+/* Newsroom mobile: full-width editorial cards, never a compressed desktop row. */
+@media (max-width:760px) {
+  body:not(.product-mode) #main .newsroom-index {
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    padding:0 0 calc(95px + env(safe-area-inset-bottom,0px))!important;
+    overflow-x:clip;
+  }
+  body:not(.product-mode) #main .newsroom-index .newsroom-head {
+    padding:24px 18px 18px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .newsroom-head h1 {
+    font-size:clamp(2.6rem,10vw,3.6rem)!important;
+    line-height:1.02!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-grid,
+  body:not(.product-mode) #main .newsroom-index .article-grid[data-count] {
+    box-sizing:border-box;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%;
+    max-width:100%;
+    gap:18px!important;
+    padding:0 16px 24px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image {
+    box-sizing:border-box;
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+    width:100%!important;
+    max-width:100%;
+    min-height:0!important;
+    height:auto!important;
+    margin:0!important;
+    gap:0!important;
+    border:1px solid #22344a!important;
+    border-radius:18px!important;
+    background:#0e1b2c!important;
+    overflow:hidden;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-image {
+    display:block!important;
+    flex:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    aspect-ratio:16/9!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-image img {
+    display:block;
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-content,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-content,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-content {
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:18px 18px 20px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card h3 {
+    font-size:clamp(1.25rem,5.4vw,1.55rem)!important;
+    line-height:1.25!important;
+    overflow-wrap:break-word;
+    margin:8px 0 10px;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card p {
+    font-size:.9rem!important;
+    line-height:1.55!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden!important;
+    margin-bottom:14px;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-meta {
+    font-size:.75rem!important;
+    flex-wrap:wrap;
+    gap:8px;
+  }
 }
 </style>
