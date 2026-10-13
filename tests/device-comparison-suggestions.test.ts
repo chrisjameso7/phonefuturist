@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { suggestDeviceComparisons } from '../src/lib/simulation/modules/device-comparison-suggestions';
+import { suggestCompetingDevices, suggestDeviceComparisons } from '../src/lib/simulation/modules/device-comparison-suggestions';
 import type { DeviceCorpus } from '../src/lib/simulation/modules/device-corpus';
 
 describe('predecessor suggestions',()=>{
@@ -27,5 +27,38 @@ describe('predecessor suggestions',()=>{
   });
   it('does not claim generations for arbitrary names',()=>{
     expect(suggestDeviceComparisons(empty,'Future Device')).toEqual([]);
+  });
+});
+
+describe('competitor suggestions',()=>{
+  const record=(id:string,manufacturer:string,capacityMah?:number,diagonalInches?:number,releaseDate?:string,catalogTrust?:string)=>({
+    variant:{id,identity:{manufacturer,modelName:id},battery:capacityMah?{capacityMah}:undefined},
+    display:diagonalInches?{diagonalInches}:undefined,
+    releaseDate,catalogTrust,
+  });
+  const corpus={devices:[
+    record('Galaxy S26 Ultra','Samsung',5000,6.9,'2026-02-01'),
+    record('iPhone 17 Pro Max','Apple',5088,6.9,'2025-09-01'),
+    record('Pixel 10 Pro XL','Google',5200,6.8,'2025-08-01'),
+    record('Unknown battery','Example',undefined,6.9,'2025-04-01'),
+    record('Unreleased','Example',5100,6.9,'2099-01-01'),
+    record('Unverified','Example',5100,6.9,'2025-04-01','source-backed-unverified'),
+  ],measurements:[],sources:[]} as unknown as DeviceCorpus;
+  it('selects other-brand released devices using known comparable dimensions',()=>{
+    const names=suggestCompetingDevices(corpus,{manufacturer:'Samsung',batteryMah:5700,displayInches:6.9,limit:5}).map(v=>v.query);
+    expect(names).toContain('Apple iPhone 17 Pro Max');
+    expect(names).toContain('Google Pixel 10 Pro XL');
+    expect(names).not.toContain('Samsung Galaxy S26 Ultra');
+    expect(names).not.toContain('Example Unknown battery');
+    expect(names).not.toContain('Example Unreleased');
+    expect(names).not.toContain('Example Unverified');
+  });
+  it('does not rank arbitrary phones without a meaningful target',()=>{
+    expect(suggestCompetingDevices(corpus,{manufacturer:'Samsung'})).toEqual([]);
+  });
+  it('can compare on just battery capacity when display size is not supplied',()=>{
+    const matches=suggestCompetingDevices(corpus,{manufacturer:'Samsung',batteryMah:5100});
+    expect(matches.length).toBeGreaterThan(0);
+    expect(matches.every(item=>item.released?.batteryMah!==undefined)).toBe(true);
   });
 });
