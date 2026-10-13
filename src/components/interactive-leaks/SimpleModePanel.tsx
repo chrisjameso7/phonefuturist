@@ -1,3 +1,4 @@
+import { SOC_MODELS } from '../../lib/simulation/soc-model-catalog';
 import BrandSelect from './BrandSelect';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES } from '../../lib/simulation/camera-option-catalog';
 import { useState } from 'react';
@@ -312,9 +313,8 @@ export default function SimpleModePanel({
           <select
             value={socVendor}
             onChange={(event) =>
-              setSocVendor(
-                event.currentTarget.value as SocVendor,
-              )
+              setSocVendor(event.currentTarget.value as SocVendor);
+              setSocName('')
             }
           >
             {vendors.map((vendor) => (
@@ -327,13 +327,11 @@ export default function SimpleModePanel({
 
         <label className="il-field il-wide">
           <span>SoC model</span>
-          <input
-            value={socName}
-            placeholder="Snapdragon 8 Elite Gen 5"
-            onChange={(event) =>
-              setSocName(event.currentTarget.value)
-            }
-          />
+          <select value={(SOC_MODELS[socVendor]?.released ?? []).concat(SOC_MODELS[socVendor]?.preview ?? []).includes(socName) ? socName : ''} onChange={event => setSocName(event.currentTarget.value)}>
+            <option value="">Select processor</option>
+            {(SOC_MODELS[socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)}
+            {(SOC_MODELS[socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}
+          </select>
         </label>
 
         <label className="il-field">
