@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro build",
+    "build": "astro build && node scripts/report-client-bundles.mjs",
     "test": "vitest run",
     "verify": "npm run check && npm test && npm run check:calibration && npm run build",
     "check:calibration": "node data/calibration/battery/validate.mjs && tsx scripts/check-charging-calibration.ts && tsx scripts/check-camera-calibration.ts && tsx scripts/check-display-calibration.ts && tsx scripts/check-performance-calibration.ts",
