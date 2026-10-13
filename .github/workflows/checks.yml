@@ -20,4 +20,16 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: npm run verify
+      - name: Verify with diagnostic output
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run verify 2>&1 | tee verify.log
+      - name: Upload verification log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-log-${{ github.run_id }}
+          path: verify.log
+          if-no-files-found: ignore
+          retention-days: 7
