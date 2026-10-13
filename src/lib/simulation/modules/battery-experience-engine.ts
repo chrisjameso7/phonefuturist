@@ -1,4 +1,4 @@
-import { SOC_MODELS } from '../soc-model-catalog';
+import { batterySocEvidenceContext } from '../soc-model-catalog';
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
@@ -176,11 +176,11 @@ export function simulateBatteryExperience(
 
   // Future chip names do not constitute measured battery-efficiency evidence.
   // Use the neutral comparison cohort until matching device measurements exist.
-  const previewChip = !!input.socName && Object.values(SOC_MODELS).some(
-    group => group.preview.includes(input.socName!),
-  );
-  const comparableSocVendor = previewChip ? undefined : input.socVendor;
-  const comparableSocName = previewChip ? undefined : input.socName;
+  const {
+    experimental: previewChip,
+    socVendor: comparableSocVendor,
+    socName: comparableSocName,
+  } = batterySocEvidenceContext(input.socVendor, input.socName);
 
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
     const band = resolveCorpusRuntimeBand(
