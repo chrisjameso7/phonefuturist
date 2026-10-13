@@ -372,13 +372,15 @@ export function resolveCorpusRuntimeBand(
   const sameFamily = sameFamilyRows(protocolValues);
   const sameVendor = sameVendorRows(protocolValues);
 
-  const values = sameFamily.length >= 2 ? sameFamily : protocolValues;
+  const values = sameFamily.length >= 2 ? sameFamily
+    : sameVendor.length >= 2 ? sameVendor : protocolValues;
 
   const evidenceScope:
     | 'same-soc-family'
     | 'same-soc-vendor'
     | 'protocol-cohort' =
-    values === sameFamily ? 'same-soc-family' : 'protocol-cohort';
+    values === sameFamily ? 'same-soc-family'
+    : values === sameVendor ? 'same-soc-vendor' : 'protocol-cohort';
 
   const drains = values.map((item) => item.value);
   const whValues = values.filter(
