@@ -1,3 +1,4 @@
+import { SOC_MODELS } from '../soc-model-catalog';
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand } from './corpus-runtime';
@@ -173,6 +174,14 @@ export function simulateBatteryExperience(
     'gaming',
   ] as const;
 
+  // Future chip names do not constitute measured battery-efficiency evidence.
+  // Use the neutral comparison cohort until matching device measurements exist.
+  const previewChip = !!input.socName && Object.values(SOC_MODELS).some(
+    group => group.preview.includes(input.socName!),
+  );
+  const comparableSocVendor = previewChip ? undefined : input.socVendor;
+  const comparableSocName = previewChip ? undefined : input.socName;
+
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
     const band = resolveCorpusRuntimeBand(
       corpus,
@@ -181,8 +190,8 @@ export function simulateBatteryExperience(
       {},
       {
         manufacturer: input.manufacturer,
-        socVendor: input.socVendor,
-        socName: input.socName,
+        socVendor: comparableSocVendor,
+        socName: comparableSocName,
         batteryChemistry:
           input.batteryChemistry,
         coolingClass: input.coolingClass,
@@ -268,6 +277,10 @@ export function simulateBatteryExperience(
     }
   }
 
+  if (previewChip) {
+    warnings.push('Upcoming SoC battery efficiency is unmeasured. Endurance uses a neutral device cohort, not a chip-specific advantage.');
+  }
+
   let mixedUse: MixedUseBatteryEstimate | undefined;
 
   if (input.dailyUseHours) {
@@ -288,8 +301,8 @@ export function simulateBatteryExperience(
         {},
         {
         manufacturer: input.manufacturer,
-        socVendor: input.socVendor,
-        socName: input.socName,
+        socVendor: comparableSocVendor,
+        socName: comparableSocName,
         batteryChemistry:
           input.batteryChemistry,
         coolingClass: input.coolingClass,
