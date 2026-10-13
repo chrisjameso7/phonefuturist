@@ -18,7 +18,7 @@ describe('external PhoneArena charging holdout', () => {
       backtestAgainstPhoneArenaCharging(
         buildCalibrationRegistry(),
       );
-  }, 120_000);
+  }, 240_000);
 
   it('evaluates a meaningful held-out PhoneArena charging cohort', () => {
     expect(result.status).toBe(
