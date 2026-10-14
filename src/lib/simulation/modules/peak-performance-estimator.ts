@@ -20,6 +20,8 @@ export interface PeakPerformanceQuery {
   manufacturer?: string;
   socVendor?: string;
   socName?: string;
+  /** Optional specific measured predecessor to use for a what-if projection. */
+  referenceSocName?: string;
   batteryMah?: number;
   displayDiagonalInches?: number;
   refreshRateHz?: number;
@@ -269,6 +271,11 @@ export function estimatePeakPerformance(
     ?? rankedGroups[0] ?? [];
   const sameFamily = familyMatches(compatible);
   const sameVendor = vendorMatches(compatible);
+  const requestedReference = query.referenceSocName?.trim();
+  const namedReferences = requestedReference
+    ? sameVendor.filter(ref => ref.socName &&
+        normalizeSocFamily(ref.socName) === normalizeSocFamily(requestedReference))
+    : [];
   const uplift = query.assumedGenerationUpliftPercent;
   const validUplift = uplift !== undefined && Number.isFinite(uplift) &&
     uplift > -100 && uplift <= 300;
@@ -278,9 +285,11 @@ export function estimatePeakPerformance(
     isSelectableSoc(query.socVendor, query.socName) &&
     sameVendor.length > 0;
   const automaticScenario = sameFamily.length === 0 && canProject && !validUplift;
+  // Explicit references cannot silently fall back to an unrelated generation.
+  const referenceCandidates = requestedReference ? namedReferences : sameVendor;
   const selected = sameFamily.length > 0 ? sameFamily
-    : (validUplift || automaticScenario) && sameVendor.length > 0
-      ? sameVendor : [];
+    : (validUplift || automaticScenario) && referenceCandidates.length > 0
+      ? referenceCandidates : [];
 
   if (!selected.length) {
     return {
@@ -296,7 +305,9 @@ export function estimatePeakPerformance(
       sameSocVendorReferences: sameVendor.length,
       sourceRecordCount: 0,
       publisherCount: 0,
-      unresolvedReason: sameVendor.length > 0
+      unresolvedReason: requestedReference && !namedReferences.length
+        ? 'The selected predecessor has no compatible measured benchmark evidence in this protocol.'
+        : sameVendor.length > 0
         ? 'This chip has no exact-family measurements; select a supported chip or supply a generation uplift for a same-vendor scenario.'
         : 'No compatible measured peak benchmark evidence exists for this exact SoC family.',
       note: 'No unrelated vendor or benchmark protocol is substituted.',
@@ -421,7 +432,9 @@ export function estimatePeakPerformance(
     protocolKey:
       selected[0].protocolKey,
     note:
-      automaticScenario
+      automaticScenario && requestedReference
+        ? `Simulated baseline from the selected measured predecessor ${requestedReference} with 0% assumed uplift. This is not a measurement of the target SoC.`
+        : automaticScenario
         ? 'Simulated baseline scenario for a selectable chip without exact measured benchmarks: same-vendor reference performance with 0% assumed uplift. This is not a measurement or a claim of equal real-world performance.'
         : validUplift && evidenceScope === 'same-soc-vendor'
         ? 'Scenario only: the baseline comes from measured same-vendor predecessor/reference chips, then the caller-supplied generation uplift is applied explicitly. This is not measured evidence for the target SoC.'
