@@ -9080,7 +9080,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Camera system · {LIVE_CAMERA_EXPERIENCE_VERSION}
                 </span>
-                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Main camera resolution',value:form.mainCameraResolutionMp ? form.mainCameraResolutionMp+' MP' : undefined},{label:'Processor',value:form.socName}]} />
+                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Camera system',value:result.cameras?.length !== undefined ? result.cameras.length+' modules' : undefined},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
