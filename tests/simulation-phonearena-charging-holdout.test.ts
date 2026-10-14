@@ -38,8 +38,8 @@ describe('external PhoneArena charging holdout', () => {
     // A calibration milestone is achieved only when actual held-out error
     // meets the target. Reporting a milestone must not pretend it passed.
     if (process.env.ENFORCE_SIMULATION_ACCURACY === '1') {
-      expect(score!.target80Met, 'Held-out MAPE must be at most 20%').toBe(true);
-      expect(score!.coverageWithin20Percent, 'At least 80% of individual predictions must be within 20%').toBeGreaterThanOrEqual(80);
+      expect(score!.evaluated, 'Holdout must have sufficient independent reference rows').toBeGreaterThanOrEqual(20);
+      expect(score!.meets80QualityGate, 'Holdout must have MAPE <=20% and at least 80% of predictions within 20%').toBe(true);
     }
   });
 
