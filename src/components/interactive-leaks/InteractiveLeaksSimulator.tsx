@@ -7447,103 +7447,30 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Peak performance · {PEAK_PERFORMANCE_ESTIMATOR_VERSION}
+                  Benchmark
                 </span>
-                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Reference SoC',value:peakPerformanceEstimate?.referenceSocName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} />
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
 
                 {peakPerformanceEstimate?.status === 'resolved' ? (
-                  <>
-                    <div className="il-metrics">
-                      <div>
-                        <strong>
-                          {format(
-                            peakPerformanceEstimate.baselineExpected,
-                            0,
-                          )}
-                        </strong>
-                        <span>
-                          {peakPerformanceEstimate.evidenceScope ===
-                          'same-soc-vendor'
-                            ? 'Measured predecessor/vendor baseline'
-                            : 'Measured exact-family baseline'}
-                        </span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            peakPerformanceEstimate.adjustedExpected,
-                            0,
-                          )}
-                        </strong>
-                        <span>
-                          {peakPerformanceEstimate.assumptionApplied
-                            ? 'Estimated benchmark score'
-                            : 'Benchmark score'}
-                        </span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {peakPerformanceEstimate.baselineMin !== undefined &&
-                          peakPerformanceEstimate.baselineMax !== undefined
-                            ? `${format(
-                                peakPerformanceEstimate.baselineMin,
-                                0,
-                              )}–${format(
-                                peakPerformanceEstimate.baselineMax,
-                                0,
-                              )}`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Measured peer range</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {peakPerformanceEstimate.referenceCount}
-                        </strong>
-                        <span>Measured references</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {peakPerformanceEstimate.evidenceScope
-                            ? peakPerformanceEstimate.evidenceScope.replaceAll(
-                                '-',
-                                ' ',
-                              )
-                            : 'Unknown'}
-                        </strong>
-                        <span>Evidence scope</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {peakPerformanceEstimate.assumedGenerationUpliftPercent !== undefined
-                            ? `${peakPerformanceEstimate.assumedGenerationUpliftPercent > 0 ? '+' : ''}${format(
-                                peakPerformanceEstimate.assumedGenerationUpliftPercent,
-                                1,
-                              )}%`
-                            : peakPerformanceEstimate.assumptionApplied ? '0% baseline scenario' : 'None'}
-                        </strong>
-                        <span>Generation uplift assumption</span>
-                      </div>
+                  <div className="il-metrics">
+                    <div>
+                      <strong>{format(peakPerformanceEstimate.adjustedExpected, 0)}</strong>
+                      <span>{form.peakBenchmarkDomain === 'geekbench6_single'
+                        ? 'Geekbench 6 · single-core'
+                        : form.peakBenchmarkDomain === 'geekbench6_multi'
+                        ? 'Geekbench 6 · multi-core'
+                        : form.peakBenchmarkDomain === '3dmark_wle'
+                        ? '3DMark Wild Life Extreme'
+                        : '3DMark Solar Bay'}</span>
+                      <small>{peakPerformanceEstimate.assumptionApplied ? 'Estimated' : 'Benchmark estimate'}</small>
                     </div>
-
-
-                  </>
+                  </div>
                 ) : (
                   <div className="il-empty">
                     <p>
-                      {peakPerformanceEstimate?.unresolvedReason ??
-                        'No compatible measured peak benchmark evidence is available.'}
+                      'Benchmark unavailable for this configuration.'
                     </p>
-                    {peakPerformanceEstimate?.note ? (
-                      <p className="il-help">
-                        {publicEvidenceText(peakPerformanceEstimate.note)}
-                      </p>
-                    ) : null}
+
                   </div>
                 )}
               </div>
