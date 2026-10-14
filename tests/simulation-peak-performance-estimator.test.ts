@@ -194,6 +194,19 @@ describe('peak performance estimator', () => {
     ).toBeCloseTo(8050, 8);
   });
 
+  it('does not silently substitute another chip when the selected predecessor is missing', () => {
+    const result = estimatePeakPerformance(corpus, {
+      domain: 'geekbench6_single',
+      socVendor: 'Samsung',
+      socName: 'Exynos 2700',
+      referenceSocName: 'Exynos 2500',
+      assumedGenerationUpliftPercent: 15,
+    });
+    expect(result.status).toBe('unresolved');
+    expect(result.baselineExpected).toBeUndefined();
+    expect(result.unresolvedReason).toContain('selected predecessor');
+  });
+
   it('keeps Geekbench and 3DMark completely separate', () => {
     const result = estimatePeakPerformance(
       corpus,
