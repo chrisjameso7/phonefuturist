@@ -1,3 +1,4 @@
+import { isSelectableSoc } from '../soc-model-catalog';
 import { buildCalibrationRegistry } from './calibration-registry';
 import {
   findComparableDevices,
@@ -247,115 +248,63 @@ export function estimatePeakPerformance(
     );
   }
 
-  const compatible =
-    [...groups.values()].sort(
-      (a, b) => {
-        const weightA =
-          a.reduce(
-            (sum, item) =>
-              sum +
-              Math.max(
-                item.score,
-                0.05,
-              ) **
-                2,
-            0,
-          );
+  const rankedGroups = [...groups.values()].sort((a, b) => {
+    const weight = (rows: typeof refs) => rows.reduce(
+      (sum, item) => sum + Math.max(item.score, 0.05) ** 2, 0,
+    );
+    return weight(b) - weight(a);
+  });
+  const familyMatches = (rows: typeof refs) => query.socName
+    ? rows.filter(ref => ref.socName &&
+        normalizeSocFamily(ref.socName) === normalizeSocFamily(query.socName!))
+    : [];
+  const vendorMatches = (rows: typeof refs) => query.socVendor
+    ? rows.filter(ref => ref.socVendor === query.socVendor)
+    : [];
 
-        const weightB =
-          b.reduce(
-            (sum, item) =>
-              sum +
-              Math.max(
-                item.score,
-                0.05,
-              ) **
-                2,
-            0,
-          );
-
-        return weightB - weightA;
-      },
-    )[0] ?? [];
-
-  const sameFamily =
-    query.socName
-      ? compatible.filter(
-          (ref) =>
-            ref.socName &&
-            normalizeSocFamily(
-              ref.socName,
-            ) ===
-              normalizeSocFamily(
-                query.socName!,
-              ),
-        )
-      : [];
-
-  const sameVendor =
-    query.socVendor
-      ? compatible.filter(
-          (ref) =>
-            ref.socVendor ===
-            query.socVendor,
-        )
-      : [];
-
-  const uplift =
-    query.assumedGenerationUpliftPercent;
-
-  const validUplift =
-    uplift !== undefined &&
-    Number.isFinite(uplift);
-
-  // Exact-family measured evidence may resolve a peak benchmark directly.
-  // Cross-generation evidence is context only unless the caller explicitly
-  // asks for an assumption scenario. This prevents a future chip from
-  // silently inheriting a precise score from its vendor predecessor.
-  const selected =
-    sameFamily.length > 0
-      ? sameFamily
-      : validUplift &&
-          sameVendor.length > 0
-        ? sameVendor
-        : [];
+  // Never let a large unrelated benchmark protocol group mask actual
+  // exact-family measured evidence in another compatible metric group.
+  const compatible = rankedGroups.find(group => familyMatches(group).length > 0)
+    ?? rankedGroups.find(group => vendorMatches(group).length > 0)
+    ?? rankedGroups[0] ?? [];
+  const sameFamily = familyMatches(compatible);
+  const sameVendor = vendorMatches(compatible);
+  const uplift = query.assumedGenerationUpliftPercent;
+  const validUplift = uplift !== undefined && Number.isFinite(uplift) &&
+    uplift > -100 && uplift <= 300;
+  // Curated, selectable models can always run an explicitly identified
+  // same-vendor baseline scenario. Unknown chip names remain unresolved.
+  const canProject = !!query.socVendor && !!query.socName &&
+    isSelectableSoc(query.socVendor, query.socName) &&
+    sameVendor.length > 0;
+  const automaticScenario = sameFamily.length === 0 && canProject && !validUplift;
+  const selected = sameFamily.length > 0 ? sameFamily
+    : (validUplift || automaticScenario) && sameVendor.length > 0
+      ? sameVendor : [];
 
   if (!selected.length) {
     return {
-      version:
-        PEAK_PERFORMANCE_ESTIMATOR_VERSION,
+      version: PEAK_PERFORMANCE_ESTIMATOR_VERSION,
       status: 'unresolved',
       domain: query.domain,
       metric,
-      unit:
-        compatible[0]?.unit,
+      unit: compatible[0]?.unit,
       assumptionApplied: false,
       referenceCount: 0,
       neighborIds: [],
-      sameSocFamilyReferences:
-        sameFamily.length,
-      sameSocVendorReferences:
-        sameVendor.length,
+      sameSocFamilyReferences: sameFamily.length,
+      sameSocVendorReferences: sameVendor.length,
       sourceRecordCount: 0,
       publisherCount: 0,
-      unresolvedReason:
-        sameVendor.length > 0
-          ? 'No measured peak benchmark evidence exists for this exact SoC family. Same-vendor measurements are available only as context unless an explicit generation-uplift assumption is supplied.'
-          : 'No compatible measured peak benchmark evidence exists for this exact SoC family.',
-      note:
-        sameVendor.length > 0
-          ? `Same-vendor context spans ${Math.min(...sameVendor.map((ref) => ref.value))}–${Math.max(...sameVendor.map((ref) => ref.value))} ${compatible[0]?.unit ?? 'points'}, but no synthetic score is emitted for a different SoC generation.`
-          : 'Peak benchmark prediction fails closed without exact-family measured evidence.',
+      unresolvedReason: sameVendor.length > 0
+        ? 'This chip has no exact-family measurements; select a supported chip or supply a generation uplift for a same-vendor scenario.'
+        : 'No compatible measured peak benchmark evidence exists for this exact SoC family.',
+      note: 'No unrelated vendor or benchmark protocol is substituted.',
     };
   }
 
-  const evidenceScope:
-    | 'same-soc-family'
-    | 'same-soc-vendor'
-    | 'protocol-cohort' =
-    sameFamily.length > 0
-      ? 'same-soc-family'
-      : 'same-soc-vendor';
+  const evidenceScope: 'same-soc-family' | 'same-soc-vendor' | 'protocol-cohort' =
+    sameFamily.length > 0 ? 'same-soc-family' : 'same-soc-vendor';
 
   const weighted = selected.map(
     (ref) => ({
@@ -433,7 +382,7 @@ export function estimatePeakPerformance(
         }
       : {}),
     assumptionApplied:
-      validUplift,
+      validUplift || automaticScenario,
     confidence:
       selected.reduce(
         (sum, ref) =>
@@ -472,7 +421,9 @@ export function estimatePeakPerformance(
     protocolKey:
       selected[0].protocolKey,
     note:
-      validUplift && evidenceScope === 'same-soc-vendor'
+      automaticScenario
+        ? 'Simulated baseline scenario for a selectable chip without exact measured benchmarks: same-vendor reference performance with 0% assumed uplift. This is not a measurement or a claim of equal real-world performance.'
+        : validUplift && evidenceScope === 'same-soc-vendor'
         ? 'Scenario only: the baseline comes from measured same-vendor predecessor/reference chips, then the caller-supplied generation uplift is applied explicitly. This is not measured evidence for the target SoC.'
         : validUplift
           ? 'Peak benchmark baseline comes from measured exact-family references. The final adjusted score applies the caller-supplied uplift as an explicit what-if assumption.'
