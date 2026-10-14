@@ -150,7 +150,7 @@ describe('peak performance estimator', () => {
     ]);
   });
 
-  it('fails closed for a future SoC unless a generation uplift is explicitly supplied', () => {
+  it('projects a curated future SoC using a clearly marked same-vendor scenario', () => {
     const baseline = estimatePeakPerformance(
       corpus,
       {
@@ -170,16 +170,14 @@ describe('peak performance estimator', () => {
       },
     );
 
-    expect(baseline.status).toBe('unresolved');
-    expect(baseline.assumptionApplied).toBe(
-      false,
-    );
+    expect(baseline.status).toBe('resolved');
+    expect(baseline.assumptionApplied).toBe(true);
+    expect(baseline.evidenceScope).toBe('same-soc-vendor');
+    expect(baseline.note).toContain('Simulated baseline scenario');
     expect(
       baseline.sameSocVendorReferences,
     ).toBe(2);
-    expect(
-      baseline.baselineExpected,
-    ).toBeUndefined();
+    expect(baseline.baselineExpected).toBeCloseTo(7000, 8);
 
     expect(uplifted.status).toBe('resolved');
     expect(uplifted.evidenceScope).toBe(
@@ -246,7 +244,7 @@ describe('peak performance estimator', () => {
     ).toBeUndefined();
   });
 
-  it('keeps Exynos 2700 peak performance unresolved without target-family evidence', () => {
+  it('provides an assumption-labeled Exynos 2700 baseline when exact evidence is absent', () => {
     const result =
       estimateLivePeakPerformance({
         domain: 'geekbench6_multi',
@@ -255,15 +253,10 @@ describe('peak performance estimator', () => {
         socName: 'Exynos 2700',
       });
 
-    expect(result.status).toBe('unresolved');
-    expect(
-      result.sameSocVendorReferences,
-    ).toBeGreaterThanOrEqual(2);
-    expect(
-      result.baselineExpected,
-    ).toBeUndefined();
-    expect(result.note).toContain(
-      'no synthetic score',
-    );
+    expect(result.status).toBe('resolved');
+    expect(result.assumptionApplied).toBe(true);
+    expect(result.sameSocVendorReferences).toBeGreaterThanOrEqual(2);
+    expect(result.baselineExpected).toBeGreaterThan(0);
+    expect(result.note).toContain('Simulated baseline scenario');
   });
 });
