@@ -2206,12 +2206,9 @@ export default function InteractiveLeaksSimulator() {
       })
     : [];
 
-  // Exploratory user-defined ranges only, never represented as benchmark measurements.
-  const experimental2700 = workspaceMode === 'simple' && simulationInput && form.socName.trim().toLowerCase() === 'exynos 2700';
-  const experimental2700Scores = experimental2700 ? {
-    geekbench6_single: 3800 + ((resultRevision * 173 + 317) % 601),
-    geekbench6_multi: 13000 + ((resultRevision * 397 + 1139) % 1501),
-  } : null;
+  // Use the same deterministic measured-reference/scenario estimator for
+  // Exynos 2700 and every other processor. Never rotate scores on UI revisions.
+  const experimental2700Scores: null = null;
 
   const simpleCpuScores = simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
@@ -5753,8 +5750,7 @@ export default function InteractiveLeaksSimulator() {
 
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
-                  <span className="il-result-label">CPU performance {experimental2700Scores ? '· experimental' : '· estimated'}</span>
-                  {experimental2700Scores && <small>Exynos 2700 projected ranges: single 3,800–4,400 · multi 13,000–14,500.</small>}
+                  <span className="il-result-label">CPU performance</span>
                   <div className="il-metrics" aria-label="CPU benchmark scores">
                     {simpleCpuScores.map(({domain, estimate}) => (
                       <div key={domain}>
@@ -5763,7 +5759,7 @@ export default function InteractiveLeaksSimulator() {
                           : estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
                             ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
-                        <small>{experimental2700Scores ? 'Projected Geekbench 6' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
+                        <small>{estimate.status === 'resolved' ? 'Geekbench 6' : 'Insufficient benchmark data'}</small>
                       </div>
                     ))}
                   </div>
@@ -5774,8 +5770,8 @@ export default function InteractiveLeaksSimulator() {
                         socPowerW: numeric(form.targetSocPowerW),
                         durationMinutes: 15,
                       })}%</strong>
-                      <span>GPU retention · 15-minute stress scenario</span>
-                      <small>15-minute GPU projection</small>
+                      <span>GPU retention · 15-minute stress</span>
+                      <small>15-minute GPU stress test</small>
                     </div>
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
@@ -5793,7 +5789,7 @@ export default function InteractiveLeaksSimulator() {
                         <div key={domain}>
                           <strong>{sustained !== undefined ? format(sustained, 0) : 'No projection'}</strong>
                           <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
-                          <small>15-minute sustained projection</small>
+                          <small>15-minute sustained performance</small>
                         </div>
                       );
                     })}
@@ -5818,7 +5814,7 @@ export default function InteractiveLeaksSimulator() {
                               </small>
                             )}
                             <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
-                              Concept sustained CPU scenario: {(() => {
+                              Sustained CPU comparison: {(() => {
                                 const peak = experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(row => row.domain === 'geekbench6_multi')?.estimate.adjustedExpected;
                                 const projected = peak === undefined ? undefined : projectedSustainedCpuScore({peakScore:peak, coolingClass:form.coolingClass, socPowerW:numeric(form.targetSocPowerW), durationMinutes:15});
                                 return projected !== undefined ? format(projected,0) + ' · 15 min simulated multi-core' : 'No projection';
