@@ -21,6 +21,15 @@ describe('SoC-specific daily workload accounting', () => {
     const result=estimateSocDailyBattery({...base,sessions:[{...base.sessions[0],hoursPerDay:25}]});
     expect(result.status).toBe('unresolved');
   });
+  it('rejects invalid supplied standby power instead of silently dropping it', () => {
+    expect(estimateSocDailyBattery({...base,standbyPowerW:-0.1}).status).toBe('unresolved');
+    expect(estimateSocDailyBattery({...base,standbyPowerW:Number.NaN}).status).toBe('unresolved');
+  });
+  it('rejects zero-duration active workloads', () => {
+    const result=estimateSocDailyBattery({...base,sessions:[{...base.sessions[0],hoursPerDay:0}]});
+    expect(result.status).toBe('unresolved');
+    if (result.status === 'unresolved') expect(result.reason).toContain('nonzero active session');
+  });
   it('requires pack energy', () => {
     expect(estimateSocDailyBattery({...base,batteryEnergyWh:0}).status).toBe('unresolved');
   });
