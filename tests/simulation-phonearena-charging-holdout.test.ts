@@ -1,4 +1,4 @@
-import { scoreValidationPairs } from '../src/lib/simulation/modules/validation-accuracy';
+import { scoreValidationPairs, scoreValidationCohorts } from '../src/lib/simulation/modules/validation-accuracy';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildCalibrationRegistry,
@@ -28,6 +28,13 @@ describe('external PhoneArena charging holdout', () => {
     expect(score!.evaluated).toBe(result.rows.length);
     expect(score!.mapePercent).toBeCloseTo(result.mapePercent!, 6);
     console.info('CHARGING_ACCURACY_TARGETS', JSON.stringify(score));
+    const cohorts = scoreValidationCohorts(
+      result.rows,
+      row => row.wattageBand,
+      row => ({observed: row.actualFullChargeMinutes, predicted: row.predictedFullChargeMinutes}),
+    );
+    console.info('CHARGING_WORST_COHORTS', JSON.stringify(cohorts));
+    expect(cohorts.length).toBeGreaterThan(0);
     // A calibration milestone is achieved only when actual held-out error
     // meets the target. Reporting a milestone must not pretend it passed.
     if (process.env.ENFORCE_SIMULATION_ACCURACY === '1') {
