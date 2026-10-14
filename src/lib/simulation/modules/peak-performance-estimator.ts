@@ -271,10 +271,22 @@ export function estimatePeakPerformance(
     ?? rankedGroups[0] ?? [];
   const sameFamily = familyMatches(compatible);
   const sameVendor = vendorMatches(compatible);
+  const automaticPredecessors: Record<string, string> = {
+    'Exynos 2700': 'Exynos 2600',
+    'Dimensity 9600': 'Dimensity 9500',
+    'Dimensity 9600 Pro': 'Dimensity 9500',
+    'A20 Pro': 'A19 Pro',
+    'Snapdragon 8 Elite Gen 6': 'Snapdragon 8 Elite Gen 5',
+    'Snapdragon 8 Elite Extreme Gen 6': 'Snapdragon 8 Elite Gen 5',
+  };
   const requestedReference = query.referenceSocName?.trim();
-  const namedReferences = requestedReference
+  const automaticReference = !requestedReference && query.socName
+    ? automaticPredecessors[query.socName]
+    : undefined;
+  const chosenReference = requestedReference ?? automaticReference;
+  const namedReferences = chosenReference
     ? sameVendor.filter(ref => ref.socName &&
-        normalizeSocFamily(ref.socName) === normalizeSocFamily(requestedReference))
+        normalizeSocFamily(ref.socName) === normalizeSocFamily(chosenReference))
     : [];
   const uplift = query.assumedGenerationUpliftPercent;
   const validUplift = uplift !== undefined && Number.isFinite(uplift) &&
@@ -286,7 +298,7 @@ export function estimatePeakPerformance(
     sameVendor.length > 0;
   const automaticScenario = sameFamily.length === 0 && canProject && !validUplift;
   // Explicit references cannot silently fall back to an unrelated generation.
-  const referenceCandidates = requestedReference ? namedReferences : sameVendor;
+  const referenceCandidates = chosenReference ? namedReferences : sameVendor;
   const selected = sameFamily.length > 0 ? sameFamily
     : (validUplift || automaticScenario) && referenceCandidates.length > 0
       ? referenceCandidates : [];
@@ -432,8 +444,8 @@ export function estimatePeakPerformance(
     protocolKey:
       selected[0].protocolKey,
     note:
-      automaticScenario && requestedReference
-        ? `Simulated baseline from the selected measured predecessor ${requestedReference} with 0% assumed uplift. This is not a measurement of the target SoC.`
+      automaticScenario && chosenReference
+        ? `Simulated baseline from the ${requestedReference ? 'selected' : 'automatically selected'} measured predecessor ${chosenReference} with 0% assumed uplift. This is not a measurement of the target SoC.`
         : automaticScenario
         ? 'Simulated baseline scenario for a selectable chip without exact measured benchmarks: same-vendor reference performance with 0% assumed uplift. This is not a measurement or a claim of equal real-world performance.'
         : validUplift && evidenceScope === 'same-soc-vendor'
