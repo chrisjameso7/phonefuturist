@@ -6237,60 +6237,48 @@ export default function InteractiveLeaksSimulator() {
                           {DISPLAY_RUNTIME_SENSITIVITY_VERSION}
                         </span>
 
-                        <div className="il-sensitivity-grid">
-                          {displayRuntimeSensitivity.scenarios.map(
-                            (scenario) => (
-                              <div
-                                className="il-sensitivity-card"
-                                key={`${scenario.workload}-${scenario.scenario}`}
-                              >
-                                <strong>
-                                  {scenario.workload.replaceAll(
-                                    '_',
-                                    ' ',
-                                  )}
+                        <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.75rem' }}>
+                          {displayRuntimeSensitivity.scenarios.map((scenario) => (
+                            <div
+                              key={`${scenario.workload}-${scenario.scenario}`}
+                              style={{
+                                display: 'grid',
+                                gap: '0.65rem',
+                                padding: '1rem',
+                                borderRadius: '1rem',
+                                background: 'rgba(148,163,184,0.07)',
+                                minWidth: 0,
+                              }}
+                            >
+                              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', columnGap: '0.75rem', rowGap: '0.25rem' }}>
+                                <strong style={{ textTransform: 'capitalize', fontSize: '0.95rem' }}>
+                                  {scenario.workload.replaceAll('_', ' ')}
                                 </strong>
-
-                                <span>
+                                <span style={{ overflowWrap: 'anywhere', opacity: 0.85 }}>
                                   {scenario.label}
                                 </span>
-
-                                <span>
-                                  Δ runtime{' '}
-                                  {scenario.deltaRuntimePercent >= 0
-                                    ? '+'
-                                    : ''}
-                                  {format(
-                                    scenario.deltaRuntimePercent,
-                                    1,
-                                  )}%
-                                </span>
-
-                                <span>
-                                  Δ drain{' '}
-                                  {scenario.deltaDrainPercent >= 0
-                                    ? '+'
-                                    : ''}
-                                  {format(
-                                    scenario.deltaDrainPercent,
-                                    1,
-                                  )}%
-                                </span>
-
-                                <small>
-                                  {scenario.referenceCount} refs ·{' '}
-                                  {format(
-                                    scenario.averageCoverage * 100,
-                                    0,
-                                  )}% coverage ·{' '}
-                                  {format(
-                                    scenario.averageSimilarity * 100,
-                                    0,
-                                  )}% similarity
-                                </small>
                               </div>
-                            ),
-                          )}
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>
+                                <div style={{ minWidth: 0 }}>
+                                  <small style={{ display: 'block', opacity: 0.7 }}>Battery runtime</small>
+                                  <strong style={{ fontSize: '1.1rem', fontVariantNumeric: 'tabular-nums' }}>
+                                    {scenario.deltaRuntimePercent > 0 ? '+' : ''}
+                                    {format(scenario.deltaRuntimePercent, 1)}%
+                                  </strong>
+                                </div>
+                                <div style={{ minWidth: 0 }}>
+                                  <small style={{ display: 'block', opacity: 0.7 }}>Power drain</small>
+                                  <strong style={{ fontSize: '1.1rem', fontVariantNumeric: 'tabular-nums' }}>
+                                    {scenario.deltaDrainPercent > 0 ? '+' : ''}
+                                    {format(scenario.deltaDrainPercent, 1)}%
+                                  </strong>
+                                </div>
+                              </div>
+                              <small style={{ display: 'block', opacity: 0.7, lineHeight: 1.5 }}>
+                                {scenario.referenceCount} references · {format(scenario.averageCoverage * 100, 0)}% coverage · {format(scenario.averageSimilarity * 100, 0)}% similarity
+                              </small>
+                            </div>
+                          ))}
                         </div>
 
                         <p className="il-help">
