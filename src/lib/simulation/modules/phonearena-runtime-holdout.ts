@@ -32,6 +32,10 @@ export interface PhoneArenaRuntimeHoldoutRow {
     | 'protocol-cohort';
   referenceCount: number;
   publisherCount: number;
+  /** Whether the prediction and held-out measurement use the exact same test protocol. */
+  protocolMatched: boolean;
+  referenceProtocol?: string;
+  observedProtocol?: string;
 }
 
 export interface PhoneArenaRuntimeHoldoutAggregate {
@@ -48,6 +52,8 @@ export interface PhoneArenaRuntimeHoldoutResult {
   evaluatedRows: number;
   evaluatedDevices: number;
   skippedRows: number;
+  protocolMatchedRows: number;
+  crossProtocolRows: number;
   maeHours?: number;
   mapePercent?: number;
   meanSignedErrorHours?: number;
@@ -190,6 +196,7 @@ export function backtestAgainstPhoneArenaRuntime(
   const rows:
     PhoneArenaRuntimeHoldoutRow[] =
     [];
+  const observedSource = corpus.sources.find(source => source.id === PHONEARENA_SOURCE_ID);
   let skippedRows = 0;
 
   for (
@@ -310,6 +317,11 @@ export function backtestAgainstPhoneArenaRuntime(
       publisherCount:
         estimate.estimate
           .publisherCount,
+      observedProtocol: observedSource?.protocol,
+      referenceProtocol: estimate.estimate.protocol,
+      protocolMatched: Boolean(observedSource?.protocol && estimate.estimate.protocol &&
+        observedSource.protocol === estimate.estimate.protocol &&
+        (observedSource.protocolVersion ?? '') === (estimate.estimate.protocolVersion ?? '')),
     });
   }
 
@@ -321,6 +333,8 @@ export function backtestAgainstPhoneArenaRuntime(
       evaluatedRows: 0,
       evaluatedDevices: 0,
       skippedRows,
+      protocolMatchedRows: 0,
+      crossProtocolRows: 0,
       byWorkload: [],
       byManufacturer: [],
       rows: [],
@@ -346,6 +360,8 @@ export function backtestAgainstPhoneArenaRuntime(
         ),
       ).size,
     skippedRows,
+    protocolMatchedRows: rows.filter(row => row.protocolMatched).length,
+    crossProtocolRows: rows.filter(row => !row.protocolMatched).length,
     maeHours:
       rows.reduce(
         (sum, row) =>
@@ -393,7 +409,7 @@ export function backtestAgainstPhoneArenaRuntime(
         .slice(0, 10),
     note:
       mode === 'sparse'
-        ? 'PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.'
-        : 'PhoneArena runtime measurements remain fully excluded from calibration. This diagnostic adds the held-out device display and processor specifications to compare accuracy against the sparse-spec fallback; it is not an independent laboratory protocol match.',
+        ? 'Protocol compatibility is reported per row; cross-protocol error is diagnostic, not a validated like-for-like accuracy claim. PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.'
+        : 'Protocol compatibility is reported per row; cross-protocol error is diagnostic, not a validated like-for-like accuracy claim. PhoneArena runtime measurements remain fully excluded from calibration. This diagnostic adds the held-out device display and processor specifications to compare accuracy against the sparse-spec fallback; it is not an independent laboratory protocol match.',
   };
 }
