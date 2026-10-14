@@ -13,11 +13,13 @@ export type AccuracyScore = {
   accuracyFromMapePercent: number;
   target80Met: boolean;
   target90Met: boolean;
+  /** True only when both mean error and individual prediction coverage pass. */
+  meets80QualityGate: boolean;
 };
 
 export function scoreValidationPairs(pairs: readonly ValidationPair[]): AccuracyScore | undefined {
   if (!pairs.length || pairs.some(p => !Number.isFinite(p.observed) ||
-    !Number.isFinite(p.predicted) || p.observed <= 0 || p.predicted <= 0)) return undefined;
+    !Number.isFinite(p.predicted) || p.observed <= 0 || p.predicted < 0)) return undefined;
   const errors = pairs.map(p => Math.abs(p.predicted - p.observed) / p.observed);
   const meanError = errors.reduce((sum, error) => sum + error, 0) / errors.length;
   const within10Percent = errors.filter(error => error <= 0.10 + 1e-12).length;
@@ -31,6 +33,7 @@ export function scoreValidationPairs(pairs: readonly ValidationPair[]): Accuracy
     accuracyFromMapePercent: Math.max(0, 100 * (1 - meanError)),
     target80Met: meanError <= 0.20,
     target90Met: meanError <= 0.10,
+    meets80QualityGate: meanError <= 0.20 && within20Percent / pairs.length >= 0.80,
   };
 }
 
