@@ -107,6 +107,8 @@ describe('external PhoneArena runtime holdout', () => {
     expect(enriched.status).toBe('resolved');
     expect(enriched.evaluatedRows).toBeGreaterThan(10);
     expect(enriched.rows.every(row => Number.isFinite(row.predictedHours) && row.predictedHours > 0)).toBe(true);
+    expect(enriched.rows.every(row => row.energyBasis === 'mah' || row.energyBasis === 'wh')).toBe(true);
+    console.info('RUNTIME_ENERGY_BASIS', JSON.stringify({wh: enriched.rows.filter(row => row.energyBasis === 'wh').length, mah: enriched.rows.filter(row => row.energyBasis === 'mah').length}));
     console.info('PHONEARENA_RUNTIME_SPEC_ENRICHED', JSON.stringify({
       sparseMapePercent: result.mapePercent,
       enrichedMapePercent: enriched.mapePercent,
