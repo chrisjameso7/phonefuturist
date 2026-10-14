@@ -87,6 +87,18 @@ describe('external PhoneArena runtime holdout', () => {
     ).toBeGreaterThanOrEqual(0);
   });
 
+  it('identifies cross-protocol comparisons instead of calling them like-for-like', () => {
+    expect(result.protocolMatchedRows + result.crossProtocolRows).toBe(result.evaluatedRows);
+    expect(result.rows.every(row => typeof row.protocolMatched === 'boolean')).toBe(true);
+    expect(result.note).toContain('cross-protocol error is diagnostic');
+    console.info('RUNTIME_PROTOCOL_AUDIT', JSON.stringify({
+      protocolMatchedRows: result.protocolMatchedRows,
+      crossProtocolRows: result.crossProtocolRows,
+      exampleReferenceProtocols: [...new Set(result.rows.map(row => row.referenceProtocol ?? 'unknown'))],
+      exampleObservedProtocols: [...new Set(result.rows.map(row => row.observedProtocol ?? 'unknown'))],
+    }));
+  });
+
   it('compares a spec-enriched holdout without reintroducing PhoneArena measurements', () => {
     const enriched = backtestAgainstPhoneArenaRuntime(
       buildCalibrationRegistry(),
