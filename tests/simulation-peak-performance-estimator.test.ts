@@ -173,7 +173,7 @@ describe('peak performance estimator', () => {
     expect(baseline.status).toBe('resolved');
     expect(baseline.assumptionApplied).toBe(true);
     expect(baseline.evidenceScope).toBe('same-soc-vendor');
-    expect(baseline.note).toContain('Simulated baseline scenario');
+    expect(baseline.note).toContain('automatically selected measured predecessor Exynos 2600');
     expect(
       baseline.sameSocVendorReferences,
     ).toBe(2);
@@ -257,6 +257,6 @@ describe('peak performance estimator', () => {
     expect(result.assumptionApplied).toBe(true);
     expect(result.sameSocVendorReferences).toBeGreaterThanOrEqual(2);
     expect(result.baselineExpected).toBeGreaterThan(0);
-    expect(result.note).toContain('Simulated baseline scenario');
+    expect(result.note).toContain('automatically selected measured predecessor Exynos 2600');
   });
 });
