@@ -24,6 +24,8 @@ export function estimateSocDailyBattery(input: SocDailyBatteryInput): SocDailyBa
       !Number.isFinite(input.usableFraction) || input.usableFraction <= 0 || input.usableFraction > 1)
     return {status:'unresolved',reason:'Positive pack energy and a valid usable fraction are required.'};
   if (!input.sessions.length) return {status:'unresolved',reason:'At least one session is required.'};
+  if (input.standbyPowerW !== undefined && (!Number.isFinite(input.standbyPowerW) || input.standbyPowerW < 0))
+    return {status:'unresolved',reason:'Standby power must be finite and nonnegative when supplied.'};
   let activeHoursPerDay=0;
   let dailyActiveEnergyWh=0;
   const workloads: Array<{kind: WorkloadSession['kind']; powerW:number; energyWh:number}> = [];
@@ -39,6 +41,7 @@ export function estimateSocDailyBattery(input: SocDailyBatteryInput): SocDailyBa
     dailyActiveEnergyWh+=energyWh;
   }
   if (activeHoursPerDay > 24) return {status:'unresolved',reason:'Active daily sessions exceed 24 hours.'};
+  if (activeHoursPerDay === 0) return {status:'unresolved',reason:'A nonzero active session is required for this workload scenario.'};
   const base={status:'scenario' as const,dailyActiveEnergyWh,activeHoursPerDay,workloads};
   const daily=estimateDailyBatteryBudget({usableEnergyWh:input.batteryEnergyWh*input.usableFraction,
     activeHoursPerDay,activeEnergyWhPerDay:dailyActiveEnergyWh,standbyPowerW:input.standbyPowerW});
