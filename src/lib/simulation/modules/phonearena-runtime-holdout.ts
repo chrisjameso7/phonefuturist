@@ -21,6 +21,7 @@ export interface PhoneArenaRuntimeHoldoutRow {
   model: string;
   workload: RuntimeWorkload;
   batteryMah: number;
+  energyBasis: 'wh' | 'mah';
   actualHours: number;
   predictedHours: number;
   signedErrorHours: number;
@@ -275,8 +276,12 @@ export function backtestAgainstPhoneArenaRuntime(
       continue;
     }
 
-    const predictedHours =
-      batteryMah / drain;
+    const energyHours = estimate.estimate.energyBasis === 'wh' &&
+      positive(estimate.estimate.targetEnergyWh) &&
+      positive(estimate.estimate.expectedWhPerHour)
+      ? estimate.estimate.targetEnergyWh / estimate.estimate.expectedWhPerHour
+      : undefined;
+    const predictedHours = energyHours ?? batteryMah / drain;
 
     const signedErrorHours =
       predictedHours -
@@ -299,6 +304,7 @@ export function backtestAgainstPhoneArenaRuntime(
       workload:
         actual.workload as RuntimeWorkload,
       batteryMah,
+      energyBasis: energyHours !== undefined ? 'wh' : 'mah',
       actualHours:
         actual.value,
       predictedHours,
