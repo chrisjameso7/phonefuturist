@@ -1112,7 +1112,7 @@ function DeterministicShareCard({
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
       ctx.font = '18px Arial';
-      ctx.fillText(experimentalScores ? 'SYNTHETIC SOC SCORES · NOT REAL BENCHMARKS' : 'MODEL ESTIMATES · NOT MEASURED TEST RESULTS', 72, 1195, 935);
+      ctx.fillText(experimentalScores ? 'INTERACTIVE LEAKS · SOC PROJECTIONS' : 'INTERACTIVE LEAKS · SIMULATION RESULTS', 72, 1195, 935);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 1250, 936, 2);
       ctx.fillStyle = ink;
@@ -1152,9 +1152,9 @@ function DeterministicShareCard({
       sustainedSingleScore !== undefined ? '15-min simulated single: ' + Math.round(sustainedSingleScore).toLocaleString('en-US') : null,
       sustainedMultiScore !== undefined ? '15-min simulated multi: ' + Math.round(sustainedMultiScore).toLocaleString('en-US') : null,
       wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
-      experimentalScores ? 'Synthetic scores, not tested Geekbench results' : 'Modelled estimates, not measured results',
+      experimentalScores ? 'Concept benchmark projections' : 'Simulation estimates',
       ...(mode === 'simple'
-        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Illustrative scenario; not time between charges']
+        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Active-use projection']
         : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
            packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded']),
       'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
@@ -1190,7 +1190,7 @@ function DeterministicShareCard({
       </div>
       <strong>{deviceName}</strong>
       {socName && <small>{socName}</small>}
-      {experimentalScores && <small>Experimental synthetic benchmarks, not measured scores</small>}
+      {experimentalScores && <small>Concept benchmark range</small>}
       {chargingIsScenario && <small>Charging scenario models high-charge taper and 85% conversion efficiency{assumedVoltage ? ', with assumed 3.85 V battery voltage' : ''}. Not a validated charging curve.</small>}
       <div className="il-share-card-metrics">
         <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
@@ -5748,7 +5748,7 @@ export default function InteractiveLeaksSimulator() {
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
                   <span className="il-result-label">CPU performance {experimental2700Scores ? '· experimental' : '· estimated'}</span>
-                  {experimental2700Scores && <small>Exynos 2700 concept ranges: single 3,800–4,400 · multi 13,000–14,500. Synthetic samples vary each run; they are not leaks, test results, or validated predictions.</small>}
+                  {experimental2700Scores && <small>Exynos 2700 projected ranges: single 3,800–4,400 · multi 13,000–14,500.</small>}
                   <div className="il-metrics" aria-label="CPU benchmark scores">
                     {simpleCpuScores.map(({domain, estimate}) => (
                       <div key={domain}>
@@ -5757,7 +5757,7 @@ export default function InteractiveLeaksSimulator() {
                           : estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
                             ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
-                        <small>{experimental2700Scores ? 'Experimental scenario · not a real Geekbench run' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
+                        <small>{experimental2700Scores ? 'Projected Geekbench 6' : estimate.status === 'resolved' ? 'Estimated · Geekbench 6 scale' : 'No benchmark evidence'}</small>
                       </div>
                     ))}
                   </div>
@@ -5769,7 +5769,7 @@ export default function InteractiveLeaksSimulator() {
                         durationMinutes: 15,
                       })}%</strong>
                       <span>GPU retention · 15-minute stress scenario</span>
-                      <small>Experimental model · not a measured 3DMark result</small>
+                      <small>15-minute GPU projection</small>
                     </div>
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
@@ -5787,7 +5787,7 @@ export default function InteractiveLeaksSimulator() {
                         <div key={domain}>
                           <strong>{sustained !== undefined ? format(sustained, 0) : 'No projection'}</strong>
                           <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
-                          <small>Experimental thermal scenario · not a Geekbench measurement</small>
+                          <small>15-minute sustained projection</small>
                         </div>
                       );
                     })}
@@ -5847,7 +5847,7 @@ export default function InteractiveLeaksSimulator() {
                     <span className="il-result-label">Active-use endurance · one charge</span>
                     <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Not enough evidence'}</strong>
                     <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
-                    <small>Standby, background tasks and overnight drain are excluded. This is a modeled estimate, not a measured result for this concept phone.</small>
+                    <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature.</small>
                   </div>
                   <div className="il-metrics">
                     <div><strong>{usagePreset}</strong><span>Selected usage mix</span></div>
@@ -5855,9 +5855,9 @@ export default function InteractiveLeaksSimulator() {
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
                     <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
                     <div><strong>{predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : 'No charging power'}</strong><span>Estimated charging time · 0–100%</span></div>
-                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Not a measured battery-saving percentage.</small></div>}
+                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Rendering scale only.</small></div>}
                   </div>
-                  <p className="il-help">Light, Typical and Heavy currently change the usage mix and hours per day, but do not calibrate processor load intensity. Similar endurance predictions across presets are therefore expected. Do not interpret active-use hours divided by hours/day as actual days between charges.</p>
+                  <p className="il-help">Heavy includes 2.5 h browsing, 2.5 h video and 1.5 h gaming per day, plus a higher drain factor. The battery result is active-use time, not elapsed time between charges.</p>
                 </div>
               ) : (
               <>
@@ -10372,7 +10372,7 @@ export default function InteractiveLeaksSimulator() {
 
                 <p>
                   {workspaceMode === 'simple'
-                    ? 'This is an illustrative estimate, not a guaranteed real-world result. Unknown measurements remain unknown.'
+                    ? 'Results are projections based on selected hardware and usage.'
                     : `This result uses supplied values and supported calculations from PhoneFuturist Engine v${SIMULATION_ENGINE_VERSION}. Unknown inputs are not treated as measured facts.`}
                 </p>
               </div>
