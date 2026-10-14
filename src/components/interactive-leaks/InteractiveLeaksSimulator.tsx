@@ -2206,9 +2206,6 @@ export default function InteractiveLeaksSimulator() {
       })
     : [];
 
-  // Use the same deterministic measured-reference/scenario estimator for
-  // Exynos 2700 and every other processor. Never rotate scores on UI revisions.
-  const experimental2700Scores: null = null;
 
   const simpleCpuScores = simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
@@ -5754,9 +5751,7 @@ export default function InteractiveLeaksSimulator() {
                   <div className="il-metrics" aria-label="CPU benchmark scores">
                     {simpleCpuScores.map(({domain, estimate}) => (
                       <div key={domain}>
-                        <strong>{experimental2700Scores
-                          ? format(experimental2700Scores[domain], 0)
-                          : estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
+                        <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
                             ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
                         <small>{estimate.status === 'resolved' ? 'Geekbench 6' : 'Insufficient benchmark data'}</small>
@@ -5776,7 +5771,7 @@ export default function InteractiveLeaksSimulator() {
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
                     {simpleCpuScores.map(({domain, estimate}) => {
-                      const peak = experimental2700Scores?.[domain] ?? estimate.adjustedExpected;
+                      const peak = estimate.adjustedExpected;
                       const sustained = peak !== undefined
                         ? projectedSustainedCpuScore({
                             peakScore: peak,
@@ -5815,7 +5810,7 @@ export default function InteractiveLeaksSimulator() {
                             )}
                             <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
                               Sustained CPU comparison: {(() => {
-                                const peak = experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(row => row.domain === 'geekbench6_multi')?.estimate.adjustedExpected;
+                                const peak = simpleCpuScores.find(row => row.domain === 'geekbench6_multi')?.estimate.adjustedExpected;
                                 const projected = peak === undefined ? undefined : projectedSustainedCpuScore({peakScore:peak, coolingClass:form.coolingClass, socPowerW:numeric(form.targetSocPowerW), durationMinutes:15});
                                 return projected !== undefined ? format(projected,0) + ' · 15 min simulated multi-core' : 'No projection';
                               })()} · predecessor sustained score unavailable
@@ -10339,7 +10334,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && workspaceMode === 'simple' && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={!!experimental2700Scores} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={false} />
               )}
 
               {workspaceMode === 'advanced' && result.warnings.length > 0 && (
