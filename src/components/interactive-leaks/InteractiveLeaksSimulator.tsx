@@ -1,3 +1,4 @@
+import DownloadSectionReceipt from './DownloadSectionReceipt';
 import ThermalPerformanceCharts from './ThermalPerformanceCharts';
 import './simulation-results-layout.css';
 import { projectedSustainedGpuRetention } from '../../lib/simulation/modules/sustained-gpu-scenario';
@@ -5867,6 +5868,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Display
                 </span>
+                <DownloadSectionReceipt kind="Display" deviceName={form.name} metrics={[{label:'Diagonal',value:simulationInput?.displays.primary.diagonalInches !== undefined ? format(simulationInput.displays.primary.diagonalInches,2)+' in' : undefined},{label:'Refresh rate',value:form.refreshRateHz ? form.refreshRateHz+' Hz' : undefined},{label:'Resolution',value:`${form.resolutionWidthPx} × ${form.resolutionHeightPx}`},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Panel',value:form.panelTechnology}]} />
 
                 <div className="il-metrics">
                   <div>
@@ -6374,6 +6376,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Battery
                 </span>
+                <DownloadSectionReceipt kind="Battery" deviceName={form.name} metrics={[{label:'Capacity',value:result.battery?.totalCapacityMah !== undefined ? format(result.battery.totalCapacityMah,0)+' mAh' : undefined},{label:'Chemistry',value:form.batteryChemistry},{label:'Active-use endurance',value:batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge !== undefined ? format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,1)+' h' : undefined},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
@@ -6866,6 +6869,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Wired charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
                 </span>
+                <DownloadSectionReceipt kind="Charging" deviceName={form.name} metrics={[{label:'Wired power',value:form.wiredChargeW ? form.wiredChargeW+' W' : undefined},{label:'Wireless power',value:form.wirelessChargeW ? form.wirelessChargeW+' W' : undefined},{label:'Charging standard',value:form.chargingStandard},{label:'Cell architecture',value:form.cellArchitecture},{label:'Projected 0–100%',value:predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : undefined}]} />
 
                 {chargingScenarioMinutes !== undefined && (
                   <div className="il-metrics">
@@ -7457,6 +7461,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Peak performance · {PEAK_PERFORMANCE_ESTIMATOR_VERSION}
                 </span>
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} />
 
                 {peakPerformanceEstimate?.status === 'resolved' ? (
                   <>
@@ -8628,6 +8633,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Thermal & performance · {LIVE_THERMAL_EXPERIENCE_VERSION}
                 </span>
+                <DownloadSectionReceipt kind="Thermal" deviceName={form.name} metrics={[{label:'Cooling',value:form.coolingClass},{label:'Peak temperature',value:thermalResult?.peakTemperatureC !== undefined ? format(thermalResult.peakTemperatureC,1)+' °C' : undefined},{label:'Sustained performance',value:thermalResult?.sustainedPerformancePercent !== undefined ? format(thermalResult.sustainedPerformancePercent,1)+'%' : undefined},{label:'Ambient',value:form.ambientTemperatureC ? form.ambientTemperatureC+' °C' : undefined},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} thermalPoints={thermalResult?.points} />
 
                 {thermalResult?.status === 'resolved' ? (
                   <>
@@ -9074,6 +9080,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Camera system · {LIVE_CAMERA_EXPERIENCE_VERSION}
                 </span>
+                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Main camera resolution',value:form.mainCameraResolutionMp ? form.mainCameraResolutionMp+' MP' : undefined},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
@@ -10329,7 +10336,7 @@ export default function InteractiveLeaksSimulator() {
 
               </>
               )}
-              {simulationInput && (
+              {simulationInput && workspaceMode === 'simple' && (
                 <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_single ?? simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: experimental2700Scores?.geekbench6_multi ?? simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={!!experimental2700Scores} />
               )}
 
