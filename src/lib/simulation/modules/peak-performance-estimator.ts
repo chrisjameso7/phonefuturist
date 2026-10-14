@@ -55,6 +55,7 @@ export interface PeakPerformanceEstimate {
   confidence?: number;
   referenceCount: number;
   neighborIds: string[];
+  referenceSocName?: string;
   evidenceScope?:
     | 'same-soc-family'
     | 'same-soc-vendor'
@@ -414,6 +415,7 @@ export function estimatePeakPerformance(
       ) / selected.length,
     referenceCount:
       selected.length,
+    referenceSocName: evidenceScope === 'same-soc-vendor' ? chosenReference : query.socName,
     neighborIds: [
       ...new Set(
         selected.map(
@@ -449,7 +451,7 @@ export function estimatePeakPerformance(
         : automaticScenario
         ? 'Simulated baseline scenario for a selectable chip without exact measured benchmarks: same-vendor reference performance with 0% assumed uplift. This is not a measurement or a claim of equal real-world performance.'
         : validUplift && evidenceScope === 'same-soc-vendor'
-        ? 'Scenario only: the baseline comes from measured same-vendor predecessor/reference chips, then the caller-supplied generation uplift is applied explicitly. This is not measured evidence for the target SoC.'
+        ? `Scenario only: the baseline comes from ${chosenReference ? `the measured predecessor ${chosenReference}` : 'same-vendor references'}, then the caller-supplied generation uplift is applied explicitly. This is not measured evidence for the target SoC.`
         : validUplift
           ? 'Peak benchmark baseline comes from measured exact-family references. The final adjusted score applies the caller-supplied uplift as an explicit what-if assumption.'
           : 'Peak benchmark result is resolved only from measured exact-family evidence. No hidden architecture, node or generational uplift is applied.',
