@@ -33,3 +33,45 @@ export function scoreValidationPairs(pairs: readonly ValidationPair[]): Accuracy
     target90Met: meanError <= 0.10,
   };
 }
+
+/** Group validation by workload, manufacturer, charging band, or other cohort.
+ * Small groups are reported but cannot be treated as validated milestones.
+ */
+export type CohortAccuracy = {
+  key: string;
+  score: AccuracyScore;
+  sufficientSample: boolean;
+  meanSignedErrorPercent: number;
+  p90AbsoluteErrorPercent: number;
+};
+
+export function scoreValidationCohorts<T>(
+  rows: readonly T[],
+  keyOf: (row: T) => string,
+  pairOf: (row: T) => ValidationPair,
+  minimumSamples = 5,
+): CohortAccuracy[] {
+  if (!Number.isInteger(minimumSamples) || minimumSamples < 1)
+    throw new Error('Minimum cohort sample size must be a positive integer.');
+  const groups = new Map<string, ValidationPair[]>();
+  for (const row of rows) {
+    const key = keyOf(row);
+    const group = groups.get(key) ?? [];
+    group.push(pairOf(row));
+    groups.set(key, group);
+  }
+  return [...groups.entries()].map(([key, pairs]) => {
+    const score = scoreValidationPairs(pairs);
+    if (!score) return undefined;
+    const errors = pairs.map(p => Math.abs(p.predicted - p.observed) / p.observed * 100).sort((a, b) => a - b);
+    const rank = Math.ceil(0.9 * errors.length) - 1;
+    return {
+      key,
+      score,
+      sufficientSample: score.evaluated >= minimumSamples,
+      meanSignedErrorPercent: pairs.reduce((sum, p) => sum + (p.predicted - p.observed) / p.observed * 100, 0) / pairs.length,
+      p90AbsoluteErrorPercent: errors[Math.max(0, rank)],
+    };
+  }).filter((cohort): cohort is CohortAccuracy => cohort !== undefined)
+    .sort((a, b) => b.score.mapePercent - a.score.mapePercent);
+}
