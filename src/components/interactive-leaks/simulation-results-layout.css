@@ -1,0 +1,78 @@
+/* Shared display, evidence and thermal result layouts. Scoped to the simulator's named panels. */
+.il-sensitivity-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));
+  gap:12px;
+  min-width:0;
+}
+.il-sensitivity-grid > .il-sensitivity-card {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:9px;
+  min-width:0;
+  padding:16px;
+  border-radius:14px;
+  background:rgba(148,163,184,.07);
+  overflow-wrap:anywhere;
+  line-height:1.5;
+}
+.il-sensitivity-grid > .il-sensitivity-card > strong {
+  display:block;
+  font-size:15px;
+  line-height:1.45;
+  text-transform:capitalize;
+  font-weight:700;
+}
+.il-sensitivity-grid > .il-sensitivity-card > span {
+  display:block;
+  width:100%;
+  font-size:14px;
+  line-height:1.5;
+}
+.il-sensitivity-grid > .il-sensitivity-card > small {
+  display:block;
+  width:100%;
+  line-height:1.6;
+  opacity:.82;
+}
+.il-thermal-table {
+  display:grid;
+  gap:7px;
+  margin-top:12px;
+}
+.il-thermal-row {
+  display:grid;
+  grid-template-columns:minmax(72px,1.25fr) repeat(3,minmax(0,1fr));
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  padding:10px 12px;
+  border-radius:9px;
+  background:rgba(148,163,184,.055);
+  font-variant-numeric:tabular-nums;
+  font-size:13px;
+}
+.il-thermal-row > * {min-width:0;overflow-wrap:anywhere}
+.il-thermal-row > strong {font-size:13px}
+.il-thermal-plot {
+  min-width:0;
+  border-radius:15px;
+  padding:14px;
+  background:rgba(148,163,184,.065);
+}
+.il-thermal-plot-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:7px;
+  margin-bottom:10px;
+}
+.il-thermal-plot-heading strong {font-size:14px}
+.il-thermal-plot-heading span {font-size:12px;opacity:.72}
+@media(max-width:560px){
+ .il-sensitivity-grid{grid-template-columns:minmax(0,1fr)}
+ .il-thermal-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px}
+ .il-thermal-plot{padding:10px}
+}
