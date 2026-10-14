@@ -18,5 +18,9 @@ describe('section receipts', () => {
     expect(exporter).toContain('safeFilename(deviceName)');
     expect(exporter).toContain("kind === 'Thermal'");
     expect(exporter).toContain('PERFORMANCE STABILITY');
+    expect(exporter).toContain('Performance (%)');
+    expect(exporter).toContain('Temperature (°C)');
+    expect(exporter).toContain('temperatureY(p.temperatureC)');
+    expect(exporter).toContain('maxTime - minTime');
   });
 });
