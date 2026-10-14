@@ -18,7 +18,7 @@ export function projectTaperedChargingMinutes(input: {
   // Standard labels select illustrative taper profiles, not measured vendor curves.
   const earlyPowerFactor = standardizedProfile && twoOrMoreCells ? 0.79 : standardizedProfile ? 0.74 : 0.70;
   const taperStart = standardizedProfile ? 0.62 : 0.55;
-  if (!(efficiency > 0 && efficiency <= 1)) return undefined;
+  if (!Number.isFinite(efficiency) || !(efficiency > 0 && efficiency <= 1)) return undefined;
   let hours = 0;
   for (let percent = 0; percent < 100; percent++) {
     const stateOfCharge = (percent + 0.5) / 100;
