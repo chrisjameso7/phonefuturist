@@ -76,3 +76,28 @@
  .il-thermal-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px}
  .il-thermal-plot{padding:10px}
 }
+
+
+.il-section-receipt-button {
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  max-width:100%;
+  min-height:44px;
+  padding:0.7rem 1rem;
+  border:1px solid rgba(125,211,252,.45);
+  border-radius:12px;
+  background:rgba(56,189,248,.09);
+  color:#b9e9ff;
+  font:inherit;
+  font-size:0.88rem;
+  font-weight:700;
+  letter-spacing:0.01em;
+  cursor:pointer;
+  transition:background .15s ease,transform .15s ease;
+}
+.il-section-receipt-button:hover { background:rgba(56,189,248,.19);transform:translateY(-1px) }
+.il-section-receipt-button:focus-visible { outline:2px solid #7dd3fc;outline-offset:3px }
+@media(max-width:560px) { .il-section-receipt-button {width:100%} }
