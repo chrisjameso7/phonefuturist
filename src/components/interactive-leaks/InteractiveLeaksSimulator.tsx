@@ -7535,12 +7535,12 @@ export default function InteractiveLeaksSimulator() {
 
                       <div>
                         <strong>
-                          {peakPerformanceEstimate.assumptionApplied
-                            ? `+${format(
+                          {peakPerformanceEstimate.assumedGenerationUpliftPercent !== undefined
+                            ? `${peakPerformanceEstimate.assumedGenerationUpliftPercent > 0 ? '+' : ''}${format(
                                 peakPerformanceEstimate.assumedGenerationUpliftPercent,
                                 1,
                               )}%`
-                            : 'None'}
+                            : peakPerformanceEstimate.assumptionApplied ? '0% baseline scenario' : 'None'}
                         </strong>
                         <span>Generation uplift assumption</span>
                       </div>
