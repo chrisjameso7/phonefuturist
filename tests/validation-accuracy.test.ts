@@ -7,6 +7,7 @@ describe('independent calibration accuracy scoring', () => {
     expect(score.target80Met).toBe(true);
     expect(score.target90Met).toBe(true);
     expect(score.coverageWithin20Percent).toBe(100);
+    expect(score.meets80QualityGate).toBe(true);
   });
   it('does not disguise sparse acceptable predictions as high hit-rate coverage', () => {
     const score = scoreValidationPairs([{observed: 10, predicted: 7}, {observed: 10, predicted: 10}])!;
@@ -14,6 +15,7 @@ describe('independent calibration accuracy scoring', () => {
     expect(score.target80Met).toBe(true);
     expect(score.target90Met).toBe(false);
     expect(score.coverageWithin20Percent).toBe(50);
+    expect(score.meets80QualityGate).toBe(false);
   });
   it('does not count 20% errors as 90% accuracy', () => {
     const score = scoreValidationPairs([{observed: 10, predicted: 12}])!;
@@ -40,6 +42,11 @@ describe('independent calibration accuracy scoring', () => {
   });
   it('rejects invalid cohort sample requirements', () => {
     expect(() => scoreValidationCohorts([], () => 'x', () => ({observed: 1, predicted: 1}), 0)).toThrow();
+  });
+  it('scores zero predictions as complete misses instead of ignoring them', () => {
+    const score = scoreValidationPairs([{observed: 10, predicted: 0}])!;
+    expect(score.mapePercent).toBe(100);
+    expect(score.meets80QualityGate).toBe(false);
   });
   it('rejects empty and invalid reference measurements', () => {
     expect(scoreValidationPairs([])).toBeUndefined();
