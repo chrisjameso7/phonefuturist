@@ -26,22 +26,23 @@ export function estimateSocDailyBattery(input: SocDailyBatteryInput): SocDailyBa
   if (!input.sessions.length) return {status:'unresolved',reason:'At least one session is required.'};
   if (input.standbyPowerW !== undefined && (!Number.isFinite(input.standbyPowerW) || input.standbyPowerW < 0))
     return {status:'unresolved',reason:'Standby power must be finite and nonnegative when supplied.'};
-  let activeHoursPerDay=0;
+  // Validate the complete schedule before looking up any processor evidence.
+  // Otherwise an unknown SoC can mask an invalid zero-hour or >24-hour day.
+  if (input.sessions.some(session => !Number.isFinite(session.hoursPerDay) || session.hoursPerDay < 0))
+    return {status:'unresolved',reason:'Session duration must be finite and nonnegative.'};
+  const activeHoursPerDay = input.sessions.reduce((total, session) => total + session.hoursPerDay, 0);
+  if (activeHoursPerDay > 24) return {status:'unresolved',reason:'Active daily sessions exceed 24 hours.'};
+  if (activeHoursPerDay === 0) return {status:'unresolved',reason:'A nonzero active session is required for this workload scenario.'};
   let dailyActiveEnergyWh=0;
   const workloads: Array<{kind: WorkloadSession['kind']; powerW:number; energyWh:number}> = [];
   for (const session of input.sessions) {
-    if (!Number.isFinite(session.hoursPerDay) || session.hoursPerDay < 0)
-      return {status:'unresolved',reason:'Session duration must be finite and nonnegative.'};
     const result=estimateSocWorkloadPower({...session.electrical,batteryEnergyWh:input.batteryEnergyWh,
       usableFraction:input.usableFraction});
     if (result.status !== 'scenario') return {status:'unresolved',reason:session.kind+': '+result.reason};
     const energyWh=result.totalPowerW*session.hoursPerDay;
     workloads.push({kind:session.kind,powerW:result.totalPowerW,energyWh});
-    activeHoursPerDay+=session.hoursPerDay;
     dailyActiveEnergyWh+=energyWh;
   }
-  if (activeHoursPerDay > 24) return {status:'unresolved',reason:'Active daily sessions exceed 24 hours.'};
-  if (activeHoursPerDay === 0) return {status:'unresolved',reason:'A nonzero active session is required for this workload scenario.'};
   const base={status:'scenario' as const,dailyActiveEnergyWh,activeHoursPerDay,workloads};
   const daily=estimateDailyBatteryBudget({usableEnergyWh:input.batteryEnergyWh*input.usableFraction,
     activeHoursPerDay,activeEnergyWhPerDay:dailyActiveEnergyWh,standbyPowerW:input.standbyPowerW});
