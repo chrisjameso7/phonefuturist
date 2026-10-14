@@ -7464,10 +7464,13 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Peak performance · {PEAK_PERFORMANCE_ESTIMATOR_VERSION}
                 </span>
-                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} />
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Reference SoC',value:peakPerformanceEstimate?.referenceSocName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} />
 
                 {peakPerformanceEstimate?.status === 'resolved' ? (
                   <>
+                    {peakPerformanceEstimate.referenceSocName && peakPerformanceEstimate.evidenceScope === 'same-soc-vendor' ? (
+                      <p className="il-help">Baseline processor: {peakPerformanceEstimate.referenceSocName}. The projected score is a scenario, not a measured result for {form.socName}.</p>
+                    ) : null}
                     <div className="il-metrics">
                       <div>
                         <strong>
