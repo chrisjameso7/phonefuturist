@@ -1,3 +1,4 @@
+import { scoreValidationPairs } from '../src/lib/simulation/modules/validation-accuracy';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildCalibrationRegistry,
@@ -19,6 +20,21 @@ describe('external PhoneArena runtime holdout', () => {
         buildCalibrationRegistry(),
       );
   }, 120_000);
+
+  it('reports 80% and 90% evidence-based accuracy milestones', () => {
+    expect(result.status).toBe('resolved');
+    const score = scoreValidationPairs(result.rows.map(row => ({ observed: row.actualHours, predicted: row.predictedHours })));
+    expect(score).toBeDefined();
+    expect(score!.evaluated).toBe(result.rows.length);
+    expect(score!.mapePercent).toBeCloseTo(result.mapePercent!, 6);
+    console.info('RUNTIME_ACCURACY_TARGETS', JSON.stringify(score));
+    // A calibration milestone is achieved only when actual held-out error
+    // meets the target. Reporting a milestone must not pretend it passed.
+    if (process.env.ENFORCE_SIMULATION_ACCURACY === '1') {
+      expect(score!.target80Met, 'Held-out MAPE must be at most 20%').toBe(true);
+      expect(score!.coverageWithin20Percent, 'At least 80% of individual predictions must be within 20%').toBeGreaterThanOrEqual(80);
+    }
+  });
 
   it('evaluates held-out PhoneArena runtime rows across multiple workloads', () => {
     expect(result.status).toBe(
