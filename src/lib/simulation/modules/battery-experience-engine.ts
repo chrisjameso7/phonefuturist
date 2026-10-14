@@ -1,3 +1,4 @@
+import { usagePresetDrainFactor } from './usage-preset-drain';
 import { projectedSocPowerFactor } from '../soc-model-catalog';
 import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 import type { SimulationInput } from '../types';
@@ -345,8 +346,9 @@ export function simulateBatteryExperience(
     if (activeHoursPerDay > 0 && selected.length > 0) {
       // An interactive scenario, not a correction to lab measurements.
       // Represents brightness, background load, radios and gaming intensity.
-      const intensityFactor = (input.usageIntensity === 'Light' ? 0.78
-        : input.usageIntensity === 'Heavy' ? 1.40 : 1) * projectedSocPowerFactor(input.socName);
+      const intensityFactor = (workload: typeof selected[number]['workload']) =>
+        usagePresetDrainFactor(input.usageIntensity, workload) *
+        projectedSocPowerFactor(input.socName);
       // Thermal headroom alters sustained CPU/GPU duty cycle rather than
       // applying a flat battery bonus to browsing and video playback.
       const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
@@ -377,7 +379,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -386,7 +388,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.minDrainMahPerHour,
             0,
           );
@@ -395,7 +397,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -404,7 +406,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -413,7 +415,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -422,7 +424,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor * scenarioFactor(row.workload) *
+              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
                 row.maxDrainWhPerHour!,
             0,
           )
