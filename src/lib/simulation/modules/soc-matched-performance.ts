@@ -43,11 +43,11 @@ export function compareSocsAtPerformance(
     const ordered = [...points].sort((a, b) => a.benchmarkScore - b.benchmarkScore);
     if (targetScore < ordered[0].benchmarkScore || targetScore > ordered[ordered.length - 1].benchmarkScore)
       return undefined;
-    for (let i = 1; i < ordered.length; i++) {
+    // Equal scores can occur at multiple board-power settings. Prefer the\n    // lowest observed power rather than depending on source ordering.\n    const exact = ordered.filter(point => point.benchmarkScore === targetScore);\n    if (exact.length) return Math.min(...exact.map(point => point.boardPowerW));\n    for (let i = 1; i < ordered.length; i++) {
       const low = ordered[i - 1], high = ordered[i];
       if (targetScore > high.benchmarkScore) continue;
       const delta = high.benchmarkScore - low.benchmarkScore;
-      const ratio = delta === 0 ? 0 : (targetScore - low.benchmarkScore) / delta;
+      if (delta <= 0) continue;\n      const ratio = (targetScore - low.benchmarkScore) / delta;
       return low.boardPowerW + (high.boardPowerW - low.boardPowerW) * ratio;
     }
     return ordered[0].boardPowerW;
