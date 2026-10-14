@@ -1,3 +1,5 @@
+import ThermalPerformanceCharts from './ThermalPerformanceCharts';
+import './simulation-results-layout.css';
 import { projectedSustainedGpuRetention } from '../../lib/simulation/modules/sustained-gpu-scenario';
 import { projectedSustainedCpuScore } from '../../lib/simulation/modules/sustained-cpu-scenario';
 import { projectTaperedChargingMinutes } from '../../lib/simulation/modules/charging-scenario';
@@ -8829,6 +8831,7 @@ export default function InteractiveLeaksSimulator() {
                           Thermal timeline
                         </div>
 
+                        <ThermalPerformanceCharts points={thermalResult.points} />
                         <div className="il-thermal-table">
                           {thermalResult.points
                             .filter(
