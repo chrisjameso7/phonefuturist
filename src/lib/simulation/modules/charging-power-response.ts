@@ -6,7 +6,7 @@ export const CHARGING_POWER_RESPONSE_VERSION =
 export interface ChargingPowerResponseQuery {
   manufacturer?: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   targetWatts: number;
 }
 
@@ -19,7 +19,7 @@ export interface ChargingPowerResponseEvidence {
   elasticity: number;
   manufacturer: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
 }
 
 export interface EarlyChargePowerResponseEvidence {
@@ -31,7 +31,7 @@ export interface EarlyChargePowerResponseEvidence {
   elasticity: number;
   manufacturer: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
 }
 
 export interface ChargingPowerResponse {

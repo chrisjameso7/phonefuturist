@@ -39,7 +39,7 @@ describe('Frozen sharing',()=>{
 it('renders the restored deterministic Interactive Leaks workspace without Quick Sim controls',async()=>{
  const {createElement}=await import('react');const {renderToStaticMarkup}=await import('react-dom/server');const {default:Simulator}=await import('../src/components/interactive-leaks/InteractiveLeaksSimulator');
  const html=renderToStaticMarkup(createElement(Simulator));
- expect(html).toContain('Simulation workspace');expect(html).toContain('Device');expect(html).toContain('Run simulation');expect(html).not.toContain('aria-label="Simulation mode"');expect(html).not.toContain('Quick Sim');expect(html).not.toContain('aria-label="Gaming average device power (W)"');
+ expect(html).toContain('Ready to simulate');expect(html).toContain('Estimated');expect(html).toContain('Simulation workspace');expect(html).toContain('Device');expect(html).toContain('Run simulation');expect(html).not.toContain('aria-label="Simulation mode"');expect(html).not.toContain('Quick Sim');expect(html).not.toContain('aria-label="Gaming average device power (W)"');
 }, 30_000);
 it('wraps a long device name in the PNG and never changes the calculated result',async()=>{
  const a=freezeRun({...sample(),input:{...input,name:'A very long device concept '.repeat(6)}},sample().context);

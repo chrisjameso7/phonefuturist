@@ -1,3 +1,4 @@
+import { scoreValidationPairs, scoreValidationCohorts } from '../src/lib/simulation/modules/validation-accuracy';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildCalibrationRegistry,
@@ -19,6 +20,27 @@ describe('external PhoneArena runtime holdout', () => {
         buildCalibrationRegistry(),
       );
   }, 120_000);
+
+  it('reports 80% and 90% evidence-based accuracy milestones', () => {
+    expect(result.status).toBe('resolved');
+    const score = scoreValidationPairs(result.rows.map(row => ({ observed: row.actualHours, predicted: row.predictedHours })));
+    expect(score).toBeDefined();
+    expect(score!.evaluated).toBe(result.rows.length);
+    expect(score!.mapePercent).toBeCloseTo(result.mapePercent!, 6);
+    console.info('RUNTIME_ACCURACY_TARGETS', JSON.stringify(score));
+    const cohorts = scoreValidationCohorts(
+      result.rows,
+      row => row.workload,
+      row => ({observed: row.actualHours, predicted: row.predictedHours}),
+    );
+    console.info('RUNTIME_WORST_COHORTS', JSON.stringify(cohorts));
+    expect(cohorts.length).toBeGreaterThan(0);
+    // A calibration milestone is achieved only when actual held-out error
+    // meets the target. Reporting a milestone must not pretend it passed.
+    // This is a cross-protocol diagnostic. Never use it as a calibration
+    // acceptance gate: its observed workload conditions differ from the
+    // reference lab's. The gate lives in the same-protocol historical test.
+  });
 
   it('evaluates held-out PhoneArena runtime rows across multiple workloads', () => {
     expect(result.status).toBe(
@@ -63,6 +85,37 @@ describe('external PhoneArena runtime holdout', () => {
       result.mapePercent,
     ).toBeGreaterThanOrEqual(0);
   });
+
+  it('identifies cross-protocol comparisons instead of calling them like-for-like', () => {
+    expect(result.protocolMatchedRows + result.crossProtocolRows).toBe(result.evaluatedRows);
+    expect(result.rows.every(row => typeof row.protocolMatched === 'boolean')).toBe(true);
+    expect(result.note).toContain('cross-protocol error is diagnostic');
+    console.info('RUNTIME_PROTOCOL_AUDIT', JSON.stringify({
+      protocolMatchedRows: result.protocolMatchedRows,
+      crossProtocolRows: result.crossProtocolRows,
+      exampleReferenceProtocols: [...new Set(result.rows.map(row => row.referenceProtocol ?? 'unknown'))],
+      exampleObservedProtocols: [...new Set(result.rows.map(row => row.observedProtocol ?? 'unknown'))],
+    }));
+  });
+
+  it('compares a spec-enriched holdout without reintroducing PhoneArena measurements', () => {
+    const enriched = backtestAgainstPhoneArenaRuntime(
+      buildCalibrationRegistry(),
+      'spec-enriched',
+    );
+    expect(enriched.status).toBe('resolved');
+    expect(enriched.evaluatedRows).toBeGreaterThan(10);
+    expect(enriched.rows.every(row => Number.isFinite(row.predictedHours) && row.predictedHours > 0)).toBe(true);
+    expect(enriched.rows.every(row => row.energyBasis === 'mah' || row.energyBasis === 'wh')).toBe(true);
+    console.info('RUNTIME_ENERGY_BASIS', JSON.stringify({wh: enriched.rows.filter(row => row.energyBasis === 'wh').length, mah: enriched.rows.filter(row => row.energyBasis === 'mah').length}));
+    console.info('PHONEARENA_RUNTIME_SPEC_ENRICHED', JSON.stringify({
+      sparseMapePercent: result.mapePercent,
+      enrichedMapePercent: enriched.mapePercent,
+      sparseMaeHours: result.maeHours,
+      enrichedMaeHours: enriched.maeHours,
+      byWorkload: enriched.byWorkload,
+    }));
+  }, 120_000);
 
   it('reports browsing, video and gaming error separately', () => {
     const keys =

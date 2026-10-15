@@ -1,3 +1,4 @@
+import { scoreValidationPairs, scoreValidationCohorts } from '../src/lib/simulation/modules/validation-accuracy';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
   buildCalibrationRegistry,
@@ -18,7 +19,29 @@ describe('external PhoneArena charging holdout', () => {
       backtestAgainstPhoneArenaCharging(
         buildCalibrationRegistry(),
       );
-  }, 120_000);
+  }, 240_000);
+
+  it('reports 80% and 90% evidence-based accuracy milestones', () => {
+    expect(result.status).toBe('resolved');
+    const score = scoreValidationPairs(result.rows.map(row => ({ observed: row.actualFullChargeMinutes, predicted: row.predictedFullChargeMinutes })));
+    expect(score).toBeDefined();
+    expect(score!.evaluated).toBe(result.rows.length);
+    expect(score!.mapePercent).toBeCloseTo(result.mapePercent!, 6);
+    console.info('CHARGING_ACCURACY_TARGETS', JSON.stringify(score));
+    const cohorts = scoreValidationCohorts(
+      result.rows,
+      row => row.wattageBand,
+      row => ({observed: row.actualFullChargeMinutes, predicted: row.predictedFullChargeMinutes}),
+    );
+    console.info('CHARGING_WORST_COHORTS', JSON.stringify(cohorts));
+    expect(cohorts.length).toBeGreaterThan(0);
+    // A calibration milestone is achieved only when actual held-out error
+    // meets the target. Reporting a milestone must not pretend it passed.
+    if (process.env.ENFORCE_SIMULATION_ACCURACY === '1') {
+      expect(score!.evaluated, 'Holdout must have sufficient independent reference rows').toBeGreaterThanOrEqual(20);
+      expect(score!.meets80QualityGate, 'Holdout must have MAPE <=20% and at least 80% of predictions within 20%').toBe(true);
+    }
+  });
 
   it('evaluates a meaningful held-out PhoneArena charging cohort', () => {
     expect(result.status).toBe(

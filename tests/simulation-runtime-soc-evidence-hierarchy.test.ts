@@ -154,4 +154,54 @@ describe('runtime SoC evidence hierarchy', () => {
     );
     expect(result.estimate?.referenceCount).toBe(2);
   });
+  it('does not treat repeated tests of one phone as two same-family peers', () => {
+    const corpus: DeviceCorpus = {
+      version: 'runtime-repeat-family',
+      sources: [source],
+      devices: [
+        device('one-chip', 'MediaTek', 'Dimensity 9500'),
+        device('another-chip', 'Qualcomm', 'Snapdragon X'),
+      ],
+      measurements: [
+        measurement('one-first', 'one-chip', 5),
+        measurement('one-repeat', 'one-chip', 5.2),
+        measurement('another', 'another-chip', 12),
+      ],
+    };
+    const result = resolveCorpusRuntimeBand(
+      corpus, input(), 'gaming', {},
+      { socVendor: 'MediaTek', socName: 'Dimensity 9500' },
+    );
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceScope).toBe('protocol-cohort');
+    expect(result.estimate?.sameSocFamilyReferences).toBe(1);
+    expect(result.estimate?.sameSocVendorReferences).toBe(1);
+    expect(result.estimate?.referenceCount).toBe(3);
+    expect(result.estimate?.independentReferenceDeviceCount).toBe(2);
+    expect(result.estimate?.neighborIds.sort()).toEqual(['another-chip', 'one-chip']);
+  });
+
+  it('needs two independent phones before selecting same-vendor evidence', () => {
+    const corpus: DeviceCorpus = {
+      version: 'runtime-repeat-vendor',
+      sources: [source],
+      devices: [
+        device('one-chip', 'MediaTek', 'Dimensity 9400'),
+        device('other-chip', 'Qualcomm', 'Snapdragon X'),
+      ],
+      measurements: [
+        measurement('one-first', 'one-chip', 5),
+        measurement('one-repeat', 'one-chip', 5.5),
+        measurement('another', 'other-chip', 12),
+      ],
+    };
+    const result = resolveCorpusRuntimeBand(
+      corpus, input(), 'gaming', {},
+      { socVendor: 'MediaTek', socName: 'Dimensity 9500' },
+    );
+    expect(result.status).toBe('resolved');
+    expect(result.estimate?.evidenceScope).toBe('protocol-cohort');
+    expect(result.estimate?.sameSocVendorReferences).toBe(1);
+  });
+
 });

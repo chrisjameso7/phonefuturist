@@ -1,0 +1,120 @@
+/* Shared display, evidence and thermal result layouts. Scoped to the simulator's named panels. */
+.il-sensitivity-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));
+  gap:12px;
+  min-width:0;
+}
+.il-sensitivity-grid > .il-sensitivity-card {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:9px;
+  min-width:0;
+  padding:16px;
+  border-radius:14px;
+  background:rgba(148,163,184,.07);
+  overflow-wrap:anywhere;
+  line-height:1.5;
+}
+.il-sensitivity-grid > .il-sensitivity-card > strong {
+  display:block;
+  font-size:15px;
+  line-height:1.45;
+  text-transform:capitalize;
+  font-weight:700;
+}
+.il-sensitivity-grid > .il-sensitivity-card > span {
+  display:block;
+  width:100%;
+  font-size:14px;
+  line-height:1.5;
+}
+.il-sensitivity-grid > .il-sensitivity-card > small {
+  display:block;
+  width:100%;
+  line-height:1.6;
+  opacity:.82;
+}
+.il-thermal-table {
+  display:grid;
+  gap:7px;
+  margin-top:12px;
+}
+.il-thermal-row {
+  display:grid;
+  grid-template-columns:minmax(72px,1.25fr) repeat(3,minmax(0,1fr));
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  padding:10px 12px;
+  border-radius:9px;
+  background:rgba(148,163,184,.055);
+  font-variant-numeric:tabular-nums;
+  font-size:13px;
+}
+.il-thermal-row > * {min-width:0;overflow-wrap:anywhere}
+.il-thermal-row > strong {font-size:13px}
+.il-thermal-plot {
+  min-width:0;
+  border-radius:15px;
+  padding:14px;
+  background:rgba(148,163,184,.065);
+}
+.il-thermal-plot-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:7px;
+  margin-bottom:10px;
+}
+.il-thermal-plot-heading strong {font-size:14px}
+.il-thermal-plot-heading span {font-size:12px;opacity:.72}
+@media(max-width:560px){
+ .il-sensitivity-grid{grid-template-columns:minmax(0,1fr)}
+ .il-thermal-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px}
+ .il-thermal-plot{padding:10px}
+}
+
+
+.il-section-receipt-button {
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  max-width:100%;
+  min-height:44px;
+  padding:0.7rem 1rem;
+  border:1px solid rgba(125,211,252,.45);
+  border-radius:12px;
+  background:rgba(56,189,248,.09);
+  color:#b9e9ff;
+  font:inherit;
+  font-size:0.88rem;
+  font-weight:700;
+  letter-spacing:0.01em;
+  cursor:pointer;
+  transition:background .15s ease,transform .15s ease;
+}
+.il-section-receipt-button:hover { background:rgba(56,189,248,.19);transform:translateY(-1px) }
+.il-section-receipt-button:focus-visible { outline:2px solid #7dd3fc;outline-offset:3px }
+@media(max-width:560px) { .il-section-receipt-button {width:100%} }
+
+/* Allow controls, receipts and comparison names to shrink inside narrow cards. */
+.il-app :is(.il-toolbar, .il-toolbar-actions, .il-mode-switch) { flex-wrap:wrap; }
+.il-app :is(.il-builder, .il-results, .il-field, .il-result-group, .il-metrics > div) { min-width:0; }
+.il-app :is(input, select, textarea) { box-sizing:border-box; min-width:0; max-width:100%; }
+.il-app :is(.il-metrics, .il-share-card-metrics, .il-sensitivity-card) { overflow-wrap:anywhere; }
+.il-section-receipt-button:disabled { cursor:wait; opacity:.7; }
+@media(max-width:560px) {
+  .il-app :is(button, select, input) { min-height:44px; }
+  .il-app .il-toolbar-actions { gap:8px; }
+  .il-app .il-mode-switch { max-width:100%; }
+  .il-app .il-results { min-width:0; }
+}
+/* Override legacy compact button rules so the complete touch target is usable. */
+.interactive-page.pf-ui .interactive-simulator-shell .il-app :is(button, select, input) {
+  min-height:44px;
+}

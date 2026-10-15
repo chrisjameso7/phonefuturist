@@ -1,0 +1,28 @@
+---
+interface SpotlightCampaign {
+  title: string;
+  description?: string;
+  image: string;
+  href: string;
+  cta?: string;
+  imageAlt?: string;
+}
+interface Props { campaign?: SpotlightCampaign | null }
+const { campaign = null } = Astro.props;
+const sponsored = Boolean(campaign);
+const title = campaign?.title ?? 'Tomorrow, examined.';
+const description = campaign?.description ?? '';
+const image = campaign?.image ?? '/assets/device-concept.png';
+const href = campaign?.href ?? '/interactive-leaks';
+const action = campaign?.cta ?? 'Explore Interactive Leaks';
+---
+<section class="pf-spotlight pf-ui" aria-labelledby="pf-spotlight-title" data-sponsored={sponsored ? 'true' : 'false'}>
+  <img class="pf-spotlight__image" src={image} alt={campaign?.imageAlt ?? ''} width="1672" height="941" fetchpriority="high" />
+  <div class="pf-spotlight__content">
+    <p class="pf-spotlight__label">{sponsored ? 'Sponsored Spotlight' : 'PhoneFuturist'}</p>
+    <h1 id="pf-spotlight-title">{title}</h1>
+    {description && <p class="pf-spotlight__description">{description}</p>}
+    <a class="pf-ui__button pf-spotlight__cta" href={href} rel={sponsored ? 'sponsored noopener noreferrer' : undefined}>{action} <span aria-hidden="true">↗</span></a>
+  </div>
+  {sponsored ? <span class="pf-spotlight__index">Advertisement</span> : <span class="pf-spotlight__index" aria-hidden="true">PF / 01</span>}
+</section>

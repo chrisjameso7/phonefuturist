@@ -50,13 +50,18 @@ export function buildLegacyWorkloadCorpus(): DeviceCorpus {
       continue;
     }
 
-    const sourceId = `legacy-source-${slug(row.source_url)}`;
-    if (!sourceByUrl.has(row.source_url)) {
-      sourceByUrl.set(row.source_url, {
+    // A single source URL may contain browsing, video and gaming results.
+    // Never assign the first row's workload to every measurement on that URL.
+    // The original lab method is undocumented, so distinguish workloads
+    // without claiming these are standardized, comparable lab protocols.
+    const sourceKey = `${row.source_url}|${row.workload}`;
+    const sourceId = `legacy-source-${slug(row.source_url)}-${row.workload}`;
+    if (!sourceByUrl.has(sourceKey)) {
+      sourceByUrl.set(sourceKey, {
         id: sourceId,
         publisher: 'Legacy workload dataset source',
         url: row.source_url,
-        protocol: row.workload,
+        protocol: `legacy-${row.workload}-method-unspecified`,
       });
     }
 

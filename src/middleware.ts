@@ -5,7 +5,9 @@ import { validOrigin } from './lib/security';
 export const onRequest = defineMiddleware(async (context, next) => {
   const path = context.url.pathname;
   const protectedPage = path === '/account' || path.startsWith('/account/') || path === '/studio' || path.startsWith('/studio/');
-  const earlyAccessPage = path === '/interactive-leaks/simulate' || path.startsWith('/interactive-leaks/api/');
+  // The legacy /simulate page is only a public redirect to the simulator.
+  // Keep actual lab API endpoints behind their existing access checks.
+  const earlyAccessPage = path.startsWith('/interactive-leaks/api/');
   const authPage = protectedPage || earlyAccessPage || ['/login', '/join', '/forgot-password'].includes(path) || path.startsWith('/auth/');
   context.locals.supabase = null; context.locals.user = null; context.locals.access = null;
   let response: Response;

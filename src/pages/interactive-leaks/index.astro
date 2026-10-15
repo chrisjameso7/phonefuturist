@@ -1,6 +1,5 @@
 ---
 import Page from '../../layouts/Page.astro';
-import { SIMULATION_ENGINE_VERSION } from '../../lib/simulation/engine';
 import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
 ---
 
@@ -8,7 +7,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   title="Interactive Leaks"
   description="Build and test unreleased device concepts with PhoneFuturist's deterministic hardware simulation engine."
 >
-  <main class="interactive-page">
+  <div class="interactive-page pf-ui">
     <section class="interactive-hero">
       <div class="interactive-hero-copy">
         <p class="interactive-eyebrow">PhoneFuturist Intelligence</p>
@@ -19,19 +18,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
         </h1>
 
         <p class="interactive-intro">
-          Don't just read the specifications. Test them.
+          Build it. Test it.
         </p>
-
-        <p class="interactive-description">
-          Build an unreleased device from reported, estimated, or hypothetical
-          specifications and see what the numbers actually imply.
-        </p>
-
-        <div class="interactive-principles">
-          <span>Evidence in</span>
-          <span>Math applied</span>
-          <span>No invented specifications</span>
-        </div>
 
         <p class="interactive-community-link"><a class="workspace-jump" href="#simulator">Open workspace ↓</a>
           <a href="/interactive-leaks/explore">Explore community builds →</a>
@@ -50,28 +38,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
           <div class="model-mark">
             <strong>PF</strong>
-            <span>SIM {SIMULATION_ENGINE_VERSION}</span>
+            <span>SIMULATED</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="interactive-context">
-      <p class="interactive-section-label">
-        Interactive hardware modelling
-      </p>
-
-      <div>
-        <h2>
-          Turn leaked specifications into something testable.
-        </h2>
-
-        <p>
-          Interactive Leaks uses deterministic calculations rather than
-          generative guesses. Give the model what is known. Leave the rest
-          unknown. The engine calculates only what the supplied evidence
-          supports.
-        </p>
       </div>
     </section>
 
@@ -79,20 +48,22 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
       <div class="interactive-workspace-header">
         <div>
           <p class="interactive-section-label">Simulator</p>
-          <h2>Device workspace</h2>
+          <h2>Build your device</h2>
         </div>
 
         <div class="interactive-engine-badge">
           <span class="interactive-engine-dot"></span>
-          Beta engine · v{SIMULATION_ENGINE_VERSION}
+          Beta
         </div>
       </div>
 
       <div class="interactive-simulator-shell">
-        <InteractiveLeaksSimulator client:load />
+        <InteractiveLeaksSimulator client:visible />
       </div>
     </section>
 
+    <details class="pf-simulation-method">
+      <summary>How it works</summary>
     <section class="interactive-methodology">
       <div class="interactive-methodology-heading">
         <p class="interactive-section-label">Methodology</p>
@@ -128,7 +99,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
         </article>
       </div>
     </section>
-  </main>
+
+    </details>
+  </div>
 </Page>
 
 <style is:global>
@@ -1658,4 +1631,92 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     width:100%;
     border-left:0;
   }
+</style>
+
+<style is:global>
+/* Advanced workspace palette: remove leftover graphite from legacy simulator styles. */
+.interactive-page .interactive-simulator-shell {
+  background:#091321;
+  border-color:#23374f;
+}
+.interactive-page .il-workspace,
+.interactive-page .il-builder,
+.interactive-page .il-results {
+  background:#0a1422;
+  border-color:#23374f;
+}
+.interactive-page .il-section,
+.interactive-page .il-simple-panel {
+  background:#0e1b2c;
+  border-color:#243b56;
+}
+.interactive-page .il-advanced,
+.interactive-page .il-result-empty,
+.interactive-page .il-sensitivity-card {
+  background:#0c1828;
+  border-color:#253b54;
+}
+.interactive-page .il-field input,
+.interactive-page .il-field select,
+.interactive-page .il-field textarea {
+  background:#080f1a;
+  border-color:#324762;
+  color:#f0f7ff;
+}
+.interactive-page .il-section details,
+.interactive-page .il-section details > summary {
+  background:transparent;
+}
+.interactive-page .il-section details > summary {
+  color:#85c6ff;
+  border-color:#253b54;
+}
+.interactive-page .il-section-heading p,
+.interactive-page .il-field > span,
+.interactive-page .il-engine {
+  color:#b1c5dd;
+}
+@media (max-width:760px) {
+  .interactive-page .il-section {background:#0e1b2c;}
+}
+</style>
+
+<style is:global>
+/* Shared Simple + Advanced simulator surfaces, replacing legacy graphite. */
+.interactive-page .il-app[data-mode="simple"] .il-simple-panel,
+.interactive-page .il-app[data-mode="simple"] .il-section,
+.interactive-page .il-app[data-mode="simple"] .il-results,
+.interactive-page .il-app[data-mode="simple"] .il-result-empty {
+  background:#0e1b2c;
+  border-color:#243b56;
+}
+.interactive-page .il-app[data-mode="simple"] .il-mode-switch {
+  background:#091321;
+  border-color:#2a405a;
+}
+.interactive-page .il-app[data-mode="simple"] .il-mode-switch button:not(.active) {
+  background:transparent;
+  color:#b0c5dd;
+}
+.interactive-page .il-app[data-mode="simple"] .il-simple-intro span,
+.interactive-page .il-app[data-mode="simple"] .il-simple-note,
+.interactive-page .il-app[data-mode="simple"] .il-feedback-trigger {
+  background:#10243a;
+  border-color:#2a435f;
+}
+.interactive-page .il-app[data-mode="simple"] .il-field input,
+.interactive-page .il-app[data-mode="simple"] .il-field select {
+  background:#080f1a;
+  border-color:#324762;
+  color:#f0f7ff;
+}
+.interactive-page .il-feedback-modal {
+  background:#0e1b2c;
+  border-color:#304b67;
+}
+.interactive-page .il-feedback-modal textarea,
+.interactive-page .il-feedback-head > button {
+  background:#080f1a;
+  border-color:#324762;
+}
 </style>

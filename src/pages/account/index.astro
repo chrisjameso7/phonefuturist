@@ -27,6 +27,7 @@ const initial=displayName.slice(0,1).toUpperCase();
         <a class="is-active" href="/account">Overview</a>
         <a href="/articles">Newsroom</a>
         {staff&&<a href="/studio">Studio</a>}
+        <a href="/pro">Free &amp; Pro plans</a>
         <a href="/account/security">Security</a>
         <a href="/account/password">Password</a>
       </nav>
@@ -146,5 +147,60 @@ const initial=displayName.slice(0,1).toUpperCase();
   .account-form-grid{grid-template-columns:1fr!important}
   .account-creator-form input,.account-creator-form textarea{border-radius:14px}
   .account-creator-form .button{width:100%;border-radius:999px}
+}
+</style>
+
+<style>
+/* Mobile account dashboard: a true single-column viewport layout. */
+@media (max-width:760px) {
+  .account-network {
+    box-sizing:border-box;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    padding:14px 16px calc(100px + env(safe-area-inset-bottom,0px))!important;
+    gap:16px;
+    overflow-x:clip;
+  }
+  .account-profile-card {
+    position:static;
+    top:auto;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+  .account-profile-card nav {
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    max-width:100%;
+    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+  }
+  .account-profile-card nav a {
+    flex:0 0 auto;
+    scroll-snap-align:start;
+    white-space:nowrap;
+  }
+  .account-feed,
+  .account-status-grid,
+  .account-feature-card,
+  .account-creator-panel,
+  .account-form-grid,
+  .account-creator-form {
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+  .account-status-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .account-status-grid article { min-width:0; overflow-wrap:anywhere; }
+  .account-feature-card { flex-direction:column; align-items:flex-start; }
+  .account-form-grid { grid-template-columns:minmax(0,1fr); }
+  .account-creator-form input,
+  .account-creator-form textarea { box-sizing:border-box; max-width:100%; width:100%; min-width:0; }
+  .account-feed-head h2 { font-size:clamp(2rem,9vw,2.7rem); line-height:1; }
 }
 </style>

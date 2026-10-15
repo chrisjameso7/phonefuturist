@@ -1560,7 +1560,7 @@ footer .brand-lockup .brand-word {
     gap:10px!important;
     border:1px solid #ffffff30!important;
     border-radius:24px!important;
-    background:#353535e8!important;
+    background:#0c1726ed!important;
     box-shadow:0 12px 45px #25211e20!important;
     backdrop-filter:blur(18px);
   }
@@ -1611,7 +1611,7 @@ footer .brand-lockup .brand-word {
     justify-content:center!important;
     border:1px solid #ffffff2b!important;
     border-radius:999px!important;
-    background:#292a28!important;
+    background:#0d1928!important;
     color:#f3efe4!important;
   }
 
@@ -1630,7 +1630,7 @@ footer .brand-lockup .brand-word {
     padding:14px!important;
     border:1px solid #ffffff29!important;
     border-radius:20px!important;
-    background:#2d2e2cf8!important;
+    background:#0d1828f8!important;
     box-shadow:0 25px 65px #24211e66!important;
   }
 
@@ -1652,7 +1652,7 @@ footer .brand-lockup .brand-word {
 
   .mobile-menu-primary a:hover,
   .mobile-menu-primary a[aria-current='page']{
-    background:#3a3b37!important;
+    background:#101e30!important;
   }
 
   body:not(.product-mode) main,
@@ -1689,7 +1689,7 @@ footer .brand-lockup .brand-word {
     border:1px solid #ffffff60!important;
     border-radius:22px!important;
     overflow:hidden!important;
-    background:#444542!important;
+    background:#1a3047!important;
   }
 
   .observatory .hero-image{
@@ -1774,7 +1774,7 @@ footer .brand-lockup .brand-word {
   }
 
   .observatory-card.rail-lab{
-    background:#4b4e44!important;
+    background:#1b354e!important;
   }
 
   .orbit{
@@ -1789,7 +1789,7 @@ footer .brand-lockup .brand-word {
     padding:24px 16px!important;
     border:1px solid #ffffff25!important;
     border-radius:24px!important;
-    background:#343532d9!important;
+    background:#122238e8!important;
     color-scheme:dark!important;
   }
 
@@ -1806,7 +1806,7 @@ footer .brand-lockup .brand-word {
   .latest-section .article-card.has-card-image{
     border:1px solid #ffffff25!important;
     border-radius:14px!important;
-    background:#3a3b38!important;
+    background:#0e1b2c!important;
   }
 
   .latest-section .article-card.has-card-image{

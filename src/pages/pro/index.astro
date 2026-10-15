@@ -1,0 +1,47 @@
+---
+import Page from '../../layouts/Page.astro';
+import { PRO_PRICING, PRO_TRIAL_DAYS, CHECKOUT_ENABLED } from '../../lib/billing/entitlements';
+const monthly = (PRO_PRICING.monthlyCents / 100).toFixed(2);
+const annually = (PRO_PRICING.annualCents / 100).toFixed(2);
+---
+<Page title="PhoneFuturist Pro" description="Compare PhoneFuturist Free and Pro plans.">
+  <main class="pf-pricing">
+    <p class="pf-pricing-eyebrow">PhoneFuturist Membership</p>
+    <h1>Go deeper with Pro.</h1>
+    <p>News, community, and everyday device simulations remain free. Pro is designed for deeper technical analysis.</p>
+    <div class="pf-pricing-grid">
+      <section class="pf-pricing-plan" aria-label="Free plan">
+        <h2>Free</h2>
+        <p class="pf-pricing-price">$0 <small>/ forever</small></p>
+        <ul><li>News and articles</li><li>Simple simulations</li><li>Two-device comparisons</li><li>Community, saving and sharing</li></ul>
+        <a href="/interactive-leaks">Start simulating</a>
+      </section>
+      <section class="pf-pricing-plan pf-pricing-pro" aria-label="Pro plan">
+        <h2>Pro</h2>
+        <p class="pf-pricing-trial">{PRO_TRIAL_DAYS}-day free trial planned</p>
+        <p class="pf-pricing-price">${monthly} USD <small>/ month</small></p>
+        <p>Or ${annually} USD per year, billed annually.</p>
+        <ul><li>Everything in Free</li><li>Advanced simulations and efficiency analysis</li><li>Up to five-device comparisons</li><li>Detailed camera insights and technical reports</li></ul>
+        {CHECKOUT_ENABLED ? <p>Subscription checkout will be available here.</p> : <p class="pf-pricing-notice" role="status">Trial activation and payments are coming soon. No card is being collected and no subscription will start automatically.</p>}
+      </section>
+    </div>
+    <p class="pf-pricing-note">Experimental simulation outputs are estimates, not laboratory measurements. Pro does not guarantee prediction accuracy.</p>
+  </main>
+</Page>
+<style>
+  .pf-pricing{max-width:1100px;margin:0 auto;padding:clamp(2rem,6vw,5rem) 1rem 5rem;color:var(--pf-text,#f5f7fa)}
+  .pf-pricing-eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:.8rem;color:#7ed5ff;font-weight:700}
+  .pf-pricing h1{font-size:clamp(2.5rem,6vw,4.6rem);line-height:1.06;margin:.6rem 0 1rem}
+  .pf-pricing>p:not(.pf-pricing-eyebrow){max-width:680px;color:#b7c5d6;line-height:1.7}
+  .pf-pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem;margin-top:2.4rem}
+  .pf-pricing-plan{padding:clamp(1.35rem,3vw,2.3rem);border:1px solid #33445a;background:#101923;border-radius:24px;min-width:0}
+  .pf-pricing-pro{border-color:#3b92c1;background:linear-gradient(145deg,#12293c,#101923 60%)}
+  .pf-pricing-plan h2{font-size:1.7rem;margin:0}
+  .pf-pricing-price{font-size:clamp(1.8rem,4vw,2.9rem);font-weight:800;margin:1rem 0}
+  .pf-pricing-price small{font-size:1rem;font-weight:500;color:#b9c7d7}
+  .pf-pricing-plan ul{padding-left:1.4rem;line-height:2.2;min-height:11rem}
+  .pf-pricing-plan a{display:inline-flex;align-items:center;min-height:44px;padding:.7rem 1.2rem;border-radius:12px;background:#6fcfff;color:#0d1b26;font-weight:700;text-decoration:none}
+  .pf-pricing-notice{padding:.9rem 1rem;border-radius:12px;border:1px solid #45627b;background:#172c40}
+  .pf-pricing-note{margin-top:1.6rem;font-size:.9rem}
+  @media(max-width:700px){.pf-pricing-grid{grid-template-columns:1fr}.pf-pricing-plan ul{min-height:auto}}
+</style>

@@ -21,6 +21,7 @@ export interface PhoneArenaRuntimeHoldoutRow {
   model: string;
   workload: RuntimeWorkload;
   batteryMah: number;
+  energyBasis: 'wh' | 'mah';
   actualHours: number;
   predictedHours: number;
   signedErrorHours: number;
@@ -32,6 +33,10 @@ export interface PhoneArenaRuntimeHoldoutRow {
     | 'protocol-cohort';
   referenceCount: number;
   publisherCount: number;
+  /** Whether the prediction and held-out measurement use the exact same test protocol. */
+  protocolMatched: boolean;
+  referenceProtocol?: string;
+  observedProtocol?: string;
 }
 
 export interface PhoneArenaRuntimeHoldoutAggregate {
@@ -48,6 +53,8 @@ export interface PhoneArenaRuntimeHoldoutResult {
   evaluatedRows: number;
   evaluatedDevices: number;
   skippedRows: number;
+  protocolMatchedRows: number;
+  crossProtocolRows: number;
   maeHours?: number;
   mapePercent?: number;
   meanSignedErrorHours?: number;
@@ -123,6 +130,7 @@ function aggregate(
 
 export function backtestAgainstPhoneArenaRuntime(
   corpus: DeviceCorpus,
+  mode: 'sparse' | 'spec-enriched' = 'sparse',
 ): PhoneArenaRuntimeHoldoutResult {
   const phoneArenaMeasurements =
     corpus.measurements.filter(
@@ -189,6 +197,7 @@ export function backtestAgainstPhoneArenaRuntime(
   const rows:
     PhoneArenaRuntimeHoldoutRow[] =
     [];
+  const observedSource = corpus.sources.find(source => source.id === PHONEARENA_SOURCE_ID);
   let skippedRows = 0;
 
   for (
@@ -218,13 +227,19 @@ export function backtestAgainstPhoneArenaRuntime(
       SimulationInput = {
       formFactor: 'phone',
       displays: {
-        primary: {},
+        primary: mode === 'spec-enriched' ? {
+          diagonalInches: device.display?.diagonalInches,
+          resolutionWidthPx: device.display?.resolutionWidthPx,
+          resolutionHeightPx: device.display?.resolutionHeightPx,
+          refreshRateHz: device.display?.refreshRateHz,
+        } : {},
       },
       battery: {
         cells: [
           {
             capacityMah:
               batteryMah,
+            ...(mode === 'spec-enriched' && device.variant.battery?.nominalVoltageV ? { nominalVoltageV: device.variant.battery.nominalVoltageV } : {}),
           },
         ],
       },
@@ -240,6 +255,10 @@ export function backtestAgainstPhoneArenaRuntime(
           manufacturer:
             device.variant.identity
               .manufacturer,
+          ...(mode === 'spec-enriched' ? {
+            socVendor: device.variant.soc?.vendor,
+            socName: device.variant.soc?.name,
+          } : {}),
         },
       );
 
@@ -257,8 +276,12 @@ export function backtestAgainstPhoneArenaRuntime(
       continue;
     }
 
-    const predictedHours =
-      batteryMah / drain;
+    const energyHours = estimate.estimate.energyBasis === 'wh' &&
+      positive(estimate.estimate.targetEnergyWh) &&
+      positive(estimate.estimate.expectedWhPerHour)
+      ? estimate.estimate.targetEnergyWh / estimate.estimate.expectedWhPerHour
+      : undefined;
+    const predictedHours = energyHours ?? batteryMah / drain;
 
     const signedErrorHours =
       predictedHours -
@@ -281,6 +304,7 @@ export function backtestAgainstPhoneArenaRuntime(
       workload:
         actual.workload as RuntimeWorkload,
       batteryMah,
+      energyBasis: energyHours !== undefined ? 'wh' : 'mah',
       actualHours:
         actual.value,
       predictedHours,
@@ -299,6 +323,11 @@ export function backtestAgainstPhoneArenaRuntime(
       publisherCount:
         estimate.estimate
           .publisherCount,
+      observedProtocol: observedSource?.protocol,
+      referenceProtocol: estimate.estimate.protocol,
+      protocolMatched: Boolean(observedSource?.protocol && estimate.estimate.protocol &&
+        observedSource.protocol === estimate.estimate.protocol &&
+        (observedSource.protocolVersion ?? '') === (estimate.estimate.protocolVersion ?? '')),
     });
   }
 
@@ -310,6 +339,8 @@ export function backtestAgainstPhoneArenaRuntime(
       evaluatedRows: 0,
       evaluatedDevices: 0,
       skippedRows,
+      protocolMatchedRows: 0,
+      crossProtocolRows: 0,
       byWorkload: [],
       byManufacturer: [],
       rows: [],
@@ -335,6 +366,8 @@ export function backtestAgainstPhoneArenaRuntime(
         ),
       ).size,
     skippedRows,
+    protocolMatchedRows: rows.filter(row => row.protocolMatched).length,
+    crossProtocolRows: rows.filter(row => !row.protocolMatched).length,
     maeHours:
       rows.reduce(
         (sum, row) =>
@@ -381,6 +414,8 @@ export function backtestAgainstPhoneArenaRuntime(
         )
         .slice(0, 10),
     note:
-      'PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.',
+      mode === 'sparse'
+        ? 'Protocol compatibility is reported per row; cross-protocol error is diagnostic, not a validated like-for-like accuracy claim. PhoneArena browsing, video and gaming runtime measurements are removed from the estimator before prediction. This first holdout intentionally uses only battery capacity plus manufacturer context, measuring the simulator fallback path when richer leaked device specifications are absent.'
+        : 'Protocol compatibility is reported per row; cross-protocol error is diagnostic, not a validated like-for-like accuracy claim. PhoneArena runtime measurements remain fully excluded from calibration. This diagnostic adds the held-out device display and processor specifications to compare accuracy against the sparse-spec fallback; it is not an independent laboratory protocol match.',
   };
 }
