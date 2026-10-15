@@ -1,4 +1,5 @@
 import { usagePresetDrainFactor } from './usage-preset-drain';
+import { socWhatIfDrainFactor, type SocPowerWhatIf } from './soc-power-what-if';
 
 import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 import type { SimulationInput } from '../types';
@@ -15,6 +16,8 @@ export interface BatteryExperienceInput {
   manufacturer?: string;
   socVendor?: string;
   socName?: string;
+  /** User-selected power scenario. Does not infer efficiency from chip name. */
+  socPowerWhatIf?: SocPowerWhatIf;
   /** Independently measured average screen-off draw, in watts. */
   standbyPowerW?: number;
   region?: string;
@@ -219,18 +222,19 @@ export function simulateBatteryExperience(
       band.estimate.expectedWhPerHour !== undefined &&
       band.estimate.maxWhPerHour !== undefined;
 
+    const whatIfFactor = socWhatIfDrainFactor(input.socPowerWhatIf, workload);
     const runtime = useWh
       ? runtimeFromDrain(
           packEnergyWh,
-          band.estimate.minWhPerHour!,
-          band.estimate.expectedWhPerHour!,
-          band.estimate.maxWhPerHour!,
+          band.estimate.minWhPerHour! * whatIfFactor,
+          band.estimate.expectedWhPerHour! * whatIfFactor,
+          band.estimate.maxWhPerHour! * whatIfFactor,
         )
       : runtimeFromDrain(
           capacity,
-          band.estimate.minMahPerHour,
-          band.estimate.expectedMahPerHour,
-          band.estimate.maxMahPerHour,
+          band.estimate.minMahPerHour * whatIfFactor,
+          band.estimate.expectedMahPerHour * whatIfFactor,
+          band.estimate.maxMahPerHour * whatIfFactor,
         );
 
     return {
@@ -241,11 +245,11 @@ export function simulateBatteryExperience(
       ...(useWh
         ? {
             expectedDrainWhPerHour:
-              band.estimate.expectedWhPerHour,
+              band.estimate.expectedWhPerHour! * whatIfFactor,
           }
         : {
             expectedDrainMahPerHour:
-              band.estimate.expectedMahPerHour,
+              band.estimate.expectedMahPerHour * whatIfFactor,
           }),
       confidence: band.estimate.confidence,
       averageSimilarity:
@@ -266,7 +270,9 @@ export function simulateBatteryExperience(
         band.estimate.sameSocFamilyReferences,
       sameSocVendorReferences:
         band.estimate.sameSocVendorReferences,
-      note: band.estimate.note,
+      note: input.socPowerWhatIf && input.socPowerWhatIf !== 'neutral'
+        ? band.estimate.note + ' Runtime also reflects a user-selected, unmeasured SoC power scenario.'
+        : band.estimate.note,
     };
   });
 
@@ -347,7 +353,8 @@ export function simulateBatteryExperience(
       // Snapdragon selection alone must not create a fabricated battery-life
       // delta; measured workload power can be integrated separately later.
       const intensityFactor = (workload: typeof selected[number]['workload']) =>
-        usagePresetDrainFactor(input.usageIntensity, workload);
+        usagePresetDrainFactor(input.usageIntensity, workload) *
+        socWhatIfDrainFactor(input.socPowerWhatIf, workload);
       // Thermal headroom alters sustained CPU/GPU duty cycle rather than
       // applying a flat battery bonus to browsing and video playback.
       const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
