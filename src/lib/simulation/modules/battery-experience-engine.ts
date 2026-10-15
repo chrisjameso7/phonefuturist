@@ -1,5 +1,10 @@
 import { usagePresetDrainFactor } from './usage-preset-drain';
 import { socWhatIfDrainFactor, type SocPowerWhatIf } from './soc-power-what-if';
+import {
+  estimateMatchedSocBatteryScenario,
+  type SocRuntimeBatteryScenarioInput,
+  type SocRuntimeBatteryScenarioResult,
+} from './soc-runtime-delta';
 
 import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 import type { SimulationInput } from '../types';
@@ -18,6 +23,8 @@ export interface BatteryExperienceInput {
   socName?: string;
   /** User-selected power scenario. Does not infer efficiency from chip name. */
   socPowerWhatIf?: SocPowerWhatIf;
+  /** Optional Wh-only, exact-reference SoC power comparison; not applied to the headline. */
+  measuredSocComparison?: SocRuntimeBatteryScenarioInput;
   /** Independently measured average screen-off draw, in watts. */
   standbyPowerW?: number;
   region?: string;
@@ -107,6 +114,7 @@ export interface BatteryExperienceResult {
   energyWh?: number;
   runtimes: BatteryRuntimeExperience[];
   mixedUse?: MixedUseBatteryEstimate;
+  measuredSocComparison?: SocRuntimeBatteryScenarioResult;
   calendarEndurance?: DailyBatteryBudgetResult;
   charging?: ReturnType<typeof estimateChargingFromCorpus>;
   wirelessCharging?: ReturnType<typeof estimateWirelessChargingFromCorpus>;
@@ -581,6 +589,14 @@ export function simulateBatteryExperience(
       );
     }
   }
+
+  // Keep this separate from headline mixed-use runtime until its cross-device
+  // matched-performance sensitivity is externally validated.
+  const measuredSocComparison = input.measuredSocComparison
+    ? estimateMatchedSocBatteryScenario(
+        corpus, input.simulation, input.socName ?? '', input.measuredSocComparison,
+      )
+    : undefined;
 
   const calendarEndurance = input.standbyPowerW !== undefined && mixedUse && packEnergyWh !== undefined && mixedUse.expectedDrainWhPerDay !== undefined
     ? estimateDailyBatteryBudget({ usableEnergyWh: packEnergyWh, activeHoursPerDay: mixedUse.activeHoursPerDay,
