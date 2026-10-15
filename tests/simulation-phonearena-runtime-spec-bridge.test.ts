@@ -35,10 +35,10 @@ function corpusWithDonors(donors: DeviceCorpusRecord[]): DeviceCorpus {
 
 describe('conservative battery runtime spec bridge', () => {
   it('links consistent specs from the exact model and battery variant only', () => {
-    const donor = phone('spec-donor', 'Samsung Galaxy X 5G', 5000, {
+    const donor = phone('spec-donor', 'Samsung Galaxy X', 5000, {
       variant: {
         id: 'spec-donor',
-        identity: { manufacturer: 'Samsung', family: 'Galaxy X', modelName: 'Samsung Galaxy X 5G' },
+        identity: { manufacturer: 'Samsung', family: 'Galaxy X', modelName: 'Samsung Galaxy X' },
         battery: { capacityMah: 5000, nominalVoltageV: 3.9 },
         soc: { vendor: 'Qualcomm', name: 'Snapdragon Test' },
       },
@@ -93,6 +93,15 @@ describe('conservative battery runtime spec bridge', () => {
       }),
     ];
     const result = buildPhoneArenaRuntimeSpecBridge(corpusWithDonors(others));
+    expect(result.stats.linkedRecords).toBe(0);
+    expect(result.corpus.devices[0].display).toBeUndefined();
+  });
+
+  it('keeps 4G and 5G variants separate even when battery sizes match', () => {
+    const donor = phone('different-radio', 'Galaxy X 5G', 5000, {
+      display: { diagonalInches: 6.7, refreshRateHz: 120 },
+    });
+    const result = buildPhoneArenaRuntimeSpecBridge(corpusWithDonors([donor]));
     expect(result.stats.linkedRecords).toBe(0);
     expect(result.corpus.devices[0].display).toBeUndefined();
   });
