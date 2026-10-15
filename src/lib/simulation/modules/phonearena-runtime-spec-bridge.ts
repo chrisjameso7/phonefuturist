@@ -90,10 +90,8 @@ export function buildPhoneArenaRuntimeSpecBridge(corpus: DeviceCorpus): PhoneAre
     // agree on a specific region. Unknown region means unknown processor.
     const targetRegion = device.variant.identity.region?.trim().toLowerCase();
     const socRegionVerified = !!targetRegion && namedSocs.length > 0 &&
-      namedSocs.every((soc) => donors.some(d =>
-        d.variant.soc?.vendor === soc.vendor &&
-        d.variant.soc?.name === soc.name &&
-        d.variant.identity.region?.trim().toLowerCase() === targetRegion));
+      donors.filter(d => !!d.variant.soc?.name).every(d =>
+        d.variant.identity.region?.trim().toLowerCase() === targetRegion);
     const unambiguousSoc = socKeys.size === 1 && socRegionVerified
       ? namedSocs[0] : undefined;
     if (socKeys.size > 1) stats.conflictingProcessors++;
