@@ -43,6 +43,7 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
     expect(result.skippedRows).toBe(0);
     expect(result.mapePercent).toBeCloseTo(0, 8);
     expect(result.rows.every(r => r.referenceCount === 2)).toBe(true);
+    expect(result.rows.every(r => r.independentReferenceDeviceCount === 2)).toBe(true);
     expect(result.rows.every(r => !r.referenceVariantIds.includes(r.deviceVariantId))).toBe(true);
     expect(result.rows.every(r => r.energyBasis === 'mah')).toBe(true);
   });
@@ -137,6 +138,8 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
         whRows: mode.rows.filter(row => row.energyBasis === 'wh').length,
         targetVoltageEvidenceRows: mode.rows.filter(row => row.targetHasVoltage).length,
         selectedReferenceEnergyRows: mode.rows.filter(row => row.energyReferenceCount > 0).length,
+        evaluatedWithOneIndependentReference: mode.rows.filter(row => row.independentReferenceDeviceCount === 1).length,
+        evaluatedWithAtLeastTwoIndependentReferences: mode.rows.filter(row => row.independentReferenceDeviceCount >= 2).length,
       });
       console.info('PHONEARENA_RUNTIME_SPEC_COVERAGE', JSON.stringify(specCoverage));
       console.info('PHONEARENA_SAME_PROTOCOL_SPARSE', JSON.stringify(cohort(sparse)));
