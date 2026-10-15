@@ -631,6 +631,7 @@ export function simulateBatteryExperience(
       : {}),
     runtimes,
     ...(mixedUse ? { mixedUse } : {}),
+    ...(measuredSocComparison ? { measuredSocComparison } : {}),
     ...(calendarEndurance ? { calendarEndurance } : {}),
     ...(charging ? { charging } : {}),
     ...(wirelessCharging ? { wirelessCharging } : {}),
