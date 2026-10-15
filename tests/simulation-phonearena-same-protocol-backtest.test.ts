@@ -47,6 +47,25 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
     expect(result.rows.every(r => r.energyBasis === 'mah')).toBe(true);
   });
 
+  it('cannot use newer or undated phones when evaluating a historical target', () => {
+    const dated = fixture();
+    dated.devices[0].releaseDate = '2025-01-01';
+    dated.devices[1].releaseDate = '2025-06-01';
+    dated.devices[2].releaseDate = '2026-01-01';
+    const result = backtestPhoneArenaSameProtocolRuntime(
+      dated, 'sparse', 'past-devices-only',
+    );
+    // First device has no older reference; the other two have 1 and 2.
+    expect(result.evaluatedRows).toBe(6);
+    expect(result.skippedRows).toBe(3);
+    expect(result.validationScheme).toBe('past-devices-only');
+    expect(result.rows.every(r =>
+      !!r.targetReleaseDate && !!r.latestReferenceReleaseDate &&
+      r.latestReferenceReleaseDate < r.targetReleaseDate
+    )).toBe(true);
+    expect(result.rows.every(r => !r.referenceVariantIds.includes(r.deviceVariantId))).toBe(true);
+  });
+
   it('uses accepted measured energy for eligible same-protocol references', () => {
     const result = backtestPhoneArenaSameProtocolRuntime(fixture(), 'spec-enriched');
     expect(result.evaluatedRows).toBe(9);
@@ -59,6 +78,7 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
     let sparse: ReturnType<typeof backtestPhoneArenaSameProtocolRuntime>;
     let enriched: ReturnType<typeof backtestPhoneArenaSameProtocolRuntime>;
     let specCoverage: Record<string, number>;
+    let historical: ReturnType<typeof backtestPhoneArenaSameProtocolRuntime>;
 
     beforeAll(() => {
       const corpus = buildCalibrationRegistry();
@@ -76,6 +96,7 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
       };
       sparse = backtestPhoneArenaSameProtocolRuntime(corpus, 'sparse');
       enriched = backtestPhoneArenaSameProtocolRuntime(corpus, 'spec-enriched');
+      historical = backtestPhoneArenaSameProtocolRuntime(corpus, 'sparse', 'past-devices-only');
     }, 120_000);
 
     it('reports independent same-protocol errors without reusing the held-out device', () => {
@@ -103,10 +124,13 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
       console.info('PHONEARENA_RUNTIME_SPEC_COVERAGE', JSON.stringify(specCoverage));
       console.info('PHONEARENA_SAME_PROTOCOL_SPARSE', JSON.stringify(cohort(sparse)));
       console.info('PHONEARENA_SAME_PROTOCOL_ENRICHED', JSON.stringify(cohort(enriched)));
+      console.info('PHONEARENA_PAST_DEVICES_ONLY', JSON.stringify(cohort(historical)));
       // Report quality honestly; never alter the independent cross-lab holdout
       // or assert a target threshold without evidence.
       expect(Number.isFinite(sparse.mapePercent)).toBe(true);
       expect(Number.isFinite(enriched.mapePercent)).toBe(true);
+      expect(historical.evaluatedRows).toBeGreaterThanOrEqual(20);
+      expect(historical.rows.every(r => !!r.targetReleaseDate && !!r.latestReferenceReleaseDate && r.latestReferenceReleaseDate < r.targetReleaseDate)).toBe(true);
     }, 120_000);
   });
 });
