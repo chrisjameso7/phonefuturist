@@ -629,3 +629,27 @@ body:not(.product-mode) .mobile-app-brand {
 @media (min-width:600px) and (max-width:899px) {
   #main.home-page .pf-home-v2 .latest-section .article-grid {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;}
 }
+
+
+/* Homepage desktop: align hero and editorial content with the wide navigation.
+   Keep the three exploration cards in their existing narrower composition. */
+@media (min-width: 761px) {
+  body:not(.product-mode) #main.home-page {
+    width: 100%;
+    max-width: 1800px;
+    padding-inline: clamp(20px, 3.35vw, 60px);
+  }
+  #main.home-page .pf-home-v2 {
+    width: 100%;
+    max-width: none;
+    padding-inline: 0;
+  }
+  #main.home-page .pf-home-v2 .pf-home-paths {
+    width: min(100%, 1480px);
+    margin-inline: auto;
+  }
+  #main.home-page .pf-home-v2 :is(.pf-spotlight, .latest-section, .about-section) {
+    width: 100%;
+    max-width: none;
+  }
+}
