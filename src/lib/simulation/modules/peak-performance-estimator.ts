@@ -73,6 +73,11 @@ export interface PeakPerformanceEstimate {
  * Explicit what-if scenarios for preview chips without Geekbench 6 results.
  * Values are product scenario assumptions, NOT benchmarks, leaks or proof of
  * efficiency. Users can override them with the advanced generation uplift.
+ * Context: September 2026 reporting cited an unverified internal GB6.7.1
+ * Exynos 2700 result of 4,328 single / 14,700 multi:
+ * https://www.gizmochina.com/2026/09/07/galaxy-s27s-exynos-2700-earns-14700-points-in-geekbench-multi-core-test/
+ * This preset intentionally uses a conservative predecessor-relative what-if,
+ * NOT those unconfirmed scores as calibrated or measured device evidence.
  * Keep GPU domains neutral until separate graphics evidence exists.
  */
 export const PREVIEW_GB6_SCENARIO_UPLIFT: Readonly<Record<string, Partial<Record<PeakBenchmarkDomain, number>>>> = {
