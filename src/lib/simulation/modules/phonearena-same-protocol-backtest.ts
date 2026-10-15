@@ -23,6 +23,7 @@ export interface SameProtocolRuntimeRow {
   predictedHours: number;
   absolutePercentageError: number;
   referenceCount: number;
+  independentReferenceDeviceCount: number;
   referenceVariantIds: string[];
   energyBasis: 'mah' | 'wh';
   energyReferenceCount: number;
@@ -165,6 +166,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
       predictedHours,
       absolutePercentageError: 100 * Math.abs(predictedHours - actual.value) / actual.value,
       referenceCount: band.referenceCount,
+      independentReferenceDeviceCount: band.independentReferenceDeviceCount,
       referenceVariantIds: band.neighborIds,
       energyBasis: whHours === undefined ? 'mah' : 'wh',
       energyReferenceCount: band.energyReferenceCount,

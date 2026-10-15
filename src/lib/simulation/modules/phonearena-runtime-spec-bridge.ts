@@ -19,7 +19,8 @@ function identityKey(d: DeviceCorpusRecord) {
     .toLowerCase().replace(/[^a-z0-9]/g, '');
   const model = d.variant.identity.modelName.toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/\b(5g|4g|global)\b/g, ' ')
+    // Keep 4G/5G and region tags: two radio variants can have different
+    // screen, modem and battery behavior even at similar capacities.
     .replace(/\s+/g, ' ').trim();
   // Strip the manufacturer prefix only when it is literally repeated.
   return maker + '|' + (model.startsWith(maker + ' ')
@@ -84,7 +85,16 @@ export function buildPhoneArenaRuntimeSpecBridge(corpus: DeviceCorpus): PhoneAre
       .filter((v): v is NonNullable<typeof v> => !!v?.name);
     const socKeys = new Set(namedSocs.map(s =>
       s.vendor.toLowerCase() + '|' + s.name.toLowerCase().replace(/\s+/g, ' ').trim()));
-    const unambiguousSoc = socKeys.size === 1 ? namedSocs[0] : undefined;
+    // Exact marketing name and battery capacity do not uniquely identify
+    // an SoC: Samsung and others ship regional processor variants. Only
+    // attach it if the measured target and every source carrying the chip
+    // agree on a specific region. Unknown region means unknown processor.
+    const targetRegion = device.variant.identity.region?.trim().toLowerCase();
+    const socRegionVerified = !!targetRegion && namedSocs.length > 0 &&
+      donors.filter(d => !!d.variant.soc?.name).every(d =>
+        d.variant.identity.region?.trim().toLowerCase() === targetRegion);
+    const unambiguousSoc = socKeys.size === 1 && socRegionVerified
+      ? namedSocs[0] : undefined;
     if (socKeys.size > 1) stats.conflictingProcessors++;
 
     const diagonal = unanimousNumber(

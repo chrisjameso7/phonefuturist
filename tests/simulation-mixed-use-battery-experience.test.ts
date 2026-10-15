@@ -96,6 +96,40 @@ describe('mixed-use battery experience', () => {
     ).toBe(true);
   });
 
+  it('does not invent an efficiency advantage from a chip name alone', () => {
+    const simulation = {
+      formFactor: 'phone' as const,
+      displays: { primary: { diagonalInches: 6.7, refreshRateHz: 120 } },
+      battery: { cells: [{ capacityMah: 5000 }] },
+    };
+    const dailyUseHours = {
+      web_browsing: 2,
+      video_playback: 2,
+      gaming: 1,
+    };
+    const base = simulateBatteryExperience(corpus, {
+      simulation,
+      dailyUseHours,
+    });
+    const exynos = simulateBatteryExperience(corpus, {
+      simulation,
+      dailyUseHours,
+      socName: 'Exynos 2700',
+    });
+    const snapdragon = simulateBatteryExperience(corpus, {
+      simulation,
+      dailyUseHours,
+      socName: 'Snapdragon 8 Elite Extreme Gen 6',
+    });
+    expect(base.mixedUse?.expectedActiveUseHoursPerCharge).toBeDefined();
+    expect(exynos.mixedUse?.expectedActiveUseHoursPerCharge)
+      .toBeCloseTo(base.mixedUse!.expectedActiveUseHoursPerCharge, 10);
+    expect(snapdragon.mixedUse?.expectedActiveUseHoursPerCharge)
+      .toBeCloseTo(base.mixedUse!.expectedActiveUseHoursPerCharge, 10);
+    expect(exynos.runtimes.map(row => row.expectedHours))
+      .toEqual(base.runtimes.map(row => row.expectedHours));
+  });
+
   it('does not fabricate mixed-use runtime when no supported workload hours are entered', () => {
     const result = simulateBatteryExperience(corpus, {
       simulation: {

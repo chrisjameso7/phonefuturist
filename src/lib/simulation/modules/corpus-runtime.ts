@@ -43,6 +43,8 @@ export interface CorpusRuntimeBand {
     maxWhPerHour?: number;
     energyReferenceCount: number;
     referenceCount: number;
+    /** Unique device variants, excluding repeated runs from a single handset. */
+    independentReferenceDeviceCount: number;
     confidence: number;
     averageSimilarity: number;
     averageCoverage: number;
@@ -311,11 +313,24 @@ export function resolveCorpusRuntimeBand(
     });
   });
 
+  // Every measured phone contributes at most one total comparable weight
+  // within a protocol. Multiple test runs improve its average estimate, but
+  // must not make that single handset outweigh independent devices.
+  const measurementCountsByDeviceProtocol = new Map<string, number>();
+  for (const value of rawValues) {
+    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    measurementCountsByDeviceProtocol.set(
+      key, (measurementCountsByDeviceProtocol.get(key) ?? 0) + 1,
+    );
+  }
+
   const grouped = new Map<string, typeof rawValues>();
 
   for (const value of rawValues) {
     const group = grouped.get(value.protocolKey) ?? [];
-    group.push(value);
+    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    const readings = measurementCountsByDeviceProtocol.get(key) ?? 1;
+    group.push({ ...value, weight: value.weight / readings });
     grouped.set(value.protocolKey, group);
   }
 
@@ -344,19 +359,25 @@ export function resolveCorpusRuntimeBand(
         )
       : [];
 
+  // Repeated readings from a single handset are not independent peers.
+  // Require at least two distinct device variants before claiming a
+  // family/vendor cohort is supported by multiple phones.
+  const independentPhones = (group: typeof rawValues) =>
+    new Set(group.map(row => row.deviceVariantId)).size;
+
   // Keep protocol isolation, but do not let a larger generic protocol cohort
   // erase a materially better SoC prior. For future chips, prefer a protocol
   // group that contains at least two same-family references, then at least
   // two same-vendor references, and only then fall back to the strongest
   // generic protocol cohort.
   const familyProtocolGroup = rankedGroups.find(
-    (group) => sameFamilyRows(group).length >= 2,
+    (group) => independentPhones(sameFamilyRows(group)) >= 2,
   );
   // Preserve the measured-protocol boundary while preferring at least
   // two same-vendor references when a same-family cohort is unavailable.
   // Selection of similar peers is not itself a claim of efficiency gain.
   const vendorProtocolGroup = rankedGroups.find(
-    (group) => sameVendorRows(group).length >= 2,
+    (group) => independentPhones(sameVendorRows(group)) >= 2,
   );
   const protocolValues =
     familyProtocolGroup ??
@@ -377,8 +398,8 @@ export function resolveCorpusRuntimeBand(
   const sameFamily = sameFamilyRows(protocolValues);
   const sameVendor = sameVendorRows(protocolValues);
 
-  const values = sameFamily.length >= 2 ? sameFamily
-    : sameVendor.length >= 2 ? sameVendor : protocolValues;
+  const values = independentPhones(sameFamily) >= 2 ? sameFamily
+    : independentPhones(sameVendor) >= 2 ? sameVendor : protocolValues;
 
   const evidenceScope:
     | 'same-soc-family'
@@ -404,18 +425,21 @@ export function resolveCorpusRuntimeBand(
     (item) => item.valueWh,
   );
 
-  const confidence =
-    values.reduce((sum, item) => sum + item.score, 0) / values.length;
-  const averageSimilarity =
-    values.reduce(
-      (sum, item) => sum + item.similarityScore,
-      0,
-    ) / values.length;
-  const averageCoverage =
-    values.reduce(
-      (sum, item) => sum + item.coverageScore,
-      0,
-    ) / values.length;
+  // Confidence and match-quality metadata must also count each handset
+  // once. Otherwise a twice-tested device can inflate reported certainty
+  // even when its runtime weight was properly normalized.
+  const independentValues = [
+    ...new Map(values.map(item => [item.deviceVariantId, item])).values(),
+  ];
+  const confidence = independentValues.reduce(
+    (sum, item) => sum + item.score, 0,
+  ) / independentValues.length;
+  const averageSimilarity = independentValues.reduce(
+    (sum, item) => sum + item.similarityScore, 0,
+  ) / independentValues.length;
+  const averageCoverage = independentValues.reduce(
+    (sum, item) => sum + item.coverageScore, 0,
+  ) / independentValues.length;
 
   return {
     version: CORPUS_RUNTIME_MODEL_VERSION,
@@ -443,6 +467,7 @@ export function resolveCorpusRuntimeBand(
         : {}),
       energyReferenceCount: whValues.length,
       referenceCount: values.length,
+      independentReferenceDeviceCount: independentPhones(values),
       confidence: Math.min(1, Math.max(0, confidence)),
       averageSimilarity: Math.min(
         1,
@@ -475,8 +500,8 @@ export function resolveCorpusRuntimeBand(
           ),
         ).size,
       evidenceScope,
-      sameSocFamilyReferences: sameFamily.length,
-      sameSocVendorReferences: sameVendor.length,
+      sameSocFamilyReferences: independentPhones(sameFamily),
+      sameSocVendorReferences: independentPhones(sameVendor),
       note:
         useWh
           ? `Runtime drain is energy-normalized in Wh/h from measured comparable released devices using ${evidenceScope.replaceAll('-', ' ')} evidence. Every selected reference and the target have evidence-backed battery energy or nominal voltage. Only one protocol group is used per estimate.`
