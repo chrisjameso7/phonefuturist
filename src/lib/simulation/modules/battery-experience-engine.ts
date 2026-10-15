@@ -1,5 +1,5 @@
 import { usagePresetDrainFactor } from './usage-preset-drain';
-import { projectedSocPowerFactor } from '../soc-model-catalog';
+
 import { projectedDisplayPowerFactor, projectedBrightnessPowerFactor } from './display-power-scenario';
 import type { SimulationInput } from '../types';
 import type { DeviceCorpus } from './device-corpus';
@@ -346,16 +346,18 @@ export function simulateBatteryExperience(
     if (activeHoursPerDay > 0 && selected.length > 0) {
       // An interactive scenario, not a correction to lab measurements.
       // Represents brightness, background load, radios and gaming intensity.
+      // Chip marketing names are not measured power curves. An Exynos or
+      // Snapdragon selection alone must not create a fabricated battery-life
+      // delta; measured workload power can be integrated separately later.
       const intensityFactor = (workload: typeof selected[number]['workload']) =>
-        usagePresetDrainFactor(input.usageIntensity, workload) *
-        projectedSocPowerFactor(input.socName);
+        usagePresetDrainFactor(input.usageIntensity, workload);
       // Thermal headroom alters sustained CPU/GPU duty cycle rather than
       // applying a flat battery bonus to browsing and video playback.
       const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
       // Preserve raw measured-corpus arithmetic when no lab scenario is selected.
       // Hardware extrapolations are opt-in and must not silently alter baseline tests.
       const useDisplayScenario = input.usageIntensity !== undefined ||
-        input.brightnessNits !== undefined || input.socName !== undefined ||
+        input.brightnessNits !== undefined ||
         input.coolingClass !== undefined || input.targetSocPowerW !== undefined;
       const scenarioFactor = (workload: typeof selected[number]['workload']) =>
         useDisplayScenario
