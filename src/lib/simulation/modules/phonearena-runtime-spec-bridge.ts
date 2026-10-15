@@ -19,7 +19,8 @@ function identityKey(d: DeviceCorpusRecord) {
     .toLowerCase().replace(/[^a-z0-9]/g, '');
   const model = d.variant.identity.modelName.toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/\b(5g|4g|global)\b/g, ' ')
+    // Keep 4G/5G and region tags: two radio variants can have different
+    // screen, modem and battery behavior even at similar capacities.
     .replace(/\s+/g, ' ').trim();
   // Strip the manufacturer prefix only when it is literally repeated.
   return maker + '|' + (model.startsWith(maker + ' ')
