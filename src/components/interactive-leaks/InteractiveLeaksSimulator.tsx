@@ -957,7 +957,7 @@ function DeterministicShareCard({
       : undefined;
   const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
   const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
-  const scoreLabel = experimentalScores ? 'SYNTHETIC' : 'ESTIMATED';
+  const scoreLabel = experimentalScores ? 'PROJECTED' : 'ESTIMATED';
 
   async function downloadCard() {
     try {
