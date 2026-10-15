@@ -1,6 +1,7 @@
 import type { DeviceCorpus } from './device-corpus';
 import { resolveCorpusRuntimeBand, type RuntimeWorkload } from './corpus-runtime';
 import type { SimulationInput } from '../types';
+import { buildPhoneArenaRuntimeSpecBridge, type PhoneArenaSpecBridge } from './phonearena-runtime-spec-bridge';
 
 /**
  * Diagnostic leave-one-device-out validation within PhoneArena's current
@@ -36,6 +37,7 @@ export interface SameProtocolRuntimeBacktest {
   protocol?: string;
   mode: 'sparse' | 'spec-enriched';
   validationScheme: 'leave-one-device-out' | 'past-devices-only';
+  specBridgeStats?: PhoneArenaSpecBridge['stats'];
   totalMeasurements: number;
   evaluatedRows: number;
   skippedRows: number;
@@ -67,7 +69,12 @@ export function backtestPhoneArenaSameProtocolRuntime(
     m.sourceId === SOURCE_ID &&
     WORKLOADS.includes(m.workload as RuntimeWorkload) &&
     m.unit.toLowerCase() === 'hours' && positive(m.value));
-  const deviceById = new Map(corpus.devices.map(d => [d.variant.id, d]));
+  // Evaluation-only: attach cross-source specifications before matching peers.
+  // Runtime labels and reference protocols remain solely PhoneArena's.
+  const bridge = mode === 'spec-enriched'
+    ? buildPhoneArenaRuntimeSpecBridge(corpus) : undefined;
+  const referenceCorpus = bridge?.corpus ?? corpus;
+  const deviceById = new Map(referenceCorpus.devices.map(d => [d.variant.id, d]));
   const rows: SameProtocolRuntimeRow[] = [];
   let skippedRows = 0;
 
@@ -89,7 +96,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
 
     let training = trainingByDevice.get(actual.deviceVariantId);
     if (!training) {
-      const eligibleDevices = corpus.devices.filter(d =>
+      const eligibleDevices = referenceCorpus.devices.filter(d =>
         d.variant.id !== actual.deviceVariantId &&
         (validationScheme === 'leave-one-device-out' ||
           (d.releaseDate !== undefined && d.releaseDate < releaseDate!)));
@@ -173,6 +180,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
     protocol: source?.protocol,
     mode,
     validationScheme,
+    ...(bridge ? { specBridgeStats: bridge.stats } : {}),
     totalMeasurements: measurements.length,
     evaluatedRows: rows.length,
     skippedRows,
