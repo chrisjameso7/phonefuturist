@@ -170,6 +170,30 @@ describe('mixed-use battery experience', () => {
       .toBeCloseTo(efficiency.mixedUse!.expectedActiveUseHoursPerCharge, 8);
   });
 
+  it('treats brightness as an opt-in display sensitivity, not a hidden device default', () => {
+    const input = {
+      simulation: {
+        formFactor: 'phone' as const,
+        displays: { primary: { diagonalInches: 6.7, refreshRateHz: 120 } },
+        battery: { cells: [{ capacityMah: 5000 }] },
+      },
+      dailyUseHours: { web_browsing: 2, video_playback: 2, gaming: 1 },
+      usageIntensity: 'Typical' as const,
+    };
+    const baseline = simulateBatteryExperience(corpus, input);
+    const indoor = simulateBatteryExperience(corpus, { ...input, brightnessNits: 200 });
+    const office = simulateBatteryExperience(corpus, { ...input, brightnessNits: 400 });
+    const sunlight = simulateBatteryExperience(corpus, { ...input, brightnessNits: 1200 });
+    expect(baseline.mixedUse?.expectedActiveUseHoursPerCharge).toBeDefined();
+    expect(indoor.mixedUse!.expectedActiveUseHoursPerCharge)
+      .toBeGreaterThan(office.mixedUse!.expectedActiveUseHoursPerCharge);
+    expect(office.mixedUse!.expectedActiveUseHoursPerCharge)
+      .toBeGreaterThan(sunlight.mixedUse!.expectedActiveUseHoursPerCharge);
+    // No change to the number used as the neutral, reference-based baseline.
+    expect(simulateBatteryExperience(corpus, input).mixedUse?.expectedActiveUseHoursPerCharge)
+      .toBe(baseline.mixedUse?.expectedActiveUseHoursPerCharge);
+  });
+
   it('does not fabricate mixed-use runtime when no supported workload hours are entered', () => {
     const result = simulateBatteryExperience(corpus, {
       simulation: {
