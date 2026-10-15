@@ -425,18 +425,21 @@ export function resolveCorpusRuntimeBand(
     (item) => item.valueWh,
   );
 
-  const confidence =
-    values.reduce((sum, item) => sum + item.score, 0) / values.length;
-  const averageSimilarity =
-    values.reduce(
-      (sum, item) => sum + item.similarityScore,
-      0,
-    ) / values.length;
-  const averageCoverage =
-    values.reduce(
-      (sum, item) => sum + item.coverageScore,
-      0,
-    ) / values.length;
+  // Confidence and match-quality metadata must also count each handset
+  // once. Otherwise a twice-tested device can inflate reported certainty
+  // even when its runtime weight was properly normalized.
+  const independentValues = [
+    ...new Map(values.map(item => [item.deviceVariantId, item])).values(),
+  ];
+  const confidence = independentValues.reduce(
+    (sum, item) => sum + item.score, 0,
+  ) / independentValues.length;
+  const averageSimilarity = independentValues.reduce(
+    (sum, item) => sum + item.similarityScore, 0,
+  ) / independentValues.length;
+  const averageCoverage = independentValues.reduce(
+    (sum, item) => sum + item.coverageScore, 0,
+  ) / independentValues.length;
 
   return {
     version: CORPUS_RUNTIME_MODEL_VERSION,
