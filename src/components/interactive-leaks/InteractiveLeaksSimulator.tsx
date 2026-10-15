@@ -919,6 +919,7 @@ function DeterministicShareCard({
   sustainedSingleScore,
   sustainedMultiScore,
   experimentalScores = false,
+  powerScenario = 'neutral',
   socName,
   wiredWatts,
   chargingStandard,
@@ -935,6 +936,7 @@ function DeterministicShareCard({
   sustainedSingleScore?: number;
   sustainedMultiScore?: number;
   experimentalScores?: boolean;
+  powerScenario?: 'neutral' | 'efficiency' | 'performance';
   socName?: string;
   wiredWatts?: number;
   chargingStandard?: string;
@@ -1041,7 +1043,7 @@ function DeterministicShareCard({
         ['GB6 MULTI · ' + scoreLabel, multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'No estimate'],
         ['15-MIN SINGLE · SIM', sustainedSingleScore !== undefined ? Math.round(sustainedSingleScore).toLocaleString('en-US') : 'No estimate'],
         ['15-MIN MULTI · SIM', sustainedMultiScore !== undefined ? Math.round(sustainedMultiScore).toLocaleString('en-US') : 'No estimate'],
-        ['BATTERY LIFE · EST.', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
+        [powerScenario === 'neutral' ? 'BATTERY LIFE · EST.' : 'BATTERY · WHAT-IF', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
         ['CHARGING 0–100%', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
         ['WIRED CHARGING', wiredWatts !== undefined ? Math.round(wiredWatts) + ' W' : 'Unknown'],
@@ -1118,6 +1120,7 @@ function DeterministicShareCard({
       sustainedMultiScore !== undefined ? '15-min simulated multi: ' + Math.round(sustainedMultiScore).toLocaleString('en-US') : null,
       wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
       experimentalScores ? 'Concept benchmark projections' : 'Simulation estimates',
+      powerScenario !== 'neutral' ? 'Assumed processor power: ' + powerScenario : null,
       ...(mode === 'simple'
         ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Active-use projection']
         : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
@@ -8252,7 +8255,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && workspaceMode === 'simple' && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleCpuScores.some(item => item.estimate.assumptionApplied)} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleCpuScores.some(item => item.estimate.assumptionApplied)} powerScenario={simpleSocPowerScenario} />
               )}
 
               <p className="il-help">Simulated estimates. Actual device performance may vary.</p>
