@@ -130,6 +130,46 @@ describe('mixed-use battery experience', () => {
       .toEqual(base.runtimes.map(row => row.expectedHours));
   });
 
+  it('makes battery scenarios respond to chosen power assumptions, not the chip name', () => {
+    const simulation = {
+      formFactor: 'phone' as const,
+      displays: { primary: { diagonalInches: 6.7 } },
+      battery: { cells: [{ capacityMah: 5000 }] },
+    };
+    const dailyUseHours = {
+      web_browsing: 2, video_playback: 2, gaming: 1,
+    };
+    const options = { simulation, dailyUseHours, socName: 'Exynos 2700' };
+    const neutral = simulateBatteryExperience(corpus, options);
+    const efficiency = simulateBatteryExperience(corpus, {
+      ...options, socPowerWhatIf: 'efficiency',
+    });
+    const performance = simulateBatteryExperience(corpus, {
+      ...options, socPowerWhatIf: 'performance',
+    });
+    expect(neutral.mixedUse?.expectedActiveUseHoursPerCharge)
+      .toBeCloseTo(10, 8);
+    expect(efficiency.mixedUse!.expectedActiveUseHoursPerCharge)
+      .toBeGreaterThan(neutral.mixedUse!.expectedActiveUseHoursPerCharge);
+    expect(performance.mixedUse!.expectedActiveUseHoursPerCharge)
+      .toBeLessThan(neutral.mixedUse!.expectedActiveUseHoursPerCharge);
+
+    const hours = (result: typeof neutral, workload: string) =>
+      result.runtimes.find(row => row.workload === workload)?.expectedHours ?? 0;
+    expect(hours(efficiency, 'gaming')).toBeGreaterThan(hours(neutral, 'gaming'));
+    expect(hours(performance, 'web_browsing')).toBeLessThan(hours(neutral, 'web_browsing'));
+    const effect = (workload: string) =>
+      hours(efficiency, workload) / hours(neutral, workload) - 1;
+    // Gaming has a greater assumed processor-power share than video.
+    expect(effect('gaming')).toBeGreaterThan(effect('video_playback'));
+    const otherChip = simulateBatteryExperience(corpus, {
+      ...options, socName: 'Snapdragon 8 Elite Extreme Gen 6',
+      socPowerWhatIf: 'efficiency',
+    });
+    expect(otherChip.mixedUse!.expectedActiveUseHoursPerCharge)
+      .toBeCloseTo(efficiency.mixedUse!.expectedActiveUseHoursPerCharge, 8);
+  });
+
   it('does not fabricate mixed-use runtime when no supported workload hours are entered', () => {
     const result = simulateBatteryExperience(corpus, {
       simulation: {
