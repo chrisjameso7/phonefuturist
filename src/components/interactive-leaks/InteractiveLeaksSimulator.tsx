@@ -1469,6 +1469,8 @@ export default function InteractiveLeaksSimulator() {
           primary.refreshRateHz ??
             input.refreshRateHz,
         ),
+      brightnessNits: input.brightnessNits !== undefined
+        ? String(input.brightnessNits) : '',
       // Scenario hours are configurable assumptions, not demographic averages.
       // Keep them distinct from screen-on measurements and preserve Advanced inputs.
       webHours: SIMPLE_USAGE_SCENARIOS[usage].webHours,
