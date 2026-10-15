@@ -313,11 +313,24 @@ export function resolveCorpusRuntimeBand(
     });
   });
 
+  // Every measured phone contributes at most one total comparable weight
+  // within a protocol. Multiple test runs improve its average estimate, but
+  // must not make that single handset outweigh independent devices.
+  const measurementCountsByDeviceProtocol = new Map<string, number>();
+  for (const value of rawValues) {
+    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    measurementCountsByDeviceProtocol.set(
+      key, (measurementCountsByDeviceProtocol.get(key) ?? 0) + 1,
+    );
+  }
+
   const grouped = new Map<string, typeof rawValues>();
 
   for (const value of rawValues) {
     const group = grouped.get(value.protocolKey) ?? [];
-    group.push(value);
+    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    const readings = measurementCountsByDeviceProtocol.get(key) ?? 1;
+    group.push({ ...value, weight: value.weight / readings });
     grouped.set(value.protocolKey, group);
   }
 
