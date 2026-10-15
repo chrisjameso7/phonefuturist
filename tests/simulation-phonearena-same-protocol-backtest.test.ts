@@ -124,6 +124,7 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
       console.info('PHONEARENA_RUNTIME_SPEC_COVERAGE', JSON.stringify(specCoverage));
       console.info('PHONEARENA_SAME_PROTOCOL_SPARSE', JSON.stringify(cohort(sparse)));
       console.info('PHONEARENA_SAME_PROTOCOL_ENRICHED', JSON.stringify(cohort(enriched)));
+      console.info('PHONEARENA_SPEC_BRIDGE', JSON.stringify(enriched.specBridgeStats));
       console.info('PHONEARENA_PAST_DEVICES_ONLY', JSON.stringify(cohort(historical)));
       // Report quality honestly; never alter the independent cross-lab holdout
       // or assert a target threshold without evidence.
