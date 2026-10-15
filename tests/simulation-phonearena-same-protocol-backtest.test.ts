@@ -131,6 +131,15 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
       expect(Number.isFinite(sparse.mapePercent)).toBe(true);
       expect(Number.isFinite(enriched.mapePercent)).toBe(true);
       expect(historical.evaluatedRows).toBeGreaterThanOrEqual(20);
+      if (process.env.ENFORCE_SIMULATION_ACCURACY === '1') {
+        // Require a real historical, same-laboratory quality milestone.
+        // These gates are intentionally not tuned to the cross-protocol
+        // PhoneArena-vs-other-labs mismatch.
+        expect(historical.mapePercent, 'Historical same-protocol runtime MAPE must be <=20%')
+          .toBeLessThanOrEqual(20);
+        expect(historical.within20Percent, 'At least 80% of historical predictions must be within 20%')
+          .toBeGreaterThanOrEqual(80);
+      }
       expect(historical.rows.every(r => !!r.targetReleaseDate && !!r.latestReferenceReleaseDate && r.latestReferenceReleaseDate < r.targetReleaseDate)).toBe(true);
     }, 120_000);
   });
