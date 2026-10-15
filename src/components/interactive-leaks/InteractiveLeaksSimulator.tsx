@@ -1203,6 +1203,7 @@ export default function InteractiveLeaksSimulator() {
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
   const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
+  const [simpleSocPowerScenario, setSimpleSocPowerScenario] = useState<'neutral' | 'efficiency' | 'performance'>('neutral');
 
   const [predictionSaveState, setPredictionSaveState] =
     useState<
@@ -1428,9 +1429,14 @@ export default function InteractiveLeaksSimulator() {
     };
   }
 
-  function runSimpleMode(input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') {
+  function runSimpleMode(
+    input: SimpleModeInput,
+    usage: 'Light' | 'Typical' | 'Heavy',
+    powerScenario: 'neutral' | 'efficiency' | 'performance',
+  ) {
     setResultRevision(current => current + 1);
     setUsagePreset(usage);
+    setSimpleSocPowerScenario(powerScenario);
     const expansion = expandSimpleMode(input);
     const primary =
       expansion.simulationInput.displays.primary;
@@ -1729,6 +1735,7 @@ export default function InteractiveLeaksSimulator() {
             gaming: numeric(form.gamingHours) ?? 0,
           },
           usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
+          socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : undefined,
           brightnessNits: numeric(form.brightnessNits),
           targetSocPowerW: numeric(form.targetSocPowerW),
           coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
@@ -5703,7 +5710,7 @@ export default function InteractiveLeaksSimulator() {
                         <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
                             ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
-                        <small>{estimate.status === 'resolved' ? 'Geekbench 6' : 'Insufficient benchmark data'}</small>
+                        <small>{estimate.status === 'resolved' ? (estimate.assumptionApplied ? 'Projected Geekbench 6 · scenario' : 'Geekbench 6 · estimated') : 'Insufficient benchmark data'}</small>
                       </div>
                     ))}
                   </div>
@@ -8245,7 +8252,7 @@ export default function InteractiveLeaksSimulator() {
               </>
               )}
               {simulationInput && workspaceMode === 'simple' && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={false} />
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleCpuScores.some(item => item.estimate.assumptionApplied)} />
               )}
 
               <p className="il-help">Simulated estimates. Actual device performance may vary.</p>
