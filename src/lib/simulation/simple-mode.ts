@@ -37,6 +37,8 @@ export interface SimpleModeInput {
   customResolutionWidthPx?: number;
   customResolutionHeightPx?: number;
   refreshRateHz: number;
+  /** Explicit scenario brightness in nits; omitted keeps measured cohort unchanged. */
+  brightnessNits?: number;
 
   socVendor?: SocVendor;
   socName?: string;
