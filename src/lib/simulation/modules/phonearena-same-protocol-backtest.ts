@@ -102,7 +102,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
           refreshRateHz: device.display?.refreshRateHz,
         } : {},
       },
-      battery: { cells: [{ capacityMah, ...(voltage ? { nominalVoltageV: voltage } : {})] },
+      battery: { cells: [{ capacityMah, ...(voltage ? { nominalVoltageV: voltage } : {}) }] },
     };
 
     const estimate = resolveCorpusRuntimeBand(
