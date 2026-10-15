@@ -177,6 +177,7 @@ describe('runtime SoC evidence hierarchy', () => {
     expect(result.estimate?.sameSocFamilyReferences).toBe(1);
     expect(result.estimate?.sameSocVendorReferences).toBe(1);
     expect(result.estimate?.referenceCount).toBe(3);
+    expect(result.estimate?.independentReferenceDeviceCount).toBe(2);
     expect(result.estimate?.neighborIds.sort()).toEqual(['another-chip', 'one-chip']);
   });
 
