@@ -54,6 +54,7 @@ export default function SimpleModePanel({
   const [customHeight, setCustomHeight] = useState('');
   const [refreshRate, setRefreshRate] =
     useState('120');
+  const [brightness, setBrightness] = useState('');
   const [socVendor, setSocVendor] =
     useState<SocVendor>('Qualcomm');
   const [socName, setSocName] = useState('');
@@ -112,6 +113,7 @@ export default function SimpleModePanel({
       renderingScalePercent: renderingScale,
       ...(resolution === 'custom' ? { customResolutionWidthPx: number(customWidth), customResolutionHeightPx: number(customHeight) } : {}),
       refreshRateHz: hz,
+      ...(number(brightness) ? { brightnessNits: number(brightness) } : {}),
       socVendor,
       ...(socName.trim()
         ? { socName: socName.trim() }
@@ -308,6 +310,18 @@ export default function SimpleModePanel({
             <option value="144">144 Hz</option>
             <option value="165">165 Hz</option>
           </select>
+        </label>
+
+        <label className="il-field">
+          <span>Screen brightness</span>
+          <select value={brightness} onChange={event => setBrightness(event.currentTarget.value)}>
+            <option value="">Reference conditions · unchanged</option>
+            <option value="200">200 nits · indoor</option>
+            <option value="400">400 nits · bright room</option>
+            <option value="800">800 nits · outdoors</option>
+            <option value="1200">1,200 nits · bright sunlight</option>
+          </select>
+          <small>Explicit brightness scenario. Reference-lab brightness varies; these are not measured battery tests.</small>
         </label>
 
         <label className="il-field">
