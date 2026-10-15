@@ -25,6 +25,8 @@ export default defineConfig({
           codeSplitting: {
             groups: [
               { name: 'react-runtime', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 20 },
+              // Keep immutable evidence payloads out of the executable simulator chunks.
+              { name: 'simulation-data', test: /data[\\/](calibration|catalog)[\\/]/, maxSize: 200000, priority: 15 },
               { name: 'simulation-modules', test: /src[\\/]lib[\\/]simulation[\\/]/, minSize: 40000, maxSize: 240000, priority: 10 },
             ],
           },
