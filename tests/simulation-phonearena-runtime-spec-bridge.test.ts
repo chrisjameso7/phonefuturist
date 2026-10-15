@@ -54,14 +54,33 @@ describe('conservative battery runtime spec bridge', () => {
     const linked = result.corpus.devices[0];
 
     expect(result.stats.linkedRecords).toBe(1);
-    expect(result.stats.socAdded).toBe(1);
+    expect(result.stats.socAdded).toBe(0);
     expect(result.stats.displaySizeAdded).toBe(1);
-    expect(linked.variant.soc?.name).toBe('Snapdragon Test');
+    expect(linked.variant.soc).toBeUndefined();
     expect(linked.display?.refreshRateHz).toBe(120);
     expect(linked.display?.resolutionWidthPx).toBe(1440);
     // Voltage is variant-specific and must never be borrowed.
     expect(linked.variant.battery?.nominalVoltageV).toBeUndefined();
     expect(original.devices[0].variant.soc).toBeUndefined();
+  });
+
+  it('only transfers a chipset when the region and processor are both unambiguous', () => {
+    const source = phone('region-specific', 'Galaxy X', 5000, {
+      variant: {
+        id: 'region-specific',
+        identity: { manufacturer: 'Samsung', family: 'Galaxy X', modelName: 'Galaxy X', region: 'US' },
+        battery: { capacityMah: 5000 },
+        soc: { vendor: 'Qualcomm', name: 'Snapdragon Test' },
+      },
+    });
+    const base = corpusWithDonors([source]);
+    base.devices[0].variant.identity.region = 'US';
+    const linked = buildPhoneArenaRuntimeSpecBridge(base);
+    expect(linked.stats.socAdded).toBe(1);
+    expect(linked.corpus.devices[0].variant.soc?.name).toBe('Snapdragon Test');
+    const mismatch = corpusWithDonors([source]);
+    mismatch.devices[0].variant.identity.region = 'EU';
+    expect(buildPhoneArenaRuntimeSpecBridge(mismatch).corpus.devices[0].variant.soc).toBeUndefined();
   });
 
   it('rejects a mismatched regional battery or a different model', () => {
