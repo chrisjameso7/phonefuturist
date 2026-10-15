@@ -187,9 +187,6 @@ export function simulateBatteryExperience(
   // This prevents chip-name switching from producing multi-hour gains.
   const comparableSocVendor: string | undefined = undefined;
   const comparableSocName: string | undefined = undefined;
-  if (input.socName?.trim()) {
-    warnings.push('SoC power variation is an experimental assumption, not a measured device efficiency result.');
-  }
 
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
     const band = resolveCorpusRuntimeBand(
