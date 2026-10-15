@@ -26,6 +26,8 @@ export interface SameProtocolRuntimeRow {
   energyBasis: 'mah' | 'wh';
   energyReferenceCount: number;
   targetHasVoltage: boolean;
+  targetReleaseDate?: string;
+  latestReferenceReleaseDate?: string;
   evidenceScope: 'same-soc-family' | 'same-soc-vendor' | 'protocol-cohort';
 }
 
@@ -33,6 +35,7 @@ export interface SameProtocolRuntimeBacktest {
   version: string;
   protocol?: string;
   mode: 'sparse' | 'spec-enriched';
+  validationScheme: 'leave-one-device-out' | 'past-devices-only';
   totalMeasurements: number;
   evaluatedRows: number;
   skippedRows: number;
@@ -57,6 +60,7 @@ function evidenceBackedVoltage(
 export function backtestPhoneArenaSameProtocolRuntime(
   corpus: DeviceCorpus,
   mode: 'sparse' | 'spec-enriched' = 'sparse',
+  validationScheme: 'leave-one-device-out' | 'past-devices-only' = 'leave-one-device-out',
 ): SameProtocolRuntimeBacktest {
   const source = corpus.sources.find(item => item.id === SOURCE_ID);
   const measurements = corpus.measurements.filter(m =>
@@ -74,18 +78,27 @@ export function backtestPhoneArenaSameProtocolRuntime(
     const device = deviceById.get(actual.deviceVariantId);
     const battery = device?.variant.battery;
     const capacityMah = battery?.capacityMah ?? battery?.typicalCapacityMah;
-    if (!device || !positive(capacityMah) || !source) {
+    const releaseDate = device?.releaseDate;
+    // A historical prediction may use ONLY phones released before its
+    // target. Unknown release dates are excluded rather than guessed.
+    if (!device || !positive(capacityMah) || !source ||
+        (validationScheme === 'past-devices-only' && !releaseDate)) {
       skippedRows++;
       continue;
     }
 
     let training = trainingByDevice.get(actual.deviceVariantId);
     if (!training) {
+      const eligibleDevices = corpus.devices.filter(d =>
+        d.variant.id !== actual.deviceVariantId &&
+        (validationScheme === 'leave-one-device-out' ||
+          (d.releaseDate !== undefined && d.releaseDate < releaseDate!)));
+      const eligibleIds = new Set(eligibleDevices.map(d => d.variant.id));
       training = {
         ...corpus,
         sources: [source],
-        devices: corpus.devices.filter(d => d.variant.id !== actual.deviceVariantId),
-        measurements: measurements.filter(m => m.deviceVariantId !== actual.deviceVariantId),
+        devices: eligibleDevices,
+        measurements: measurements.filter(m => eligibleIds.has(m.deviceVariantId)),
       };
       trainingByDevice.set(actual.deviceVariantId, training);
     }
@@ -130,6 +143,14 @@ export function backtestPhoneArenaSameProtocolRuntime(
       skippedRows++;
       continue;
     }
+    const referenceDateById = new Map(
+      training.devices.map(d => [d.variant.id, d.releaseDate]),
+    );
+    const latestReferenceReleaseDate = band.neighborIds
+      .map(id => referenceDateById.get(id))
+      .filter((date): date is string => !!date)
+      .sort()
+      .at(-1);
     rows.push({
       deviceVariantId: actual.deviceVariantId,
       workload: actual.workload as RuntimeWorkload,
@@ -141,6 +162,8 @@ export function backtestPhoneArenaSameProtocolRuntime(
       energyBasis: whHours === undefined ? 'mah' : 'wh',
       energyReferenceCount: band.energyReferenceCount,
       targetHasVoltage: positive(voltage),
+      targetReleaseDate: releaseDate,
+      latestReferenceReleaseDate,
       evidenceScope: band.evidenceScope,
     });
   }
@@ -149,6 +172,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
     version: PHONEARENA_SAME_PROTOCOL_BACKTEST_VERSION,
     protocol: source?.protocol,
     mode,
+    validationScheme,
     totalMeasurements: measurements.length,
     evaluatedRows: rows.length,
     skippedRows,
