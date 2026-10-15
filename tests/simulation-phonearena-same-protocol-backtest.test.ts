@@ -58,9 +58,22 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
   describe('live corpus diagnostics', () => {
     let sparse: ReturnType<typeof backtestPhoneArenaSameProtocolRuntime>;
     let enriched: ReturnType<typeof backtestPhoneArenaSameProtocolRuntime>;
+    let specCoverage: Record<string, number>;
 
     beforeAll(() => {
       const corpus = buildCalibrationRegistry();
+      const ids = new Set(corpus.measurements
+        .filter(m => m.sourceId === PHONEARENA && m.workload === 'web_browsing')
+        .map(m => m.deviceVariantId));
+      const targetDevices = corpus.devices.filter(d => ids.has(d.variant.id));
+      specCoverage = {
+        targetDeviceCount: targetDevices.length,
+        withSocName: targetDevices.filter(d => !!d.variant.soc?.name).length,
+        withDisplaySize: targetDevices.filter(d => !!d.display?.diagonalInches).length,
+        withDisplayRefresh: targetDevices.filter(d => !!d.display?.refreshRateHz).length,
+        withNominalVoltage: targetDevices.filter(d => !!d.variant.battery?.nominalVoltageV).length,
+        withBatteryEnergyWh: targetDevices.filter(d => !!(d.variant.battery?.typicalEnergyWh ?? d.variant.battery?.ratedEnergyWh)).length,
+      };
       sparse = backtestPhoneArenaSameProtocolRuntime(corpus, 'sparse');
       enriched = backtestPhoneArenaSameProtocolRuntime(corpus, 'spec-enriched');
     }, 120_000);
@@ -87,6 +100,7 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
         targetVoltageEvidenceRows: mode.rows.filter(row => row.targetHasVoltage).length,
         selectedReferenceEnergyRows: mode.rows.filter(row => row.energyReferenceCount > 0).length,
       });
+      console.info('PHONEARENA_RUNTIME_SPEC_COVERAGE', JSON.stringify(specCoverage));
       console.info('PHONEARENA_SAME_PROTOCOL_SPARSE', JSON.stringify(cohort(sparse)));
       console.info('PHONEARENA_SAME_PROTOCOL_ENRICHED', JSON.stringify(cohort(enriched)));
       // Report quality honestly; never alter the independent cross-lab holdout
