@@ -8,10 +8,8 @@ import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-cata
 import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
-import { getSocEfficiencyCurve, evaluateSocAtBoardPower } from '../../lib/simulation/modules/soc-efficiency-registry';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
-import { publicEvidenceText } from '../../lib/simulation/public-evidence-copy';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
 import SimpleModePanel from './SimpleModePanel';
@@ -37,42 +35,34 @@ import type {
 } from '../../lib/simulation/modules/camera';
 
 import {
-  LIVE_BATTERY_EXPERIENCE_VERSION,
   simulateLiveBatteryExperience,
 } from '../../lib/simulation/live-battery-experience';
 
 import {
-  LIVE_THERMAL_EXPERIENCE_VERSION,
   simulateLiveThermalExperience,
 } from '../../lib/simulation/live-thermal-experience';
 
 import {
-  LIVE_CAMERA_EXPERIENCE_VERSION,
   simulateLiveCameraExperience,
 } from '../../lib/simulation/live-camera-experience';
 
 import {
-  CAMERA_ZOOM_HANDOFF_VERSION,
   resolveCameraZoomHandoff,
 } from '../../lib/simulation/modules/camera-zoom-handoff';
 
 import {
-  LIVE_DISPLAY_EXPERIENCE_VERSION,
   simulateLiveDisplayExperience,
 } from '../../lib/simulation/live-display-experience';
 
 import {
-  DISPLAY_RUNTIME_SENSITIVITY_VERSION,
   resolveLiveDisplayRuntimeSensitivity,
 } from '../../lib/simulation/modules/display-runtime-sensitivity';
 
 import {
-  SUSTAINED_PERFORMANCE_ESTIMATOR_VERSION,
   estimateLiveSustainedPerformance,
 } from '../../lib/simulation/modules/sustained-performance-estimator';
 
 import {
-  PEAK_PERFORMANCE_ESTIMATOR_VERSION,
   estimateLivePeakPerformance,
   type PeakBenchmarkDomain,
 } from '../../lib/simulation/modules/peak-performance-estimator';
@@ -82,124 +72,100 @@ import {
 } from '../../lib/simulation/modules/two-node-thermal';
 
 import {
-  SOC_ARCHITECTURE_MODEL_VERSION,
   calculateSocArchitecture,
 } from '../../lib/simulation/modules/soc-architecture';
 
 import {
-  PERFORMANCE_CONTEXT_VERSION,
   buildPerformanceContext,
 } from '../../lib/simulation/modules/performance-context';
 
 import {
-  GPU_ARCHITECTURE_MODEL_VERSION,
   calculateGpuArchitecture,
 } from '../../lib/simulation/modules/gpu-architecture';
 
 import {
-  GPU_POWER_ENVELOPE_VERSION,
   calculateGpuPowerEnvelope,
 } from '../../lib/simulation/modules/gpu-power-envelope';
 
 import {
-  GPU_WORKLOAD_DEMAND_VERSION,
   calculateGpuWorkloadDemand,
 } from '../../lib/simulation/modules/gpu-workload-demand';
 
 import {
-  GPU_WORKLOAD_RESPONSE_VERSION,
   interpretGpuWorkloadResponse,
 } from '../../lib/simulation/modules/gpu-workload-response';
 
 import {
-  GAMING_DISPLAY_ENVELOPE_VERSION,
   calculateGamingDisplayEnvelope,
 } from '../../lib/simulation/modules/gaming-display-envelope';
 
 import {
-  SUSTAINED_BENCHMARK_ENVELOPE_VERSION,
   calculateSustainedBenchmarkEnvelope,
 } from '../../lib/simulation/modules/sustained-benchmark-envelope';
 
 import {
-  GAMING_SESSION_ENVELOPE_VERSION,
   calculateGamingSessionEnvelope,
 } from '../../lib/simulation/modules/gaming-session-envelope';
 
 import {
-  BATTERY_AGING_ENVELOPE_VERSION,
   calculateBatteryAgingEnvelope,
 } from '../../lib/simulation/modules/battery-aging-envelope';
 
 import {
-  BATTERY_AGING_RUNTIME_VERSION,
   calculateBatteryAgingRuntime,
 } from '../../lib/simulation/modules/battery-aging-runtime';
 
 import {
-  BATTERY_CYCLE_EXPOSURE_VERSION,
   calculateBatteryCycleExposure,
 } from '../../lib/simulation/modules/battery-cycle-exposure';
 
 import {
-  BATTERY_HEALTH_FORECAST_VERSION,
   forecastBatteryHealthThreshold,
 } from '../../lib/simulation/modules/battery-health-forecast';
 
 import {
-  CAMERA_VIDEO_WORKLOAD_VERSION,
   calculateCameraVideoWorkload,
 } from '../../lib/simulation/modules/camera-video-workload';
 
 import {
-  CAMERA_VIDEO_THERMAL_VERSION,
   calculateCameraVideoThermal,
 } from '../../lib/simulation/modules/camera-video-thermal';
 
 import {
-  CONNECTIVITY_WORKLOAD_VERSION,
   calculateConnectivityWorkload,
   type ConnectivityMode,
 } from '../../lib/simulation/modules/connectivity-workload';
 
 import {
-  DISPLAY_REFRESH_PROFILE_VERSION,
   calculateDisplayRefreshProfile,
 } from '../../lib/simulation/modules/display-refresh-profile';
 
 import {
-  CAMERA_SENSOR_NOISE_VERSION,
   calculateCameraSensorNoise,
 } from '../../lib/simulation/modules/camera-sensor-noise';
 
 import {
-  GEEKERWAN_CHARGING_CONTEXT_VERSION,
   estimateLiveGeekerwanChargingContext,
 } from '../../lib/simulation/modules/geekerwan-charging-context';
 
 import {
-  GEEKERWAN_SOCPK_EVIDENCE_VERSION,
   findGeekerwanBatteryResult,
   summarizeGeekerwanSocCurve,
 } from '../../lib/simulation/modules/geekerwan-socpk-evidence';
 
 import {
-  PHONEARENA_BATTERY_EVIDENCE_VERSION,
   findPhoneArenaChargingResult,
 } from '../../lib/simulation/modules/phonearena-battery-evidence';
 
 import {
-  CROSS_LAB_BATTERY_CONTEXT_VERSION,
   buildCrossLabBatteryContext,
 } from '../../lib/simulation/modules/cross-lab-battery-context';
 
 import {
-  CHARGING_INPUT_POWER_ESTIMATOR_VERSION,
   estimateLiveObservedChargingInputPower,
 } from '../../lib/simulation/modules/charging-input-power-estimator';
 
 import {
-  CHARGERLAB_PEAK_INPUT_CONTEXT_VERSION,
   estimateChargerLabPeakInputContext,
 } from '../../lib/simulation/modules/chargerlab-peak-input-context';
 
@@ -757,7 +723,6 @@ function formatDurationSeconds(
     : `${hours} h`;
 }
 
-
 function cameraOutcomeLabel(domain: string) {
   switch (domain) {
     case 'sharpness_timing':
@@ -986,7 +951,6 @@ function DeterministicShareCard({
     (mode === 'simple' && battery?.totalCapacityMah !== undefined
       ? battery.totalCapacityMah * 3.85 / 1000
       : undefined);
-  const assumedVoltage = battery?.totalEnergyWh === undefined && assumedEnergyWh !== undefined;
   const chargingScenarioMinutes = chargeMinutes === undefined &&
     assumedEnergyWh !== undefined && wiredWatts !== undefined
       ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts, chargingStandard, cellArchitecture })
@@ -994,8 +958,6 @@ function DeterministicShareCard({
   const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
   const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
   const scoreLabel = experimentalScores ? 'SYNTHETIC' : 'ESTIMATED';
-
-
 
   async function downloadCard() {
     try {
@@ -1120,7 +1082,7 @@ function DeterministicShareCard({
       ctx.fillRect(72, 1250, 936, 2);
       ctx.fillStyle = ink;
       ctx.font = '700 21px Arial';
-      ctx.fillText('ENGINE ' + SIMULATION_ENGINE_VERSION, 72, 1294);
+      ctx.fillText('SIMULATED ESTIMATE', 72, 1294);
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
       ctx.textAlign = 'right';
@@ -1160,7 +1122,7 @@ function DeterministicShareCard({
         ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Active-use projection']
         : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
            packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded']),
-      'Interactive Leaks · PhoneFuturist · Engine v' + SIMULATION_ENGINE_VERSION,
+      'Interactive Leaks · PhoneFuturist · Simulated estimate',
     ].filter(Boolean).join(' · ');
 
     try {
@@ -1194,7 +1156,7 @@ function DeterministicShareCard({
       <strong>{deviceName}</strong>
       {socName && <small>{socName}</small>}
       {experimentalScores && <small>Concept benchmark range</small>}
-      {chargingIsScenario && <small>Charging scenario models high-charge taper and 85% conversion efficiency{assumedVoltage ? ', with assumed 3.85 V battery voltage' : ''}. Not a validated charging curve.</small>}
+      {chargingIsScenario && <small>Estimated charging time. Actual results may vary.</small>}
       <div className="il-share-card-metrics">
         <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
         <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
@@ -1241,7 +1203,6 @@ export default function InteractiveLeaksSimulator() {
   const [workspaceMode, setWorkspaceMode] =
     useState<'simple' | 'advanced'>('simple');
   const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
-  const [benchmarkLoad, setBenchmarkLoad] = useState<'low' | 'medium' | 'high'>('medium');
 
   const [predictionSaveState, setPredictionSaveState] =
     useState<
@@ -1980,7 +1941,6 @@ export default function InteractiveLeaksSimulator() {
     ? chargingResult.estimate?.timeTo100Minutes?.expected
     : chargingScenarioMinutes;
 
-
   const observedChargingInput =
     chargingWatts !== undefined
       ? estimateLiveObservedChargingInputPower({
@@ -2205,7 +2165,6 @@ export default function InteractiveLeaksSimulator() {
         limit: 3,
       })
     : [];
-
 
   const simpleCpuScores = simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
@@ -3096,7 +3055,7 @@ export default function InteractiveLeaksSimulator() {
     twoNodeThermalResult ? (
       <div className="il-thermal-two-node">
         <span className="il-result-label">
-          Package / surface physics
+          Processor / surface temperature
         </span>
         <div className="il-metrics">
           <div>
@@ -3151,15 +3110,10 @@ export default function InteractiveLeaksSimulator() {
                 1,
               )}%
             </strong>
-            <span>Two-node physics sustained perf</span>
+            <span>Sustained performance</span>
           </div>
         </div>
-        <p className="il-help">
-          Independent two-node physics using only the explicit
-          package-to-chassis and chassis-to-ambient parameters above.
-          It does not require or inherit the legacy lumped thermal
-          resistance or thermal mass.
-        </p>
+
       </div>
     ) : null;
 
@@ -3171,9 +3125,7 @@ export default function InteractiveLeaksSimulator() {
             Interactive Leaks
           </span>
 
-          <span className="il-engine">
-            Engine v{SIMULATION_ENGINE_VERSION}
-          </span>
+          <span className="il-engine">Beta · Simulated</span>
         </div>
 
         <div className="il-toolbar-actions">
@@ -3252,9 +3204,9 @@ export default function InteractiveLeaksSimulator() {
         </div>
       ) : null}
 
-      {workspaceMode === 'simple' ? (
+      <div hidden={workspaceMode !== 'simple'}>
         <SimpleModePanel onRun={runSimpleMode} />
-      ) : null}
+      </div>
 
       <div
         className={`il-workspace ${workspaceMode === 'simple' ? 'il-workspace-simple' : ''}`}
@@ -5715,9 +5667,7 @@ export default function InteractiveLeaksSimulator() {
               Simulation result
             </span>
 
-            <span>
-              v{SIMULATION_ENGINE_VERSION}
-            </span>
+            <span>Estimated</span>
           </div>
 
           {!hasSimulated || !result ? (
@@ -5728,7 +5678,6 @@ export default function InteractiveLeaksSimulator() {
 
               <h2>Ready to simulate</h2>
 
-              
             </div>
           ) : (
             <>
@@ -5794,7 +5743,7 @@ export default function InteractiveLeaksSimulator() {
                       <strong>Compare generations</strong>
                       <div className="il-metrics">
                         {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
-                          <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}> 
+                          <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}>
                             <strong>{item.label}</strong>
                             <span style={{display:'block',marginTop:'0.35rem'}}>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
                             {item.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Previous battery: {format(item.released.batteryMah, 0)} mAh · Selected: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
@@ -5836,19 +5785,19 @@ export default function InteractiveLeaksSimulator() {
                   )}
                   <div className="il-simple-battery-readout">
                     <span className="il-result-label">Active-use endurance · one charge</span>
-                    <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Not enough evidence'}</strong>
+                    <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
                     <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
                     <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature.</small>
                   </div>
                   <div className="il-metrics">
                     <div><strong>{usagePreset}</strong><span>Selected usage mix</span></div>
-                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Daily active-use assumption (not battery endurance)</span></div>
+                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Daily active use</span></div>
                     <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
                     <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
                     <div><strong>{predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : 'No charging power'}</strong><span>Estimated charging time · 0–100%</span></div>
                     {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Rendering scale only.</small></div>}
                   </div>
-                  <p className="il-help">Heavy includes 2.5 h browsing, 2.5 h video and 1.5 h gaming per day, plus a higher drain factor. The battery result is active-use time, not elapsed time between charges.</p>
+
                 </div>
               ) : (
               <>
@@ -5899,7 +5848,8 @@ export default function InteractiveLeaksSimulator() {
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Display load · {LIVE_DISPLAY_EXPERIENCE_VERSION}
+                  Display load
+
                 </span>
 
                 {displayExperience &&
@@ -5960,19 +5910,7 @@ export default function InteractiveLeaksSimulator() {
                         <span>Raster load vs 1080×2400@60</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {displayExperience.luminanceAreaNitCm2 !==
-                          undefined
-                            ? format(
-                                displayExperience
-                                  .luminanceAreaNitCm2,
-                                0,
-                              )
-                            : 'Unknown'}
-                        </strong>
-                        <span>Luminance-area demand</span>
-                      </div>
+
 
                       <div>
                         <strong>
@@ -6009,34 +5947,8 @@ export default function InteractiveLeaksSimulator() {
                         <span>Average picture level</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {displayExperience.load.emissiveContentLoadIndex !==
-                          undefined
-                            ? format(
-                                displayExperience.load
-                                  .emissiveContentLoadIndex,
-                                0,
-                              )
-                            : 'Unknown'}
-                        </strong>
-                        <span>OLED emissive content load index</span>
-                      </div>
 
-                      <div>
-                        <strong>
-                          {displayExperience.load.refreshDutyVsMaximum !==
-                          undefined
-                            ? `${format(
-                                displayExperience.load
-                                  .refreshDutyVsMaximum *
-                                  100,
-                                0,
-                              )}%`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Refresh duty vs maximum</span>
-                      </div>
+
 
                       <div>
                         <strong>
@@ -6048,52 +5960,17 @@ export default function InteractiveLeaksSimulator() {
                               )} W`
                             : 'Unresolved'}
                         </strong>
-                        <span>
-                          {displayExperience.electricalPowerMode ===
-                          'direct-calibration'
-                            ? 'Measured-calibrated panel power'
-                            : displayExperience.electricalPowerMode ===
-                                'controlled-interpolation'
-                              ? 'Interpolated measured panel power'
-                              : 'Electrical panel power'}
-                        </span>
+                        <span>Estimated panel power</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {displayExperience.electricalPowerMode ===
-                          'controlled-interpolation'
-                            ? displayExperience.electricalResponse
-                                .referenceCount
-                            : displayExperience.electricalPower
-                                .referenceCount}
-                        </strong>
-                        <span>Isolated panel-power references</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {displayExperience.electricalPowerMode.replaceAll(
-                            '-',
-                            ' ',
-                          )}
-                        </strong>
-                        <span>Electrical power provenance</span>
-                      </div>
                     </div>
-
-                    <p className="il-help">
-                      Electrical panel power:{' '}
-                      {publicEvidenceText(displayExperience.note)}
-                    </p>
 
                     {displayRefreshProfile ? (
                       displayRefreshProfile.status ===
                       'resolved' ? (
                         <div className="il-display-sensitivity">
                           <span className="il-result-label">
-                            Adaptive refresh ·{' '}
-                            {DISPLAY_REFRESH_PROFILE_VERSION}
+                            Adaptive refresh
                           </span>
 
                           <div className="il-metrics">
@@ -6123,18 +6000,7 @@ export default function InteractiveLeaksSimulator() {
                               <span>Time above 60 Hz</span>
                             </div>
 
-                            <div>
-                              <strong>
-                                {displayRefreshProfile.weightedPixelThroughputMpxPerSecond !==
-                                undefined
-                                  ? `${format(
-                                      displayRefreshProfile.weightedPixelThroughputMpxPerSecond,
-                                      1,
-                                    )} MP/s`
-                                  : 'Unknown'}
-                              </strong>
-                              <span>Weighted pixel scan demand</span>
-                            </div>
+
 
                             <div>
                               <strong>
@@ -6155,15 +6021,9 @@ export default function InteractiveLeaksSimulator() {
                             </div>
                           </div>
 
-                          <p className="il-help">
-                            {publicEvidenceText(displayRefreshProfile.note)}
-                          </p>
                         </div>
                       ) : (
-                        <p className="il-help">
-                          Adaptive refresh unresolved:{' '}
-                          {publicEvidenceText(displayRefreshProfile.unresolvedReason)}
-                        </p>
+                        null
                       )
                     ) : null}
 
@@ -6214,9 +6074,6 @@ export default function InteractiveLeaksSimulator() {
                           )}
                         </div>
 
-                        <p className="il-help">
-                          {publicEvidenceText(displayExperience.load.note)}
-                        </p>
                       </div>
                     ) : null}
 
@@ -6225,8 +6082,7 @@ export default function InteractiveLeaksSimulator() {
                       'unresolved' ? (
                       <div className="il-display-runtime-impact">
                         <span className="il-result-label">
-                          Measured runtime impact ·{' '}
-                          {DISPLAY_RUNTIME_SENSITIVITY_VERSION}
+                          Estimated runtime impact
                         </span>
 
                         <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.75rem' }}>
@@ -6266,26 +6122,16 @@ export default function InteractiveLeaksSimulator() {
                                   </strong>
                                 </div>
                               </div>
-                              <small style={{ display: 'block', opacity: 0.7, lineHeight: 1.5 }}>
-                                {scenario.referenceCount} references · {format(scenario.averageCoverage * 100, 0)}% coverage · {format(scenario.averageSimilarity * 100, 0)}% similarity
-                              </small>
+
                             </div>
                           ))}
                         </div>
 
-                        <p className="il-help">
-                          {publicEvidenceText(displayRuntimeSensitivity.note)}
-                        </p>
                       </div>
                     ) : displayRuntimeSensitivity?.status ===
                       'unresolved' &&
                     simulationInput?.battery ? (
-                      <p className="il-help">
-                        Measured display runtime impact is unresolved because
-                        the current corpus does not yet have enough strong
-                        protocol-compatible display/runtime references for
-                        this configuration.
-                      </p>
+                      null
                     ) : null}
 
                     {displayExperience.scenarios.length ? (
@@ -6330,27 +6176,6 @@ export default function InteractiveLeaksSimulator() {
                       </div>
                     ) : null}
 
-                    {displayExperience.warnings.length ? (
-                      <div className="il-warnings">
-                        {displayExperience.warnings.map(
-                          (warning) => (
-                            <div
-                              className="il-warning"
-                              key={warning}
-                            >
-                              <strong>DISPLAY_INPUT</strong>
-                              <p>{warning}</p>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    ) : null}
-
-                    <p className="il-help">
-                      {publicEvidenceText(displayExperience.note)} Brightness is not yet
-                      propagated into battery life because the current runtime
-                      evidence does not consistently record test luminance.
-                    </p>
                   </>
                 ) : (
                   <div className="il-empty">
@@ -6402,7 +6227,8 @@ export default function InteractiveLeaksSimulator() {
               {batteryAging ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    Battery aging · {BATTERY_AGING_ENVELOPE_VERSION}
+                    Battery aging
+
                   </span>
 
                   <div className="il-metrics">
@@ -6527,16 +6353,7 @@ export default function InteractiveLeaksSimulator() {
                                 )} h aged`
                               : 'Aged runtime unknown'}
                           </span>
-                          <small>
-                            {BATTERY_AGING_RUNTIME_VERSION}
-                            {row.result.runtimeDeltaPercent !==
-                            undefined
-                              ? ` · ${format(
-                                  row.result.runtimeDeltaPercent,
-                                  1,
-                                )}% runtime`
-                              : ''}
-                          </small>
+
                         </div>
                       ))}
                     </div>
@@ -6590,38 +6407,19 @@ export default function InteractiveLeaksSimulator() {
                           </div>
                         </div>
 
-                        <p className="il-help">
-                          {BATTERY_HEALTH_FORECAST_VERSION} ·{' '}
-                          {publicEvidenceText(batteryHealthForecast.note)}
-                        </p>
                       </>
                     ) : (
-                      <p className="il-help">
-                        Health threshold unresolved:{' '}
-                        {publicEvidenceText(batteryHealthForecast.unresolvedReason)}
-                      </p>
+                      null
                     )
                   ) : null}
 
-                  {explicitEquivalentFullCycles ===
-                    undefined &&
-                  batteryCycleExposure?.status ===
-                    'resolved' ? (
-                    <p className="il-help">
-                      {BATTERY_CYCLE_EXPOSURE_VERSION} ·{' '}
-                      {publicEvidenceText(batteryCycleExposure.note)}
-                    </p>
-                  ) : null}
-
-                  <p className="il-help">
-                    {publicEvidenceText(batteryAging.note)}
-                  </p>
                 </div>
               ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Battery life · {LIVE_BATTERY_EXPERIENCE_VERSION}
+                  Battery life
+
                 </span>
 
                 {batteryExperience?.mixedUse ? (
@@ -6707,155 +6505,19 @@ export default function InteractiveLeaksSimulator() {
                       )}
                     </div>
 
-                    <div className="il-runtime-evidence">
-                      {form.socName.trim() ? (
-                        <div className="il-sensitivity-card" style={{ marginBottom: 16 }}>
-                          <strong>Processor efficiency evidence</strong>
-                          <label className="il-field">
-                            <span>Measured benchmark operating point</span>
-                            <select value={benchmarkLoad} onChange={event=>setBenchmarkLoad(event.currentTarget.value as 'low'|'medium'|'high')}>
-                              <option value="low">Lower measured load</option>
-                              <option value="medium">Middle measured load</option>
-                              <option value="high">Higher measured load</option>
-                            </select>
-                          </label>
-                          {(['geekbench6', 'steelNomadLight'] as const).map(protocol => {
-                            const curve = getSocEfficiencyCurve(form.socName.trim(), protocol);
-                            if (!curve) return (
-                              <small key={protocol}>
-                                {protocol === 'geekbench6' ? 'CPU' : 'GPU'}: no exact-chip measured efficiency curve.
-                              </small>
-                            );
-                            const point = curve.points[benchmarkLoad === 'low' ? 0 : benchmarkLoad === 'high' ? curve.points.length - 1 : Math.floor(curve.points.length / 2)];
-                            const observation = evaluateSocAtBoardPower(curve.soc, protocol, point.boardPowerW);
-                            return (
-                              <small key={protocol}>
-                                {protocol === 'geekbench6' ? 'CPU · Geekbench 6' : 'GPU · Steel Nomad Light'}: {format(point.benchmarkScore, 0)} points · {format(point.boardPowerW, 2)} W · {format(observation.scorePerWatt, 0)} points/W
-                              </small>
-                            );
-                          })}
-                          <small>Chip-specific measured benchmark load only. Full-phone runtime requires measured display, idle and workload duty-cycle data.</small>
-                        </div>
-                      ) : null}
-                      <span className="il-result-label">
-                        Runtime evidence quality
-                      </span>
-
-                      <div className="il-sensitivity-grid">
-                        {batteryExperience.runtimes
-                          .filter(
-                            (runtime) =>
-                              runtime.status === 'resolved',
-                          )
-                          .map((runtime) => (
-                            <div
-                              className="il-sensitivity-card"
-                              key={runtime.workload}
-                            >
-                              <strong>
-                                {runtime.workload.replaceAll(
-                                  '_',
-                                  ' ',
-                                )}
-                              </strong>
-
-                              <span>
-                                {runtime.averageSimilarity !== undefined
-                                  ? `${format(
-                                      runtime.averageSimilarity * 100,
-                                      0,
-                                    )}% similarity`
-                                  : 'Similarity unknown'}
-                              </span>
-
-                              <span>
-                                {runtime.averageCoverage !== undefined
-                                  ? `${format(
-                                      runtime.averageCoverage * 100,
-                                      0,
-                                    )}% spec coverage`
-                                  : 'Coverage unknown'}
-                              </span>
-
-                              <span>
-                                {runtime.confidence !== undefined
-                                  ? `${format(
-                                      runtime.confidence * 100,
-                                      0,
-                                    )}% confidence`
-                                  : 'Confidence unknown'}
-                              </span>
-
-                              <small>
-                                {runtime.referenceCount ?? 0}{' '}
-                                measured devices
-                                {runtime.evidenceScope
-                                  ? ` · ${runtime.evidenceScope.replaceAll('-', ' ')}`
-                                  : ''}
-                              </small>
-
-                              {runtime.evidenceScope !== 'same-soc-family' && form.socName.trim() ? (
-                                <small role="note" style={{ color: '#f6c879', fontWeight: 650 }}>
-                                  Chip-specific efficiency unverified. This estimate uses {runtime.evidenceScope === 'same-soc-vendor' ? 'other chips from the same vendor' : 'a broader device group'} and may remain unchanged across chip generations.
-                                </small>
-                              ) : null}
-
-                              <small>
-                                {runtime.energyBasis === 'wh'
-                                  ? `${format(
-                                      runtime.expectedDrainWhPerHour,
-                                      2,
-                                    )} Wh/h · energy-normalized`
-                                  : `${format(
-                                      runtime.expectedDrainMahPerHour,
-                                      0,
-                                    )} mAh/h · capacity-normalized`}
-                              </small>
-                              {runtime.sameSocFamilyReferences !== undefined ||
-                              runtime.sameSocVendorReferences !== undefined ? (
-                                <small>
-                                  {runtime.sameSocFamilyReferences ?? 0} same-family ·{' '}
-                                  {runtime.sameSocVendorReferences ?? 0} same-vendor
-                                </small>
-                              ) : null}
-                              <small>
-                                {runtime.sourceRecordCount ?? 0} source page
-                                {(runtime.sourceRecordCount ?? 0) === 1
-                                  ? ''
-                                  : 's'} ·{' '}
-                                {runtime.publisherCount ?? 0} publisher
-                                {(runtime.publisherCount ?? 0) === 1
-                                  ? ''
-                                  : 's'} ·{' '}
-                                {runtime.protocolFamilyCount ?? 0}{' '}
-                                {(runtime.protocolFamilyCount ?? 0) === 1
-                                  ? 'protocol family'
-                                  : 'protocol families'}
-                              </small>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-
-                    <p className="il-help">
-                      Runtime uses protocol-isolated released-device evidence,
-                      now matched on display resolution and refresh rate when
-                      those fields are available. Camera-use runtime remains
-                      excluded until isolated camera battery measurements are
-                      available.
-                    </p>
                   </>
                 ) : (
                   <div className="il-empty">
                     Add battery capacity and daily web, video or gaming use to
-                    calculate corpus-calibrated battery life.
+                    estimate battery life.
                   </div>
                 )}
               </div>
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Wired charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
+                  Wired charging
+
                 </span>
                 <DownloadSectionReceipt kind="Charging" deviceName={form.name} metrics={[{label:'Wired power',value:form.wiredChargeW ? form.wiredChargeW+' W' : undefined},{label:'Wireless power',value:form.wirelessChargeW ? form.wirelessChargeW+' W' : undefined},{label:'Charging standard',value:form.chargingStandard},{label:'Cell architecture',value:form.cellArchitecture},{label:'Projected 0–100%',value:predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : undefined}]} />
 
@@ -6965,240 +6627,16 @@ export default function InteractiveLeaksSimulator() {
                         <span>Observed / advertised utilization</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.confidenceGrade}
-                        </strong>
-                        <span>Evidence confidence</span>
-                      </div>
 
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.evidenceMode ===
-                          'comparable-only'
-                            ? 'Comparable'
-                            : chargingResult.estimate.evidenceMode ===
-                                'interpolated'
-                              ? 'Interpolated'
-                              : chargingResult.estimate.evidenceMode ===
-                                  'near-extrapolated'
-                                ? 'Near extrapolation'
-                                : chargingResult.estimate.evidenceMode ===
-                                    'far-extrapolated'
-                                  ? 'Far extrapolation'
-                                  : 'Measured'}
-                        </strong>
-                        <span>Evidence mode</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.referenceCount}
-                        </strong>
-                        <span>Independent devices</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.referenceModeCount}
-                        </strong>
-                        <span>Charging modes used</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.sourceRecordCount}
-                        </strong>
-                        <span>Source pages</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.publisherCount}
-                        </strong>
-                        <span>Distinct publishers</span>
-                      </div>
-
-                      {chargingResult.estimate.measurementCount !== undefined ? (
-                        <div>
-                          <strong>
-                            {chargingResult.estimate.measurementCount}
-                          </strong>
-                          <span>Measured milestone rows</span>
-                        </div>
-                      ) : null}
-
-                      <div>
-                        <strong>
-                          {chargingResult.estimate.normalizationBasis === 'wh'
-                            ? chargingResult.estimate.normalized
-                                ?.expectedMinutesPerWh !== undefined
-                              ? `${format(
-                                  chargingResult.estimate.normalized
-                                    .expectedMinutesPerWh,
-                                  2,
-                                )} min/Wh`
-                              : 'Unknown'
-                            : chargingResult.estimate.normalized
-                                ?.expectedMinutesPer1000Mah !== undefined
-                              ? `${format(
-                                  chargingResult.estimate.normalized
-                                    .expectedMinutesPer1000Mah,
-                                  1,
-                                )} min/1,000 mAh`
-                              : 'Unknown'}
-                        </strong>
-                        <span>
-                          {chargingResult.estimate.normalizationBasis === 'wh'
-                            ? 'Energy normalization'
-                            : 'Capacity normalization'}
-                        </span>
-                      </div>
                     </div>
 
-                    {observedChargingInput?.status ===
-                    'resolved' ? (
-                      <p className="il-help">
-                        {CHARGING_INPUT_POWER_ESTIMATOR_VERSION} ·{' '}
-                        {publicEvidenceText(observedChargingInput.note)}
-                      </p>
-                    ) : null}
-
-                    {chargingResult.estimate.thermalResponse ? (
-                      <p className="il-help">
-                        Thermal speed adjustment:{' '}
-                        {chargingResult.estimate.thermalResponse.applied
-                          ? `${format(
-                              (chargingResult.estimate.thermalResponse
-                                .averageTimeScale -
-                                1) *
-                                100,
-                              1,
-                            )}% slower across ${chargingResult.estimate.thermalResponse.adjustedReferenceModes} measured mode${chargingResult.estimate.thermalResponse.adjustedReferenceModes === 1 ? '' : 's'}`
-                          : 'not applied'}
-                        {' · '}
-                        {publicEvidenceText(chargingResult.estimate.thermalResponse.note)}
-                      </p>
-                    ) : null}
-
-                    {chargingResult.estimate.powerResponse
-                      ?.targetPosition ? (
-                      <p className="il-help">
-                        Power response:{' '}
-                        {chargingResult.estimate.powerResponse.targetPosition
-                          .replaceAll('-', ' ')}
-                        {chargingResult.estimate.powerResponse
-                          .evidenceRangeWatts
-                          ? ` · evidence range ${format(
-                              chargingResult.estimate.powerResponse
-                                .evidenceRangeWatts.min,
-                              0,
-                            )}–${format(
-                              chargingResult.estimate.powerResponse
-                                .evidenceRangeWatts.max,
-                              0,
-                            )} W`
-                          : ''}
-                      </p>
-                    ) : null}
-
-                    <p className="il-help">
-                      {publicEvidenceText(chargingResult.estimate.note)}
-                    </p>
                   </>
                 ) : (
                   <div className="il-empty">
-                    {chargingResult?.unresolvedReason ??
-                      'Add battery capacity and wired charging wattage to estimate charging.'}
+                    Estimate unavailable for this configuration.
                   </div>
                 )}
               </div>
-
-              {chargerLabPeakInputContext?.status ===
-              'resolved' ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    ChargerLAB peak-input sanity ·{' '}
-                    {CHARGERLAB_PEAK_INPUT_CONTEXT_VERSION}
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {format(
-                          chargerLabPeakInputContext
-                            .advertisedWiredWatts,
-                          0,
-                        )} W
-                      </strong>
-                      <span>Advertised charger class</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {chargerLabPeakInputContext
-                          .observedPeakExpectedW !==
-                        undefined
-                          ? `${format(
-                              chargerLabPeakInputContext
-                                .observedPeakExpectedW,
-                              1,
-                            )} W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Measured-peer peak context</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {chargerLabPeakInputContext
-                          .observedPeakMinW !==
-                          undefined &&
-                        chargerLabPeakInputContext
-                          .observedPeakMaxW !==
-                          undefined
-                          ? `${format(
-                              chargerLabPeakInputContext
-                                .observedPeakMinW,
-                              1,
-                            )}–${format(
-                              chargerLabPeakInputContext
-                                .observedPeakMaxW,
-                              1,
-                            )} W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Recent same-brand peak range</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {chargerLabPeakInputContext
-                          .utilizationExpectedPercent !==
-                        undefined
-                          ? `${format(
-                              chargerLabPeakInputContext
-                                .utilizationExpectedPercent,
-                              1,
-                            )}%`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Advertised-to-observed peak ratio</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {chargerLabPeakInputContext.referenceCount}
-                      </strong>
-                      <span>ChargerLAB same-brand references</span>
-                    </div>
-                  </div>
-
-                  <p className="il-help">
-                    {chargerLabPeakInputContext.note}
-                  </p>
-                </div>
-              ) : null}
 
               {geekerwanChargingContext?.status ===
               'resolved' ? (
@@ -7265,30 +6703,21 @@ export default function InteractiveLeaksSimulator() {
 
                     <div>
                       <strong>
-                        {geekerwanChargingContext.referenceCount}
-                      </strong>
-                      <span>Comparable charging measurements</span>
-                    </div>
-
-                    <div>
-                      <strong>
                         {geekerwanChargingContext.targetPosition
                           ?.replaceAll('-', ' ') ??
                           'Unknown'}
                       </strong>
-                      <span>Charger-power evidence position</span>
+                      <span>Charging power</span>
                     </div>
                   </div>
 
-                  <p className="il-help">
-                    Charging estimates incorporate measured power-conversion overhead and comparable charging behaviour.
-                  </p>
                 </div>
               ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Wireless charging · {LIVE_BATTERY_EXPERIENCE_VERSION}
+                  Wireless charging
+
                 </span>
 
                 {wirelessChargingResult?.status === 'resolved' ? (
@@ -7306,141 +6735,12 @@ export default function InteractiveLeaksSimulator() {
                         <span>Expected 0–100%</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {wirelessChargingResult.confidenceGrade ??
-                            'Unknown'}
-                        </strong>
-                        <span>Evidence confidence</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {wirelessChargingResult.referenceCount ??
-                            'Unknown'}
-                        </strong>
-                        <span>Measured references</span>
-                      </div>
                     </div>
 
-                    <p className="il-help">
-                      {publicEvidenceText(wirelessChargingResult.note)}
-                    </p>
                   </>
                 ) : (
                   <div className="il-empty">
-                    {wirelessChargingWatts === undefined
-                      ? 'Add wireless charging wattage to estimate wireless charging.'
-                      : wirelessChargingResult?.unresolvedReason ??
-                        'No measured wireless charging evidence is available for a reliable estimate yet.'}
-                  </div>
-                )}
-              </div>
-
-              <div className="il-result-group">
-                <span className="il-result-label">
-                  SoC architecture · {SOC_ARCHITECTURE_MODEL_VERSION}
-                </span>
-
-                {socArchitecture ? (
-                  <>
-                    <div className="il-metrics">
-                      <div>
-                        <strong>
-                          {socArchitecture.totalCpuCores ??
-                            'Unknown'}
-                        </strong>
-                        <span>Total CPU cores</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {socArchitecture.maximumCpuClockGhz !==
-                          undefined
-                            ? `${format(
-                                socArchitecture.maximumCpuClockGhz,
-                                2,
-                              )} GHz`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Maximum CPU clock</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            socArchitecture.clockCapacityIndex,
-                            2,
-                          )}
-                        </strong>
-                        <span>Clock/core capacity index</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            socArchitecture.ipcAdjustedSingleThreadIndex,
-                            2,
-                          )}
-                        </strong>
-                        <span>IPC-adjusted single-thread index</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            socArchitecture.ipcAdjustedAggregateIndex,
-                            2,
-                          )}
-                        </strong>
-                        <span>IPC-adjusted aggregate index</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {format(
-                            socArchitecture.ipcAdjustedAggregatePerWIndex,
-                            3,
-                          )}
-                        </strong>
-                        <span>IPC-adjusted aggregate / W</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {socArchitecture.memoryBandwidthPerCoreGbps !==
-                          undefined
-                            ? `${format(
-                                socArchitecture.memoryBandwidthPerCoreGbps,
-                                1,
-                              )} GB/s`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Memory bandwidth per core</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {socArchitecture.fabricationNodeNm !==
-                          undefined
-                            ? `${format(
-                                socArchitecture.fabricationNodeNm,
-                                1,
-                              )} nm`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Fabrication node metadata</span>
-                      </div>
-                    </div>
-
-                    <p className="il-help">
-                      {publicEvidenceText(socArchitecture.note)}
-                    </p>
-                  </>
-                ) : (
-                  <div className="il-empty">
-                    Add at least one CPU cluster with core count and max clock
-                    to calculate architecture indices.
+                    Estimate unavailable for this configuration.
                   </div>
                 )}
               </div>
@@ -7462,7 +6762,7 @@ export default function InteractiveLeaksSimulator() {
                         : form.peakBenchmarkDomain === '3dmark_wle'
                         ? '3DMark Wild Life Extreme'
                         : '3DMark Solar Bay'}</span>
-                      <small>{peakPerformanceEstimate.assumptionApplied ? 'Estimated' : 'Benchmark estimate'}</small>
+
                     </div>
                   </div>
                 ) : (
@@ -7475,565 +6775,11 @@ export default function InteractiveLeaksSimulator() {
                 )}
               </div>
 
-              {crossLabBatteryContext &&
-              crossLabBatteryContext.status !==
-                'unresolved' ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    Cross-lab battery evidence ·{' '}
-                    {CROSS_LAB_BATTERY_CONTEXT_VERSION}
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.geekerwan
-                          ? `${format(
-                              crossLabBatteryContext.geekerwan
-                                .runtimeMinutes / 60,
-                              2,
-                            )} h`
-                          : 'No exact match'}
-                      </strong>
-                      <span>Geekerwan Battery Life 5.0</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.geekerwan
-                          ?.minutesPerWh !== undefined
-                          ? `${format(
-                              crossLabBatteryContext.geekerwan
-                                .minutesPerWh,
-                              1,
-                            )} min/Wh`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Geekerwan energy-normalized runtime</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.phoneArena
-                          ? `${format(
-                              crossLabBatteryContext.phoneArena
-                                .browsingMinutes / 60,
-                              2,
-                            )} h`
-                          : 'No exact match'}
-                      </strong>
-                      <span>PhoneArena browsing</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.phoneArena
-                          ? `${format(
-                              crossLabBatteryContext.phoneArena
-                                .videoMinutes / 60,
-                              2,
-                            )} h`
-                          : 'No exact match'}
-                      </strong>
-                      <span>PhoneArena video</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.phoneArena
-                          ? `${format(
-                              crossLabBatteryContext.phoneArena
-                                .gamingMinutes / 60,
-                              2,
-                            )} h`
-                          : 'No exact match'}
-                      </strong>
-                      <span>PhoneArena gaming</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.phoneArena
-                          ? `${format(
-                              crossLabBatteryContext.phoneArena
-                                .gamingMinutesPer1000Mah,
-                              1,
-                            )} min/1000mAh`
-                          : 'Unknown'}
-                      </strong>
-                      <span>PhoneArena gaming efficiency</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.tomsGuide
-                          ? `${format(
-                              crossLabBatteryContext.tomsGuide
-                                .runtimeMinutes / 60,
-                              2,
-                            )} h`
-                          : 'No exact match'}
-                      </strong>
-                      <span>Tom's Guide 5G web-surf runtime</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.tomsGuide
-                          ? `${format(
-                              crossLabBatteryContext.tomsGuide
-                                .minutesPer1000Mah,
-                              1,
-                            )} min/1000mAh`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Tom's Guide mAh-normalized runtime</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {crossLabBatteryContext.evidenceCount}
-                      </strong>
-                      <span>Independent lab protocols</span>
-                    </div>
-                  </div>
-
-                  <p className="il-help">
-                    {publicEvidenceText(crossLabBatteryContext.note)}
-                  </p>
-
-                  {crossLabBatteryContext.warnings.map(
-                    (warning) => (
-                      <p
-                        className="il-help"
-                        key={warning}
-                      >
-                        {warning}
-                      </p>
-                    ),
-                  )}
-                </div>
-              ) : null}
-
-              {phoneArenaChargingResult ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    PhoneArena charging lab ·{' '}
-                    {PHONEARENA_BATTERY_EVIDENCE_VERSION}
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {phoneArenaChargingResult.wiredFullMinutes !==
-                        undefined
-                          ? `${format(
-                              phoneArenaChargingResult.wiredFullMinutes,
-                              0,
-                            )} min`
-                          : 'Untested'}
-                      </strong>
-                      <span>Measured wired full charge</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {phoneArenaChargingResult.wiredChargerWatts !==
-                        undefined
-                          ? `${format(
-                              phoneArenaChargingResult.wiredChargerWatts,
-                              0,
-                            )} W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>PhoneArena charger class</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {phoneArenaChargingResult.wired30MinutePercent !==
-                        undefined
-                          ? `${format(
-                              phoneArenaChargingResult.wired30MinutePercent,
-                              0,
-                            )}%`
-                          : 'Untested'}
-                      </strong>
-                      <span>30-minute wired charge</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {phoneArenaChargingResult.wirelessFullMinutes !==
-                        undefined
-                          ? `${format(
-                              phoneArenaChargingResult.wirelessFullMinutes,
-                              0,
-                            )} min`
-                          : 'Untested'}
-                      </strong>
-                      <span>Measured wireless full charge</span>
-                    </div>
-                  </div>
-
-                  <p className="il-help">
-                    PhoneArena measurements remain a separate lab protocol.
-                    Charger class is not treated as sustained battery input
-                    power.
-                  </p>
-                </div>
-              ) : null}
-
-              {(geekerwanCpuContext?.status ===
-                'resolved' ||
-                geekerwanGpuContext?.status ===
-                  'resolved' ||
-                geekerwanBatteryResult) ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    Performance and battery measurements
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {geekerwanCpuContext?.status ===
-                          'resolved'
-                          ? `${format(
-                              geekerwanCpuContext.minPowerW,
-                              2,
-                            )}–${format(
-                              geekerwanCpuContext.maxPowerW,
-                              2,
-                            )} W`
-                          : 'No exact curve'}
-                      </strong>
-                      <span>GB6 board-power range</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanCpuContext?.status ===
-                          'resolved'
-                          ? format(
-                              geekerwanCpuContext.maxScore,
-                              0,
-                            )
-                          : 'Unknown'}
-                      </strong>
-                      <span>GB6 published-curve max</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanCpuContext?.status ===
-                          'resolved'
-                          ? `${format(
-                              geekerwanCpuContext.peakEfficiencyScorePerW,
-                              0,
-                            )} score/W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>GB6 peak curve efficiency</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanCpuContext?.selectedPoint
-                          ? `${format(
-                              geekerwanCpuContext.selectedPoint
-                                .score,
-                              0,
-                            )} @ ${format(
-                              geekerwanCpuContext.selectedPoint
-                                .powerW,
-                              2,
-                            )} W`
-                          : 'No power target'}
-                      </strong>
-                      <span>Nearest published GB6 point</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanGpuContext?.status ===
-                          'resolved'
-                          ? `${format(
-                              geekerwanGpuContext.minPowerW,
-                              2,
-                            )}–${format(
-                              geekerwanGpuContext.maxPowerW,
-                              2,
-                            )} W`
-                          : 'No exact curve'}
-                      </strong>
-                      <span>Steel Nomad Light power range</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanGpuContext?.status ===
-                          'resolved'
-                          ? format(
-                              geekerwanGpuContext.maxScore,
-                              0,
-                            )
-                          : 'Unknown'}
-                      </strong>
-                      <span>Steel Nomad Light curve max</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanGpuContext?.selectedPoint
-                          ? `${format(
-                              geekerwanGpuContext.selectedPoint
-                                .score,
-                              0,
-                            )} @ ${format(
-                              geekerwanGpuContext.selectedPoint
-                                .powerW,
-                              2,
-                            )} W`
-                          : 'No power target'}
-                      </strong>
-                      <span>Nearest published GPU point</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanBatteryResult
-                          ? `${format(
-                              geekerwanBatteryResult.runtimeMinutes /
-                                60,
-                              2,
-                            )} h`
-                          : 'No exact phone match'}
-                      </strong>
-                      <span>Battery Life 5.0 runtime</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanBatteryResult?.ratedEnergyWh !==
-                        undefined
-                          ? `${format(
-                              geekerwanBatteryResult.ratedEnergyWh,
-                              2,
-                            )} Wh`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Tested phone rated energy</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {geekerwanBatteryResult?.averagePowerW !==
-                        undefined
-                          ? `${format(
-                              geekerwanBatteryResult.averagePowerW,
-                              2,
-                            )} W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Battery 5.0 average device power</span>
-                    </div>
-                  </div>
-
-                  {geekerwanCpuContext?.status ===
-                  'resolved' ? (
-                    <p className="il-help">
-                      CPU estimates are informed by available measured power and performance curves.
-                    </p>
-                  ) : null}
-
-                  {geekerwanGpuContext?.status ===
-                  'resolved' ? (
-                    <p className="il-help">
-                      GPU estimates are informed by available measured power and performance curves.
-                    </p>
-                  ) : null}
-
-                  {geekerwanBatteryResult ? (
-                    <p className="il-help">
-                      Battery runtime reference is based on an existing device measurement.
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-
-              {gpuArchitecture ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    GPU architecture · {GPU_ARCHITECTURE_MODEL_VERSION}
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {gpuArchitecture.computeGeometryCount ??
-                          'Unknown'}
-                      </strong>
-                      <span>
-                        {gpuArchitecture.computeGeometrySource
-                          ? gpuArchitecture.computeGeometrySource.replaceAll(
-                              '-',
-                              ' ',
-                            )
-                          : 'Compute geometry'}
-                      </span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {gpuArchitecture.rawComputeClockIndex !== undefined
-                          ? format(
-                              gpuArchitecture.rawComputeClockIndex,
-                              2,
-                            )
-                          : 'Unknown'}
-                      </strong>
-                      <span>Compute-clock index</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {gpuArchitecture.rawComputePerWIndex !== undefined
-                          ? format(
-                              gpuArchitecture.rawComputePerWIndex,
-                              2,
-                            )
-                          : 'Unknown'}
-                      </strong>
-                      <span>Compute-clock / W</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {gpuArchitecture.memoryBandwidthGbps !== undefined
-                          ? `${format(
-                              gpuArchitecture.memoryBandwidthGbps,
-                              1,
-                            )} GB/s`
-                          : 'Unknown'}
-                      </strong>
-                      <span>GPU memory bandwidth</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {gpuArchitecture.rayTracingUnits ??
-                          'Unknown'}
-                      </strong>
-                      <span>Ray-tracing units</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {gpuArchitecture.peakGpuPowerW !== undefined
-                          ? `${format(
-                              gpuArchitecture.peakGpuPowerW,
-                              2,
-                            )} W`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Peak GPU power</span>
-                    </div>
-                  </div>
-
-                  <p className="il-help">
-                    {publicEvidenceText(gpuArchitecture.note)}
-                  </p>
-
-                  {gpuPowerEnvelope ? (
-                    <>
-                      <div className="il-metrics">
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.sustainableSocPowerW !== undefined
-                              ? `${format(
-                                  gpuPowerEnvelope.sustainableSocPowerW,
-                                  2,
-                                )} W`
-                              : 'Unknown'}
-                          </strong>
-                          <span>Sustainable package power</span>
-                        </div>
-
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.sustainableGpuPowerCeilingW !== undefined
-                              ? `${format(
-                                  gpuPowerEnvelope.sustainableGpuPowerCeilingW,
-                                  2,
-                                )} W`
-                              : 'Unknown'}
-                          </strong>
-                          <span>Sustainable GPU power ceiling</span>
-                        </div>
-
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.nonGpuPackagePowerW !==
-                            undefined
-                              ? `${format(
-                                  gpuPowerEnvelope.nonGpuPackagePowerW,
-                                  2,
-                                )} W`
-                              : 'Unknown'}
-                          </strong>
-                          <span>Reserved non-GPU package power</span>
-                        </div>
-
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.allocationMode
-                              ? gpuPowerEnvelope.allocationMode.replaceAll(
-                                  '-',
-                                  ' ',
-                                )
-                              : 'Unknown'}
-                          </strong>
-                          <span>GPU power allocation mode</span>
-                        </div>
-
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.powerRetentionPercent !== undefined
-                              ? `${format(
-                                  gpuPowerEnvelope.powerRetentionPercent,
-                                  1,
-                                )}%`
-                              : 'Unknown'}
-                          </strong>
-                          <span>GPU power-envelope retention</span>
-                        </div>
-
-                        <div>
-                          <strong>
-                            {gpuPowerEnvelope.thermallyPowerLimited === undefined
-                              ? 'Unknown'
-                              : gpuPowerEnvelope.thermallyPowerLimited
-                                ? 'Power-limited'
-                                : 'Peak power sustainable'}
-                          </strong>
-                          <span>GPU thermal power state</span>
-                        </div>
-                      </div>
-
-                      <p className="il-help">
-                        {GPU_POWER_ENVELOPE_VERSION} ·{' '}
-                        {publicEvidenceText(gpuPowerEnvelope.note)}
-                      </p>
-                    </>
-                  ) : null}
-                </div>
-              ) : null}
-
               {gpuWorkloadResponse ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    GPU workload response · {GPU_WORKLOAD_RESPONSE_VERSION}
+                    GPU workload response
+
                   </span>
 
                   <div className="il-metrics">
@@ -8071,31 +6817,9 @@ export default function InteractiveLeaksSimulator() {
                       <span>Pixel throughput demand</span>
                     </div>
 
-                    <div>
-                      <strong>
-                        {gpuWorkloadResponse.theoreticalBandwidthBytesPerRenderedPixel !==
-                        undefined
-                          ? `${format(
-                              gpuWorkloadResponse.theoreticalBandwidthBytesPerRenderedPixel,
-                              1,
-                            )} B/pixel`
-                          : 'Unknown'}
-                      </strong>
-                      <span>Theoretical bandwidth budget</span>
-                    </div>
 
-                    <div>
-                      <strong>
-                        {gpuWorkloadResponse.structuralComputeIndexPerWeightedMegapixelPerSecond !==
-                        undefined
-                          ? format(
-                              gpuWorkloadResponse.structuralComputeIndexPerWeightedMegapixelPerSecond,
-                              3,
-                            )
-                          : 'Unknown'}
-                      </strong>
-                      <span>Structural compute / demand</span>
-                    </div>
+
+
 
                     <div>
                       <strong>
@@ -8137,15 +6861,7 @@ export default function InteractiveLeaksSimulator() {
                       <span>Power pressure</span>
                     </div>
 
-                    <div>
-                      <strong>
-                        {gpuWorkloadResponse.architectureCoverage.replaceAll(
-                          '-',
-                          ' ',
-                        )}
-                      </strong>
-                      <span>GPU architecture coverage</span>
-                    </div>
+
 
                     <div>
                       <strong>
@@ -8202,10 +6918,6 @@ export default function InteractiveLeaksSimulator() {
                         </div>
                       </div>
 
-                      <p className="il-help">
-                        {GAMING_DISPLAY_ENVELOPE_VERSION} ·{' '}
-                        {publicEvidenceText(gamingDisplayEnvelope.note)}
-                      </p>
                     </>
                   ) : null}
 
@@ -8249,100 +6961,16 @@ export default function InteractiveLeaksSimulator() {
                         </div>
                       </div>
 
-                      <p className="il-help">
-                        {GAMING_SESSION_ENVELOPE_VERSION} ·{' '}
-                        {publicEvidenceText(gamingSessionEnvelope.note)}
-                      </p>
                     </>
                   ) : null}
 
-                  {gpuWorkloadDemand ? (
-                    <p className="il-help">
-                      {GPU_WORKLOAD_DEMAND_VERSION} ·{' '}
-                      {publicEvidenceText(gpuWorkloadDemand.note)}
-                    </p>
-                  ) : null}
-
-                  <p className="il-help">
-                    {publicEvidenceText(gpuWorkloadResponse.note)}
-                  </p>
-
-                  {gpuWorkloadResponse.bottleneckSignals.map(
-                    (signal) => (
-                      <p className="il-help" key={signal}>
-                        {signal}
-                      </p>
-                    ),
-                  )}
-                </div>
-              ) : null}
-
-              {performanceContext ? (
-                <div className="il-result-group">
-                  <span className="il-result-label">
-                    Performance interpretation · {PERFORMANCE_CONTEXT_VERSION}
-                  </span>
-
-                  <div className="il-metrics">
-                    <div>
-                      <strong>
-                        {performanceContext.scoreDisposition.replaceAll(
-                          '-',
-                          ' ',
-                        )}
-                      </strong>
-                      <span>Peak score provenance</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {performanceContext.benchmarkRelevance.replaceAll(
-                          '-',
-                          ' ',
-                        )}
-                      </strong>
-                      <span>Benchmark domain</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {performanceContext.architectureCanExplainDirection
-                          ? 'Relevant context'
-                          : 'Not predictive'}
-                      </strong>
-                      <span>Architecture relevance</span>
-                    </div>
-
-                    <div>
-                      <strong>
-                        {performanceContext.architectureSignals.length}
-                      </strong>
-                      <span>Structural signals available</span>
-                    </div>
-                  </div>
-
-                  <p className="il-help">
-                    {publicEvidenceText(performanceContext.note)}
-                  </p>
-
-                  {performanceContext.warnings.map(
-                    (warning) => (
-                      <p
-                        className="il-help"
-                        key={warning}
-                      >
-                        {warning}
-                      </p>
-                    ),
-                  )}
                 </div>
               ) : null}
 
               {sustainedBenchmarkEnvelope ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    Sustained benchmark envelope ·{' '}
-                    {SUSTAINED_BENCHMARK_ENVELOPE_VERSION}
+                    Sustained benchmark envelope
                   </span>
 
                   {sustainedBenchmarkEnvelope.status ===
@@ -8403,22 +7031,17 @@ export default function InteractiveLeaksSimulator() {
                                 )}`
                               : 'Unknown'}
                           </strong>
-                          <span>Measured peak-range envelope</span>
+                          <span>Estimated peak performance</span>
                         </div>
                       </div>
 
-                      <p className="il-help">
-                        {publicEvidenceText(sustainedBenchmarkEnvelope.note)}
-                      </p>
                     </>
                   ) : (
                     <div className="il-empty">
                       <p>
-                        {sustainedBenchmarkEnvelope.reason}
+                        Estimate unavailable for this configuration.
                       </p>
-                      <p className="il-help">
-                        {publicEvidenceText(sustainedBenchmarkEnvelope.note)}
-                      </p>
+
                     </div>
                   )}
                 </div>
@@ -8427,7 +7050,8 @@ export default function InteractiveLeaksSimulator() {
               {connectivityWorkload ? (
                 <div className="il-result-group">
                   <span className="il-result-label">
-                    Connectivity · {CONNECTIVITY_WORKLOAD_VERSION}
+                    Connectivity
+
                   </span>
 
                   <div className="il-metrics">
@@ -8536,15 +7160,13 @@ export default function InteractiveLeaksSimulator() {
                     </div>
                   </div>
 
-                  <p className="il-help">
-                    {publicEvidenceText(connectivityWorkload.note)}
-                  </p>
                 </div>
               ) : null}
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Thermal & performance · {LIVE_THERMAL_EXPERIENCE_VERSION}
+                  Thermal & performance
+
                 </span>
                 <DownloadSectionReceipt kind="Thermal" deviceName={form.name} metrics={[{label:'Cooling',value:form.coolingClass},{label:'Peak temperature',value:thermalResult?.peakTemperatureC !== undefined ? format(thermalResult.peakTemperatureC,1)+' °C' : undefined},{label:'Sustained performance',value:thermalResult?.sustainedPerformancePercent !== undefined ? format(thermalResult.sustainedPerformancePercent,1)+'%' : undefined},{label:'Ambient',value:form.ambientTemperatureC ? form.ambientTemperatureC+' °C' : undefined},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} thermalPoints={thermalResult?.points} />
 
@@ -8560,7 +7182,7 @@ export default function InteractiveLeaksSimulator() {
                               )} °C`
                             : 'Unknown'}
                         </strong>
-                        <span>Peak model-node temperature</span>
+                        <span>Peak temperature</span>
                       </div>
 
                       <div>
@@ -8572,32 +7194,8 @@ export default function InteractiveLeaksSimulator() {
                               )} °C`
                             : 'Unknown'}
                         </strong>
-                        <span>End model-node temperature</span>
+                        <span>End temperature</span>
                       </div>
-
-                      {thermalResult.evidencePriorPercent !== undefined ? (
-                        <div>
-                          <strong>
-                            {format(
-                              thermalResult.evidencePriorPercent,
-                              1,
-                            )}%
-                          </strong>
-                          <span>Measured sustained prior</span>
-                        </div>
-                      ) : null}
-
-                      {thermalResult.rawPhysicsSustainedPercent !== undefined ? (
-                        <div>
-                          <strong>
-                            {format(
-                              thermalResult.rawPhysicsSustainedPercent,
-                              1,
-                            )}%
-                          </strong>
-                          <span>Raw thermal physics ceiling</span>
-                        </div>
-                      ) : null}
 
                       <div>
                         <strong>
@@ -8634,114 +7232,9 @@ export default function InteractiveLeaksSimulator() {
                         <span>Throttle onset</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {thermalResult.evidenceMode === 'calibrated'
-                            ? 'Calibrated'
-                            : 'Physics fallback'}
-                        </strong>
-                        <span>Evidence mode</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.referenceCount ?? 'None'}
-                        </strong>
-                        <span>Measured references used</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.evidenceScope
-                            ? thermalResult.evidenceScope.replaceAll('-', ' ')
-                            : 'Unknown'}
-                        </strong>
-                        <span>Calibration scope</span>
-                      </div>
-
-                      {thermalResult.sameSocFamilyReferences !== undefined ||
-                      thermalResult.sameSocVendorReferences !== undefined ? (
-                        <div>
-                          <strong>
-                            {thermalResult.sameSocFamilyReferences ?? 0} /{' '}
-                            {thermalResult.sameSocVendorReferences ?? 0}
-                          </strong>
-                          <span>Same family / same vendor refs</span>
-                        </div>
-                      ) : null}
-
-                      {thermalResult.sourceRecordCount !== undefined ? (
-                        <div>
-                          <strong>
-                            {thermalResult.sourceRecordCount} /{' '}
-                            {thermalResult.publisherCount ?? 0}
-                          </strong>
-                          <span>Source pages / publishers</span>
-                        </div>
-                      ) : null}
-
-                      <div>
-                        <strong>
-                          {thermalResult.sourceRecordCount ?? 0}
-                        </strong>
-                        <span>Source pages</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.publisherCount ?? 0}
-                        </strong>
-                        <span>Distinct publishers</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.confidence !== undefined
-                            ? `${format(
-                                thermalResult.confidence * 100,
-                                0,
-                              )}%`
-                            : 'Unrated'}
-                        </strong>
-                        <span>Evidence confidence</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.averageSimilarity !== undefined
-                            ? `${format(
-                                thermalResult.averageSimilarity * 100,
-                                0,
-                              )}%`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Comparable similarity</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {thermalResult.averageCoverage !== undefined
-                            ? `${format(
-                                thermalResult.averageCoverage * 100,
-                                0,
-                              )}%`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Spec coverage</span>
-                      </div>
                     </div>
 
                     {twoNodeThermalSummary}
-
-                    {thermalResult.protocolKey ? (
-                      <p className="il-help">
-                        Measured sustained-performance protocol:{' '}
-                        {thermalResult.protocolKey.replace(
-                          '::',
-                          ' · ',
-                        )}
-                      </p>
-                    ) : null}
 
                     {thermalResult.points &&
                     thermalResult.points.length > 1 ? (
@@ -8856,33 +7349,9 @@ export default function InteractiveLeaksSimulator() {
                           )}
                         </div>
 
-                        <p className="il-help">
-                          Controlled sensitivity probes only. They change one
-                          thermal assumption at a time and are not additional
-                          measured device results.
-                        </p>
                       </div>
                     ) : null}
 
-                    {thermalResult.warnings?.length ? (
-                      <div className="il-warnings">
-                        {thermalResult.warnings.map(
-                          (warning) => (
-                            <div
-                              className="il-warning"
-                              key={warning.code}
-                            >
-                              <strong>{warning.code}</strong>
-                              <p>{warning.message}</p>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    ) : null}
-
-                    <p className="il-help">
-                      {publicEvidenceText(thermalResult.note)}
-                    </p>
                   </>
                 ) : sustainedPerformanceEstimate?.status ===
                   'resolved' ? (
@@ -8901,97 +7370,29 @@ export default function InteractiveLeaksSimulator() {
                         <span>Estimated sustained GPU performance</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {sustainedPerformanceEstimate.minPercent !==
-                            undefined &&
-                          sustainedPerformanceEstimate.maxPercent !==
-                            undefined
-                            ? `${format(
-                                sustainedPerformanceEstimate.minPercent,
-                                1,
-                              )}–${format(
-                                sustainedPerformanceEstimate.maxPercent,
-                                1,
-                              )}%`
-                            : 'Unknown'}
-                        </strong>
-                        <span>Measured peer range</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {sustainedPerformanceEstimate.referenceCount}
-                        </strong>
-                        <span>Measured references used</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {sustainedPerformanceEstimate.sourceRecordCount} /{' '}
-                          {sustainedPerformanceEstimate.publisherCount}
-                        </strong>
-                        <span>Source pages / publishers</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {sustainedPerformanceEstimate.evidenceScope
-                            ? sustainedPerformanceEstimate.evidenceScope.replaceAll(
-                                '-',
-                                ' ',
-                              )
-                            : 'Unknown'}
-                        </strong>
-                        <span>Evidence scope</span>
-                      </div>
-
-                      <div>
-                        <strong>
-                          {sustainedPerformanceEstimate.confidence !==
-                          undefined
-                            ? `${format(
-                                sustainedPerformanceEstimate.confidence *
-                                  100,
-                                0,
-                              )}%`
-                            : 'Unrated'}
-                        </strong>
-                        <span>Evidence confidence</span>
-                      </div>
                     </div>
 
                     {twoNodeThermalSummary}
 
-                    <p className="il-help">
-                      Evidence-only estimate ·{' '}
-                      {SUSTAINED_PERFORMANCE_ESTIMATOR_VERSION}. This
-                      predicts sustained performance from protocol-compatible
-                      measured peers without inventing package or surface
-                      temperatures. Add explicit thermal physics in Advanced
-                      Mode to simulate temperatures.
-                    </p>
                   </>
                 ) : twoNodeThermalResult ? (
                   <>
                     {twoNodeThermalSummary}
                     <div className="il-empty">
-                      {sustainedPerformanceEstimate?.unresolvedReason ??
-                        'No compatible measured sustained-performance evidence is available for this configuration. Package and surface temperatures are still shown from the explicit two-node physics.'}
+                      Estimate unavailable for this configuration.
                     </div>
                   </>
                 ) : (
                   <div className="il-empty">
-                    {thermalResult?.unresolvedReason ??
-                      sustainedPerformanceEstimate?.unresolvedReason ??
-                      'Add target SoC power, ambient temperature, throttle ceiling, thermal resistance and thermal mass to simulate thermal behavior.'}
+                    Estimate unavailable for this configuration.
                   </div>
                 )}
               </div>
 
               <div className="il-result-group">
                 <span className="il-result-label">
-                  Camera system · {LIVE_CAMERA_EXPERIENCE_VERSION}
+                  Camera system
+
                 </span>
                 <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Processor',value:form.socName}]} />
 
@@ -9022,7 +7423,8 @@ export default function InteractiveLeaksSimulator() {
                 {cameraZoomHandoff ? (
                   <div className="il-camera-evidence">
                     <span className="il-result-label">
-                      Zoom handoff · {CAMERA_ZOOM_HANDOFF_VERSION}
+                      Zoom handoff
+
                     </span>
 
                     {cameraZoomHandoff.status === 'resolved' &&
@@ -9085,14 +7487,10 @@ export default function InteractiveLeaksSimulator() {
                           </div>
                         </div>
 
-                        <p className="il-help">
-                          {publicEvidenceText(cameraZoomHandoff.note)}
-                        </p>
                       </>
                     ) : (
                       <div className="il-empty">
-                        {cameraZoomHandoff.unresolvedReason ??
-                          'Zoom handoff is unresolved for this camera set.'}
+                        Estimate unavailable for this configuration.
                       </div>
                     )}
                   </div>
@@ -9119,17 +7517,7 @@ export default function InteractiveLeaksSimulator() {
                         <span>Active sensor area mm²</span>
                       </div>
 
-                      <div>
-                        <strong>
-                          {camera.sensorGeometrySource
-                            ? camera.sensorGeometrySource.replaceAll(
-                                '-',
-                                ' ',
-                              )
-                            : 'Unknown'}
-                        </strong>
-                        <span>Sensor geometry source</span>
-                      </div>
+
 
                       <div>
                         <strong>
@@ -9151,7 +7539,7 @@ export default function InteractiveLeaksSimulator() {
                             2,
                           )}
                         </strong>
-                        <span>Total-light geometry proxy</span>
+                        <span>Relative light capture</span>
                       </div>
 
                       <div>
@@ -9161,7 +7549,7 @@ export default function InteractiveLeaksSimulator() {
                             3,
                           )}
                         </strong>
-                        <span>Per-pixel light proxy</span>
+                        <span>Relative light per pixel</span>
                       </div>
 
                       <div>
@@ -9181,7 +7569,7 @@ export default function InteractiveLeaksSimulator() {
                             4,
                           )}
                         </strong>
-                        <span>QE-aware capture proxy</span>
+                        <span>Sensor light capture</span>
                       </div>
 
                       <div>
@@ -9356,7 +7744,7 @@ export default function InteractiveLeaksSimulator() {
                               )}`
                             : 'Unknown'}
                         </strong>
-                        <span>Two-pixel diffraction reference</span>
+                        <span>Diffraction threshold</span>
                       </div>
 
                       <div>
@@ -9442,7 +7830,8 @@ export default function InteractiveLeaksSimulator() {
                     {cameraVideoWorkloads[index] ? (
                       <div className="il-camera-evidence">
                         <span className="il-result-label">
-                          Video workload · {CAMERA_VIDEO_WORKLOAD_VERSION}
+                          Video workload
+
                         </span>
 
                         <div className="il-metrics">
@@ -9476,20 +7865,7 @@ export default function InteractiveLeaksSimulator() {
                             <span>Uncompressed video data rate</span>
                           </div>
 
-                          <div>
-                            <strong>
-                              {cameraVideoWorkloads[index]
-                                ?.compressionRatioVsRaw !==
-                              undefined
-                                ? `${format(
-                                    cameraVideoWorkloads[index]
-                                      ?.compressionRatioVsRaw,
-                                    1,
-                                  )}×`
-                                : 'Unknown'}
-                            </strong>
-                            <span>Raw-to-encoded ratio</span>
-                          </div>
+
 
                           <div>
                             <strong>
@@ -9589,46 +7965,23 @@ export default function InteractiveLeaksSimulator() {
                               </div>
                             </div>
 
-                            <p className="il-help">
-                              {CAMERA_VIDEO_THERMAL_VERSION} ·{' '}
-                              {cameraVideoThermals[index]?.note}
-                            </p>
                           </>
                         ) : cameraVideoThermals[index] ? (
-                          <p className="il-help">
-                            Video thermal limit unresolved:{' '}
-                            {cameraVideoThermals[index]
-                              ?.unresolvedReason}
-                          </p>
+                          null
                         ) : null}
 
-                        <p className="il-help">
-                          {cameraVideoWorkloads[index]?.note}
-                        </p>
                       </div>
                     ) : null}
 
                     {cameraSensorNoise[index] ? (
                       <div className="il-camera-evidence">
                         <span className="il-result-label">
-                          Sensor electronics · {CAMERA_SENSOR_NOISE_VERSION}
+                          Sensor electronics
+
                         </span>
 
                         <div className="il-metrics">
-                          <div>
-                            <strong>
-                              {cameraSensorNoise[index]
-                                ?.dynamicRangeStops !==
-                              undefined
-                                ? `${format(
-                                    cameraSensorNoise[index]
-                                      ?.dynamicRangeStops,
-                                    2,
-                                  )} stops`
-                                : 'Unknown'}
-                            </strong>
-                            <span>Electron-domain dynamic range</span>
-                          </div>
+
 
                           <div>
                             <strong>
@@ -9690,42 +8043,9 @@ export default function InteractiveLeaksSimulator() {
                             <span>Signal-to-noise</span>
                           </div>
 
-                          <div>
-                            <strong>
-                              {cameraSensorNoise[index]
-                                ?.saturationFraction !==
-                              undefined
-                                ? `${format(
-                                    cameraSensorNoise[index]
-                                      ?.saturationFraction *
-                                      100,
-                                    1,
-                                  )}%`
-                                : 'Unknown'}
-                            </strong>
-                            <span>Full-well utilization</span>
-                          </div>
+
                         </div>
 
-                        <p className="il-help">
-                          {cameraSensorNoise[index]?.note}
-                        </p>
-                      </div>
-                    ) : null}
-
-                    {cameraExperiences[index]?.warnings.length ? (
-                      <div className="il-warnings">
-                        {cameraExperiences[index]?.warnings.map(
-                          (warning) => (
-                            <div
-                              className="il-warning"
-                              key={warning.code}
-                            >
-                              <strong>{warning.code}</strong>
-                              <p>{warning.message}</p>
-                            </div>
-                          ),
-                        )}
                       </div>
                     ) : null}
 
@@ -9865,11 +8185,6 @@ export default function InteractiveLeaksSimulator() {
                           )}
                         </div>
 
-                        <p className="il-help">
-                          Controlled optical probes only. Sensor footprint
-                          pressure is a linear sensor-size proxy, not a claim
-                          about exact camera-module volume.
-                        </p>
                       </div>
                     ) : null}
 
@@ -9878,7 +8193,7 @@ export default function InteractiveLeaksSimulator() {
                     ) ? (
                       <div className="il-camera-evidence">
                         <span className="il-result-label">
-                          Observed comparable outcomes
+                          Estimated camera performance
                         </span>
 
                         <div className="il-metrics">
@@ -9890,338 +8205,18 @@ export default function InteractiveLeaksSimulator() {
                             )
                             .map((outcome) => (
                               <div key={outcome.domain}>
-                                <strong>
-                                  {format(outcome.value, 2)}
-                                  {outcome.unit ? ` ${outcome.unit}` : ''}
-                                </strong>
-                                <span>
-                                  {cameraOutcomeLabel(
-                                    outcome.domain,
-                                  )}
-                                </span>
-                                <small>
-                                  {outcome.referenceCount} refs ·{' '}
-                                  {outcome.confidence !== undefined
-                                    ? `${format(
-                                        outcome.confidence * 100,
-                                        0,
-                                      )}% confidence`
-                                    : 'confidence unrated'}
-                                </small>
-                                <small>
-                                  {outcome.sourceRecordCount ?? 0} source page
-                                  {(outcome.sourceRecordCount ?? 0) === 1
-                                    ? ''
-                                    : 's'} ·{' '}
-                                  {outcome.publisherCount ?? 0} publisher
-                                  {(outcome.publisherCount ?? 0) === 1
-                                    ? ''
-                                    : 's'}
-                                </small>
-                                {outcome.averageSimilarity !== undefined ||
-                                outcome.averageCoverage !== undefined ? (
-                                  <small>
-                                    {outcome.averageSimilarity !== undefined
-                                      ? `${format(
-                                          outcome.averageSimilarity * 100,
-                                          0,
-                                        )}% similarity`
-                                      : ''}
-                                    {outcome.averageSimilarity !== undefined &&
-                                    outcome.averageCoverage !== undefined
-                                      ? ' · '
-                                      : ''}
-                                    {outcome.averageCoverage !== undefined
-                                      ? `${format(
-                                          outcome.averageCoverage * 100,
-                                          0,
-                                        )}% spec coverage`
-                                      : ''}
-                                  </small>
-                                ) : null}
-                                {outcome.protocolKey ? (
-                                  <small>
-                                    {outcome.protocolKey.replace('::', ' · ')}
-                                  </small>
-                                ) : null}
+                                <strong>{format(outcome.value, 2)}{outcome.unit ? ` ${outcome.unit}` : ''}</strong>
+                                <span>{cameraOutcomeLabel(outcome.domain)}</span>
                               </div>
                             ))}
                         </div>
                       </div>
                     ) : (
-                      <p className="il-help">
-                        No matching measured camera outcome evidence is available
-                        for this optical configuration yet.
-                      </p>
+                      null
                     )}
 
-                    <p className="il-help">
-                      Light-capture values are geometric comparison proxies
-                      derived from optical sensor format and aperture. They do
-                      not claim final image quality, exposure or noise because
-                      shutter time, lens transmission, sensor efficiency,
-                      stabilization and processing are not inferred.
-                    </p>
                   </div>
                 ))}
-              </div>
-
-              <div className="il-result-group">
-                <span className="il-result-label">
-                  Internal volume
-                </span>
-
-                <div className="il-volume-number">
-                  <strong>
-                    {format(
-                      packaging?.knownComponentVolumeCm3,
-                      2,
-                    )}
-                  </strong>
-
-                  <span>/</span>
-
-                  <strong>
-                    {format(
-                      packaging?.availableInternalVolumeCm3,
-                      2,
-                    )}
-                  </strong>
-
-                  <small>cm³ known / available</small>
-                </div>
-
-                <div className="il-metrics">
-                  <div>
-                    <strong>
-                      {format(
-                        packaging?.remainingVolumeCm3,
-                        2,
-                      )}
-                    </strong>
-                    <span>cm³ remaining</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {format(
-                        packaging?.usedInternalVolumePercent,
-                        1,
-                      )}
-                      {packaging?.usedInternalVolumePercent !==
-                      undefined
-                        ? '%'
-                        : ''}
-                    </strong>
-                    <span>Known allocation</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {packaging?.packagingPressure
-                        ? packaging.packagingPressure
-                            .replaceAll('_', ' ')
-                        : 'Unknown'}
-                    </strong>
-                    <span>Aggregate pressure</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {packaging?.minimumAggregateThicknessMm !==
-                      undefined
-                        ? `${format(
-                            packaging.minimumAggregateThicknessMm,
-                            2,
-                          )} mm`
-                        : 'Unknown'}
-                    </strong>
-                    <span>Minimum aggregate thickness</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {packaging?.aggregateThicknessHeadroomMm !==
-                      undefined
-                        ? `${format(
-                            packaging.aggregateThicknessHeadroomMm,
-                            2,
-                          )} mm`
-                        : 'Unknown'}
-                    </strong>
-                    <span>Gross thickness headroom</span>
-                  </div>
-
-                  <div>
-                    <strong>
-                      {packaging?.largestKnownComponent
-                        ? packaging.largestKnownComponent.component
-                        : 'Unknown'}
-                    </strong>
-                    <span>Largest known component</span>
-                  </div>
-                </div>
-
-                {packaging?.thinnerByHalfMm ? (
-                  <div className="il-packaging-sensitivity">
-                    <span className="il-result-label">
-                      Thin-phone what-if
-                    </span>
-
-                    <div className="il-sensitivity-card">
-                      <strong>
-                        Thickness → {format(
-                          packaging.thinnerByHalfMm
-                            .targetThicknessMm,
-                          2,
-                        )} mm
-                      </strong>
-
-                      <span>
-                        Lost internal volume{' '}
-                        {format(
-                          packaging.thinnerByHalfMm
-                            .lostAvailableVolumeCm3,
-                          2,
-                        )} cm³
-                      </span>
-
-                      <span>
-                        Known allocation{' '}
-                        {format(
-                          packaging.thinnerByHalfMm
-                            .usedInternalVolumePercent,
-                          1,
-                        )}%
-                      </span>
-
-                      <span>
-                        Remaining{' '}
-                        {format(
-                          packaging.thinnerByHalfMm
-                            .remainingVolumeCm3,
-                          2,
-                        )} cm³
-                      </span>
-
-                      <small>
-                        {packaging.thinnerByHalfMm
-                          .fitsAvailableVolume
-                          ? 'Aggregate volume budget still passes'
-                          : 'Aggregate volume budget fails'}
-                      </small>
-                    </div>
-
-                    <p className="il-help">
-                      This keeps all known component volumes unchanged and
-                      reduces device thickness by 0.5 mm. It is an aggregate
-                      volume sensitivity test, not a claim that the component
-                      shapes can be repackaged successfully.
-                    </p>
-                  </div>
-                ) : null}
-
-                {packaging?.componentGrowthSensitivity?.length ? (
-                  <div className="il-packaging-growth">
-                    <span className="il-result-label">
-                      Subsystem growth tradeoffs
-                    </span>
-
-                    <div className="il-sensitivity-grid">
-                      {packaging.componentGrowthSensitivity.map(
-                        (scenario) => (
-                          <div
-                            className="il-sensitivity-card"
-                            key={scenario.component}
-                          >
-                            <strong>
-                              +{scenario.growthPercent}%{' '}
-                              {scenario.component}
-                            </strong>
-
-                            <span>
-                              Added volume{' '}
-                              {format(
-                                scenario.addedVolumeCm3,
-                                2,
-                              )} cm³
-                            </span>
-
-                            <span>
-                              Known allocation{' '}
-                              {format(
-                                scenario.usedInternalVolumePercent,
-                                1,
-                              )}%
-                            </span>
-
-                            <span>
-                              Remaining{' '}
-                              {format(
-                                scenario.remainingVolumeCm3,
-                                2,
-                              )} cm³
-                            </span>
-
-                            <small>
-                              {scenario.fitsAvailableVolume
-                                ? 'Aggregate volume budget passes'
-                                : 'Aggregate volume budget fails'}
-                            </small>
-                          </div>
-                        ),
-                      )}
-                    </div>
-
-                    <p className="il-help">
-                      Each probe grows one known subsystem by 10% while all
-                      other known component volumes stay fixed.
-                    </p>
-                  </div>
-                ) : null}
-
-                {packaging?.componentVolumePercent ? (
-                  <div className="il-packaging-breakdown">
-                    <span className="il-result-label">
-                      Known internal allocation
-                    </span>
-
-                    <div className="il-packaging-bars">
-                      {Object.entries(
-                        packaging.componentVolumePercent,
-                      ).map(([component, percent]) => (
-                        <div
-                          className="il-packaging-bar"
-                          key={component}
-                        >
-                          <div>
-                            <strong>{component}</strong>
-                            <span>
-                              {format(percent, 1)}%
-                            </span>
-                          </div>
-
-                          <div className="il-packaging-track">
-                            <span
-                              style={{
-                                width: `${Math.min(
-                                  100,
-                                  Math.max(0, percent),
-                                )}%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <p className="il-help">
-                      Shares are percentages of the aggregate allocatable
-                      internal volume. They do not model exact component shape,
-                      stacking, routing, shielding, or mechanical clearances.
-                    </p>
-                  </div>
-                ) : null}
               </div>
 
               {packaging?.fitsAvailableVolume !==
@@ -10253,40 +8248,7 @@ export default function InteractiveLeaksSimulator() {
                 <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={false} />
               )}
 
-              {workspaceMode === 'advanced' && result.warnings.length > 0 && (
-                <div className="il-warnings">
-                  <span className="il-result-label">
-                    Engine notes
-                  </span>
-
-                  {result.warnings.map(
-                    (warning, index) => (
-                      <div
-                        className="il-warning"
-                        key={`${warning.code}-${index}`}
-                      >
-                        <strong>
-                          {warning.code}
-                        </strong>
-
-                        <p>{warning.message}</p>
-                      </div>
-                    ),
-                  )}
-                </div>
-              )}
-
-              <div className="il-method">
-                <strong>
-                  Deterministic model
-                </strong>
-
-                <p>
-                  {workspaceMode === 'simple'
-                    ? 'Results are projections based on selected hardware and usage.'
-                    : `This result uses supplied values and supported calculations from PhoneFuturist Engine v${SIMULATION_ENGINE_VERSION}. Unknown inputs are not treated as measured facts.`}
-                </p>
-              </div>
+              <p className="il-help">Simulated estimates. Actual device performance may vary.</p>
             </>
           )}
         </aside>

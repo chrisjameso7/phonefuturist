@@ -1,6 +1,5 @@
 ---
 import Page from '../../layouts/Page.astro';
-import { SIMULATION_ENGINE_VERSION } from '../../lib/simulation/engine';
 import InteractiveLeaksSimulator from '../../components/interactive-leaks/InteractiveLeaksSimulator';
 ---
 
@@ -39,7 +38,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
           <div class="model-mark">
             <strong>PF</strong>
-            <span>SIM {SIMULATION_ENGINE_VERSION}</span>
+            <span>SIMULATED</span>
           </div>
         </div>
       </div>
@@ -54,7 +53,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
         <div class="interactive-engine-badge">
           <span class="interactive-engine-dot"></span>
-          v{SIMULATION_ENGINE_VERSION}
+          Beta
         </div>
       </div>
 

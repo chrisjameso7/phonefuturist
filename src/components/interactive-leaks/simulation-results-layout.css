@@ -101,3 +101,20 @@
 .il-section-receipt-button:hover { background:rgba(56,189,248,.19);transform:translateY(-1px) }
 .il-section-receipt-button:focus-visible { outline:2px solid #7dd3fc;outline-offset:3px }
 @media(max-width:560px) { .il-section-receipt-button {width:100%} }
+
+/* Allow controls, receipts and comparison names to shrink inside narrow cards. */
+.il-app :is(.il-toolbar, .il-toolbar-actions, .il-mode-switch) { flex-wrap:wrap; }
+.il-app :is(.il-builder, .il-results, .il-field, .il-result-group, .il-metrics > div) { min-width:0; }
+.il-app :is(input, select, textarea) { box-sizing:border-box; min-width:0; max-width:100%; }
+.il-app :is(.il-metrics, .il-share-card-metrics, .il-sensitivity-card) { overflow-wrap:anywhere; }
+.il-section-receipt-button:disabled { cursor:wait; opacity:.7; }
+@media(max-width:560px) {
+  .il-app :is(button, select, input) { min-height:44px; }
+  .il-app .il-toolbar-actions { gap:8px; }
+  .il-app .il-mode-switch { max-width:100%; }
+  .il-app .il-results { min-width:0; }
+}
+/* Override legacy compact button rules so the complete touch target is usable. */
+.interactive-page.pf-ui .interactive-simulator-shell .il-app :is(button, select, input) {
+  min-height:44px;
+}
