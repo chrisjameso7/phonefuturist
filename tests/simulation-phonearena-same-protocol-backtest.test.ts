@@ -111,10 +111,27 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
         within20Percent: mode.within20Percent,
         byWorkload: (['web_browsing', 'video_playback', 'gaming'] as const).map(workload => {
           const rows = mode.rows.filter(row => row.workload === workload);
+          const errors = rows.map(row => row.absolutePercentageError).sort((a, b) => a - b);
+          const signedError = rows.map(row =>
+            100 * (row.predictedHours - row.observedHours) / row.observedHours);
           return {
             workload,
             count: rows.length,
-            mapePercent: rows.length ? rows.reduce((sum, row) => sum + row.absolutePercentageError, 0) / rows.length : null,
+            mapePercent: rows.length
+              ? rows.reduce((sum, row) => sum + row.absolutePercentageError, 0) / rows.length : null,
+            within20Percent: rows.length
+              ? 100 * rows.filter(row => row.absolutePercentageError <= 20).length / rows.length : null,
+            meanSignedErrorPercent: rows.length
+              ? signedError.reduce((sum, value) => sum + value, 0) / rows.length : null,
+            p90AbsoluteErrorPercent: errors.length
+              ? errors[Math.ceil(errors.length * 0.9) - 1] : null,
+            worst: [...rows].sort((x, y) => y.absolutePercentageError - x.absolutePercentageError)
+              .slice(0, 3).map(row => ({
+                deviceVariantId: row.deviceVariantId,
+                observedHours: row.observedHours,
+                predictedHours: row.predictedHours,
+                absolutePercentageError: row.absolutePercentageError,
+              })),
           };
         }),
         whRows: mode.rows.filter(row => row.energyBasis === 'wh').length,
@@ -139,6 +156,17 @@ describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () =>
           .toBeLessThanOrEqual(20);
         expect(historical.within20Percent, 'At least 80% of historical predictions must be within 20%')
           .toBeGreaterThanOrEqual(80);
+        // A good average must not conceal a broken gaming, video or browsing
+        // cohort. Require reasonable coverage within every workload.
+        for (const workload of ['web_browsing', 'video_playback', 'gaming'] as const) {
+          const rows = historical.rows.filter(row => row.workload === workload);
+          const within20 = 100 * rows.filter(row =>
+            row.absolutePercentageError <= 20).length / rows.length;
+          expect(rows.length, workload + ': insufficient historical observations')
+            .toBeGreaterThanOrEqual(20);
+          expect(within20, workload + ': fewer than 70% within 20%')
+            .toBeGreaterThanOrEqual(70);
+        }
       }
       expect(historical.rows.every(r => !!r.targetReleaseDate && !!r.latestReferenceReleaseDate && r.latestReferenceReleaseDate < r.targetReleaseDate)).toBe(true);
     }, 120_000);
