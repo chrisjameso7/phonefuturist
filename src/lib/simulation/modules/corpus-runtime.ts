@@ -43,6 +43,8 @@ export interface CorpusRuntimeBand {
     maxWhPerHour?: number;
     energyReferenceCount: number;
     referenceCount: number;
+    /** Unique device variants, excluding repeated runs from a single handset. */
+    independentReferenceDeviceCount: number;
     confidence: number;
     averageSimilarity: number;
     averageCoverage: number;
@@ -449,6 +451,7 @@ export function resolveCorpusRuntimeBand(
         : {}),
       energyReferenceCount: whValues.length,
       referenceCount: values.length,
+      independentReferenceDeviceCount: independentPhones(values),
       confidence: Math.min(1, Math.max(0, confidence)),
       averageSimilarity: Math.min(
         1,
