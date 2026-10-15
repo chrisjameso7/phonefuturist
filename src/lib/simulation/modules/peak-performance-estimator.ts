@@ -69,6 +69,19 @@ export interface PeakPerformanceEstimate {
   unresolvedReason?: string;
 }
 
+/**
+ * Explicit what-if scenarios for preview chips without Geekbench 6 results.
+ * Values are product scenario assumptions, NOT benchmarks, leaks or proof of
+ * efficiency. Users can override them with the advanced generation uplift.
+ * Keep GPU domains neutral until separate graphics evidence exists.
+ */
+export const PREVIEW_GB6_SCENARIO_UPLIFT: Readonly<Record<string, Partial<Record<PeakBenchmarkDomain, number>>>> = {
+  'Exynos 2700': {
+    geekbench6_single: 27,
+    geekbench6_multi: 25,
+  },
+};
+
 export const PEAK_METRIC_BY_DOMAIN: Record<
   PeakBenchmarkDomain,
   string
@@ -298,6 +311,10 @@ export function estimatePeakPerformance(
     isSelectableSoc(query.socVendor, query.socName) &&
     sameVendor.length > 0;
   const automaticScenario = sameFamily.length === 0 && canProject && !validUplift;
+  const previewUplift = automaticScenario && !requestedReference && chosenReference
+    ? PREVIEW_GB6_SCENARIO_UPLIFT[query.socName ?? '']?.[query.domain]
+    : undefined;
+  const effectiveUplift = validUplift ? uplift! : previewUplift ?? 0;
   // Explicit references cannot silently fall back to an unrelated generation.
   const referenceCandidates = chosenReference ? namedReferences : sameVendor;
   const selected = sameFamily.length > 0 ? sameFamily
@@ -375,10 +392,7 @@ export function estimatePeakPerformance(
       ),
     );
 
-  const multiplier =
-    validUplift
-      ? 1 + uplift! / 100
-      : 1;
+  const multiplier = 1 + effectiveUplift / 100;
 
   return {
     version:
@@ -399,11 +413,8 @@ export function estimatePeakPerformance(
     adjustedMax:
       baselineMax *
       multiplier,
-    ...(validUplift
-      ? {
-          assumedGenerationUpliftPercent:
-            uplift,
-        }
+    ...(validUplift || previewUplift !== undefined
+      ? { assumedGenerationUpliftPercent: effectiveUplift }
       : {}),
     assumptionApplied:
       validUplift || automaticScenario,
@@ -447,7 +458,7 @@ export function estimatePeakPerformance(
       selected[0].protocolKey,
     note:
       automaticScenario && chosenReference
-        ? `Simulated baseline from the ${requestedReference ? 'selected' : 'automatically selected'} measured predecessor ${chosenReference} with 0% assumed uplift. This is not a measurement of the target SoC.`
+        ? `Simulated benchmark scenario from the automatically selected measured predecessor ${chosenReference} with ${effectiveUplift}% assumed uplift. This is an illustrative next-generation what-if, not a measurement or verified forecast of the target chip.`
         : automaticScenario
         ? 'Simulated baseline scenario for a selectable chip without exact measured benchmarks: same-vendor reference performance with 0% assumed uplift. This is not a measurement or a claim of equal real-world performance.'
         : validUplift && evidenceScope === 'same-soc-vendor'
