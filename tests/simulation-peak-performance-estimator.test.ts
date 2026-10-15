@@ -194,6 +194,43 @@ describe('peak performance estimator', () => {
     ).toBeCloseTo(8050, 8);
   });
 
+  it('uses a clearly labelled optimistic Geekbench 6 scenario for Exynos 2700', () => {
+    const single = estimatePeakPerformance(corpus, {
+      domain: 'geekbench6_single',
+      socVendor: 'Samsung',
+      socName: 'Exynos 2700',
+    });
+    expect(single.status).toBe('resolved');
+    expect(single.assumptionApplied).toBe(true);
+    expect(single.assumedGenerationUpliftPercent).toBe(27);
+    expect(single.adjustedExpected).toBeCloseTo(single.baselineExpected! * 1.27, 8);
+    expect(single.note).toContain('what-if');
+
+    const multiCorpus: DeviceCorpus = {
+      ...corpus,
+      measurements: [
+        ...corpus.measurements,
+        { id: 'a-multi', deviceVariantId: 'a', workload: 'benchmark',
+          metric: 'geekbench_6_7_multi_core', value: 10500, unit: 'points', sourceId: 'gb', evidenceKind: 'measured' },
+        { id: 'b-multi', deviceVariantId: 'b', workload: 'benchmark',
+          metric: 'geekbench_6_7_multi_core', value: 11100, unit: 'points', sourceId: 'gb', evidenceKind: 'measured' },
+      ],
+    };
+    const multi = estimatePeakPerformance(multiCorpus, {
+      domain: 'geekbench6_multi', socVendor: 'Samsung', socName: 'Exynos 2700',
+    });
+    expect(multi.status).toBe('resolved');
+    expect(multi.assumedGenerationUpliftPercent).toBe(25);
+    expect(multi.adjustedExpected).toBeCloseTo(multi.baselineExpected! * 1.25, 8);
+    // Advanced controls always override the preset, including explicit 0.
+    const manual = estimatePeakPerformance(multiCorpus, {
+      domain: 'geekbench6_multi', socVendor: 'Samsung', socName: 'Exynos 2700',
+      assumedGenerationUpliftPercent: 0,
+    });
+    expect(manual.adjustedExpected).toBeCloseTo(manual.baselineExpected!, 8);
+    expect(manual.assumedGenerationUpliftPercent).toBe(0);
+  });
+
   it('does not silently substitute another chip when the selected predecessor is missing', () => {
     const result = estimatePeakPerformance(corpus, {
       domain: 'geekbench6_single',
