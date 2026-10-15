@@ -1,4 +1,5 @@
 import { SOC_MODELS } from '../../lib/simulation/soc-model-catalog';
+import type { SocPowerWhatIf } from '../../lib/simulation/modules/soc-power-what-if';
 import BrandSelect from './BrandSelect';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES } from '../../lib/simulation/camera-option-catalog';
 import { useState } from 'react';
@@ -10,7 +11,7 @@ import type {
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
 type Props = {
-  onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') => void;
+  onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy', powerScenario: SocPowerWhatIf) => void;
 };
 
 const vendors: SocVendor[] = [
@@ -56,6 +57,7 @@ export default function SimpleModePanel({
   const [socVendor, setSocVendor] =
     useState<SocVendor>('Qualcomm');
   const [socName, setSocName] = useState('');
+  const [socPowerScenario, setSocPowerScenario] = useState<SocPowerWhatIf>('neutral');
   const [cooling, setCooling] =
     useState<SimpleCoolingPreset>('large-vc');
   const [cameraMp, setCameraMp] =
@@ -133,7 +135,7 @@ export default function SimpleModePanel({
           : {}),
         equivalentFocalLengthMm: 24,
       },
-    }, usage);
+    }, usage, socPowerScenario);
   }
 
   return (
@@ -332,6 +334,19 @@ export default function SimpleModePanel({
             {(SOC_MODELS[socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)}
             {(SOC_MODELS[socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}
           </select>
+        </label>
+
+        <label className="il-field il-wide">
+          <span>Processor power scenario</span>
+          <select
+            value={socPowerScenario}
+            onChange={event => setSocPowerScenario(event.currentTarget.value as SocPowerWhatIf)}
+          >
+            <option value="neutral">Neutral · no chip efficiency assumption</option>
+            <option value="efficiency">Efficiency-focused · assume 12% less loaded SoC power</option>
+            <option value="performance">Performance-focused · assume 12% more loaded SoC power</option>
+          </select>
+          <small>What-if only. Actual Exynos and Snapdragon efficiency is not established.</small>
         </label>
 
         <label className="il-field">
