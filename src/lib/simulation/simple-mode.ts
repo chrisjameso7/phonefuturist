@@ -79,6 +79,7 @@ export interface SimpleModeExpansion {
   version: string;
   simulationInput: SimulationInput;
   advanced: {
+    brightnessNits?: number;
     manufacturer?: string;
     batteryMah: number;
     wiredChargingWatts?: number;
@@ -186,6 +187,10 @@ export function expandSimpleMode(
     );
   }
 
+  if (input.brightnessNits !== undefined && !positive(input.brightnessNits)) {
+    throw new Error('Simple Mode brightness must be positive when supplied.');
+  }
+
   const resolution = input.displayResolution === 'custom'
     ? { width: input.customResolutionWidthPx ?? 0, height: input.customResolutionHeightPx ?? 0, label: 'Custom' }
     : RESOLUTION_PRESETS[input.displayResolution];
@@ -264,6 +269,7 @@ export function expandSimpleMode(
     version: SIMPLE_MODE_VERSION,
     simulationInput,
     advanced: {
+      ...(input.brightnessNits !== undefined ? { brightnessNits: input.brightnessNits } : {}),
       ...(input.manufacturer
         ? { manufacturer: input.manufacturer }
         : {}),

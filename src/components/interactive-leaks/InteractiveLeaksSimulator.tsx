@@ -1469,8 +1469,8 @@ export default function InteractiveLeaksSimulator() {
           primary.refreshRateHz ??
             input.refreshRateHz,
         ),
-      brightnessNits: input.brightnessNits !== undefined
-        ? String(input.brightnessNits) : '',
+      brightnessNits: expansion.advanced.brightnessNits !== undefined
+        ? String(expansion.advanced.brightnessNits) : '',
       // Scenario hours are configurable assumptions, not demographic averages.
       // Keep them distinct from screen-on measurements and preserve Advanced inputs.
       webHours: SIMPLE_USAGE_SCENARIOS[usage].webHours,
@@ -2768,6 +2768,7 @@ export default function InteractiveLeaksSimulator() {
 
   const feedbackSnapshot = {
     mode: workspaceMode,
+    socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : 'neutral',
     form,
     cameras,
     simulationInput,
@@ -2985,6 +2986,7 @@ export default function InteractiveLeaksSimulator() {
         },
         assumptions: {
           workspaceMode,
+          socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : 'neutral',
           manufacturer:
             form.manufacturer.trim() || null,
           socVendor:
@@ -6761,12 +6763,13 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Benchmark
                 </span>
-                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Result type',value:peakPerformanceEstimate?.status === 'resolved' ? (peakPerformanceEstimate.assumptionApplied ? 'Projected what-if' : 'Estimated') : undefined},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
 
                 {peakPerformanceEstimate?.status === 'resolved' ? (
                   <div className="il-metrics">
                     <div>
                       <strong>{format(peakPerformanceEstimate.adjustedExpected, 0)}</strong>
+                      <small>{peakPerformanceEstimate.assumptionApplied ? 'Projected benchmark · what-if' : 'Estimated benchmark'}</small>
                       <span>{form.peakBenchmarkDomain === 'geekbench6_single'
                         ? 'Geekbench 6 · single-core'
                         : form.peakBenchmarkDomain === 'geekbench6_multi'
