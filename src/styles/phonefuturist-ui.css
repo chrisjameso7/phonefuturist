@@ -611,7 +611,7 @@ body:not(.product-mode) .mobile-app-brand {
     padding:22px 24px 25px!important;
   }
   #main.home-page .pf-home-v2 .latest-section .article-card h3 {
-    font-size:clamp(1.3rem,1.65vw,1.75rem)!important;
+    font-size:clamp(1.15rem,1.45vw,1.5rem)!important;
     line-height:1.25!important;
     letter-spacing:-.025em;
     max-width:34ch;
@@ -672,5 +672,20 @@ body:not(.product-mode) .mobile-app-brand {
     width: 100%;
     max-width: 1480px;
     margin-inline: auto;
+  }
+}
+
+/* Headline hierarchy: readable titles, including long newsroom headlines. */
+.newsroom-index .article-card h3 {
+  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+  line-height: 1.24;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  body:not(.product-mode) #main .newsroom-index .article-card h3 {
+    font-size: 1.2rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: -.02em;
   }
 }

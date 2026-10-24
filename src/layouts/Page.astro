@@ -6,6 +6,7 @@ import '../styles/optical-pointer.css';
 import '../styles/brand-theme.css';
 import '../styles/mobile-editorial.css';
 import '../styles/phonefuturist-ui.css';
+import '../styles/motion.css';
 import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
@@ -63,6 +64,7 @@ const active = activeNavigation(Astro.url);
 
   <body class:list={{ 'product-mode': productMode }}>
     <a class="skip" href="#main">Skip to content</a>
+    <div class="pf-navigation-progress" aria-hidden="true"></div>
 
     {
       !productMode && (
@@ -339,8 +341,10 @@ const active = activeNavigation(Astro.url);
 
 <script>
   import { enhanceNavigation } from '../lib/navigation-client';
+  import { enhanceInteractionFeedback } from '../lib/interaction-client';
 
   enhanceNavigation();
+  enhanceInteractionFeedback();
   const mobileMenu=document.querySelector<HTMLDetailsElement>('.mobile-app-menu');
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileMenu?.open){mobileMenu.open=false;mobileMenu.querySelector('summary')?.focus();}});
   document.addEventListener('click',event=>{if(mobileMenu?.open&&event.target instanceof Node&&!mobileMenu.contains(event.target))mobileMenu.open=false;});

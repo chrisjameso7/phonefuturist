@@ -1,0 +1,163 @@
+/* Shared interaction feedback. Geometry stays stable while surfaces animate. */
+:root {
+  --motion-fast: 150ms;
+  --motion-page: 220ms;
+  --motion-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+html {
+  scroll-behavior: auto;
+  scrollbar-gutter: stable;
+}
+
+/* Native touch highlights can paint a square around rounded controls. */
+:where(a, button, summary, label, [role='button'], input, select, textarea) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(a, button, summary, [role='button']) {
+  touch-action: manipulation;
+}
+
+:where(a, button, summary, [role='button']):focus:not(:focus-visible) {
+  outline: none;
+}
+
+:where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.pf-navigation-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 1000;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+}
+
+html[data-navigation-pending] .pf-navigation-progress {
+  opacity: 1;
+  animation: pf-navigation-progress 8s var(--motion-ease) forwards;
+}
+
+@keyframes pf-navigation-progress {
+  from { transform: scaleX(.08); }
+  40% { transform: scaleX(.72); }
+  to { transform: scaleX(.92); }
+}
+
+@keyframes pf-content-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pf-fade-out {
+  to { opacity: 0; }
+}
+
+/* Cross-document transitions preserve native navigation, forms and hydration. */
+@view-transition { navigation: auto; }
+#main { view-transition-name: page-content; }
+.site-header { view-transition-name: desktop-header; }
+.mobile-appbar { view-transition-name: mobile-header; }
+.mobile-tabbar { view-transition-name: mobile-navigation; }
+
+::view-transition-old(root) { animation: pf-fade-out var(--motion-fast) ease both; }
+::view-transition-new(root) { animation: pf-fade-in var(--motion-page) ease both; }
+::view-transition-old(page-content) { animation: pf-fade-out var(--motion-fast) ease both; }
+::view-transition-new(page-content) { animation: pf-content-in var(--motion-page) var(--motion-ease) both; }
+::view-transition-group(desktop-header),
+::view-transition-group(mobile-header),
+::view-transition-group(mobile-navigation) { animation: none; }
+::view-transition-old(desktop-header),
+::view-transition-old(mobile-header),
+::view-transition-old(mobile-navigation) { animation: none; opacity: 0; }
+::view-transition-new(desktop-header),
+::view-transition-new(mobile-header),
+::view-transition-new(mobile-navigation) { animation: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(button, .button, .pf-ui__button, .section-tabs a, .desktop-nav a, .mobile-tabbar > a, summary) {
+    transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease,
+      opacity var(--motion-fast) ease, transform var(--motion-fast) var(--motion-ease);
+  }
+
+  :is(button, .button, .pf-ui__button, .section-tabs a, .mobile-tabbar > a, summary):active:not(:disabled) {
+    transform: scale(.97);
+  }
+
+  :is(.section-tabs a, .desktop-nav a, .mobile-tabbar > a)[data-navigation-pending] {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  :is(input, select, textarea) {
+    transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+  }
+
+  /* Fade instead of replaying stacked 650ms slide-ins on each visit. */
+  .pf-home-v2 .pf-spotlight,
+  .pf-home-v2 .pf-spotlight__content > *,
+  .interactive-page .il-app[data-mode='advanced'] .il-workspace,
+  .interactive-page .il-results :is(.il-metrics, .il-result-group, .il-warning) {
+    animation: pf-fade-in var(--motion-page) ease both;
+    animation-delay: 0s;
+  }
+
+  .mobile-app-menu[open] .mobile-app-menu-panel,
+  .mobile-nav[open] .mobile-nav-panel,
+  .interactive-page details[open] > :not(summary) {
+    animation: pf-content-in 180ms var(--motion-ease) both;
+  }
+
+  /* A selected tab should settle, rather than pulse continuously. */
+  .mobile-tabbar > a[aria-current='page'] .mobile-lab-orb { animation: none; }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :is(.article-card, .pf-home-v2 .pf-home-path, .il-share-card) {
+    transition: transform 200ms var(--motion-ease), box-shadow 200ms ease, border-color 200ms ease;
+  }
+  :is(.article-card, .pf-home-v2 .pf-home-path, .il-share-card):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgb(0 0 0 / .16);
+  }
+}
+
+/* Touch browsers can retain :hover after a tap. Do not leave content lifted. */
+@media (hover: none), (pointer: coarse) {
+  .pf-home-v2 .pf-home-path:hover,
+  .pf-home-v2 .pf-spotlight__cta:hover,
+  .pf-ui__button:hover,
+  .article-card:hover,
+  .interactive-page .il-share-card:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  html[data-navigation-pending] .pf-navigation-progress {
+    animation: none;
+    transform: scaleX(.5);
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, summary, input, select, textarea):focus-visible { outline-color: Highlight; }
+}
