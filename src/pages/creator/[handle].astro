@@ -1,4 +1,5 @@
 ---
+import ProfileBadge from '../../components/ProfileBadge.astro';
 import Page from '../../layouts/Page.astro';
 import { serverClient, settings } from '../../lib/supabase';
 import '../../styles/lab-simulator.css';
@@ -13,7 +14,7 @@ let simulationForks=0;
 let profileForks=0;
 
 if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
-  const {data}=await client.from('creator_profiles').select('user_id,handle,display_name,bio,avatar_url,created_at').eq('handle',handle).maybeSingle();
+  const {data}=await client.from('creator_profiles').select('*').eq('handle',handle).maybeSingle();
   creator=data;
   if(creator){
     const [{data:simRows},{data:profileRows}]=await Promise.all([
@@ -55,12 +56,12 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
           <div>
             <div class="creator-name-row">
               <h1>{creator.display_name}</h1>
-              <span class="creator-badge">Creator</span>
+              <ProfileBadge badge={creator.verification_badge} />
             </div>
             <p class="creator-handle">@{creator.handle}</p>
             {creator.bio && <p class="creator-bio">{creator.bio}</p>}
           </div>
-          <a class="button" href="/interactive-leaks/explore">Explore community</a>
+          <a class="button" href={Astro.locals.user?.id === creator.user_id ? "/account?edit=profile" : "/interactive-leaks/explore"}>{Astro.locals.user?.id === creator.user_id ? "Edit profile" : "Explore community"}</a>
         </section>
 
         <section class="creator-stats">
@@ -133,7 +134,6 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
 .creator-profile-head{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:64px 6px 22px;border-bottom:1px solid #202c39}
 .creator-name-row{display:flex;align-items:center;gap:10px}
 .creator-name-row h1{margin:0;font-size:clamp(2.5rem,5vw,4.6rem);line-height:.95;letter-spacing:-.06em;font-weight:620}
-.creator-badge{padding:4px 7px;border-radius:999px;background:rgb(22 140 255/.12);color:#61c9ff;font-size:.56rem;font-weight:760;text-transform:uppercase;letter-spacing:.08em}
 .creator-handle{margin:6px 0 0;color:#6f7e90;font-size:.74rem}
 .creator-bio{max-width:620px;margin:14px 0 0;color:#a2afbd;line-height:1.6}
 .creator-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid #202c39}

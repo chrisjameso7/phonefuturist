@@ -1,4 +1,5 @@
 ---
+import ProfileBadge from '../../../components/ProfileBadge.astro';
 import Page from '../../../layouts/Page.astro';
 import { serverClient, settings } from '../../../lib/supabase';
 import '../../../styles/lab-simulator.css';
@@ -19,7 +20,7 @@ if (uuid.test(id)) {
     if (profile) {
       const creatorPromise = client
         .from('creator_profiles')
-        .select('handle,display_name,avatar_url')
+        .select('*')
         .eq('user_id', profile.owner_id)
         .maybeSingle();
 
@@ -75,7 +76,7 @@ if (uuid.test(id)) {
             {creator && (
               <a class="il-creator-line" href={`/creator/${creator.handle}`}>
                 {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
-                <b>{creator.display_name}</b>
+                <b>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></b>
                 <small>@{creator.handle}</small>
               </a>
             )}

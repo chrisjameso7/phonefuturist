@@ -1,4 +1,5 @@
 ---
+import ProfileBadge from '../../components/ProfileBadge.astro';
 import Page from '../../layouts/Page.astro';
 import { serverClient, settings } from '../../lib/supabase';
 import '../../styles/lab-simulator.css';
@@ -31,7 +32,7 @@ if (client) {
   const ownerIds = [...new Set([...simulations.map((item) => item.owner_id), ...profiles.map((item) => item.owner_id)].filter(Boolean))];
   if (ownerIds.length) {
     const { data: creatorRows } = await client.from('creator_profiles')
-      .select('user_id,handle,display_name,avatar_url')
+      .select('*')
       .in('user_id', ownerIds);
     creators = new Map((creatorRows ?? []).map((creator: any) => [creator.user_id, creator]));
   }
@@ -130,7 +131,7 @@ const creatorsList=[...creators.values()].slice(0,6);
               </a>
               {creator && <a class="explore-creator-line" href={'/creator/'+creator.handle}>
                 <span class="explore-avatar">{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
-                <span><strong>{creator.display_name}</strong><small>@{creator.handle}</small></span>
+                <span><strong>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></strong><small>@{creator.handle}</small></span>
               </a>}
             </article>
           })}
@@ -150,7 +151,7 @@ const creatorsList=[...creators.values()].slice(0,6);
               <span class="explore-post-avatar">{creator?.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:(creator?.display_name||'P').slice(0,1).toUpperCase()}</span>
               <div>
                 <div class="explore-post-top">
-                  <strong>{creator?.display_name || 'PhoneFuturist creator'}</strong>
+                  <strong>{creator?.display_name || 'PhoneFuturist creator'}<ProfileBadge badge={creator?.verification_badge} /></strong>
                   {creator&&<small>@{creator.handle}</small>}
                   <time datetime={item.updated_at}>{new Date(item.updated_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'})}</time>
                 </div>
@@ -188,7 +189,7 @@ const creatorsList=[...creators.values()].slice(0,6);
         <div class="explore-side-title">Creators to watch</div>
         {creatorsList.length ? creatorsList.map((creator:any)=><a class="explore-person" href={'/creator/'+creator.handle}>
           <span>{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
-          <div><strong>{creator.display_name}</strong><small>@{creator.handle}</small></div>
+          <div><strong>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></strong><small>@{creator.handle}</small></div>
         </a>) : <p>No creator profiles yet.</p>}
       </section>
 
