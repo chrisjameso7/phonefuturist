@@ -1,16 +1,23 @@
 ---
 import Page from '../../layouts/Page.astro';
+import ProfileBadge from '../../components/ProfileBadge.astro';
+import { badgeForAccess } from '../../lib/profile-badge';
 import '../../styles/lab-simulator.css';
 const user=Astro.locals.user!;
 const access=Astro.locals.access!;
 const staff=access.roles.some(r=>['admin','writer','editor','publisher'].includes(r));
 let creatorProfile:any=null;
+let profileUnavailable=false;
 if(Astro.locals.supabase){
-  const {data}=await Astro.locals.supabase.from('creator_profiles').select('handle,display_name,bio,avatar_url').eq('user_id',user.id).maybeSingle();
+  const {data,error}=await Astro.locals.supabase.from('creator_profiles').select('handle,display_name,bio,avatar_url').eq('user_id',user.id).maybeSingle();
   creatorProfile=data;
+  profileUnavailable=!!error;
 }
 const displayName=creatorProfile?.display_name || user.email?.split('@')[0] || 'PhoneFuturist member';
 const initial=displayName.slice(0,1).toUpperCase();
+const editing = !creatorProfile || Astro.url.searchParams.get('edit') === 'profile';
+const profileErrors: Record<string,string> = { invalid: 'Check your name, handle and bio, then try again.', taken: 'That handle is already taken. Please choose another.', image: 'Choose a JPEG, PNG, WebP or AVIF image, up to 10 MB.', upload: 'Your photo could not be uploaded. Please try again.', save: 'Your profile could not be saved. Please try again.', verified: 'Verify your email before setting up your public profile.' };
+const profileError = profileErrors[Astro.url.searchParams.get('profile_error') ?? ''];
 ---
 
 <Page title="Your account" privatePage>
@@ -19,7 +26,7 @@ const initial=displayName.slice(0,1).toUpperCase();
       <div class="account-avatar">
         {creatorProfile?.avatar_url ? <img src={creatorProfile.avatar_url} alt="" /> : <span>{initial}</span>}
       </div>
-      <h1>{displayName}</h1>
+      <h1>{displayName}<ProfileBadge badge={badgeForAccess(access)} /></h1>
       {creatorProfile?.handle && <p class="account-handle">@{creatorProfile.handle}</p>}
       <p class="account-email">{user.email}</p>
 
@@ -47,7 +54,7 @@ const initial=displayName.slice(0,1).toUpperCase();
       <section class="account-status-grid">
         <article>
           <span>Account</span>
-          <strong>{access.verified?'Verified':'Verification required'}</strong>
+          <strong>{access.verified?'Email confirmed':'Verify your email'}</strong>
         </article>
         <article>
           <span>Creator</span>
@@ -55,7 +62,7 @@ const initial=displayName.slice(0,1).toUpperCase();
         </article>
         <article>
           <span>Access</span>
-          <strong>{staff?access.roles.filter(r=>r!=='reader').join(', '):'Member'}</strong>
+          <strong>{access.roles.filter(r=>r!=='reader').join(', ') || 'Member'}</strong>
         </article>
       </section>
 
@@ -68,15 +75,17 @@ const initial=displayName.slice(0,1).toUpperCase();
           {creatorProfile&&<a href={`/creator/${creatorProfile.handle}`}>View profile ↗</a>}
         </div>
         <p class="muted">This is how your public PhoneFuturist identity is presented.</p>
-        <form class="account-creator-form" action="/account/api/creator-profile" method="post">
+        {profileError && <p role="alert">{profileError}</p>}
+        {profileUnavailable ? <p role="alert">Your profile could not be loaded. <a href="/account">Try again</a></p> : editing ? <form class="account-creator-form" action="/account/api/creator-profile" method="post" enctype="multipart/form-data">
           <div class="account-form-grid">
             <label><span>Display name</span><input name="display_name" maxlength="60" required value={creatorProfile?.display_name??''} placeholder="Your public name" /></label>
             <label><span>Handle</span><input name="handle" maxlength="24" minlength="3" pattern="[a-z0-9_]{3,24}" required value={creatorProfile?.handle??''} placeholder="your_handle" /></label>
           </div>
-          <label><span>Avatar URL</span><input name="avatar_url" type="url" value={creatorProfile?.avatar_url??''} placeholder="https://..." /></label>
+          <label><span>Profile photo</span><input name="avatar" type="file" accept="image/jpeg,image/png,image/webp,image/avif" aria-describedby="photo-help" /><small id="photo-help">Choose a photo from your phone or computer. JPEG, PNG, WebP or AVIF, up to 10 MB. Leave empty to keep your current photo.</small></label>
           <label><span>Bio</span><textarea name="bio" maxlength="240" rows="3" placeholder="What do you like predicting?">{creatorProfile?.bio??''}</textarea></label>
-          <button class="button" type="submit">{creatorProfile?'Update profile':'Create profile'}</button>
-        </form>
+          <button class="button" type="submit">{creatorProfile?'Save changes':'Create profile'}</button>
+          {creatorProfile && <a href="/account">Cancel editing</a>}
+        </form> : <div class="account-profile-summary"><p>{creatorProfile.bio || "Your public profile is ready."}</p><a class="button" href={`/creator/${creatorProfile.handle}`}>Open your profile ↗</a> <a class="text-link" href="/account?edit=profile">Edit profile</a></div>}
       </section>
     </main>
   </div>

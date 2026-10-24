@@ -1,0 +1,15 @@
+---
+import { badgeLabel } from '../lib/profile-badge';
+interface Props { badge?: unknown }
+const { badge } = Astro.props;
+const label = badgeLabel(badge);
+---
+{label && <span class:list={['profile-verification', `profile-verification--${badge}`]} role="img" aria-label={label} title={label}>
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="m12 1 3 2.1 3.6.3 1.4 3.4 2.8 2.4-.9 3.6.9 3.6-2.8 2.4-1.4 3.4-3.6.3L12 24l-3-2.1-3.6-.3L4 18.2l-2.8-2.4.9-3.6-.9-3.6L4 6.2l1.4-3.4L9 2.5z"/><path d="m7.7 12 2.8 2.8 5.8-6" fill="none" stroke="#071018" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</span>}
+<style>
+.profile-verification{display:inline-flex!important;vertical-align:middle;align-items:center;justify-content:center;flex-shrink:0;width:1.1em!important;height:1.1em!important;margin-inline-start:.25em;padding:0!important;background:none!important;border:0!important;line-height:1}
+.profile-verification svg{width:100%;height:100%;max-width:24px;max-height:24px}
+.profile-verification--gold{color:#f4c85e!important}
+.profile-verification--green{color:#44d59b!important}
+</style>
