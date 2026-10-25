@@ -79,7 +79,7 @@ const trending = [...simulations]
   })
   .slice(0, 8);
 
-const creatorsList=[...creators.values()].slice(0,6);
+const creatorsList=[...new Map([...people,...creators.values()].map(person=>[person.handle,person])).values()].slice(0,6);
 ---
 
 <Page
@@ -213,7 +213,7 @@ const creatorsList=[...creators.values()].slice(0,6);
         {creatorsList.length ? creatorsList.map((creator:any)=><a class="explore-person" href={'/creator/'+creator.handle}>
           <span>{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
           <div><strong>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></strong><small>@{creator.handle}</small></div>
-        </a>) : <p>No creator profiles yet.</p>}
+        </a>) : <p>No creators to show.</p>}
       </section>
 
       <section class="explore-side-card">
