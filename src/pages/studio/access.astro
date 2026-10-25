@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import ProfileBadge from '../../components/ProfileBadge.astro';
 import {studioError} from '../../lib/editorial';
 import {boundedForm} from '../../lib/security';
 if(!Astro.locals.access?.can_manage_mfa_exceptions) return new Response('Primary administrator access required.',{status:403});
@@ -17,6 +18,11 @@ type Member={user_id:string;email:string;role:string;verified:boolean};
 type Event={email:string;action:string;role:string;recorded_at:string};
 const members=(data?.members??[]) as Member[];
 const activity=(data?.activity??[]) as Event[];
+const query=(Astro.url.searchParams.get('q')??'').trim().slice(0,80);
+let accounts:any[]=[];
+let searchFailed=false;
+if(query.length>=2){const result=await Astro.locals.supabase!.rpc('studio_account_search',{p_query:query});accounts=result.data??[];searchFailed=!!result.error;}
+const selectedEmail=Astro.url.searchParams.get('email')??'';
 ---
 <Page title="Studio access" privatePage>
 <p class="eyebrow">PhoneFuturist Studio / People</p><h1>Your newsroom.</h1>
@@ -24,8 +30,16 @@ const activity=(data?.activity??[]) as Event[];
 <p><a href="/studio">← Back to articles</a></p>
 {message&&<p role="alert" class="notice error">{message}</p>}
 {Astro.url.searchParams.has('updated')&&<p role="status" class="notice">Studio access updated.</p>}
+<section class="panel stack" aria-labelledby="account-search-title">
+<h2 id="account-search-title">Find an account</h2>
+<form method="get" role="search"><label>Name, @handle or email<input name="q" value={query} minlength="2" maxlength="80" required placeholder="Search existing accounts" /></label><button>Search accounts</button></form>
+<p class="muted">Private account lookup for the primary administrator. Public Community search never includes email addresses.</p>
+{query&&<a href="/studio/access">Clear search</a>}
+{searchFailed ? <p role="alert">Account search could not load. Please retry.</p> : query.length>=2 && (accounts.length ? <div class="access-members">{accounts.map(account=><article class="panel"><h3>{account.display_name||account.email}<ProfileBadge badge={account.verification_badge}/></h3><p>{account.email}{account.handle&&` · @${account.handle}`}</p><p>{account.roles.join(', ')||'Member'} · {account.status} · {account.verified?'Email confirmed':'Email not confirmed'}</p>{account.handle&&<p><a href={`/creator/${account.handle}`}>View public profile</a></p>}<a href={`/studio/access?email=${encodeURIComponent(account.email)}`}>Choose for role management</a></article>)}</div> : <p role="status">No accounts found.</p>)}
+{accounts.length===25&&<p>Showing 25 accounts. Refine the search for more specific results.</p>}
+</section>
 <form method="post" class="panel stack">
- <label>Account email<input name="email" type="email" required maxlength="320" autocomplete="off"/></label>
+ <label>Account email<input name="email" type="email" required maxlength="320" autocomplete="off" value={selectedEmail}/></label>
  <label>Role<select name="role"><option value="writer">Writer — own articles</option><option value="editor">Editor — all articles</option><option value="publisher">Publisher — all articles</option></select></label>
  <p class="muted">They need an account first. Email confirmation and article ownership protections remain in place. Grants take effect on their next page load.</p>
  <button name="action" value="grant">Grant Studio access</button>

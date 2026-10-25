@@ -6,6 +6,15 @@ import '../../styles/lab-simulator.css';
 
 const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
 
+const search = (Astro.url.searchParams.get('q') ?? '').trim().replace(/^@/, '').slice(0,60);
+const safeSearch = search.replace(/[^\p{L}\p{N}_ -]/gu,'');
+let people:any[]=[];
+let peopleError=false;
+if(client){
+ let query=client.from('creator_profiles').select('handle,display_name,bio,avatar_url,verification_badge').order('handle').limit(24);
+ if(safeSearch) query=query.or(`handle.ilike.%${safeSearch}%,display_name.ilike.%${safeSearch}%`);
+ const result=await query;people=result.data??[];peopleError=!!result.error;
+}
 let simulations: any[] = [];
 let profiles: any[] = [];
 let simulationForks = new Map<string, number>();
@@ -74,7 +83,7 @@ const creatorsList=[...creators.values()].slice(0,6);
 ---
 
 <Page
-  title="Explore · PhoneFuturist"
+  title="Explore Â· PhoneFuturist"
   description="Discover public PhoneFuturist simulations, creators and reusable component profiles."
 >
   <div class="explore-network">
@@ -99,8 +108,22 @@ const creatorsList=[...creators.values()].slice(0,6);
           <h1>Explore</h1>
           <p>See what people are testing, forking and arguing about next.</p>
         </div>
-        <a href="/interactive-leaks">Open Interactive Leaks →</a>
+        <a href="/interactive-leaks">Open Interactive Leaks â†’</a>
       </header>
+
+      <section class="people-directory" aria-labelledby="people-title">
+        <h2 id="people-title">Find people</h2>
+        <form method="get" action="/interactive-leaks/explore#people-title" role="search">
+          <label for="people-search">Public name or @handle</label>
+          <div><input id="people-search" name="q" maxlength="60" value={search} placeholder="Search creators and writers" /><button type="submit">Search</button></div>
+        </form>
+        {search && <a href="/interactive-leaks/explore#people-title">Clear search</a>}
+        {peopleError ? <p role="status">People search is temporarily unavailable. Please try again.</p> : people.length ? <div class="people-results">{people.map(person=><a href={`/creator/${person.handle}`} class="people-result">
+          {person.avatar_url && <img src={person.avatar_url} alt="" loading="lazy" width="44" height="44" />}
+          <div><strong>{person.display_name}<ProfileBadge badge={person.verification_badge}/></strong><small>@{person.handle}</small>{person.bio&&<p>{person.bio}</p>}</div>
+        </a>)}</div> : <p role="status">No public profiles found. Try another name or handle.</p>}
+        {people.length===24&&<p>Showing up to 24 people. Refine your search to find someone specific.</p>}
+      </section>
 
       <nav class="explore-tabs" aria-label="Explore sections">
         <a class="is-active" href="#trending">Trending</a>
@@ -126,7 +149,7 @@ const creatorsList=[...creators.values()].slice(0,6);
                     <b>{simulationForks.get(item.id) ?? 0} forks</b>
                   </div>
                   <h2>{item.name}</h2>
-                  <p>{item.processor_key?.replaceAll('_',' ') || 'Processor unknown'} · {item.configuration_source}</p>
+                  <p>{item.processor_key?.replaceAll('_',' ') || 'Processor unknown'} Â· {item.configuration_source}</p>
                 </div>
               </a>
               {creator && <a class="explore-creator-line" href={'/creator/'+creator.handle}>
@@ -135,7 +158,7 @@ const creatorsList=[...creators.values()].slice(0,6);
               </a>}
             </article>
           })}
-        </div> : <div class="explore-empty"><h2>No public simulations yet.</h2><p>The first one gets the whole feed.</p><a class="button" href="/interactive-leaks">Open Interactive Leaks →</a></div>}
+        </div> : <div class="explore-empty"><h2>No public simulations yet.</h2><p>The first one gets the whole feed.</p><a class="button" href="/interactive-leaks">Open Interactive Leaks â†’</a></div>}
       </section>
 
       <section id="latest" class="explore-section">
@@ -156,7 +179,7 @@ const creatorsList=[...creators.values()].slice(0,6);
                   <time datetime={item.updated_at}>{new Date(item.updated_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'})}</time>
                 </div>
                 <h3>{item.name}</h3>
-                <p>{item.device_key.replaceAll('-',' ')} · {item.processor_key?.replaceAll('_',' ')||'processor unknown'}</p>
+                <p>{item.device_key.replaceAll('-',' ')} Â· {item.processor_key?.replaceAll('_',' ')||'processor unknown'}</p>
                 <div class="explore-post-footer"><span>{simulationForks.get(item.id)??0} forks</span><span>{item.configuration_source}</span></div>
               </div>
             </a>
@@ -196,7 +219,7 @@ const creatorsList=[...creators.values()].slice(0,6);
       <section class="explore-side-card">
         <div class="explore-side-title">What can I do here?</div>
         <p>Open a public simulation, fork it, change one assumption and publish your own branch.</p>
-        <a href="/interactive-leaks">Open Interactive Leaks →</a>
+        <a href="/interactive-leaks">Open Interactive Leaks â†’</a>
       </section>
     </aside>
   </div>
@@ -249,4 +272,8 @@ const creatorsList=[...creators.values()].slice(0,6);
   .explore-profile-grid{grid-template-columns:1fr}
   .explore-head h1{font-size:2.8rem}
 }
+</style>
+
+<style>
+.people-directory{padding:20px 0;border-bottom:1px solid #263442}.people-directory h2{font-size:1.3rem}.people-directory label{display:block;margin-bottom:8px}.people-directory form>div{display:flex;gap:8px}.people-directory input{min-width:0;flex:1}.people-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;margin-top:18px}.people-result{display:flex;gap:12px;padding:14px;border:1px solid #263442;border-radius:14px;color:inherit;text-decoration:none;min-width:0}.people-result img{border-radius:50%;object-fit:cover;flex-shrink:0}.people-result small{display:block;color:var(--muted)}.people-result p{font-size:.8rem;margin:6px 0 0;overflow-wrap:anywhere}.people-result strong{overflow-wrap:anywhere}
 </style>

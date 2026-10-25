@@ -36,6 +36,8 @@ beforeAll(async()=>{
   if(['publisher','admin'].includes(role))await db.query("insert into auth.mfa_factors values($1,$1,'verified')",[id]);
  }
  await db.exec(readFileSync(new URL('../supabase/migrations/20260924111314_public_article_card_images.sql',import.meta.url),'utf8'));
+ await db.exec('create table public.creator_profiles(user_id uuid,handle text,display_name text,avatar_url text,verification_badge text)');
+ await db.exec(readFileSync(new URL('../supabase/migrations/20261024231315_account_directory_search.sql',import.meta.url),'utf8'));
 },30000);
 afterAll(async()=>db.close());
 describe('current Studio publishing policy and historical integrity',()=>{
@@ -129,4 +131,16 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await as('reader');expect((await db.query('select * from storage.objects')).rows).toEqual([]);
   await as('publisher','aal1');await db.query("insert into storage.objects(bucket_id,name) values('article-media',$1)",['articles/'+ids.publisher+'/x.png']);
  });
+});
+
+it('limits private account search to the primary administrator and returns bounded safe fields',async()=>{
+ await as('anon');await expect(db.query("select public.studio_account_search('example')")).rejects.toThrow();
+ await as('writer');await expect(db.query("select public.studio_account_search('example')")).rejects.toThrow('STUDIO_FORBIDDEN');
+ await as('admin');
+ const rows=(await db.query<{result:any[]}>("select public.studio_account_search('example.test') result")).rows[0].result;
+ expect(rows).toHaveLength(6);expect(rows.find(row=>row.email===ids.reader+'@example.test')).toBeTruthy();
+ expect(rows[0]).not.toHaveProperty('encrypted_password');expect(rows[0]).not.toHaveProperty('user_metadata');
+ expect((await db.query<{result:any[]}>("select public.studio_account_search('%') result")).rows[0].result).toEqual([]);
+ await db.exec('reset role');await db.query("insert into private.role_grants(user_id,role) values($1,'admin')",[ids.stranger]);
+ await as('stranger');await expect(db.query("select public.studio_account_search('example')")).rejects.toThrow('STUDIO_FORBIDDEN');
 });
