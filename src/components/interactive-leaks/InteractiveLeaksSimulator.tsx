@@ -943,16 +943,14 @@ function DeterministicShareCard({
   cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
 }) {
   const [shareMessage, setShareMessage] = useState('');
+  const [downloading, setDownloading] = useState(false);
   const display = result.displays.primary;
   const battery = result.battery;
   const packaging = result.packaging;
   const deviceName = input.name || 'Untitled concept';
   // A 0–100% estimate is only defensible as a coarse scenario if no curve exists.
   // Do not pretend that advertised peak wattage is sustained charging power.
-  const assumedEnergyWh = battery?.totalEnergyWh ??
-    (mode === 'simple' && battery?.totalCapacityMah !== undefined
-      ? battery.totalCapacityMah * 3.85 / 1000
-      : undefined);
+  const assumedEnergyWh = battery?.totalEnergyWh;
   const chargingScenarioMinutes = chargeMinutes === undefined &&
     assumedEnergyWh !== undefined && wiredWatts !== undefined
       ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts, chargingStandard, cellArchitecture })
@@ -962,6 +960,9 @@ function DeterministicShareCard({
   const scoreLabel = experimentalScores ? 'PROJECTED' : 'ESTIMATED';
 
   async function downloadCard() {
+    if (downloading) return;
+    setDownloading(true);
+    setShareMessage('Preparing your card…');
     try {
       const canvas = document.createElement('canvas');
       canvas.width = 1080;
@@ -983,8 +984,9 @@ function DeterministicShareCard({
       // Reject export if it cannot be loaded rather than producing a card with incorrect branding.
       const brandLogo = new Image();
       await new Promise<void>((resolve, reject) => {
-        brandLogo.onload = () => resolve();
-        brandLogo.onerror = () => reject(new Error('PhoneFuturist logo could not be loaded for export.'));
+        const timeout = setTimeout(() => reject(new Error('The logo could not load. Please try the download again.')), 8000);
+        brandLogo.onload = () => { clearTimeout(timeout); resolve(); };
+        brandLogo.onerror = () => { clearTimeout(timeout); reject(new Error('PhoneFuturist logo could not be loaded for export.')); };
         brandLogo.src = '/assets/phonefuturist-mark.svg';
       });
       ctx.drawImage(brandLogo, 72, 74, 91, 41);
@@ -1041,10 +1043,10 @@ function DeterministicShareCard({
       const metrics: Array<[string, string]> = [
         ['GB6 SINGLE · ' + scoreLabel, singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'No estimate'],
         ['GB6 MULTI · ' + scoreLabel, multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'No estimate'],
-        ['15-MIN SINGLE · SIM', sustainedSingleScore !== undefined ? Math.round(sustainedSingleScore).toLocaleString('en-US') : 'No estimate'],
-        ['15-MIN MULTI · SIM', sustainedMultiScore !== undefined ? Math.round(sustainedMultiScore).toLocaleString('en-US') : 'No estimate'],
-        [powerScenario === 'neutral' ? 'BATTERY LIFE · EST.' : 'BATTERY · WHAT-IF', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
-        ['CHARGING 0–100%', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
+        ['15-MIN SINGLE · SCENARIO', sustainedSingleScore !== undefined ? Math.round(sustainedSingleScore).toLocaleString('en-US') : 'No estimate'],
+        ['15-MIN MULTI · SCENARIO', sustainedMultiScore !== undefined ? Math.round(sustainedMultiScore).toLocaleString('en-US') : 'No estimate'],
+        [powerScenario === 'neutral' ? 'ACTIVE USE · EST.' : 'ACTIVE USE · WHAT-IF', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
+        [chargingIsScenario ? 'FULL CHARGE · SCENARIO' : 'FULL CHARGE · EST.', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
         ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
         ['WIRED CHARGING', wiredWatts !== undefined ? Math.round(wiredWatts) + ' W' : 'Unknown'],
         ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
@@ -1070,7 +1072,7 @@ function DeterministicShareCard({
         ctx.fill();
         ctx.fillStyle = dim;
         ctx.font = '700 18px Arial';
-        ctx.fillText(metrics[i][0], x + 22, y + 32);
+        ctx.fillText(metrics[i][0], x + 22, y + 32, 412);
         ctx.fillStyle = ink;
         const value = metrics[i][1];
         ctx.font = '700 ' + (value.length > 18 ? 30 : value.length > 11 ? 40 : 53) + 'px Arial';
@@ -1079,7 +1081,8 @@ function DeterministicShareCard({
       ctx.fillStyle = dim;
       ctx.font = '20px Arial';
       ctx.font = '18px Arial';
-      ctx.fillText(experimentalScores ? 'INTERACTIVE LEAKS · SOC PROJECTIONS' : 'INTERACTIVE LEAKS · SIMULATION RESULTS', 72, 1195, 935);
+      ctx.fillText('Estimates and scenarios — not measured device results.', 72, 1195, 935);
+      ctx.fillText('Active use is not standby time. Cooling retention is an assumption.', 72, 1223, 935);
       ctx.fillStyle = accent;
       ctx.fillRect(72, 1250, 936, 2);
       ctx.fillStyle = ink;
@@ -1106,6 +1109,8 @@ function DeterministicShareCard({
       setShareMessage('Share card downloaded.');
     } catch (error) {
       setShareMessage(error instanceof Error ? error.message : 'Could not generate the share card.');
+    } finally {
+      setDownloading(false);
     }
   }
 
@@ -1175,7 +1180,7 @@ function DeterministicShareCard({
         </>}
       </div>
       <div className="il-share-card-actions">
-        <button type="button" onClick={downloadCard}>Download share card</button>
+        <button type="button" onClick={downloadCard} disabled={downloading} aria-busy={downloading}>{downloading ? 'Preparing…' : 'Download share card'}</button>
         <button type="button" onClick={shareSummary}>Share result</button>
       </div>
       {shareMessage && <small role="status">{shareMessage}</small>}
@@ -1188,6 +1193,7 @@ export default function InteractiveLeaksSimulator() {
   const [simulationError, setSimulationError] = useState('');
   const [simulationResult, setSimulationResult] = useState<ReturnType<typeof simulateDevice> | null>(null);
   const activeWorker = useRef<Worker | null>(null);
+  const workerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const jobNumber = useRef(0);
   const [form, setForm] =
     useState<FormState>(initialForm);
@@ -1219,11 +1225,27 @@ export default function InteractiveLeaksSimulator() {
   const result = simulationResult;
 
   useEffect(() => () => {
+    if (workerTimer.current !== null) clearTimeout(workerTimer.current);
     jobNumber.current++;
     activeWorker.current?.terminate();
   }, []);
 
+  function invalidateSimulation() {
+    jobNumber.current++;
+    if (workerTimer.current !== null) clearTimeout(workerTimer.current);
+    workerTimer.current = null;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(false);
+    setSimulationError('');
+    setSimulationResult(null);
+    setSimulationInput(null);
+    setHasSimulated(false);
+    setPredictionSaveState({ status: 'idle' });
+  }
+
   function calculateInWorker(input: SimulationInput) {
+    if (workerTimer.current !== null) clearTimeout(workerTimer.current);
     const job = ++jobNumber.current;
     activeWorker.current?.terminate();
     activeWorker.current = null;
@@ -1234,6 +1256,8 @@ export default function InteractiveLeaksSimulator() {
 
     const finish = (nextResult: ReturnType<typeof simulateDevice>) => {
       if (job !== jobNumber.current) return;
+      if (workerTimer.current !== null) clearTimeout(workerTimer.current);
+      workerTimer.current = null;
       setSimulationInput(input);
       setSimulationResult(nextResult);
       setHasSimulated(true);
@@ -1244,10 +1268,21 @@ export default function InteractiveLeaksSimulator() {
       if (typeof Worker === 'undefined') throw new Error('Web Workers unavailable');
       const worker = new Worker(new URL('./simulation.worker.ts', import.meta.url), { type: 'module' });
       activeWorker.current = worker;
+      workerTimer.current = setTimeout(() => {
+        if (job !== jobNumber.current) return;
+        jobNumber.current++;
+        worker.terminate();
+        activeWorker.current = null;
+        workerTimer.current = null;
+        setSimulationPending(false);
+        setSimulationError('This calculation took too long. Please try again.');
+      }, 20000);
       worker.onmessage = (event: MessageEvent<{ id: number; result?: ReturnType<typeof simulateDevice>; error?: string }>) => {
         if (job !== jobNumber.current || event.data.id !== job) return;
         worker.terminate();
         activeWorker.current = null;
+        if (workerTimer.current !== null) clearTimeout(workerTimer.current);
+        workerTimer.current = null;
         if (event.data.result) finish(event.data.result);
         else {
           setSimulationPending(false);
@@ -1258,11 +1293,17 @@ export default function InteractiveLeaksSimulator() {
         if (job !== jobNumber.current) return;
         worker.terminate();
         activeWorker.current = null;
+        if (workerTimer.current !== null) clearTimeout(workerTimer.current);
+        workerTimer.current = null;
         setSimulationPending(false);
         setSimulationError('Simulation worker failed. Try running it again.');
       };
       worker.postMessage({ id: job, input });
     } catch {
+      activeWorker.current?.terminate();
+      activeWorker.current = null;
+      if (workerTimer.current !== null) clearTimeout(workerTimer.current);
+      workerTimer.current = null;
       // Compatibility fallback is synchronous but preserves the deterministic engine.
       try { finish(simulateDevice(input)); }
       catch (error) {
@@ -1276,6 +1317,7 @@ export default function InteractiveLeaksSimulator() {
     key: K,
     value: FormState[K],
   ) {
+    invalidateSimulation();
     setForm((current) => ({
       ...current,
       [key]: value,
@@ -1286,6 +1328,7 @@ export default function InteractiveLeaksSimulator() {
     id: number,
     patch: Partial<CameraDraft>,
   ) {
+    invalidateSimulation();
     setCameras((current) =>
       current.map((camera) =>
         camera.id === id
@@ -1296,6 +1339,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function addCamera() {
+    invalidateSimulation();
     setCameras((current) => [
       ...current,
       emptyCamera(
@@ -1307,6 +1351,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function removeCamera(id: number) {
+    invalidateSimulation();
     setCameras((current) =>
       current.filter((camera) => camera.id !== id),
     );
@@ -1585,13 +1630,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function loadExample() {
-    jobNumber.current++;
-    activeWorker.current?.terminate();
-    activeWorker.current = null;
-    setSimulationPending(false);
-    setSimulationError('');
-    setSimulationResult(null);
-    setPredictionSaveState({ status: 'idle' });
+    invalidateSimulation();
     setForm(flagshipExample);
     setCameras(flagshipCameras);
     setSimulationInput(null);
@@ -1599,13 +1638,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function clearSimulation() {
-    jobNumber.current++;
-    activeWorker.current?.terminate();
-    activeWorker.current = null;
-    setSimulationPending(false);
-    setSimulationError('');
-    setSimulationResult(null);
-    setPredictionSaveState({ status: 'idle' });
+    invalidateSimulation();
     setForm(initialForm);
     setCameras([]);
     setSimulationInput(null);
@@ -1935,10 +1968,7 @@ export default function InteractiveLeaksSimulator() {
       : undefined;
 
   const chargingResult = batteryExperience?.charging;
-  const projectedChargingEnergyWh = result?.battery?.totalEnergyWh ??
-    (result?.battery?.totalCapacityMah !== undefined
-      ? result.battery.totalCapacityMah * 3.85 / 1000
-      : undefined);
+  const projectedChargingEnergyWh = result?.battery?.totalEnergyWh;
   const chargingScenarioMinutes = chargingResult?.status === 'resolved'
     ? undefined
     : projectedChargingEnergyWh !== undefined && chargingWatts !== undefined
@@ -3146,7 +3176,7 @@ export default function InteractiveLeaksSimulator() {
               type="button"
               className={workspaceMode === 'simple' ? 'active' : ''}
               aria-pressed={workspaceMode === 'simple'}
-              onClick={() => { setWorkspaceMode('simple'); setHasSimulated(false); }}
+              onClick={() => { invalidateSimulation(); setWorkspaceMode('simple'); }}
             >
               Simple
             </button>
@@ -3154,7 +3184,7 @@ export default function InteractiveLeaksSimulator() {
               type="button"
               className={workspaceMode === 'advanced' ? 'active' : ''}
               aria-pressed={workspaceMode === 'advanced'}
-              onClick={() => { setWorkspaceMode('advanced'); setHasSimulated(false); }}
+              onClick={() => { invalidateSimulation(); setWorkspaceMode('advanced'); }}
             >
               Advanced
             </button>
@@ -4199,6 +4229,7 @@ export default function InteractiveLeaksSimulator() {
                   value={form.socVendor}
                   onChange={(event) => {
                     const vendor = event.currentTarget.value;
+                    invalidateSimulation();
                     setForm(current => ({ ...current, socVendor: vendor, socName: '' }));
                   }}
                 >
@@ -6202,7 +6233,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Battery
                 </span>
-                <DownloadSectionReceipt kind="Battery" deviceName={form.name} metrics={[{label:'Capacity',value:result.battery?.totalCapacityMah !== undefined ? format(result.battery.totalCapacityMah,0)+' mAh' : undefined},{label:'Chemistry',value:form.batteryChemistry},{label:'Active-use endurance',value:batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge !== undefined ? format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,1)+' h' : undefined},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Processor',value:form.socName}]} />
+                <DownloadSectionReceipt kind="Battery" deviceName={form.name} metrics={[{label:'Capacity',value:result.battery?.totalCapacityMah !== undefined ? format(result.battery.totalCapacityMah,0)+' mAh' : undefined},{label:'Chemistry',value:form.batteryChemistry},{label:'Daily mix · web / video / gaming',value:`${form.webHours || '0'} / ${form.videoHours || '0'} / ${form.gamingHours || '0'} h`},{label:'Estimated active use (not standby)',value:batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge !== undefined ? format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,1)+' h' : undefined},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
@@ -6532,7 +6563,7 @@ export default function InteractiveLeaksSimulator() {
                   Wired charging
 
                 </span>
-                <DownloadSectionReceipt kind="Charging" deviceName={form.name} metrics={[{label:'Wired power',value:form.wiredChargeW ? form.wiredChargeW+' W' : undefined},{label:'Wireless power',value:form.wirelessChargeW ? form.wirelessChargeW+' W' : undefined},{label:'Charging standard',value:form.chargingStandard},{label:'Cell architecture',value:form.cellArchitecture},{label:'Projected 0–100%',value:predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : undefined}]} />
+                <DownloadSectionReceipt kind="Charging" deviceName={form.name} metrics={[{label:'Wired power',value:form.wiredChargeW ? form.wiredChargeW+' W' : undefined},{label:'Wireless power',value:form.wirelessChargeW ? form.wirelessChargeW+' W' : undefined},{label:'Charging standard',value:form.chargingStandard},{label:'Cell architecture',value:form.cellArchitecture},{label:chargingResult?.status === 'resolved' ? 'Estimated full charge' : 'Illustrative full-charge scenario',value:predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : undefined}]} />
 
                 {chargingScenarioMinutes !== undefined && (
                   <div className="il-metrics">
@@ -6762,7 +6793,7 @@ export default function InteractiveLeaksSimulator() {
                 <span className="il-result-label">
                   Benchmark
                 </span>
-                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark',value:form.peakBenchmarkDomain === 'geekbench6_single' ? 'Geekbench 6 · single-core' : form.peakBenchmarkDomain === 'geekbench6_multi' ? 'Geekbench 6 · multi-core' : form.peakBenchmarkDomain === '3dmark_wle' ? '3DMark Wild Life Extreme' : '3DMark Solar Bay'},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
 
                 {peakPerformanceEstimate?.status === 'resolved' ? (
                   <div className="il-metrics">
@@ -7181,7 +7212,7 @@ export default function InteractiveLeaksSimulator() {
                   Thermal & performance
 
                 </span>
-                <DownloadSectionReceipt kind="Thermal" deviceName={form.name} metrics={[{label:'Cooling',value:form.coolingClass},{label:'Peak temperature',value:thermalResult?.peakTemperatureC !== undefined ? format(thermalResult.peakTemperatureC,1)+' °C' : undefined},{label:'Sustained performance',value:thermalResult?.sustainedPerformancePercent !== undefined ? format(thermalResult.sustainedPerformancePercent,1)+'%' : undefined},{label:'Ambient',value:form.ambientTemperatureC ? form.ambientTemperatureC+' °C' : undefined},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} thermalPoints={thermalResult?.points} />
+                <DownloadSectionReceipt kind="Thermal" deviceName={form.name} metrics={[{label:'Cooling',value:form.coolingClass},{label:'Simulated peak temperature',value:thermalResult?.peakTemperatureC !== undefined ? format(thermalResult.peakTemperatureC,1)+' °C' : undefined},{label:'Simulated performance retention',value:thermalResult?.sustainedPerformancePercent !== undefined ? format(thermalResult.sustainedPerformancePercent,1)+'%' : undefined},{label:'Ambient',value:form.ambientTemperatureC ? form.ambientTemperatureC+' °C' : undefined},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} thermalPoints={thermalResult?.points} />
 
                 {thermalResult?.status === 'resolved' ? (
                   <>
@@ -7407,7 +7438,7 @@ export default function InteractiveLeaksSimulator() {
                   Camera system
 
                 </span>
-                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Processor',value:form.socName}]} />
+                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Processor',value:form.socName},...(result.cameras ?? []).flatMap((camera,index) => [{label:`Camera ${index+1} · ${camera.type} · sensor area`,value:camera.activeSensorAreaMm2 !== undefined ? format(camera.activeSensorAreaMm2,1)+' mm²' : undefined},{label:`Camera ${index+1} · entrance pupil`,value:camera.entrancePupilDiameterMm !== undefined ? format(camera.entrancePupilDiameterMm,2)+' mm' : undefined}])]} />
 
                 <div className="il-metrics">
                   <div>

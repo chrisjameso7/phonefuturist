@@ -7,29 +7,64 @@ export async function renderSectionReceipt({ kind, deviceName, metrics, thermalP
   metrics: ReceiptMetric[];
   thermalPoints?: Array<{ second: number; performancePercent: number; temperatureC: number }>;
 }) {
-  const rows = metrics.filter(m => m.value !== undefined && m.value !== null && String(m.value).trim() !== '');
+  const rows = metrics.filter(m => m.value !== undefined && m.value !== null && String(m.value).trim() !== ''
+    && !(typeof m.value === 'number' && !Number.isFinite(m.value))
+    && !/\b(?:NaN|Infinity|undefined|null)\b/i.test(String(m.value)));
   const points = (thermalPoints?.filter(p => Number.isFinite(p.second) && Number.isFinite(p.performancePercent) && Number.isFinite(p.temperatureC)) ?? []).sort((a, b) => a.second - b.second);
   const chart = kind === 'Thermal' && points.length > 1;
   const width = 1080;
-  const height = 420 + rows.length * 108 + (chart ? 430 : 0) + 145;
   const canvas = document.createElement('canvas');
-  canvas.width = width * 2; canvas.height = height * 2;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas unavailable');
-  ctx.scale(2, 2);
+  // Lay out complete lines before sizing the bitmap. Never squeeze long text
+  // horizontally or let a value collide with its label on a phone screen.
+  function lines(text: string, font: string, available: number): string[] {
+    ctx!.font = font;
+    const output: string[] = [];
+    let line = '';
+    for (const word of text.replace(/\s+/g, ' ').trim().split(' ')) {
+      const candidate = line ? line + ' ' + word : word;
+      if (ctx!.measureText(candidate).width <= available) {
+        line = candidate; continue;
+      }
+      if (line) output.push(line);
+      line = '';
+      // Also handle a pasted identifier with no spaces.
+      for (const character of word) {
+        if (line && ctx!.measureText(line + character).width > available) {
+          output.push(line); line = '';
+        }
+        line += character;
+      }
+    }
+    if (line.trim()) output.push(line.trim());
+    return output;
+  }
+  const title = lines(deviceName || 'Custom device', 'bold 42px Arial', 940);
+  const layout = rows.map(metric => ({
+    label: lines(metric.label, '23px Arial', 894),
+    value: lines(String(metric.value), 'bold 38px Arial', 894),
+  }));
+  const headerHeight = 226 + title.length * 51;
+  const rowHeight = (row: typeof layout[number]) => 44 + row.label.length * 30 + row.value.length * 47;
+  const height = headerHeight + 45 + layout.reduce((sum, row) => sum + rowHeight(row) + 16, 0) + (chart ? 430 : 0) + 190;
+  // 1080px is already social-ready; 2x tall receipts waste mobile memory.
+  canvas.width = width; canvas.height = height;
   ctx.fillStyle = '#081524'; ctx.fillRect(0, 0, width, height);
   ctx.fillStyle = '#22d3ee'; ctx.fillRect(0, 0, 12, height);
   ctx.fillStyle = '#7dd3fc'; ctx.font = 'bold 25px Arial'; ctx.fillText('PHONEFUTURIST  /  INTERACTIVE LEAKS', 64, 79);
   ctx.fillStyle = '#fff'; ctx.font = 'bold 61px Arial'; ctx.fillText(kind.toUpperCase(), 64, 165, 950);
-  ctx.fillStyle = '#cbd5e1'; ctx.font = '29px Arial'; ctx.fillText(deviceName || 'Custom device', 64, 222, 950);
-  ctx.fillStyle = '#64748b'; ctx.fillRect(64, 255, 952, 2);
-  let y = 300;
-  for (const metric of rows) {
-    ctx.fillStyle = '#14263a'; ctx.beginPath(); ctx.roundRect(64, y, 952, 92, 14); ctx.fill();
-    ctx.fillStyle = '#9bb1c7'; ctx.font = '22px Arial'; ctx.fillText(metric.label, 89, y + 34, 500);
-    ctx.fillStyle = '#f1f5f9'; ctx.font = 'bold 34px Arial'; ctx.textAlign = 'right';
-    ctx.fillText(String(metric.value), 992, y + 61, 440); ctx.textAlign = 'left';
-    y += 108;
+  ctx.fillStyle = '#cbd5e1'; ctx.font = 'bold 42px Arial';
+  title.forEach((line, i) => ctx.fillText(line, 64, 227 + i * 51));
+  ctx.fillStyle = '#64748b'; ctx.fillRect(64, headerHeight, 952, 2);
+  let y = headerHeight + 35;
+  for (const row of layout) {
+    ctx.fillStyle = '#14263a'; ctx.beginPath(); ctx.roundRect(64, y, 952, rowHeight(row), 18); ctx.fill();
+    ctx.fillStyle = '#9bb1c7'; ctx.font = '23px Arial';
+    row.label.forEach((line, i) => ctx.fillText(line, 90, y + 34 + i * 30));
+    ctx.fillStyle = '#f1f5f9'; ctx.font = 'bold 38px Arial';
+    row.value.forEach((line, i) => ctx.fillText(line, 90, y + 48 + row.label.length * 30 + i * 47));
+    y += rowHeight(row) + 16;
   }
   if (chart) {
     y += 25;
@@ -71,7 +106,8 @@ export async function renderSectionReceipt({ kind, deviceName, metrics, thermalP
     y += 400;
   }
   ctx.fillStyle='#94a3b8'; ctx.font='22px Arial';
-  ctx.fillText('PHONEFUTURIST LAB  •  SIMULATION RESULTS',64,height-103,950);
+  ctx.fillText('PHONEFUTURIST LAB  •  SIMULATION RESULTS',64,height-133,950);
+  ctx.font='21px Arial'; ctx.fillText('Estimates and scenarios. Not a measured device test.',64,height-97,950);
   ctx.font='19px Arial';ctx.fillText(new Date().toLocaleDateString('en-GB', {year:'numeric',month:'short',day:'numeric'}),64,height-68);
   const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve,'image/png'));
   if (!blob) throw new Error('Could not generate image');
