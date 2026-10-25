@@ -363,7 +363,9 @@ export function simulateBatteryExperience(
       0,
     );
 
-    if (activeHoursPerDay > 0 && selected.length > 0) {
+    const mixedEnergyBases = new Set(selected.map(row => row.energyBasis));
+    if (mixedEnergyBases.size > 1) warnings.push('Mixed-use and calendar estimates are withheld because the selected workload references mix Wh and capacity-only energy bases.');
+    if (activeHoursPerDay > 0 && selected.length > 0 && mixedEnergyBases.size === 1) {
       const useWh =
         packEnergyWh !== undefined &&
         selected.every(

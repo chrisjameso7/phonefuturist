@@ -262,3 +262,14 @@ it('does not silently drop an unsupported workload from the requested usage mix'
  expect(result.runtimes.find(row=>row.workload==='web_browsing')!.status).toBe('resolved');
  expect(result.mixedUse).toBeUndefined();expect(result.calendarEndurance).toBeUndefined();
 });
+
+it('withholds a combined budget when only some requested workloads support Wh evidence',()=>{
+ const mixedCorpus={...corpus,
+  devices:[{...corpus.devices[0],variant:{...corpus.devices[0].variant,battery:{capacityMah:5000,typicalEnergyWh:20}}},
+   {...corpus.devices[0],variant:{...corpus.devices[0].variant,id:'capacity-only',battery:{capacityMah:5000}}}],
+  measurements:corpus.measurements.map(row=>row.workload==='gaming'?{...row,deviceVariantId:'capacity-only'}:row)};
+ const result=simulateBatteryExperience(mixedCorpus,{simulation:{formFactor:'phone',displays:{primary:{}},battery:{cells:[{capacityMah:5000,nominalVoltageV:4}]}},dailyUseHours:{web_browsing:2,gaming:1}});
+ expect(result.runtimes.find(row=>row.workload==='web_browsing')!.energyBasis).toBe('wh');
+ expect(result.runtimes.find(row=>row.workload==='gaming')!.energyBasis).toBe('mah');
+ expect(result.mixedUse).toBeUndefined();expect(result.calendarEndurance).toBeUndefined();
+});
