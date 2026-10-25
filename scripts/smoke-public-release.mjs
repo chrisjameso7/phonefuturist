@@ -17,6 +17,8 @@ const cases = [
   {path:'/',expected:200,contains:'PhoneFuturist'},
   {path:'/articles',expected:200,contains:'PhoneFuturist'},
   {path:'/interactive-leaks',expected:200,contains:'Interactive'},
+  {path:'/community',expected:200,contains:'Community',alsoContains:['Find people']},
+  {path:'/interactive-leaks/explore?q=Alex',expected:301,location:'/community',locationSearch:'?q=Alex'},
   {path:'/pro',expected:200,contains:'14-day free trial',alsoContains:['$4.99','39.99','payments are coming soon']},
   {path:'/assets/phonefuturist-mark.svg',expected:200,contains:'<svg'},
   {path:'/interactive-leaks/simulate',expected:302,location:'/interactive-leaks'},
@@ -32,7 +34,7 @@ for (const check of cases) {
     });
     const body = await response.text();
     const actualLocation = response.headers.get('location');
-    const redirectOk = !check.location || (actualLocation && new URL(actualLocation,url).pathname === check.location);
+    const redirectOk = !check.location || (actualLocation && new URL(actualLocation,url).pathname === check.location && (!check.locationSearch || new URL(actualLocation,url).search === check.locationSearch));
     const bodyOk = (!check.contains || body.toLowerCase().includes(check.contains.toLowerCase())) &&
       (!check.alsoContains || check.alsoContains.every(value => body.toLowerCase().includes(value.toLowerCase())));
     const securityOk = check.path.startsWith('/assets/') || (response.headers.get('x-content-type-options') === 'nosniff' && response.headers.get('x-frame-options') === 'DENY');
