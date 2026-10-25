@@ -321,7 +321,7 @@ export default function SimpleModePanel({
             <option value="800">800 nits · outdoors</option>
             <option value="1200">1,200 nits · bright sunlight</option>
           </select>
-          <small>Explicit brightness scenario. Reference-lab brightness varies; these are not measured battery tests.</small>
+          <small>Brightness scenarios use a 400-nit reference. Actual lab conditions vary; these are estimates.</small>
         </label>
 
         <label className="il-field">
@@ -360,7 +360,7 @@ export default function SimpleModePanel({
             <option value="efficiency">Efficiency-focused · assume 12% less loaded SoC power</option>
             <option value="performance">Performance-focused · assume 12% more loaded SoC power</option>
           </select>
-          <small>What-if only. Actual Exynos and Snapdragon efficiency is not established.</small>
+          <small>An assumption, not a measured efficiency advantage for the selected processor.</small>
         </label>
 
         <label className="il-field">

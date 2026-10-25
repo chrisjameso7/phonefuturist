@@ -45,6 +45,9 @@ export function estimateMatchedSocRuntimeDelta(
   const fail = (reason: string): SocRuntimeDeltaResult => ({
     status: 'unresolved', reason, version: SOC_RUNTIME_DELTA_VERSION,
   });
+  if (input.protocol !== 'geekbench6' && input.protocol !== 'steelNomadLight') {
+    return fail('Choose a supported matched-performance protocol.');
+  }
   if (input.protocol === 'geekbench6' && input.workload !== 'web_browsing') {
     return fail('Geekbench CPU power can only enter the explicitly modelled browsing scenario.');
   }
@@ -150,6 +153,12 @@ export function estimateMatchedSocBatteryScenario(
       baseline.independentReferenceDeviceCount < 2) {
     return fail('At least two independent reference phones with the exact reference SoC are required.');
   }
+  // Region/storage aliases of one phone model are not independent phones.
+  const references = new Set(baseline.neighborIds);
+  const referenceModels = new Set(corpus.devices.filter(device => references.has(device.variant.id))
+    .map(device => [device.variant.identity.manufacturer, device.variant.identity.modelName]
+      .map(value => value.trim().toLowerCase().replace(/\s+/g, ' ')).join('|')));
+  if (referenceModels.size < 2) return fail('At least two distinct reference phone models are required; variant aliases do not establish independence.');
   const energyWh = baseline.targetEnergyWh;
   if (baseline.energyBasis !== 'wh' || energyWh === undefined ||
       baseline.expectedWhPerHour === undefined || energyWh <= 0) {
@@ -174,7 +183,7 @@ export function estimateMatchedSocBatteryScenario(
     boardPowerDeltaW: delta.deltaWholePhonePowerW,
     benchmarkScore: query.targetBenchmarkScore,
     activeDutyFraction: query.activeDutyFraction,
-    independentReferencePhones: baseline.independentReferenceDeviceCount,
+    independentReferencePhones: referenceModels.size,
     note: 'Experimental fixed-benchmark-power comparison against measured exact-SoC whole-phone references. ' +
       'Only the matched board-power difference is transferred; the existing display, network and background ' +
       'loads remain embedded in the lab baseline. Not validated as real browsing or gaming runtime.',

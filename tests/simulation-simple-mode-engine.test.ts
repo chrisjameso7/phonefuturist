@@ -57,3 +57,10 @@ describe('Simple Mode engine', () => {
     );
   });
 });
+
+it('carries brightness through Simple Mode expansion and the shared battery engine',()=>{
+ const base={batteryMah:5500,displayDiagonalInches:6.7,displayResolution:'fhd' as const,refreshRateHz:120,cooling:'good' as const};
+ const dim=simulateSimpleMode({...base,brightnessNits:200});
+ const bright=simulateSimpleMode({...base,brightnessNits:1200});
+ expect(dim.battery.runtimes.find(row=>row.workload==='web_browsing')!.expectedHours).toBeGreaterThan(bright.battery.runtimes.find(row=>row.workload==='web_browsing')!.expectedHours!);
+});

@@ -207,3 +207,69 @@ describe('mixed-use battery experience', () => {
     expect(result.mixedUse).toBeUndefined();
   });
 });
+
+describe('battery scenario consistency',()=>{
+ const simulation={formFactor:'phone' as const,displays:{primary:{diagonalInches:6.7,refreshRateHz:120}},battery:{cells:[{capacityMah:5000}]}};
+ const dailyUseHours={web_browsing:2,video_playback:2,gaming:1};
+ it('applies brightness to each workload and its mixed-use contribution exactly once',()=>{
+  const dim=simulateBatteryExperience(corpus,{simulation,dailyUseHours,brightnessNits:200});
+  const bright=simulateBatteryExperience(corpus,{simulation,dailyUseHours,brightnessNits:1200});
+  for(const runtime of dim.runtimes){
+   expect(runtime.expectedHours).toBeGreaterThan(bright.runtimes.find(row=>row.workload===runtime.workload)!.expectedHours!);
+   const contribution=dim.mixedUse!.workloads.find(row=>row.workload===runtime.workload)!;
+   expect(contribution.expectedDrainMahPerHour).toBeCloseTo(runtime.expectedDrainMahPerHour!,8);
+  }
+  const expectedDrain=dim.runtimes.reduce((sum,row)=>sum+dailyUseHours[row.workload]*row.expectedDrainMahPerHour!,0);
+  expect(dim.mixedUse!.expectedDrainMahPerDay).toBeCloseTo(expectedDrain,8);
+ });
+ it('keeps the neutral reference unchanged when only neutral or invalid brightness is supplied',()=>{
+  const baseline=simulateBatteryExperience(corpus,{simulation,dailyUseHours});
+  for(const brightnessNits of [400,0,-1,NaN,Infinity]){
+   const result=simulateBatteryExperience(corpus,{simulation,dailyUseHours,brightnessNits});
+   expect(result.mixedUse?.expectedActiveUseHoursPerCharge).toBeCloseTo(baseline.mixedUse!.expectedActiveUseHoursPerCharge,8);
+  }
+ });
+ it('uses the same single-workload intensity and cooling assumptions in the headline',()=>{
+  const result=simulateBatteryExperience(corpus,{simulation,dailyUseHours:{gaming:1},usageIntensity:'Heavy',coolingClass:'active-fan',targetSocPowerW:9,brightnessNits:800});
+  expect(result.mixedUse!.expectedActiveUseHoursPerCharge).toBeCloseTo(result.runtimes.find(row=>row.workload==='gaming')!.expectedHours!,8);
+ });
+ it('withholds mixed use for invalid or impossible daily hours instead of returning partial or nonfinite results',()=>{
+  for(const hours of [NaN,Infinity,-1,25]){
+   const result=simulateBatteryExperience(corpus,{simulation,dailyUseHours:{web_browsing:2,gaming:hours}});
+   expect(result.mixedUse).toBeUndefined();
+  }
+ });
+});
+
+it('uses one brightness adjustment in Wh budgets and preserves the raw reference',()=>{
+ const energyCorpus={...corpus,devices:corpus.devices.map(row=>({...row,variant:{...row.variant,battery:{capacityMah:5000,typicalEnergyWh:20}}}))};
+ const input={simulation:{formFactor:'phone' as const,displays:{primary:{diagonalInches:6.5}},battery:{cells:[{capacityMah:5000,nominalVoltageV:4}]}},dailyUseHours:{web_browsing:1},brightnessNits:1200};
+ const result=simulateBatteryExperience(energyCorpus,input);const web=result.runtimes.find(row=>row.workload==='web_browsing')!;
+ expect(web.energyBasis).toBe('wh');expect(web.referenceExpectedHours).toBeCloseTo(10,8);
+ expect(result.mixedUse!.expectedDrainWhPerDay).toBeCloseTo(web.expectedDrainWhPerHour!,8);
+ expect(result.mixedUse!.expectedActiveUseHoursPerCharge).toBeCloseTo(web.expectedHours!,8);
+});
+it('rejects invalid pack capacities instead of synthesizing a usable combined capacity',()=>{
+ for(const cells of [[{capacityMah:-1000},{capacityMah:6000}],[{capacityMah:0}],[{capacityMah:Infinity}]]){
+  const result=simulateBatteryExperience(corpus,{simulation:{formFactor:'phone',displays:{primary:{}},battery:{cells}}});
+  expect(result.status).toBe('unresolved');expect(result.mixedUse).toBeUndefined();
+ }
+});
+
+it('does not silently drop an unsupported workload from the requested usage mix',()=>{
+ const missingGaming={...corpus,measurements:corpus.measurements.filter(row=>row.workload!=='gaming')};
+ const result=simulateBatteryExperience(missingGaming,{simulation:{formFactor:'phone',displays:{primary:{}},battery:{cells:[{capacityMah:5000}]}},dailyUseHours:{web_browsing:2,gaming:1}});
+ expect(result.runtimes.find(row=>row.workload==='web_browsing')!.status).toBe('resolved');
+ expect(result.mixedUse).toBeUndefined();expect(result.calendarEndurance).toBeUndefined();
+});
+
+it('withholds a combined budget when only some requested workloads support Wh evidence',()=>{
+ const mixedCorpus={...corpus,
+  devices:[{...corpus.devices[0],variant:{...corpus.devices[0].variant,battery:{capacityMah:5000,typicalEnergyWh:20}}},
+   {...corpus.devices[0],variant:{...corpus.devices[0].variant,id:'capacity-only',battery:{capacityMah:5000}}}],
+  measurements:corpus.measurements.map(row=>row.workload==='gaming'?{...row,deviceVariantId:'capacity-only'}:row)};
+ const result=simulateBatteryExperience(mixedCorpus,{simulation:{formFactor:'phone',displays:{primary:{}},battery:{cells:[{capacityMah:5000,nominalVoltageV:4}]}},dailyUseHours:{web_browsing:2,gaming:1}});
+ expect(result.runtimes.find(row=>row.workload==='web_browsing')!.energyBasis).toBe('wh');
+ expect(result.runtimes.find(row=>row.workload==='gaming')!.energyBasis).toBe('mah');
+ expect(result.mixedUse).toBeUndefined();expect(result.calendarEndurance).toBeUndefined();
+});

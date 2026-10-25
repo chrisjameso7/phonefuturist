@@ -15,7 +15,9 @@
     "check:calibration": "node data/calibration/battery/validate.mjs && tsx scripts/check-charging-calibration.ts && tsx scripts/check-camera-calibration.ts && tsx scripts/check-display-calibration.ts && tsx scripts/check-performance-calibration.ts",
     "preview": "astro preview",
     "smoke:staging": "node scripts/smoke-public-release.mjs",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "audit:simulation": "tsx scripts/audit-simulation-evidence.ts",
+    "check:simulation-accuracy": "tsx scripts/audit-simulation-evidence.ts --enforce"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.3.1",
