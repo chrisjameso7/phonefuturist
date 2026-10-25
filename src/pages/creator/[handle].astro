@@ -61,7 +61,7 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
             <p class="creator-handle">@{creator.handle}</p>
             {creator.bio && <p class="creator-bio">{creator.bio}</p>}
           </div>
-          <a class="button" href={Astro.locals.user?.id === creator.user_id ? "/account?edit=profile" : "/interactive-leaks/explore"}>{Astro.locals.user?.id === creator.user_id ? "Edit profile" : "Explore community"}</a>
+          <a class="button" href={Astro.locals.user?.id === creator.user_id ? "/account?edit=profile" : "/community"}>{Astro.locals.user?.id === creator.user_id ? "Edit profile" : "Explore community"}</a>
         </section>
 
         <section class="creator-stats">
@@ -119,7 +119,7 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
         <img src="/assets/phonefuturist-mark.svg" alt="" width="100" height="46" />
         <h1>Creator not found.</h1>
         <p>This creator profile does not exist or is not available.</p>
-        <a class="button" href="/interactive-leaks/explore">Explore community</a>
+        <a class="button" href="/community">Explore community</a>
       </section>
     )}
   </div>

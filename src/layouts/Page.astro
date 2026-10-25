@@ -80,7 +80,7 @@ const active = activeNavigation(Astro.url);
                   <a href="/">Home</a><a href="/articles">Newsroom</a>
                   <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
                   <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
-                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
+                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/community">Community builds</a>
                   {showStudio && <a href="/studio">The Studio</a>}
                   {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
                 </nav>
@@ -144,7 +144,7 @@ const active = activeNavigation(Astro.url);
                       <span aria-hidden="true">↗</span>
                     </a>
 
-                    <a href="/interactive-leaks/explore">
+                    <a href="/community" aria-current={active === 'community' ? 'page' : undefined}>
                       <span>Community</span>
                       <span aria-hidden="true">↗</span>
                     </a>
@@ -229,7 +229,7 @@ const active = activeNavigation(Astro.url);
                 Interactive Leaks
               </a>
 
-              <a href="/interactive-leaks/explore">Community</a>
+              <a href="/community" aria-current={active === 'community' ? 'page' : undefined}>Community</a>
 
               {
                 showStudio && (
@@ -291,6 +291,10 @@ const active = activeNavigation(Astro.url);
               <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
             </span>
             <span>Leaks</span>
+          </a>
+          <a href="/community" aria-current={active === 'community' ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
+            <span>Community</span>
           </a>
           {showStudio && (
             <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>
