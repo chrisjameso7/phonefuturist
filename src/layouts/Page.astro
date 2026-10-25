@@ -80,7 +80,7 @@ const active = activeNavigation(Astro.url);
                   <a href="/">Home</a><a href="/articles">Newsroom</a>
                   <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
                   <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
-                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/community">Community builds</a>
+                  <a href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>Interactive Leaks</a><a href="/community" aria-current={active === 'community' ? 'page' : undefined}>Community</a>
                   {showStudio && <a href="/studio">The Studio</a>}
                   {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
                 </nav>
