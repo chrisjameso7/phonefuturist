@@ -131,3 +131,18 @@ describe('measured SoC delta into phone runtime', () => {
       .toEqual(baseline.runtimes.map(row => row.expectedHours));
   });
 });
+
+it('rejects unsupported protocols, invalid duty/score inputs and duplicate-handset cohorts',()=>{
+ for(const invalid of [{protocol:'geekbench7'},{activeDutyFraction:NaN},{activeDutyFraction:-0.1},{activeDutyFraction:1.1},{targetBenchmarkScore:Infinity},{targetBenchmarkScore:0}]){
+  expect(estimateMatchedSocRuntimeDelta({...query,targetSocName:'Snapdragon 8 Elite Gen 5',...invalid} as any).status).toBe('unresolved');
+ }
+ const repeated={...corpus,devices:corpus.devices.slice(0,1),measurements:corpus.measurements.map((row,index)=>({...row,id:`repeat-${index}`,deviceVariantId:'ref-one'}))};
+ expect(estimateMatchedSocBatteryScenario(repeated,pack,'Snapdragon 8 Elite Gen 5',query).status).toBe('unresolved');
+ const partialWh={...corpus,devices:corpus.devices.map((row,index)=>index===0?{...row,variant:{...row.variant,battery:{capacityMah:5000}}}:row)};
+ expect(estimateMatchedSocBatteryScenario(partialWh,pack,'Snapdragon 8 Elite Gen 5',query).status).toBe('unresolved');
+});
+
+it('does not treat region or storage aliases of one phone model as independent references',()=>{
+ const variants={...corpus,devices:corpus.devices.map(device=>({...device,variant:{...device.variant,identity:corpus.devices[0].variant.identity}}))};
+ expect(estimateMatchedSocBatteryScenario(variants,pack,'Snapdragon 8 Elite Gen 5',query).status).toBe('unresolved');
+});

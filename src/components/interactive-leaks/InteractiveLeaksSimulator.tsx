@@ -5716,6 +5716,7 @@ export default function InteractiveLeaksSimulator() {
                             ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
                         <small>{estimate.status === 'resolved' ? (estimate.assumptionApplied ? 'Projected Geekbench 6 · scenario' : 'Geekbench 6 · estimated') : 'Insufficient benchmark data'}</small>
+                        {estimate.assumptionApplied && estimate.referenceSocName && <small className="il-benchmark-assumption">Based on {estimate.referenceSocName}{estimate.assumedGenerationUpliftPercent !== undefined ? ` with ${estimate.assumedGenerationUpliftPercent}% assumed uplift` : ''}. Not a measured score for this chip.</small>}
                       </div>
                     ))}
                   </div>
@@ -5726,8 +5727,8 @@ export default function InteractiveLeaksSimulator() {
                         socPowerW: numeric(form.targetSocPowerW),
                         durationMinutes: 15,
                       })}%</strong>
-                      <span>GPU stability · 15 min</span>
-                      <small>Stability score</small>
+                      <span>GPU retention scenario · 15 min</span>
+                      <small>Cooling-based assumption, not a measured stress-test score</small>
                     </div>
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
@@ -5745,7 +5746,7 @@ export default function InteractiveLeaksSimulator() {
                         <div key={domain}>
                           <strong>{sustained !== undefined ? format(sustained, 0) : 'Unavailable'}</strong>
                           <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
-                          <small>Sustained performance</small>
+                          <small>Cooling-based scenario, not a sustained benchmark measurement</small>
                         </div>
                       );
                     })}
@@ -5799,7 +5800,7 @@ export default function InteractiveLeaksSimulator() {
                     <span className="il-result-label">Active-use endurance · one charge</span>
                     <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
                     <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
-                    <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature.</small>
+                    <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature. Processor names alone do not establish battery efficiency.</small>
                   </div>
                   <div className="il-metrics">
                     <div><strong>{usagePreset}</strong><span>Selected usage mix</span></div>

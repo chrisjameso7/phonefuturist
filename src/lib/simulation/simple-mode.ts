@@ -81,6 +81,7 @@ export interface SimpleModeExpansion {
   advanced: {
     manufacturer?: string;
     batteryMah: number;
+    brightnessNits?: number;
     wiredChargingWatts?: number;
     wirelessChargingWatts?: number;
     batteryChemistry?: string;
@@ -268,6 +269,7 @@ export function expandSimpleMode(
         ? { manufacturer: input.manufacturer }
         : {}),
       batteryMah: input.batteryMah,
+      ...(positive(input.brightnessNits) ? { brightnessNits: input.brightnessNits } : {}),
       ...(positive(input.wiredChargingWatts)
         ? {
             wiredChargingWatts:

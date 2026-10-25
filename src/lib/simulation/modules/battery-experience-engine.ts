@@ -14,7 +14,7 @@ import { estimateDailyBatteryBudget, type DailyBatteryBudgetResult } from './bat
 import { estimateChargingFromCorpus } from './charging-corpus-estimator';
 import { estimateWirelessChargingFromCorpus } from './wireless-charging-estimator';
 
-export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.3.0';
+export const BATTERY_EXPERIENCE_ENGINE_VERSION = 'battery-experience-engine-0.4.0';
 
 export interface BatteryExperienceInput {
   simulation: SimulationInput;
@@ -74,6 +74,9 @@ export interface BatteryRuntimeExperience {
     | 'protocol-cohort';
   sameSocFamilyReferences?: number;
   sameSocVendorReferences?: number;
+  /** Unadjusted corpus estimate, before any explicit scenario factor. */
+  referenceExpectedHours?: number;
+  scenarioApplied?: boolean;
   note?: string;
 }
 
@@ -123,11 +126,12 @@ export interface BatteryExperienceResult {
 
 function capacityMah(input: SimulationInput) {
   const cells = input.battery?.cells ?? [];
-  if (!cells.length || cells.some((cell) => !Number.isFinite(cell.capacityMah))) {
+  if (!cells.length || cells.some((cell) => !Number.isFinite(cell.capacityMah) || (cell.capacityMah ?? 0) <= 0)) {
     return undefined;
   }
 
-  return cells.reduce((sum, cell) => sum + (cell.capacityMah ?? 0), 0);
+  const capacity = cells.reduce((sum, cell) => sum + (cell.capacityMah ?? 0), 0);
+  return Number.isFinite(capacity) && capacity > 0 ? capacity : undefined;
 }
 function energyWh(input: SimulationInput) {
   const cells = input.battery?.cells ?? [];
@@ -145,14 +149,8 @@ function energyWh(input: SimulationInput) {
     return undefined;
   }
 
-  return cells.reduce(
-    (sum, cell) =>
-      sum +
-      ((cell.capacityMah ?? 0) *
-        (cell.nominalVoltageV ?? 0)) /
-        1000,
-    0,
-  );
+  const energy = cells.reduce((sum, cell) => sum + cell.capacityMah! * cell.nominalVoltageV! / 1000, 0);
+  return Number.isFinite(energy) && energy > 0 ? energy : undefined;
 }
 
 
@@ -199,6 +197,22 @@ export function simulateBatteryExperience(
   const comparableSocVendor: string | undefined = undefined;
   const comparableSocName: string | undefined = undefined;
 
+  // Apply each explicit scenario once, at workload drain level. The same
+  // adjusted drain feeds workload cards and the mixed-use energy budget.
+  // A neutral brightness selection must not enable unrelated hardware changes.
+  const useHardwareScenario = input.usageIntensity !== undefined ||
+    input.coolingClass !== undefined ||
+    (input.targetSocPowerW !== undefined && Number.isFinite(input.targetSocPowerW) && input.targetSocPowerW > 0);
+  const workloadDrainFactor = (workload: typeof workloads[number]) =>
+    usagePresetDrainFactor(input.usageIntensity, workload) *
+    socWhatIfDrainFactor(input.socPowerWhatIf, workload) *
+    projectedBrightnessPowerFactor(input.brightnessNits) *
+    (useHardwareScenario
+      ? projectedDisplayPowerFactor(input.simulation.displays.primary, workload) *
+        (workload === 'gaming' ? projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW) : 1)
+      : 1);
+  const sourceBands = new Map<typeof workloads[number], ReturnType<typeof resolveCorpusRuntimeBand>>();
+
   const runtimes: BatteryRuntimeExperience[] = workloads.map((workload) => {
     const band = resolveCorpusRuntimeBand(
       corpus,
@@ -215,6 +229,7 @@ export function simulateBatteryExperience(
       },
     );
 
+    sourceBands.set(workload, band);
     if (band.status !== 'resolved' || !band.estimate) {
       return {
         workload,
@@ -230,7 +245,7 @@ export function simulateBatteryExperience(
       band.estimate.expectedWhPerHour !== undefined &&
       band.estimate.maxWhPerHour !== undefined;
 
-    const whatIfFactor = socWhatIfDrainFactor(input.socPowerWhatIf, workload);
+    const whatIfFactor = workloadDrainFactor(workload);
     const runtime = useWh
       ? runtimeFromDrain(
           packEnergyWh,
@@ -249,6 +264,8 @@ export function simulateBatteryExperience(
       workload,
       status: 'resolved',
       ...runtime,
+      referenceExpectedHours: (useWh ? packEnergyWh : capacity)! / (useWh ? band.estimate.expectedWhPerHour! : band.estimate.expectedMahPerHour),
+      scenarioApplied: whatIfFactor !== 1,
       energyBasis: useWh ? 'wh' : 'mah',
       ...(useWh
         ? {
@@ -278,15 +295,20 @@ export function simulateBatteryExperience(
         band.estimate.sameSocFamilyReferences,
       sameSocVendorReferences:
         band.estimate.sameSocVendorReferences,
-      note: input.socPowerWhatIf && input.socPowerWhatIf !== 'neutral'
-        ? band.estimate.note + ' Runtime also reflects a user-selected, unmeasured SoC power scenario.'
+      note: whatIfFactor !== 1
+        ? band.estimate.note + ' Runtime also reflects explicit usage, display or processor-power assumptions, not a new measurement.'
         : band.estimate.note,
     };
   });
 
   let mixedUse: MixedUseBatteryEstimate | undefined;
 
-  if (input.dailyUseHours) {
+  const dailyHours = Object.values(input.dailyUseHours ?? {});
+  const invalidDailyHours = dailyHours.some(hours => !Number.isFinite(hours) || hours < 0) || dailyHours.reduce((sum,hours) => sum + hours,0) > 24;
+  if (invalidDailyHours) warnings.push('Enter finite, nonnegative daily workload hours totaling no more than 24. Mixed-use and calendar estimates are withheld.');
+  const missingRequestedWorkload = workloads.some(workload => (input.dailyUseHours?.[workload] ?? 0) > 0 && sourceBands.get(workload)?.status !== 'resolved');
+  if (missingRequestedWorkload) warnings.push('Mixed-use and calendar estimates are withheld because an entered workload has no compatible runtime evidence.');
+  if (input.dailyUseHours && !invalidDailyHours && !missingRequestedWorkload) {
     const selected = runtimes.flatMap((runtime) => {
       const hours = input.dailyUseHours?.[runtime.workload] ?? 0;
 
@@ -297,20 +319,7 @@ export function simulateBatteryExperience(
         return [];
       }
 
-      const sourceBand = resolveCorpusRuntimeBand(
-        corpus,
-        input.simulation,
-        runtime.workload,
-        {},
-        {
-        manufacturer: input.manufacturer,
-        socVendor: comparableSocVendor,
-        socName: comparableSocName,
-        batteryChemistry:
-          input.batteryChemistry,
-        coolingClass: input.coolingClass,
-      },
-      );
+      const sourceBand = sourceBands.get(runtime.workload)!;
 
       if (sourceBand.status !== 'resolved' || !sourceBand.estimate) {
         return [];
@@ -328,22 +337,22 @@ export function simulateBatteryExperience(
         hoursPerDay: hours,
         energyBasis: useWh ? 'wh' as const : 'mah' as const,
         expectedDrainMahPerHour:
-          sourceBand.estimate.expectedMahPerHour,
+          sourceBand.estimate.expectedMahPerHour * workloadDrainFactor(runtime.workload),
         minDrainMahPerHour:
-          sourceBand.estimate.minMahPerHour,
+          sourceBand.estimate.minMahPerHour * workloadDrainFactor(runtime.workload),
         maxDrainMahPerHour:
-          sourceBand.estimate.maxMahPerHour,
+          sourceBand.estimate.maxMahPerHour * workloadDrainFactor(runtime.workload),
         expectedDrainWhPerHour:
           useWh
-            ? sourceBand.estimate.expectedWhPerHour
+            ? sourceBand.estimate.expectedWhPerHour! * workloadDrainFactor(runtime.workload)
             : undefined,
         minDrainWhPerHour:
           useWh
-            ? sourceBand.estimate.minWhPerHour
+            ? sourceBand.estimate.minWhPerHour! * workloadDrainFactor(runtime.workload)
             : undefined,
         maxDrainWhPerHour:
           useWh
-            ? sourceBand.estimate.maxWhPerHour
+            ? sourceBand.estimate.maxWhPerHour! * workloadDrainFactor(runtime.workload)
             : undefined,
         confidence: sourceBand.estimate.confidence,
       }];
@@ -355,29 +364,6 @@ export function simulateBatteryExperience(
     );
 
     if (activeHoursPerDay > 0 && selected.length > 0) {
-      // An interactive scenario, not a correction to lab measurements.
-      // Represents brightness, background load, radios and gaming intensity.
-      // Chip marketing names are not measured power curves. An Exynos or
-      // Snapdragon selection alone must not create a fabricated battery-life
-      // delta; measured workload power can be integrated separately later.
-      const intensityFactor = (workload: typeof selected[number]['workload']) =>
-        usagePresetDrainFactor(input.usageIntensity, workload) *
-        socWhatIfDrainFactor(input.socPowerWhatIf, workload);
-      // Thermal headroom alters sustained CPU/GPU duty cycle rather than
-      // applying a flat battery bonus to browsing and video playback.
-      const gamingThermalFactor = projectedGamingThermalPowerFactor(input.coolingClass, input.targetSocPowerW);
-      // Preserve raw measured-corpus arithmetic when no lab scenario is selected.
-      // Hardware extrapolations are opt-in and must not silently alter baseline tests.
-      const useDisplayScenario = input.usageIntensity !== undefined ||
-        input.brightnessNits !== undefined ||
-        input.coolingClass !== undefined || input.targetSocPowerW !== undefined;
-      const scenarioFactor = (workload: typeof selected[number]['workload']) =>
-        useDisplayScenario
-          ? (workload === 'gaming' ? gamingThermalFactor : 1) *
-            projectedDisplayPowerFactor(input.simulation.displays.primary, workload) *
-            projectedBrightnessPowerFactor(input.brightnessNits)
-          : 1;
-
       const useWh =
         packEnergyWh !== undefined &&
         selected.every(
@@ -393,7 +379,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.expectedDrainMahPerHour,
             0,
           );
@@ -402,7 +388,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.minDrainMahPerHour,
             0,
           );
@@ -411,7 +397,7 @@ export function simulateBatteryExperience(
         : selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.maxDrainMahPerHour,
             0,
           );
@@ -420,7 +406,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.expectedDrainWhPerHour!,
             0,
           )
@@ -429,7 +415,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.minDrainWhPerHour!,
             0,
           )
@@ -438,7 +424,7 @@ export function simulateBatteryExperience(
         ? selected.reduce(
             (sum, row) =>
               sum +
-              row.hoursPerDay * intensityFactor(row.workload) * scenarioFactor(row.workload) *
+              row.hoursPerDay *
                 row.maxDrainWhPerHour!,
             0,
           )
@@ -651,7 +637,7 @@ export function projectedGamingThermalPowerFactor(
     'active-fan': 1.10,
     'other': 1,
   };
-  const power = targetSocPowerW === undefined || !Number.isFinite(targetSocPowerW)
+  const power = targetSocPowerW === undefined || !Number.isFinite(targetSocPowerW) || targetSocPowerW <= 0
     ? 1 : Math.max(0.82, Math.min(1.18, 1 + (targetSocPowerW - 7) * 0.025));
-  return Math.max(0.75, Math.min(1.30, (coolingClass ? cooling[coolingClass] : 1) * power));
+  return Math.max(0.75, Math.min(1.30, (coolingClass ? cooling[coolingClass] ?? 1 : 1) * power));
 }

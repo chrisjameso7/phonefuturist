@@ -118,3 +118,5 @@
 .interactive-page.pf-ui .interactive-simulator-shell .il-app :is(button, select, input) {
   min-height:44px;
 }
+
+.il-metrics .il-benchmark-assumption { display: block; margin-top: .35rem; line-height: 1.5; }

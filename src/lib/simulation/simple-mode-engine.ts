@@ -73,6 +73,7 @@ export function simulateSimpleMode(
   const battery =
     simulateLiveBatteryExperience({
       simulation,
+      brightnessNits: expansion.advanced.brightnessNits,
       manufacturer:
         expansion.advanced.manufacturer,
       socVendor:
