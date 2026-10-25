@@ -1,0 +1,279 @@
+---
+import ProfileBadge from '../../components/ProfileBadge.astro';
+import Page from '../../layouts/Page.astro';
+import { serverClient, settings } from '../../lib/supabase';
+import '../../styles/lab-simulator.css';
+
+const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+
+const search = (Astro.url.searchParams.get('q') ?? '').trim().replace(/^@/, '').slice(0,60);
+const safeSearch = search.replace(/[^\p{L}\p{N}_ -]/gu,'');
+let people:any[]=[];
+let peopleError=false;
+if(client){
+ let query=client.from('creator_profiles').select('handle,display_name,bio,avatar_url,verification_badge').order('handle').limit(24);
+ if(safeSearch) query=query.or(`handle.ilike.%${safeSearch}%,display_name.ilike.%${safeSearch}%`);
+ const result=await query;people=result.data??[];peopleError=!!result.error;
+}
+let simulations: any[] = [];
+let profiles: any[] = [];
+let simulationForks = new Map<string, number>();
+let profileForks = new Map<string, number>();
+let creators = new Map<string, any>();
+
+if (client) {
+  const [{ data: simulationRows }, { data: profileRows }] = await Promise.all([
+    client.from('simulations')
+      .select('id,owner_id,name,device_key,configuration_source,processor_key,state,result_snapshot,created_at,updated_at')
+      .eq('visibility', 'public')
+      .order('updated_at', { ascending: false })
+      .limit(36),
+    client.from('simulation_profiles')
+      .select('id,owner_id,name,component_key,profile_kind,assumptions,created_at,updated_at')
+      .eq('visibility', 'public')
+      .order('updated_at', { ascending: false })
+      .limit(24),
+  ]);
+
+  simulations = simulationRows ?? [];
+  profiles = profileRows ?? [];
+
+  const ownerIds = [...new Set([...simulations.map((item) => item.owner_id), ...profiles.map((item) => item.owner_id)].filter(Boolean))];
+  if (ownerIds.length) {
+    const { data: creatorRows } = await client.from('creator_profiles')
+      .select('*')
+      .in('user_id', ownerIds);
+    creators = new Map((creatorRows ?? []).map((creator: any) => [creator.user_id, creator]));
+  }
+
+  const simulationIds = simulations.map((item) => item.id);
+  const profileIds = profiles.map((item) => item.id);
+
+  if (simulationIds.length) {
+    const { data: forks } = await client.from('simulations')
+      .select('forked_from')
+      .eq('visibility', 'public')
+      .in('forked_from', simulationIds);
+    for (const row of forks ?? []) {
+      if (!row.forked_from) continue;
+      simulationForks.set(row.forked_from, (simulationForks.get(row.forked_from) ?? 0) + 1);
+    }
+  }
+
+  if (profileIds.length) {
+    const { data: forks } = await client.from('simulation_profiles')
+      .select('forked_from')
+      .eq('visibility', 'public')
+      .in('forked_from', profileIds);
+    for (const row of forks ?? []) {
+      if (!row.forked_from) continue;
+      profileForks.set(row.forked_from, (profileForks.get(row.forked_from) ?? 0) + 1);
+    }
+  }
+}
+
+const trending = [...simulations]
+  .sort((a, b) => {
+    const forkDelta=(simulationForks.get(b.id) ?? 0)-(simulationForks.get(a.id) ?? 0);
+    return forkDelta || new Date(b.updated_at).getTime()-new Date(a.updated_at).getTime();
+  })
+  .slice(0, 8);
+
+const creatorsList=[...new Map([...people,...creators.values()].map(person=>[person.handle,person])).values()].slice(0,6);
+---
+
+<Page
+  title="Community"
+  description="Discover public PhoneFuturist simulations, creators and reusable component profiles."
+>
+  <div class="explore-network">
+    <aside class="explore-left">
+      <a class="explore-brand" href="/community">
+        <img src="/assets/phonefuturist-mark.svg" alt="" width="42" height="20" />
+        <span>Community</span>
+      </a>
+      <nav aria-label="Community navigation">
+        <a href="/">Home</a>
+        <a href="/interactive-leaks">Interactive Leaks</a>
+        <a class="is-active" href="/community" aria-current="page">Community</a>
+        <a href="/account">Your profile</a>
+      </nav>
+      <a class="button explore-build" href="/interactive-leaks">Open Interactive Leaks</a>
+    </aside>
+
+    <main class="explore-feed">
+      <header class="explore-head">
+        <div>
+          <p class="eyebrow">PhoneFuturist community</p>
+          <h1>Community</h1>
+          <p>See what people are testing, forking and arguing about next.</p>
+        </div>
+        <a href="/interactive-leaks">Open Interactive Leaks →</a>
+      </header>
+
+      <section class="people-directory" aria-labelledby="people-title">
+        <h2 id="people-title">Find people</h2>
+        <form method="get" action="/community#people-title" role="search">
+          <label for="people-search">Public name or @handle</label>
+          <div><input id="people-search" name="q" maxlength="60" value={search} placeholder="Search creators and writers" /><button type="submit">Search</button></div>
+        </form>
+        {search && <a href="/community#people-title">Clear search</a>}
+        {peopleError ? <p role="status">People search is temporarily unavailable. Please try again.</p> : people.length ? <div class="people-results">{people.map(person=><a href={`/creator/${person.handle}`} class="people-result">
+          {person.avatar_url && <img src={person.avatar_url} alt="" loading="lazy" width="44" height="44" />}
+          <div><strong>{person.display_name}<ProfileBadge badge={person.verification_badge}/></strong><small>@{person.handle}</small>{person.bio&&<p>{person.bio}</p>}</div>
+        </a>)}</div> : <p role="status">No public profiles found. Try another name or handle.</p>}
+        {people.length===24&&<p>Showing up to 24 people. Refine your search to find someone specific.</p>}
+      </section>
+
+      <nav class="explore-tabs" aria-label="Explore sections">
+        <a class="is-active" href="#trending">Trending</a>
+        <a href="#latest">Latest</a>
+        <a href="#profiles">Profiles</a>
+      </nav>
+
+      <section id="trending" class="explore-section">
+        <div class="explore-section-head">
+          <div><span>Trending now</span><small>Ranked by public forks, then recency</small></div>
+          <span>{trending.length}</span>
+        </div>
+
+        {trending.length ? <div class="explore-card-grid">
+          {trending.map((item,index)=>{
+            const creator=creators.get(item.owner_id);
+            return <article class="explore-card">
+              <a class="explore-card-main" href={'/interactive-leaks/simulation/'+item.id}>
+                <div class="explore-rank">0{index+1}</div>
+                <div class="explore-card-copy">
+                  <div class="explore-card-meta">
+                    <span>{item.device_key.replaceAll('-',' ')}</span>
+                    <b>{simulationForks.get(item.id) ?? 0} forks</b>
+                  </div>
+                  <h2>{item.name}</h2>
+                  <p>{item.processor_key?.replaceAll('_',' ') || 'Processor unknown'} · {item.configuration_source}</p>
+                </div>
+              </a>
+              {creator && <a class="explore-creator-line" href={'/creator/'+creator.handle}>
+                <span class="explore-avatar">{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
+                <span><strong>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></strong><small>@{creator.handle}</small></span>
+              </a>}
+            </article>
+          })}
+        </div> : <div class="explore-empty"><h2>No public simulations yet.</h2><p>The first one gets the whole feed.</p><a class="button" href="/interactive-leaks">Open Interactive Leaks →</a></div>}
+      </section>
+
+      <section id="latest" class="explore-section">
+        <div class="explore-section-head">
+          <div><span>Latest</span><small>Fresh public builds</small></div>
+          <span>{simulations.length}</span>
+        </div>
+
+        {simulations.length ? <div class="explore-stream">
+          {simulations.slice(0,14).map(item=>{
+            const creator=creators.get(item.owner_id);
+            return <a class="explore-post" href={'/interactive-leaks/simulation/'+item.id}>
+              <span class="explore-post-avatar">{creator?.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:(creator?.display_name||'P').slice(0,1).toUpperCase()}</span>
+              <div>
+                <div class="explore-post-top">
+                  <strong>{creator?.display_name || 'PhoneFuturist creator'}<ProfileBadge badge={creator?.verification_badge} /></strong>
+                  {creator&&<small>@{creator.handle}</small>}
+                  <time datetime={item.updated_at}>{new Date(item.updated_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'})}</time>
+                </div>
+                <h3>{item.name}</h3>
+                <p>{item.device_key.replaceAll('-',' ')} · {item.processor_key?.replaceAll('_',' ')||'processor unknown'}</p>
+                <div class="explore-post-footer"><span>{simulationForks.get(item.id)??0} forks</span><span>{item.configuration_source}</span></div>
+              </div>
+            </a>
+          })}
+        </div> : <p class="explore-empty-inline">Nothing published yet.</p>}
+      </section>
+
+      <section id="profiles" class="explore-section">
+        <div class="explore-section-head">
+          <div><span>Reusable profiles</span><small>Component assumptions from the community</small></div>
+          <span>{profiles.length}</span>
+        </div>
+
+        {profiles.length ? <div class="explore-profile-grid">
+          {profiles.slice(0,12).map(item=>{
+            const creator=creators.get(item.owner_id);
+            return <a class="explore-profile-card" href={'/interactive-leaks/profile/'+item.id}>
+              <span>{item.profile_kind}</span>
+              <h3>{item.name}</h3>
+              <p>{item.component_key.replaceAll('_',' ')}</p>
+              <div><small>{creator?'@'+creator.handle:'Community'}</small><b>{profileForks.get(item.id)??0} forks</b></div>
+            </a>
+          })}
+        </div> : <p class="explore-empty-inline">No public profiles yet.</p>}
+      </section>
+    </main>
+
+    <aside class="explore-right">
+      <section class="explore-side-card">
+        <div class="explore-side-title">Creators to watch</div>
+        {creatorsList.length ? creatorsList.map((creator:any)=><a class="explore-person" href={'/creator/'+creator.handle}>
+          <span>{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
+          <div><strong>{creator.display_name}<ProfileBadge badge={creator.verification_badge} /></strong><small>@{creator.handle}</small></div>
+        </a>) : <p>No creators to show.</p>}
+      </section>
+
+      <section class="explore-side-card">
+        <div class="explore-side-title">What can I do here?</div>
+        <p>Open a public simulation, fork it, change one assumption and publish your own branch.</p>
+        <a href="/interactive-leaks">Open Interactive Leaks →</a>
+      </section>
+    </aside>
+  </div>
+</Page>
+
+<style>
+.explore-network{width:min(100%,1420px);margin:0 auto;padding:18px clamp(12px,2vw,24px) 70px;display:grid;grid-template-columns:190px minmax(0,760px) 260px;gap:20px;align-items:start}
+.explore-left,.explore-right{position:sticky;top:92px}.explore-left{display:grid;gap:16px}
+.explore-brand{display:flex;align-items:center;gap:8px;padding:6px 9px;color:var(--ink);text-decoration:none;font-size:.78rem;font-weight:760}.explore-brand img{width:34px;height:20px}
+.explore-left nav{display:grid;gap:3px}.explore-left nav a{padding:10px 11px;border-radius:9px;color:#8593a3;text-decoration:none;font-size:.74rem}.explore-left nav a:hover,.explore-left nav a.is-active{color:#fff;background:#0e151e}.explore-left nav a.is-active{box-shadow:inset 2px 0 #168cff}.explore-build{width:100%;text-align:center}
+.explore-feed{min-width:0;border-inline:1px solid #1d2834}.explore-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:24px 22px 20px}.explore-head h1{margin:5px 0 8px;font-size:clamp(3.2rem,6vw,5.8rem);line-height:.9;letter-spacing:-.07em;font-weight:620}.explore-head p:not(.eyebrow){margin:0;color:var(--muted);font-size:.78rem}.explore-head>a{color:#62cfff;text-decoration:none;font-size:.68rem}
+.explore-tabs{display:flex;gap:4px;padding:0 16px 12px;border-bottom:1px solid #1d2834;overflow-x:auto}.explore-tabs a{padding:8px 11px;border-radius:8px;color:#778697;text-decoration:none;font-size:.67rem}.explore-tabs a.is-active{color:#fff;background:#101821;box-shadow:inset 0 -1px #168cff}
+.explore-section{padding:18px 16px 8px}.explore-section+.explore-section{border-top:1px solid #1d2834;margin-top:12px}.explore-section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;padding:0 6px 12px}.explore-section-head>div>span{display:block;font-size:.78rem;font-weight:760}.explore-section-head small,.explore-section-head>span{color:#667587;font-size:.59rem}
+.explore-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.explore-card{border:1px solid #202c39;border-radius:14px;background:#0b121a;overflow:hidden}.explore-card-main{display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;padding:15px;color:inherit;text-decoration:none}.explore-rank{display:grid;place-items:center;width:40px;height:40px;border:1px solid #293746;border-radius:11px;color:#62cfff;font-size:.64rem;font-weight:800;background:#0a1017}.explore-card-meta{display:flex;justify-content:space-between;gap:8px;color:#6f7e90;font-size:.55rem;text-transform:uppercase;letter-spacing:.07em}.explore-card-meta span{color:#2cd9ff}.explore-card-meta b{font-weight:600;color:#708092}.explore-card h2{margin:6px 0 5px;font-size:1rem;line-height:1.15}.explore-card p{margin:0;color:#758496;font-size:.63rem;text-transform:capitalize}
+.explore-creator-line{display:flex;align-items:center;gap:8px;padding:10px 15px;border-top:1px solid #1d2834;color:inherit;text-decoration:none}.explore-avatar,.explore-post-avatar,.explore-person>span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:#13202d;color:#fff;font-size:.66rem;font-weight:700}.explore-avatar img,.explore-post-avatar img,.explore-person img{width:100%;height:100%;object-fit:cover}.explore-creator-line strong{display:block;font-size:.63rem}.explore-creator-line small{display:block;color:#667587;font-size:.55rem}
+.explore-stream{display:grid}.explore-post{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:16px 6px;border-top:1px solid #1d2834;color:inherit;text-decoration:none}.explore-post:hover{background:#090f16}.explore-post-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.explore-post-top strong{font-size:.67rem}.explore-post-top small,.explore-post-top time{color:#667587;font-size:.58rem}.explore-post h3{margin:5px 0 4px;font-size:.96rem}.explore-post p{margin:0;color:#7d8b9b;font-size:.64rem;text-transform:capitalize}.explore-post-footer{display:flex;gap:12px;margin-top:8px;color:#647384;font-size:.57rem}
+.explore-profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.explore-profile-card{padding:14px;border:1px solid #202c39;border-radius:12px;background:#0b121a;color:inherit;text-decoration:none}.explore-profile-card>span{color:#2cd9ff;font-size:.54rem;text-transform:uppercase;letter-spacing:.08em}.explore-profile-card h3{margin:6px 0 4px;font-size:.85rem}.explore-profile-card p{margin:0;color:#718092;font-size:.61rem;text-transform:capitalize}.explore-profile-card>div{display:flex;justify-content:space-between;margin-top:12px;padding-top:9px;border-top:1px solid #1d2834;color:#657486;font-size:.56rem}.explore-profile-card b{font-weight:600}
+.explore-right{display:grid;gap:12px}.explore-side-card{padding:14px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-side-title{margin-bottom:10px;color:#748294;font-size:.59rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}.explore-person{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid #1d2834;color:inherit;text-decoration:none}.explore-person:first-of-type{border-top:0}.explore-person strong{display:block;font-size:.64rem}.explore-person small{display:block;color:#667587;font-size:.55rem}.explore-side-card>p{margin:0;color:#7a8999;font-size:.67rem;line-height:1.55}.explore-side-card>a{display:block;margin-top:10px;color:#62cfff;text-decoration:none;font-size:.64rem}
+.explore-empty{padding:28px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-empty h2{margin:0 0 6px;font-size:1.4rem}.explore-empty p,.explore-empty-inline{color:#718092;font-size:.7rem}
+@media(max-width:1120px){.explore-network{grid-template-columns:170px minmax(0,1fr)}.explore-right{display:none}}@media(max-width:800px){.explore-network{display:block;padding-inline:0}.explore-left{display:none}.explore-feed{border-inline:0}.explore-card-grid{grid-template-columns:1fr}.explore-profile-grid{grid-template-columns:1fr 1fr}.explore-head{padding-inline:18px}}@media(max-width:540px){.explore-profile-grid{grid-template-columns:1fr}.explore-head h1{font-size:3.4rem}.explore-section{padding-inline:12px}}
+</style>
+
+
+<style>
+@media(max-width:800px){
+  .explore-network{width:100%;padding:8px 0 92px}
+  .explore-feed{border:0}
+  .explore-head{padding:18px 18px 14px}
+  .explore-head h1{font-size:2.8rem;line-height:.94}
+  .explore-head p:not(.eyebrow){max-width:320px;font-size:.75rem;line-height:1.45}
+  .explore-head>a{padding:8px 12px;border:1px solid #20303e;border-radius:999px;background:#0b1118}
+  .explore-tabs{padding:0 12px 12px;border:0;gap:7px}
+  .explore-tabs a{min-height:38px;display:inline-flex;align-items:center;padding:0 13px;border:1px solid #202b37;border-radius:999px;background:#0b1118}
+  .explore-tabs a.is-active{background:rgb(22 140 255/.12);border-color:rgb(44 217 255/.24);box-shadow:none}
+  .explore-section{padding:12px}
+  .explore-section+.explore-section{border-top:0;margin-top:6px}
+  .explore-section-head{padding:0 5px 10px}
+  .explore-card-grid{grid-template-columns:1fr;gap:10px}
+  .explore-card{border-radius:22px}
+  .explore-card-main{padding:15px}
+  .explore-rank{border-radius:14px}
+  .explore-creator-line{padding:11px 15px}
+  .explore-stream{gap:10px}
+  .explore-post{padding:14px;border:1px solid #202b37;border-radius:22px;background:#0b1118}
+  .explore-post:hover{background:#0b1118}
+  .explore-profile-grid{grid-template-columns:1fr 1fr;gap:9px}
+  .explore-profile-card{border-radius:20px}
+}
+@media(max-width:540px){
+  .explore-profile-grid{grid-template-columns:1fr}
+  .explore-head h1{font-size:2.8rem}
+}
+</style>
+
+<style>
+.people-directory{padding:20px 0;border-bottom:1px solid #263442}.people-directory h2{font-size:1.3rem}.people-directory label{display:block;margin-bottom:8px}.people-directory form>div{display:flex;gap:8px}.people-directory input{min-width:0;flex:1}.people-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;margin-top:18px}.people-result{display:flex;gap:12px;padding:14px;border:1px solid #263442;border-radius:14px;color:inherit;text-decoration:none;min-width:0}.people-result img{border-radius:50%;object-fit:cover;flex-shrink:0}.people-result small{display:block;color:var(--muted)}.people-result p{font-size:.8rem;margin:6px 0 0;overflow-wrap:anywhere}.people-result strong{overflow-wrap:anywhere}
+</style>

@@ -107,6 +107,7 @@ body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px;
   body:not(.product-mode) .mobile-app-brand { color:var(--ink)!important; }
   body:not(.product-mode) .mobile-app-menu-panel { background:var(--surface)!important; border-color:var(--line)!important; }
   body:not(.product-mode) .mobile-app-menu-panel a { color:var(--ink)!important; border-color:var(--line)!important; }
+  body:not(.product-mode) .mobile-app-menu-panel a[aria-current="page"] { color:var(--accent)!important; background:var(--surface-raised); border-radius:8px; }
   body:not(.product-mode) .mobile-tabbar,
   body:not(.product-mode) .mobile-tabbar[data-compact='true'] {
     background:var(--surface-deep)!important;
