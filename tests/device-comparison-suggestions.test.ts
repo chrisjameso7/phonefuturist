@@ -80,4 +80,16 @@ describe('competitor suggestions',()=>{
     expect(matches.length).toBeGreaterThan(0);
     expect(matches.every(item=>item.released?.batteryMah!==undefined)).toBe(true);
   });
+  it('does not fill comparison slots with storage variants of the same phone',()=>{
+    const variants={...corpus,devices:[
+      record('Nova Ultra CN 256GB','Huawei',5500,6.8),
+      record('Nova Ultra CN 512GB','Huawei',5500,6.8),
+      record('Nova Ultra CN 1TB','Huawei',5500,6.8),
+      record('Another Phone','Google',5400,6.7),
+    ]} as unknown as DeviceCorpus;
+    const matches=suggestCompetingDevices(variants,{batteryMah:5500,displayInches:6.8,limit:NaN});
+    expect(matches).toHaveLength(2);
+    expect(matches.filter(item=>item.label.includes('Nova Ultra'))).toHaveLength(1);
+    expect(matches.some(item=>item.label.includes('Another Phone'))).toBe(true);
+  });
 });

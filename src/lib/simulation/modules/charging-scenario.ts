@@ -29,5 +29,6 @@ export function projectTaperedChargingMinutes(input: {
     const effectiveW = ratedWatts * Math.max(0.15, fraction) * efficiency;
     hours += (energyWh / 100) / effectiveW;
   }
-  return Math.round(hours * 60);
+  const minutes = hours * 60;
+  return Number.isFinite(minutes) && minutes > 0 ? Math.max(1, Math.round(minutes)) : undefined;
 }

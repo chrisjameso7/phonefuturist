@@ -1,5 +1,10 @@
 import type { DeviceCorpus } from './device-corpus';
 
+function deviceLabel(manufacturer: string, model: string) {
+  return model.toLowerCase().startsWith(manufacturer.trim().toLowerCase() + ' ')
+    ? model : `${manufacturer} ${model}`;
+}
+
 export type SuggestedComparison = {
   query: string;
   role: 'predecessor' | 'older-generation' | 'related-model';
@@ -41,7 +46,7 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
         a.variant.id.localeCompare(b.variant.id))[0];
     return {query,role,status:exact?'found' as const:'not-in-catalog' as const,
       ...(exact?{deviceId:exact.variant.id}:{}),
-      label:exact?`${exact.variant.identity.manufacturer} ${exact.variant.identity.modelName}`:query,
+      label:exact?deviceLabel(exact.variant.identity.manufacturer, exact.variant.identity.modelName):query,
       ...(exact ? {released:{
         batteryMah:exact.variant.battery?.typicalCapacityMah ?? exact.variant.battery?.capacityMah,
         displayInches:exact.display?.diagonalInches,
@@ -89,16 +94,20 @@ export function suggestCompetingDevices(
       .localeCompare(b.device.variant.identity.manufacturer+' '+b.device.variant.identity.modelName)
   );
   const seen=new Set<string>();
+  const limit=Number.isFinite(options.limit) ? Math.min(Math.max(Math.trunc(options.limit!),1),5) : 3;
   return scored.filter(({device})=>{
-    const key=normalize(device.variant.identity.manufacturer+' '+device.variant.identity.modelName);
+    // Presentation only: storage options should not fill all comparison slots.
+    // Keep regional and radio names distinct; never use this key for evidence joins.
+    const key=normalize(device.variant.identity.manufacturer+' '+device.variant.identity.modelName)
+      .replace(/\b\d+(?:\.\d+)?\s*(?:gb|tb)\b/g,'').replace(/\s+/g,' ').trim();
     if(seen.has(key))return false;
     seen.add(key);
     return true;
-  }).slice(0,Math.min(Math.max(options.limit ?? 3,1),5)).map(({device})=>({
-    query:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+  }).slice(0,limit).map(({device})=>({
+    query:deviceLabel(device.variant.identity.manufacturer,device.variant.identity.modelName),
     role:'related-model' as const,
     status:'found' as const,
-    label:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+    label:deviceLabel(device.variant.identity.manufacturer,device.variant.identity.modelName),
     deviceId:device.variant.id,
     released:{
       batteryMah:device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah,
