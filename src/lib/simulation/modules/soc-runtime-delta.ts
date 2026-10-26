@@ -1,5 +1,6 @@
 import { resolveCorpusRuntimeBand, type RuntimeWorkload } from './corpus-runtime';
 import type { DeviceCorpus } from './device-corpus';
+import { deviceModelKey } from './device-variant';
 import type { SimulationInput } from '../types';
 import {
   estimateSocWorkloadPower,
@@ -156,8 +157,7 @@ export function estimateMatchedSocBatteryScenario(
   // Region/storage aliases of one phone model are not independent phones.
   const references = new Set(baseline.neighborIds);
   const referenceModels = new Set(corpus.devices.filter(device => references.has(device.variant.id))
-    .map(device => [device.variant.identity.manufacturer, device.variant.identity.modelName]
-      .map(value => value.trim().toLowerCase().replace(/\s+/g, ' ')).join('|')));
+    .map(device => deviceModelKey(device.variant.identity)));
   if (referenceModels.size < 2) return fail('At least two distinct reference phone models are required; variant aliases do not establish independence.');
   const energyWh = baseline.targetEnergyWh;
   if (baseline.energyBasis !== 'wh' || energyWh === undefined ||

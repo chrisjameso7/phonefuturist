@@ -55,6 +55,19 @@ export interface DeviceVariantRecord {
   notes?: string[];
 }
 
+/** Independence/holdout key only. Never use it to transfer measurements or
+ * specifications across regional/SKU records; those still require variant keys. */
+export function deviceModelKey(identity: DeviceVariantIdentity): string {
+  const normalize = (value: string) => value.normalize('NFKC').toLowerCase()
+    .replace(/\+/g, ' plus ')
+    .replace(/\b\d+(?:\.\d+)?\s*(?:gb|tb)\b/g, ' ')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const manufacturer = normalize(identity.manufacturer);
+  const model = normalize(identity.modelName);
+  return manufacturer + '|' + (manufacturer && model.startsWith(manufacturer + ' ')
+    ? model.slice(manufacturer.length + 1) : model);
+}
+
 /**
  * Canonical identity key for measurement joins.
  *

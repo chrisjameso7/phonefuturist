@@ -1,11 +1,12 @@
 import type { DeviceCorpus } from './device-corpus';
+import { deviceModelKey } from './device-variant';
 import {
   findComparableDevices,
   normalizeSocFamily,
 } from './comparable-devices';
 import type { SimulationInput } from '../types';
 
-export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.3.0';
+export const CORPUS_RUNTIME_MODEL_VERSION = 'corpus-runtime-0.4.0';
 
 export type RuntimeWorkload = 'web_browsing' | 'video_playback' | 'gaming';
 
@@ -43,7 +44,7 @@ export interface CorpusRuntimeBand {
     maxWhPerHour?: number;
     energyReferenceCount: number;
     referenceCount: number;
-    /** Unique device variants, excluding repeated runs from a single handset. */
+    /** Distinct marketed phone models, excluding repeated runs and variant aliases. */
     independentReferenceDeviceCount: number;
     confidence: number;
     averageSimilarity: number;
@@ -74,13 +75,13 @@ function inputCapacityMah(input: SimulationInput) {
   if (!cells.length || !cells.every((cell) => positive(cell.capacityMah))) {
     return undefined;
   }
-  return cells.reduce((sum, cell) => sum + cell.capacityMah!, 0);
+  const capacity = cells.reduce((sum, cell) => sum + cell.capacityMah!, 0);
+  return positive(capacity) ? capacity : undefined;
 }
 
 function weightedMean(values: Array<{ value: number; weight: number }>) {
   const total = values.reduce((sum, item) => sum + item.weight, 0);
-  return values.reduce((sum, item) => sum + item.value * item.weight, 0) /
-    Math.max(total, Number.EPSILON);
+  return values.reduce((sum, item) => sum + item.value * (item.weight / Math.max(total, Number.EPSILON)), 0);
 }
 function inputEnergyWh(input: SimulationInput) {
   const cells = input.battery?.cells ?? [];
@@ -95,13 +96,14 @@ function inputEnergyWh(input: SimulationInput) {
     return undefined;
   }
 
-  return cells.reduce(
+  const energy = cells.reduce(
     (sum, cell) =>
       sum +
       (cell.capacityMah! * cell.nominalVoltageV!) /
         1000,
     0,
   );
+  return positive(energy) ? energy : undefined;
 }
 
 function referenceEnergyWh(
@@ -126,10 +128,11 @@ function referenceEnergyWh(
     positive(capacity) &&
     positive(battery.nominalVoltageV)
   ) {
-    return (
+    const energy = (
       capacity *
       battery.nominalVoltageV
     ) / 1000;
+    return positive(energy) ? energy : undefined;
   }
 
   return undefined;
@@ -255,7 +258,7 @@ export function resolveCorpusRuntimeBand(
       match.device.variant.battery?.capacityMah ??
       match.device.variant.battery?.typicalCapacityMah;
 
-    if (!refCapacity || !measurements.length) return [];
+    if (!positive(refCapacity) || !measurements.length) return [];
 
     return measurements.flatMap((measurement) => {
       const source = sourceById.get(
@@ -286,15 +289,17 @@ export function resolveCorpusRuntimeBand(
 
       const refEnergyWh =
         referenceEnergyWh(match.device);
+      const drainMah = refCapacity / measurement.value;
+      const drainWh = refEnergyWh !== undefined ? refEnergyWh / measurement.value : undefined;
+      if (!positive(drainMah)) return [];
 
       return [{
-        value: refCapacity / measurement.value,
-        valueWh:
-          refEnergyWh !== undefined
-            ? refEnergyWh / measurement.value
-            : undefined,
+        value: drainMah,
+        valueWh: positive(drainWh) ? drainWh : undefined,
         weight: Math.max(match.score, 0.05) ** 2,
+        originalWeight: Math.max(match.score, 0.05) ** 2,
         deviceVariantId: match.device.variant.id,
+        modelKey: deviceModelKey(match.device.variant.identity),
         score: match.score,
         similarityScore: match.similarityScore,
         coverageScore: match.coverageScore,
@@ -313,12 +318,12 @@ export function resolveCorpusRuntimeBand(
     });
   });
 
-  // Every measured phone contributes at most one total comparable weight
+  // Every marketed phone model contributes at most one total comparable weight
   // within a protocol. Multiple test runs improve its average estimate, but
   // must not make that single handset outweigh independent devices.
   const measurementCountsByDeviceProtocol = new Map<string, number>();
   for (const value of rawValues) {
-    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    const key = value.protocolKey + '\\u0000' + value.modelKey;
     measurementCountsByDeviceProtocol.set(
       key, (measurementCountsByDeviceProtocol.get(key) ?? 0) + 1,
     );
@@ -328,7 +333,7 @@ export function resolveCorpusRuntimeBand(
 
   for (const value of rawValues) {
     const group = grouped.get(value.protocolKey) ?? [];
-    const key = value.protocolKey + '\\u0000' + value.deviceVariantId;
+    const key = value.protocolKey + '\\u0000' + value.modelKey;
     const readings = measurementCountsByDeviceProtocol.get(key) ?? 1;
     group.push({ ...value, weight: value.weight / readings });
     grouped.set(value.protocolKey, group);
@@ -360,10 +365,10 @@ export function resolveCorpusRuntimeBand(
       : [];
 
   // Repeated readings from a single handset are not independent peers.
-  // Require at least two distinct device variants before claiming a
+  // Require at least two distinct marketed models before claiming a
   // family/vendor cohort is supported by multiple phones.
   const independentPhones = (group: typeof rawValues) =>
-    new Set(group.map(row => row.deviceVariantId)).size;
+    new Set(group.map(row => row.modelKey)).size;
 
   // Keep protocol isolation, but do not let a larger generic protocol cohort
   // erase a materially better SoC prior. For future chips, prefer a protocol
@@ -398,15 +403,21 @@ export function resolveCorpusRuntimeBand(
   const sameFamily = sameFamilyRows(protocolValues);
   const sameVendor = sameVendorRows(protocolValues);
 
-  const values = independentPhones(sameFamily) >= 2 ? sameFamily
+  const selectedValues = independentPhones(sameFamily) >= 2 ? sameFamily
     : independentPhones(sameVendor) >= 2 ? sameVendor : protocolValues;
 
   const evidenceScope:
     | 'same-soc-family'
     | 'same-soc-vendor'
     | 'protocol-cohort' =
-    values === sameFamily ? 'same-soc-family'
-    : values === sameVendor ? 'same-soc-vendor' : 'protocol-cohort';
+    selectedValues === sameFamily ? 'same-soc-family'
+    : selectedValues === sameVendor ? 'same-soc-vendor' : 'protocol-cohort';
+
+  // Rebalance after scope selection: a regional variant in a different SoC
+  // cohort must not reduce its sibling's weight in the chosen cohort.
+  const selectedCounts = new Map<string, number>();
+  for (const row of selectedValues) selectedCounts.set(row.modelKey, (selectedCounts.get(row.modelKey) ?? 0) + 1);
+  const values = selectedValues.map(row => ({ ...row, weight: row.originalWeight / selectedCounts.get(row.modelKey)! }));
 
   const drains = values.map((item) => item.value);
   const whValues = values.filter(
@@ -429,7 +440,7 @@ export function resolveCorpusRuntimeBand(
   // once. Otherwise a twice-tested device can inflate reported certainty
   // even when its runtime weight was properly normalized.
   const independentValues = [
-    ...new Map(values.map(item => [item.deviceVariantId, item])).values(),
+    ...new Map(values.map(item => [item.modelKey, item])).values(),
   ];
   const confidence = independentValues.reduce(
     (sum, item) => sum + item.score, 0,

@@ -11,6 +11,7 @@ import type {
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
 type Props = {
+  pending?: boolean;
   onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy', powerScenario: SocPowerWhatIf) => void;
 };
 
@@ -34,6 +35,7 @@ function number(value: string) {
 
 export default function SimpleModePanel({
   onRun,
+  pending = false,
 }: Props) {
   const [name, setName] = useState('');
   const [manufacturer, setManufacturer] =
@@ -422,8 +424,10 @@ export default function SimpleModePanel({
         type="button"
         className="il-simple-run"
         onClick={submit}
+        disabled={pending}
+        aria-busy={pending}
       >
-        Run simulation
+        {pending ? 'Simulating…' : 'Run simulation'}
       </button>
 
 

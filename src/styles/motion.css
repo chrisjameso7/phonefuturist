@@ -1,7 +1,7 @@
 /* Shared interaction feedback. Geometry stays stable while surfaces animate. */
 :root {
   --motion-fast: 150ms;
-  --motion-page: 220ms;
+  --motion-page: 140ms;
   --motion-ease: cubic-bezier(.2, .7, .2, 1);
 }
 

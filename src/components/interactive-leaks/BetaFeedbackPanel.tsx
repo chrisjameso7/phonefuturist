@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Category =
   | 'wrong-result'
@@ -23,6 +23,17 @@ export default function BetaFeedbackPanel({
   versions,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (!open || !dialogRef.current) return;
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialog.showModal();
+    return () => {
+      if (dialog.open) dialog.close();
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [open]);
   const [category, setCategory] =
     useState<Category>('wrong-result');
   const [message, setMessage] = useState('');
@@ -38,14 +49,18 @@ export default function BetaFeedbackPanel({
       return;
     }
 
+    if (submitting) return;
     setSubmitting(true);
     setStatus('');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
 
     try {
       const response = await fetch(
         '/api/simulator-feedback',
         {
           method: 'POST',
+          signal: controller.signal,
           headers: {
             'content-type': 'application/json',
           },
@@ -80,11 +95,14 @@ export default function BetaFeedbackPanel({
       setExpectedBehavior('');
     } catch (error) {
       setStatus(
-        error instanceof Error
+        controller.signal.aborted
+          ? 'Submission could not be confirmed in time. Your message is still here; please try again later.'
+          : error instanceof Error
           ? error.message
           : 'Feedback could not be submitted.',
       );
     } finally {
+      clearTimeout(timeout);
       setSubmitting(false);
     }
   }
@@ -100,9 +118,13 @@ export default function BetaFeedbackPanel({
       </button>
 
       {open ? (
-        <div
+        <dialog
+          ref={dialogRef}
           className="il-feedback-backdrop"
-          role="presentation"
+          aria-labelledby="il-feedback-title"
+          aria-modal="true"
+          aria-busy={submitting}
+          onCancel={() => setOpen(false)}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setOpen(false);
@@ -111,9 +133,6 @@ export default function BetaFeedbackPanel({
         >
           <section
             className="il-feedback-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="il-feedback-title"
           >
             <div className="il-feedback-head">
               <div>
@@ -135,6 +154,7 @@ export default function BetaFeedbackPanel({
               <span>Feedback type</span>
               <select
                 value={category}
+                disabled={submitting}
                 onChange={(event) =>
                   setCategory(
                     event.currentTarget
@@ -164,6 +184,7 @@ export default function BetaFeedbackPanel({
                 rows={5}
                 maxLength={4000}
                 value={message}
+                disabled={submitting}
                 onChange={(event) =>
                   setMessage(
                     event.currentTarget.value,
@@ -181,6 +202,7 @@ export default function BetaFeedbackPanel({
                 rows={3}
                 maxLength={4000}
                 value={expectedBehavior}
+                disabled={submitting}
                 onChange={(event) =>
                   setExpectedBehavior(
                     event.currentTarget.value,
@@ -222,7 +244,7 @@ export default function BetaFeedbackPanel({
               </p>
             ) : null}
           </section>
-        </div>
+        </dialog>
       ) : null}
     </>
   );

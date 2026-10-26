@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
 import SimpleModePanel from './SimpleModePanel';
+import SimulationLoading from './SimulationLoading';
 
 import {
   expandSimpleMode,
@@ -3247,7 +3248,8 @@ export default function InteractiveLeaksSimulator() {
       ) : null}
 
       <div hidden={workspaceMode !== 'simple'}>
-        <SimpleModePanel onRun={runSimpleMode} />
+        <SimpleModePanel onRun={runSimpleMode} pending={simulationPending} />
+        {simulationError && <p role="alert">{simulationError}</p>}
       </div>
 
       <div
@@ -5680,7 +5682,6 @@ export default function InteractiveLeaksSimulator() {
           </div>
 
           <div className="il-run">
-            {simulationPending && <p role="status" aria-live="polite">Simulating device performance in the background…</p>}
             {simulationError && <p role="alert">{simulationError}</p>}
             <button
               type="button"
@@ -5713,7 +5714,7 @@ export default function InteractiveLeaksSimulator() {
             <span>Estimated</span>
           </div>
 
-          {!hasSimulated || !result ? (
+          {simulationPending ? <SimulationLoading /> : !hasSimulated || !result ? (
             <div className="il-result-empty">
               <div className="il-orbit" aria-hidden="true">
                 <span />

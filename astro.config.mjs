@@ -4,6 +4,7 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   output: 'server',
+  prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
 
   // Supabase owns sessions; do not auto-provision a second session store.
   session: false,

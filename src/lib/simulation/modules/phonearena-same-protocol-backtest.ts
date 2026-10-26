@@ -1,4 +1,5 @@
 import type { DeviceCorpus } from './device-corpus';
+import { deviceModelKey } from './device-variant';
 import { resolveCorpusRuntimeBand, type RuntimeWorkload } from './corpus-runtime';
 import type { SimulationInput } from '../types';
 import { buildPhoneArenaRuntimeSpecBridge, type PhoneArenaSpecBridge } from './phonearena-runtime-spec-bridge';
@@ -9,7 +10,7 @@ import { buildPhoneArenaRuntimeSpecBridge, type PhoneArenaSpecBridge } from './p
  * holdout: one device's measurements are never used to predict that device,
  * but other devices tested by the same lab are allowed as references.
  */
-export const PHONEARENA_SAME_PROTOCOL_BACKTEST_VERSION = 'phonearena-same-protocol-loo-0.1.0';
+export const PHONEARENA_SAME_PROTOCOL_BACKTEST_VERSION = 'phonearena-same-protocol-loo-0.2.0';
 const SOURCE_ID = 'phonearena-battery-current-2026-10';
 const WORKLOADS: RuntimeWorkload[] = ['web_browsing', 'video_playback', 'gaming'];
 
@@ -18,6 +19,8 @@ const positive = (n: unknown): n is number =>
 
 export interface SameProtocolRuntimeRow {
   deviceVariantId: string;
+  targetModelKey: string;
+  referenceModelKeys: string[];
   workload: RuntimeWorkload;
   observedHours: number;
   predictedHours: number;
@@ -70,6 +73,7 @@ export function backtestPhoneArenaSameProtocolRuntime(
     m.sourceId === SOURCE_ID &&
     WORKLOADS.includes(m.workload as RuntimeWorkload) &&
     m.unit.toLowerCase() === 'hours' && positive(m.value));
+  const measuredDeviceIds = new Set(measurements.map(m => m.deviceVariantId));
   // Evaluation-only: attach cross-source specifications before matching peers.
   // Runtime labels and reference protocols remain solely PhoneArena's.
   const bridge = mode === 'spec-enriched'
@@ -98,7 +102,8 @@ export function backtestPhoneArenaSameProtocolRuntime(
     let training = trainingByDevice.get(actual.deviceVariantId);
     if (!training) {
       const eligibleDevices = referenceCorpus.devices.filter(d =>
-        d.variant.id !== actual.deviceVariantId &&
+        measuredDeviceIds.has(d.variant.id) &&
+        deviceModelKey(d.variant.identity) !== deviceModelKey(device.variant.identity) &&
         (validationScheme === 'leave-one-device-out' ||
           (d.releaseDate !== undefined && d.releaseDate < releaseDate!)));
       const eligibleIds = new Set(eligibleDevices.map(d => d.variant.id));
@@ -151,16 +156,18 @@ export function backtestPhoneArenaSameProtocolRuntime(
       skippedRows++;
       continue;
     }
-    const referenceDateById = new Map(
-      training.devices.map(d => [d.variant.id, d.releaseDate]),
-    );
     const latestReferenceReleaseDate = band.neighborIds
-      .map(id => referenceDateById.get(id))
+      .map(id => deviceById.get(id)?.releaseDate)
       .filter((date): date is string => !!date)
       .sort()
       .at(-1);
     rows.push({
       deviceVariantId: actual.deviceVariantId,
+      targetModelKey: deviceModelKey(device.variant.identity),
+      referenceModelKeys: [...new Set(band.neighborIds.flatMap(id => {
+        const reference = deviceById.get(id);
+        return reference ? [deviceModelKey(reference.variant.identity)] : [];
+      }))],
       workload: actual.workload as RuntimeWorkload,
       observedHours: actual.value,
       predictedHours,
