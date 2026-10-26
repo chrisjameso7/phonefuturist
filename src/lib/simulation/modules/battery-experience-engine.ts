@@ -52,6 +52,8 @@ export interface BatteryExperienceInput {
 }
 
 export interface BatteryRuntimeExperience {
+  protocol?: string;
+  protocolVersion?: string;
   workload: 'web_browsing' | 'video_playback' | 'gaming';
   status: 'resolved' | 'unresolved';
   expectedHours?: number;
@@ -264,6 +266,8 @@ export function simulateBatteryExperience(
       workload,
       status: 'resolved',
       ...runtime,
+      protocol: band.estimate.protocol,
+      protocolVersion: band.estimate.protocolVersion,
       referenceExpectedHours: (useWh ? packEnergyWh : capacity)! / (useWh ? band.estimate.expectedWhPerHour! : band.estimate.expectedMahPerHour),
       scenarioApplied: whatIfFactor !== 1,
       energyBasis: useWh ? 'wh' : 'mah',

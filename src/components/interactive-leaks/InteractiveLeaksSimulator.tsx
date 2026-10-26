@@ -8,7 +8,7 @@ import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-cata
 import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
-import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
+import PhoneComparison from './PhoneComparison';
 import { useEffect, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
@@ -2195,19 +2195,6 @@ export default function InteractiveLeaksSimulator() {
               : form.coolingClass,
         })
       : undefined;
-
-  const suggestedComparisons = simulationInput && result && form.name.trim()
-    ? suggestLiveDeviceComparisons(form.name.trim())
-    : [];
-
-  const competingDevices = simulationInput && result && workspaceMode === 'simple'
-    ? suggestLiveCompetingDevices({
-        manufacturer: form.manufacturer.trim() || undefined,
-        batteryMah: result.battery?.totalCapacityMah,
-        displayInches: simulationInput.displays.primary.diagonalInches,
-        limit: 3,
-      })
-    : [];
 
   const simpleCpuScores = simulationInput && result
     ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
@@ -5738,6 +5725,26 @@ export default function InteractiveLeaksSimulator() {
                 </h2>
               </div>
 
+                  {simulationInput && batteryExperience && <PhoneComparison
+                    name={form.name}
+                    capacityMah={result.battery?.totalCapacityMah}
+                    cpuScores={simpleCpuScores.map(item => item.estimate)}
+                    batteryResult={batteryExperience}
+                    batteryInput={{
+                      simulation: simulationInput,
+                      manufacturer: form.manufacturer || undefined,
+                      socVendor: form.socVendor || undefined,
+                      socName: form.socName || undefined,
+                      batteryChemistry: form.batteryChemistry || undefined,
+                      dailyUseHours: {web_browsing: numeric(form.webHours) ?? 0,video_playback: numeric(form.videoHours) ?? 0,gaming: numeric(form.gamingHours) ?? 0},
+                      usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
+                      brightnessNits: numeric(form.brightnessNits),
+                      socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : undefined,
+                      targetSocPowerW: numeric(form.targetSocPowerW),
+                      coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
+                    }}
+                  />}
+
               {workspaceMode === 'simple' ? (
                 <div className="il-result-group">
                   <span className="il-result-label">CPU performance</span>
@@ -5783,51 +5790,7 @@ export default function InteractiveLeaksSimulator() {
                       );
                     })}
                   </div>
-                  {suggestedComparisons.some(item=>item.status==='found') && (
-                    <div className="il-sensitivity-card">
-                      <strong>Compare generations</strong>
-                      <div className="il-metrics">
-                        {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
-                          <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}>
-                            <strong>{item.label}</strong>
-                            <span style={{display:'block',marginTop:'0.35rem'}}>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
-                            {item.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Previous battery: {format(item.released.batteryMah, 0)} mAh · Selected: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
-                            {item.released?.batteryMah !== undefined && result.battery?.totalCapacityMah !== undefined && item.released.batteryMah > 0 && (
-                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
-                                Battery delta: {result.battery.totalCapacityMah >= item.released.batteryMah ? '+' : ''}{format((result.battery.totalCapacityMah / item.released.batteryMah - 1) * 100, 1)}%
-                              </small>
-                            )}
-                            {item.released?.wiredWatts !== undefined && numeric(form.wiredChargeW) !== undefined && item.released.wiredWatts > 0 && (
-                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
-                                Rated charging delta: {numeric(form.wiredChargeW)! >= item.released.wiredWatts ? '+' : ''}{format((numeric(form.wiredChargeW)! / item.released.wiredWatts - 1) * 100, 1)}%
-                              </small>
-                            )}
 
-                            {item.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Display: {format(item.released.displayInches, 2)}″ · Selected: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
-                            {item.released?.refreshRateHz !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
-                            {item.released?.wiredWatts !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
-                            {item.released?.socName && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Predecessor chip: {item.released.socName}</small>}
-                            {item.released?.catalogUnverified && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Specifications may vary by region.</small>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {competingDevices.length > 0 && (
-                    <div className="il-sensitivity-card">
-                      <strong>Other phones to compare</strong>
-                      <div className="il-metrics">
-                        {competingDevices.map(device=>(
-                          <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
-                            <strong>{device.label}</strong>
-                            <span style={{display:'block',marginTop:'0.35rem'}}>{device.released?.socName ?? 'Processor unspecified'}</span>
-                            {device.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.batteryMah,0)} mAh</small>}
-                            {device.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.displayInches,2)}″ display</small>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <div className="il-simple-battery-readout">
                     <span className="il-result-label">Active-use endurance · one charge</span>
                     <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
