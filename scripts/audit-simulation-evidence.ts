@@ -35,7 +35,7 @@ function calibration(mode: 'sparse'|'spec-enriched', scheme: 'leave-one-device-o
   const result = backtestPhoneArenaSameProtocolRuntime(corpus, mode, scheme);
   const pairs = result.rows.map(row => ({ observed: row.observedHours, predicted: row.predictedHours }));
   return { mode, scheme, evaluated: result.evaluatedRows, skipped: result.skippedRows, protocol: result.protocol,
-    targetLeakageDetected: result.rows.some(row => row.referenceVariantIds.includes(row.deviceVariantId)),
+    targetLeakageDetected: result.rows.some(row => row.referenceVariantIds.includes(row.deviceVariantId) || row.referenceModelKeys.includes(row.targetModelKey)),
     score: reportScore(scoreValidationPairs(pairs)),
     workloads: scoreValidationCohorts(result.rows, row => row.workload, row => ({observed: row.observedHours,predicted:row.predictedHours}),20).map(({key,score,...rest}) => ({workload:key,...rest,score:reportScore(score)})),
   };

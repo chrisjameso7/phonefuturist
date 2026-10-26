@@ -31,11 +31,12 @@ export function estimateDailyBatteryBudget(input: DailyBatteryBudgetInput): Dail
   const standbyHoursPerDay = 24 - activeHoursPerDay;
   const standbyEnergyWhPerDay = standbyHoursPerDay * standbyPowerW;
   const totalEnergyWhPerDay = activeEnergyWhPerDay + standbyEnergyWhPerDay;
-  if (totalEnergyWhPerDay <= 0) return { status: 'unresolved', reason: 'Total daily energy demand must be positive.' };
+  const calendarDays = usableEnergyWh / totalEnergyWhPerDay;
+  if (!Number.isFinite(totalEnergyWhPerDay) || !Number.isFinite(calendarDays) || calendarDays <= 0 || totalEnergyWhPerDay <= 0) return { status: 'unresolved', reason: 'Total daily energy demand must be positive.' };
   return {
     status: 'resolved', evidence: 'explicit-standby-power',
     activeEnergyWhPerDay, standbyEnergyWhPerDay, totalEnergyWhPerDay,
-    expectedCalendarDaysPerCharge: usableEnergyWh / totalEnergyWhPerDay,
+    expectedCalendarDaysPerCharge: calendarDays,
     activeHoursPerDay, standbyHoursPerDay,
   };
 }

@@ -16,7 +16,7 @@ Branch: `fix/share-card-presentation` (based on `fix/simulation-evidence-integri
 
 ## Verification
 
-All 185 original simulation-prefixed suites were exercised in sequential batches to fit local memory limits. The only failures were six newly added export-test assertions that selected only full-word title fragments; those assertions were corrected to reconstruct every wrapped line. The complete export suite passed on rerun. The added charging safety suite and comparison suite also passed: **187 distinct suites / 720 tests** covered across batches and targeted reruns. This is not a claim that the entire repository test suite ran in one invocation.
+All 185 original simulation-prefixed suites were exercised in sequential batches to fit local memory limits. The only failures were six newly added export-test assertions that selected only full-word title fragments; those assertions were corrected to reconstruct every wrapped line. The complete export suite passed on rerun. The added charging safety suite and comparison suite also passed: **187 distinct suites / 748 tests** covered across batches and targeted reruns. This is not a claim that the entire repository test suite ran in one invocation.
 
 Final verification:
 

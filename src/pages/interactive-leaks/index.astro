@@ -22,7 +22,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
         </p>
 
         <p class="interactive-community-link"><a class="workspace-jump" href="#simulator">Open workspace ↓</a>
-          <a href="/interactive-leaks/explore">Explore community builds →</a>
+          <a href="/community">Explore community builds →</a>
         </p>
       </div>
 
@@ -1449,7 +1449,17 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     cursor:pointer;
   }
 
+  .il-feedback-backdrop:not([open]){display:none}
+  .il-feedback-backdrop::backdrop{background:transparent}
   .il-feedback-backdrop{
+    margin:0;
+    width:100%;
+    height:100dvh;
+    max-width:none;
+    max-height:none;
+    box-sizing:border-box;
+    border:0;
+    color:inherit;
     position:fixed;
     inset:0;
     z-index:1000;
@@ -1462,7 +1472,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
   .il-feedback-modal{
     width:min(560px,100%);
-    max-height:min(760px,calc(100vh - 48px));
+    max-height:min(760px,calc(100dvh - 48px));
     overflow:auto;
     padding:22px;
     border:1px solid #4a555e;
@@ -1594,11 +1604,11 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
     .il-feedback-backdrop{
       place-items:end center;
-      padding:12px 12px calc(88px + env(safe-area-inset-bottom,0px));
+      padding:12px 12px max(12px,env(safe-area-inset-bottom,0px));
     }
 
     .il-feedback-modal{
-      max-height:calc(100vh - 110px);
+      max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px));
       border-radius:18px;
       padding:16px;
     }

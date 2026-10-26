@@ -70,6 +70,24 @@ function input() {
 }
 
 describe('runtime SoC evidence hierarchy', () => {
+  it('does not count variant aliases as independent phone models', () => {
+    const original = device('one-model-256', 'MediaTek', 'Dimensity 9500');
+    original.variant.identity.modelName = 'One Model';
+    const alias = structuredClone(original);
+    alias.variant.id = 'one-model-512';
+    alias.variant.identity.modelName = 'one   model 512GB';
+    const corpus: DeviceCorpus = {
+      version: 'aliased-model', sources: [source],
+      devices: [original, alias, device('another-model', 'Qualcomm', 'Snapdragon X')],
+      measurements: [measurement('a','one-model-256',5),measurement('b','one-model-512',5),measurement('c','another-model',10)],
+    };
+    const result = resolveCorpusRuntimeBand(corpus,input(),'gaming',{}, {socVendor:'MediaTek',socName:'Dimensity 9500'});
+    expect(result.estimate?.sameSocFamilyReferences).toBe(1);
+    expect(result.estimate?.sameSocVendorReferences).toBe(1);
+    expect(result.estimate?.evidenceScope).toBe('protocol-cohort');
+    expect(result.estimate?.independentReferenceDeviceCount).toBe(2);
+  });
+
   it('uses two same-family peers instead of broader protocol peers', () => {
     const corpus: DeviceCorpus = {
       version: 'runtime-soc-family',

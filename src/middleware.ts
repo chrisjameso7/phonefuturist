@@ -23,10 +23,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
     let identityError = false;
     if (context.locals.supabase && (protectedPage || hasAuthCookie)) {
       const client = context.locals.supabase;
-      const { data, error } = await client.auth.getUser();
+      // Both calls are read-only and use the same cookie-backed session.
+      // Start them together to avoid two serial network round trips per page.
+      // Roles are accepted only after getUser verifies the identity below.
+      const [{ data, error }, { data: access, error: accessError }] = await Promise.all([
+        client.auth.getUser(),
+        client.rpc('foundation_access'),
+      ]);
       if (!error && data.user) {
         context.locals.user = data.user;
-        const { data: access, error: accessError } = await client.rpc('foundation_access');
         identityError = !!accessError || !access;
         if (!identityError) context.locals.access = access;
       }

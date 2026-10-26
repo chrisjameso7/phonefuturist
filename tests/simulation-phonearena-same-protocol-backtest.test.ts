@@ -37,6 +37,20 @@ function fixture(): DeviceCorpus {
 }
 
 describe('PhoneArena same-protocol runtime leave-one-device-out backtest', () => {
+  it('holds out all model aliases, not only the current variant ID', () => {
+    const corpus = fixture();
+    const alias = structuredClone(corpus.devices[0]);
+    alias.variant.id = 'one-alias';
+    alias.variant.identity.modelName = '  ONE 256GB  ';
+    corpus.devices.push(alias);
+    corpus.measurements.push({...corpus.measurements[0],id:'alias-web',deviceVariantId:'one-alias',value:1});
+    const result = backtestPhoneArenaSameProtocolRuntime(corpus);
+    const original = result.rows.filter(row => row.deviceVariantId === 'one');
+    expect(original).toHaveLength(3);
+    expect(original.every(row=>!row.referenceVariantIds.includes('one-alias'))).toBe(true);
+    expect(result.rows.filter(row=>row.deviceVariantId==='one-alias').every(row=>!row.referenceVariantIds.includes('one'))).toBe(true);
+  });
+
   it('holds out every measurement for the target device and isolates protocols', () => {
     const result = backtestPhoneArenaSameProtocolRuntime(fixture());
     expect(result.evaluatedRows).toBe(9);

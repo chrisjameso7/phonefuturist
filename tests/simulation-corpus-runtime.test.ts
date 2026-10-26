@@ -58,6 +58,22 @@ const input: SimulationInput = {
 };
 
 describe('corpus runtime bands', () => {
+  it('withholds a target pack whose finite cell capacities overflow in total', () => {
+    const target = structuredClone(input);
+    target.battery = {cells:[{capacityMah:1e308},{capacityMah:1e308}]};
+    expect(resolveCorpusRuntimeBand(corpus,target,'web_browsing').status).toBe('unresolved');
+  });
+  it('ignores reference capacity and drain overflow without emitting invalid estimates', () => {
+    const broken = structuredClone(corpus);
+    broken.devices[0].variant.battery!.capacityMah = Infinity;
+    const result = resolveCorpusRuntimeBand(broken,input,'web_browsing');
+    expect(result.estimate?.neighborIds).toEqual(['far']);
+    expect(Number.isFinite(result.estimate?.expectedMahPerHour)).toBe(true);
+    const tinyRuntime = structuredClone(corpus);
+    tinyRuntime.measurements[0].value = 1e-308;
+    expect(resolveCorpusRuntimeBand(tinyRuntime,input,'web_browsing').estimate?.neighborIds).toEqual(['far']);
+  });
+
   it('weights runtime evidence toward closer physical comparables', () => {
     const result = resolveCorpusRuntimeBand(corpus, input, 'web_browsing');
 
@@ -106,6 +122,14 @@ describe('corpus runtime bands', () => {
     // Device A: 1000 mAh/h, device B: 500 mAh/h.
     // The two observations of A carry one total device weight.
     expect(result.estimate?.expectedMahPerHour).toBeCloseTo(750, 10);
+    const alias = structuredClone(repeated.devices[0]);
+    alias.variant.id = 'phone-a-storage-alias';
+    repeated.devices.push(alias);
+    repeated.measurements.push({ ...repeated.measurements[0], id:'alias-reading',deviceVariantId:alias.variant.id });
+    const withAlias = resolveCorpusRuntimeBand(repeated,target,'gaming');
+    expect(withAlias.estimate?.expectedMahPerHour).toBeCloseTo(750, 10);
+    expect(withAlias.estimate?.independentReferenceDeviceCount).toBe(2);
+    expect(withAlias.estimate?.confidence).toBeCloseTo(result.estimate!.confidence,10);
   });
 
 });

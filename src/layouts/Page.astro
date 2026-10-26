@@ -77,17 +77,17 @@ const active = activeNavigation(Astro.url);
               <div class="mobile-app-menu-panel">
                 <p>Explore PhoneFuturist</p>
                 <nav aria-label="Browse all pages">
-                  <a href="/">Home</a><a href="/articles">Newsroom</a>
-                  <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
-                  <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
-                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
+                  <a data-astro-prefetch href="/">Home</a><a data-astro-prefetch href="/articles">Newsroom</a>
+                  <a data-astro-prefetch href="/articles?section=news">News</a><a data-astro-prefetch href="/articles?section=leaks">Leaks</a>
+                  <a data-astro-prefetch href="/articles?section=analysis">Analysis</a><a data-astro-prefetch href="/articles?section=reports">Reports</a>
+                  <a data-astro-prefetch href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>Interactive Leaks</a><a data-astro-prefetch href="/community" aria-current={active === 'community' ? 'page' : undefined}>Community</a>
                   {showStudio && <a href="/studio">The Studio</a>}
                   {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
                 </nav>
                 {signedIn && <form action="/auth/signout" method="post"><button type="submit">Sign out</button></form>}
               </div>
             </details>
-            <a class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
+            <a data-astro-prefetch class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
               <span class="mobile-app-logo"><img src="/assets/phonefuturist-mark.svg" alt="" width="160" height="72" /></span>
               <span>PhoneFuturist</span>
             </a>
@@ -97,7 +97,7 @@ const active = activeNavigation(Astro.url);
 
           <header class="site-header">
             <div class="header-brand-row">
-              <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
+              <a data-astro-prefetch class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
                 <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
                 <span class="brand-word">PhoneFuturist</span>
               </a>
@@ -117,7 +117,7 @@ const active = activeNavigation(Astro.url);
 
                 <div class="mobile-menu-panel" id="mobile-navigation-panel">
                   <nav class="mobile-menu-primary" aria-label="Mobile">
-                    <a
+                    <a data-astro-prefetch
                       href="/"
                       aria-current={active === 'home' ? 'page' : undefined}
                     >
@@ -127,7 +127,7 @@ const active = activeNavigation(Astro.url);
 
                     {
                       links.map(([name, key]) => (
-                        <a
+                        <a data-astro-prefetch
                           href={key === 'newsroom' ? '/articles' : '/articles?section=' + key}
                           aria-current={active === key ? 'page' : undefined}
                         >
@@ -136,7 +136,7 @@ const active = activeNavigation(Astro.url);
                         </a>
                       ))
                     }
-                    <a
+                    <a data-astro-prefetch
                       href="/interactive-leaks"
                       aria-current={active === 'lab' ? 'page' : undefined}
                     >
@@ -144,7 +144,7 @@ const active = activeNavigation(Astro.url);
                       <span aria-hidden="true">↗</span>
                     </a>
 
-                    <a href="/interactive-leaks/explore">
+                    <a data-astro-prefetch href="/community" aria-current={active === 'community' ? 'page' : undefined}>
                       <span>Community</span>
                       <span aria-hidden="true">↗</span>
                     </a>
@@ -209,27 +209,27 @@ const active = activeNavigation(Astro.url);
             </div>
 
             <nav class="desktop-nav" aria-label="Main">
-              <a
+              <a data-astro-prefetch
                 href="/"
                 aria-current={active === 'home' ? 'page' : undefined}
               >
                 Home
               </a>
 
-              <a
+              <a data-astro-prefetch
                 href="/articles"
                 aria-current={['newsroom','news','leaks','analysis'].includes(active ?? '') ? 'page' : undefined}
               >
                 Newsroom
               </a>
-              <a
+              <a data-astro-prefetch
                 href="/interactive-leaks"
                 aria-current={active === 'lab' ? 'page' : undefined}
               >
                 Interactive Leaks
               </a>
 
-              <a href="/interactive-leaks/explore">Community</a>
+              <a data-astro-prefetch href="/community" aria-current={active === 'community' ? 'page' : undefined}>Community</a>
 
               {
                 showStudio && (
@@ -278,19 +278,23 @@ const active = activeNavigation(Astro.url);
     {
       !productMode && (
         <nav class="mobile-tabbar" aria-label="Mobile app navigation">
-          <a href="/" aria-current={active === 'home' ? 'page' : undefined}>
+          <a data-astro-prefetch href="/" aria-current={active === 'home' ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-4v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
             <span>Home</span>
           </a>
-          <a href="/articles" aria-current={['newsroom','news','leaks','analysis','reports'].includes(active ?? '') ? 'page' : undefined}>
+          <a data-astro-prefetch href="/articles" aria-current={['newsroom','news','leaks','analysis','reports'].includes(active ?? '') ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
-          <a class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
+          <a data-astro-prefetch class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
             <span class="mobile-lab-orb" aria-hidden="true">
               <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
             </span>
             <span>Leaks</span>
+          </a>
+          <a data-astro-prefetch href="/community" aria-current={active === 'community' ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
+            <span>Community</span>
           </a>
           {showStudio && (
             <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>
@@ -320,7 +324,7 @@ const active = activeNavigation(Astro.url);
       !productMode && (
         <footer>
 
-          <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
+          <a data-astro-prefetch class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
             <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
             <span class="brand-word">PhoneFuturist</span>
           </a>

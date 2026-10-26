@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
   deviceVariantKey,
+  deviceModelKey,
   type DeviceVariantRecord,
 } from '../src/lib/simulation/modules/device-variant';
 
 describe('device variant identity', () => {
+  it('keeps Plus models distinct while normalizing aliases for holdouts', () => {
+    const base={manufacturer:'Samsung',family:'Galaxy S',modelName:'Galaxy S26'};
+    expect(deviceModelKey(base)).not.toBe(deviceModelKey({...base,modelName:'Galaxy S26+'}));
+    expect(deviceModelKey({...base,modelName:'Galaxy S26+'})).toBe(deviceModelKey({...base,modelName:'Galaxy S26 Plus'}));
+    expect(deviceModelKey(base)).toBe(deviceModelKey({...base,modelName:' Samsung  Galaxy S26 '}));
+    expect(deviceModelKey(base)).toBe(deviceModelKey({...base,modelName:'Galaxy S26 256GB'}));
+    expect(deviceModelKey({...base,modelName:'Galaxy S26+'})).toBe(deviceModelKey({...base,modelName:'Galaxy S26 Plus 1TB'}));
+  });
   it('separates Samsung SoC variants with the same marketing name', () => {
     const base = {
       id: 'galaxy-example',
