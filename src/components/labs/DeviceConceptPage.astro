@@ -1,0 +1,10 @@
+---
+import Page from '../../layouts/Page.astro';
+import DeviceConceptLab from './DeviceConceptLab';
+import type {ConceptFamily} from '../../lib/labs/device-concepts';
+import '../../styles/labs.css';
+interface Props {family:ConceptFamily;}
+const {family}=Astro.props;
+const labels={foldables:'Foldables',tablets:'Tablets',laptops:'Laptops'};
+---
+<Page title={labels[family]+' · Interactive Leaks'}><div class="labs"><nav class="lab-nav" aria-label="Interactive Leaks devices"><a href="/labs">All labs</a><a href="/interactive-leaks">Phones</a><a href="/interactive-leaks/foldables" aria-current={family==='foldables'?'page':undefined}>Foldables</a><a href="/interactive-leaks/tablets" aria-current={family==='tablets'?'page':undefined}>Tablets</a><a href="/interactive-leaks/laptops" aria-current={family==='laptops'?'page':undefined}>Laptops</a></nav><header class="lab-hero"><p class="lab-kicker">Interactive Leaks / Device concepts</p><h1>Beyond the phone.</h1><p>Design a foldable, tablet or laptop concept. Compare displays, battery energy and power scenarios.</p></header><DeviceConceptLab family={family} client:load/></div></Page>

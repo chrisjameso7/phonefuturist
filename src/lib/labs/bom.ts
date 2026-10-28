@@ -1,10 +1,6 @@
-// Illustrative procurement assumptions in USD, not supplier quotations.
-export const BOM_OPTIONS = {
-    sensor: [{ id: 'lyt900', name: 'Sony LYT-900', cost: 48 }, { id: 'hp2', name: 'ISOCELL HP2', cost: 38 }, { id: 'imx890', name: 'Sony IMX890', cost: 23 }],
-    display: [{ id: 'm16', name: 'M16 OLED', cost: 83 }, { id: 'm14', name: 'M14 OLED', cost: 65 }, { id: 'ltpo', name: 'Standard LTPO', cost: 49 }],
-    chassis: [{ id: 'titanium', name: 'Titanium Grade 5', cost: 42 }, { id: 'aluminum', name: 'Aerospace aluminum', cost: 21 }, { id: 'ceramic', name: 'Ceramic', cost: 34 }, { id: 'glass', name: 'Glass / plastic', cost: 12 }],
-    silicon: [{ id: 'flagship', name: 'Flagship 3nm', cost: 170 }, { id: 'sub', name: 'Sub-flagship', cost: 95 }, { id: 'custom', name: 'Custom silicon', cost: 200 }],
-} as const;
+import { BOM_GROUPS, type BomDevice } from './bom-catalog';
+export { BOM_GROUPS, BOM_OPTION_COUNT } from './bom-catalog';
+export const BOM_OPTIONS = Object.fromEntries(BOM_GROUPS.map(group => [group.id, group.options])) as Record<string, typeof BOM_GROUPS[number]['options']>;
 export type BomInput = {
     sensor: string;
     display: string;
@@ -14,15 +10,71 @@ export type BomInput = {
     refresh: number;
     multiplier: number;
     retail: number;
+    name?: string;
+    device?: BomDevice;
+    components?: Record<string, string>;
+    quantities?: Record<string, number>;
 };
-export const DEFAULT_BOM: BomInput = { sensor: 'lyt900', display: 'm16', chassis: 'titanium', silicon: 'flagship', resolution: 1440, refresh: 120, multiplier: 2.5, retail: 1300 };
+export const DEFAULT_BOM: BomInput = {
+    sensor: 'lyt900', display: 'm16', chassis: 'titanium', silicon: 'flagship',
+    resolution: 1440, refresh: 120, multiplier: 2.5, retail: 1300, device: 'phone', name: '',
+    components: { ram: '12-gb-lpddr5x', storage: '256-gb-ufs-4-0', board: '10-layer-hdi-pcb', battery: '5000-mah-li-ion', charging: '65-w-usb-pd', pmic: 'phone-pmic-set', cooling: 'large-vapor-chamber', glass: 'strengthened-flagship-glass', speakers: 'stereo-phone-speakers', haptics: 'x-axis-linear-actuator', wifi: 'wi-fi-6e-bluetooth-module', rf: '5g-sub-6-rf-front-end', assembly: 'phone-assembly' },
+};
+export function bomPreset(device: BomDevice): BomInput {
+    if (device === 'phone')
+        return structuredClone(DEFAULT_BOM);
+    const components = { ...DEFAULT_BOM.components };
+    let primary: Partial<BomInput>;
+    if (device === 'foldable') {
+        Object.assign(components, { hinge: 'book-teardrop-hinge', coverDisplay: '6-3-inch-cover-oled', battery: 'foldable-dual-cell-5000-mah', board: 'foldable-split-mainboard', glass: 'ultra-thin-foldable-glass', assembly: 'foldable-assembly' });
+        primary = { display: '8-inch-folding-oled', chassis: 'foldable-reinforced-aluminum', retail: 1800 };
+    }
+    else if (device === 'tablet') {
+        Object.assign(components, { battery: 'tablet-40-wh', board: 'tablet-logic-board', speakers: 'four-speaker-tablet-array', rf: 'wi-fi-antenna-set', assembly: 'tablet-assembly' });
+        primary = { display: '11-inch-oled-tablet-panel', chassis: 'tablet-aluminum-unibody', sensor: 'imx890', retail: 1000 };
+    }
+    else {
+        Object.assign(components, { ram: 'memory-included-in-processor-package', storage: '1-tb-nvme-gen-4', battery: 'laptop-70-wh', board: 'laptop-motherboard', keyboard: 'backlit-scissor-keyboard', touchpad: 'glass-precision-touchpad', hinge: 'laptop-friction-hinge-pair', frontCamera: '1080p-laptop-webcam', rf: 'wi-fi-antenna-set', wifi: 'laptop-wi-fi-7-card', assembly: 'laptop-assembly', cooling: 'laptop-heatpipe-and-fan', pmic: 'laptop-multiphase-power-stage', glass: 'laptop-cover-glass' });
+        primary = { display: '14-inch-oled-laptop-panel', silicon: 'intel-core-ultra-7-258v-package', chassis: 'laptop-aluminum-unibody', sensor: 'none', retail: 1800, resolution: 1440 };
+    }
+    return { ...DEFAULT_BOM, ...primary, device, components, quantities: {} };
+}
+export function selectedBomId(input: BomInput, id: string) {
+    return ['sensor', 'display', 'chassis', 'silicon'].includes(id) ? input[id as 'sensor' | 'display' | 'chassis' | 'silicon'] : input.components?.[id];
+}
+export function bomUnitPrice(input: Pick<BomInput, 'resolution' | 'refresh'>, group: string, cost: number) {
+    const value = group === 'display' ? cost * (input.resolution / 1080) ** 0.35 * (1 + (input.refresh - 60) / 600) : cost;
+    return Math.round(value * 100) / 100;
+}
 export function calculateBom(input: BomInput) {
-    const cost = (kind: keyof typeof BOM_OPTIONS, id: string) => { const item = BOM_OPTIONS[kind].find(item => item.id === id); if (!item)
-        throw new Error('Unknown component.'); return item.cost; };
-    if (![1080, 1440, 2160].includes(input.resolution) || ![60, 90, 120, 144].includes(input.refresh) || !Number.isFinite(input.multiplier) || input.multiplier < 1 || input.multiplier > 5 || !Number.isFinite(input.retail) || input.retail < 1 || input.retail > 10000)
+    if (![1080, 1440, 2160].includes(input.resolution) || ![60, 90, 120, 144, 165, 240].includes(input.refresh) || !Number.isFinite(input.multiplier) || input.multiplier < 1 || input.multiplier > 5 || !Number.isFinite(input.retail) || input.retail < 1 || input.retail > 20000)
         throw new Error('Invalid pricing scenario.');
-    const panel = cost('display', input.display) * (input.resolution / 1080) ** 0.35 * (1 + (input.refresh - 60) / 600);
-    const items = [{ label: 'Main sensor', cost: cost('sensor', input.sensor) }, { label: 'Display', cost: panel }, { label: 'Chassis', cost: cost('chassis', input.chassis) }, { label: 'Silicon', cost: cost('silicon', input.silicon) }, { label: 'Other components & assembly', cost: 135 }];
-    const total = items.reduce((sum, item) => sum + item.cost, 0), msrp = Math.ceil(total * input.multiplier / 10) * 10;
+    const items: Array<{
+        id: string;
+        label: string;
+        name: string;
+        unitPrice: number;
+        quantity: number;
+        cost: number;
+    }> = [];
+    const ordered = ['sensor', 'display', 'chassis', 'silicon', ...BOM_GROUPS.map(g => g.id).filter(id => !['sensor', 'display', 'chassis', 'silicon'].includes(id))];
+    for (const id of ordered) {
+        const selected = selectedBomId(input, id);
+        if (!selected)
+            continue;
+        const group = BOM_GROUPS.find(g => g.id === id)!;
+        const option = group.options.find(o => o.id === selected);
+        if (!option)
+            throw new Error('Unknown component.');
+        const unitPrice = option.cost;
+        const quantity = input.quantities?.[id] ?? 1;
+        if (!Number.isFinite(unitPrice) || unitPrice < 0 || unitPrice > 10000 || !Number.isInteger(quantity) || quantity < 0 || quantity > 8)
+            throw new Error('Invalid component price or quantity.');
+        // Preserve existing fixed panel scaling for each resolution and refresh configuration.
+        const price = bomUnitPrice(input, id, unitPrice);
+        if (quantity > 0)
+            items.push({ id, label: group.label, name: option.name, unitPrice: price, quantity, cost: price * quantity });
+    }
+    const total = Math.round(items.reduce((sum, item) => sum + item.cost, 0) * 100) / 100, msrp = Math.ceil(total * input.multiplier / 10) * 10;
     return { items, total, msrp, grossProfit: input.retail - total, grossMargin: (input.retail - total) / input.retail * 100 };
 }
