@@ -1,5 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
+import ArticleEngagement from '../../components/ArticleEngagement';
+import '../../styles/article-engagement.css';
 import InlineContent from '../../components/InlineContent.astro';
 import { safeHttps } from '../../lib/editorial';
 import { publishedArticles } from '../../lib/publication';
@@ -55,6 +57,8 @@ const heroImage = article && !article.withdrawn
             return <p><InlineContent parts={parts}/></p>;
           })}
         </div>
+
+        <ArticleEngagement articleId={article.id} title={article.title} canonicalPath={article.canonical_path} client:load/>
 
         {(article.public_notes?.length ? article.public_notes : article.correction_note ? [{message:article.correction_note,recorded_at:article.updated_at}] : []).map(note=><aside class="notice story-note"><h2>Editorial note</h2><p>{note.message}</p><time datetime={note.recorded_at}>{new Date(note.recorded_at).toLocaleDateString('en-GB',{timeZone:'UTC'})}</time></aside>)}
 

@@ -42,3 +42,9 @@ The Security Advisor reports intentional callable SECURITY DEFINER functions and
 Reuse the existing `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `APP_ORIGIN` runtime bindings. Labs writes fail closed if configured against an unrelated Supabase host. Local preview without those bindings intentionally shows an unavailable vault rather than fake poll results.
 
 The user authorized Cloudflare deployment on 28 October 2026. The repository target is `phonefuturist-dev` at `https://phonefuturist-dev.phonefuturist.workers.dev`. Deployment must preserve existing bindings (`keep_vars: true`). No main-branch merge is part of this work.
+
+## Article engagement
+
+Articles include native sharing with copy-link fallback, aggregate daily reader views and authenticated likes. The reader must reach the article end and spend 15 visible seconds reading before the UI unlocks liking; the database independently enforces the minimum elapsed time. Duplicate views per reader/day and duplicate likes per account are ignored. Reading records are private and the public RPC only returns counts and the current reader's status.
+
+The article engagement migration was applied to the existing Supabase project. Final verification: Astro check 514 files, zero diagnostics; Vitest 211 files / 849 tests passed; Astro Cloudflare build passed. A pre-existing battery fixture edit is excluded from these commits.
