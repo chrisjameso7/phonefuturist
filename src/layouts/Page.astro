@@ -78,7 +78,7 @@ const active = activeNavigation(Astro.url);
                   <a href="/">Home</a><a href="/articles">Newsroom</a>
                   <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
                   <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
-                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
+                  <a href="/labs">Labs</a><a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
                   {showStudio && <a href="/studio">The Studio</a>}
                   {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
                 </nav>
@@ -135,10 +135,10 @@ const active = activeNavigation(Astro.url);
                       ))
                     }
                     <a
-                      href="/interactive-leaks"
+                      href="/labs"
                       aria-current={active === 'lab' ? 'page' : undefined}
                     >
-                      <span>Interactive Leaks</span>
+                      <span>Labs</span>
                       <span aria-hidden="true">↗</span>
                     </a>
 
@@ -221,10 +221,10 @@ const active = activeNavigation(Astro.url);
                 Newsroom
               </a>
               <a
-                href="/interactive-leaks"
+                href="/labs"
                 aria-current={active === 'lab' ? 'page' : undefined}
               >
-                Interactive Leaks
+                Labs
               </a>
 
               <a href="/interactive-leaks/explore">Community</a>
@@ -284,11 +284,11 @@ const active = activeNavigation(Astro.url);
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
-          <a class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
+          <a class="mobile-tabbar-lab" href="/labs" aria-current={active === 'lab' ? 'page' : undefined}>
             <span class="mobile-lab-orb" aria-hidden="true">
               <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
             </span>
-            <span>Leaks</span>
+            <span>Labs</span>
           </a>
           {showStudio && (
             <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>

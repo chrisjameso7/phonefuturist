@@ -6,6 +6,7 @@ import '../../styles/lab-simulator.css';
 const handle = (Astro.params.handle ?? '').toLowerCase();
 const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
 
+let badges:Array<{badge_name:string}>=[];
 let creator:any=null;
 let simulations:any[]=[];
 let profiles:any[]=[];
@@ -16,6 +17,7 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
   const {data}=await client.from('creator_profiles').select('user_id,handle,display_name,bio,avatar_url,created_at').eq('handle',handle).maybeSingle();
   creator=data;
   if(creator){
+    const {data:badgeRows}=await client.from('user_badges').select('badge_name').eq('user_id',creator.user_id);badges=badgeRows??[];
     const [{data:simRows},{data:profileRows}]=await Promise.all([
       client.from('simulations').select('id,name,device_key,processor_key,configuration_source,updated_at').eq('owner_id',creator.user_id).eq('visibility','public').order('updated_at',{ascending:false}).limit(24),
       client.from('simulation_profiles').select('id,name,component_key,profile_kind,updated_at').eq('owner_id',creator.user_id).eq('visibility','public').order('updated_at',{ascending:false}).limit(24),
@@ -55,7 +57,7 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
           <div>
             <div class="creator-name-row">
               <h1>{creator.display_name}</h1>
-              <span class="creator-badge">Creator</span>
+              <span class="creator-badge">Creator</span>{badges.map(badge=><span class="creator-badge">{badge.badge_name}</span>)}
             </div>
             <p class="creator-handle">@{creator.handle}</p>
             {creator.bio && <p class="creator-bio">{creator.bio}</p>}

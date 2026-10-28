@@ -1,0 +1,8 @@
+---
+import Page from '../../layouts/Page.astro';
+import PollEditor from '../../components/labs/PollEditor';
+import '../../styles/labs.css';
+const allowed=Astro.locals.access?.roles.some(r=>['editor','publisher','admin'].includes(r));
+if(!allowed)return new Response('Editor access required.',{status:403});
+---
+<Page title="Labs editorial" privatePage><div class="labs"><a href="/studio">← Studio</a><header class="lab-hero"><p class="lab-kicker">Labs editorial</p><h1>Design forks.</h1><p>Publish a blind poll or resolve a closed one. Community badges do not grant editorial permissions.</p></header><PollEditor client:load/></div></Page>

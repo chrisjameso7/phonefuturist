@@ -1,13 +1,19 @@
 ---
 import Page from '../../layouts/Page.astro';
+import AvatarUpload from '../../components/labs/AvatarUpload';
 import '../../styles/lab-simulator.css';
+import '../../styles/labs.css';
 const user=Astro.locals.user!;
 const access=Astro.locals.access!;
 const staff=access.roles.some(r=>['admin','writer','editor','publisher'].includes(r));
 let creatorProfile:any=null;
+let labProfile:any=null;
+let badges:Array<{badge_name:string}>=[];
 if(Astro.locals.supabase){
   const {data}=await Astro.locals.supabase.from('creator_profiles').select('handle,display_name,bio,avatar_url').eq('user_id',user.id).maybeSingle();
   creatorProfile=data;
+  const [{data:profile},{data:badgeRows}]=await Promise.all([Astro.locals.supabase.from('profiles').select('avatar_url').eq('user_id',user.id).maybeSingle(),Astro.locals.supabase.from('user_badges').select('badge_name').eq('user_id',user.id)]);
+  labProfile=profile;badges=badgeRows??[];
 }
 const displayName=creatorProfile?.display_name || user.email?.split('@')[0] || 'PhoneFuturist member';
 const initial=displayName.slice(0,1).toUpperCase();
@@ -17,15 +23,17 @@ const initial=displayName.slice(0,1).toUpperCase();
   <div class="account-network">
     <aside class="account-profile-card">
       <div class="account-avatar">
-        {creatorProfile?.avatar_url ? <img src={creatorProfile.avatar_url} alt="" /> : <span>{initial}</span>}
+        {(labProfile?.avatar_url || creatorProfile?.avatar_url) ? <img src={labProfile?.avatar_url || creatorProfile.avatar_url} alt="" /> : <span>{initial}</span>}
       </div>
       <h1>{displayName}</h1>
+      {badges.map(badge=><span class="lab-badge">{badge.badge_name}</span>)}
       {creatorProfile?.handle && <p class="account-handle">@{creatorProfile.handle}</p>}
       <p class="account-email">{user.email}</p>
 
       <nav aria-label="Account">
         <a class="is-active" href="/account">Overview</a>
         <a href="/articles">Newsroom</a>
+        <a href="/labs">Labs</a>
         {staff&&<a href="/studio">Studio</a>}
         <a href="/pro">Free &amp; Pro plans</a>
         <a href="/account/security">Security</a>
@@ -59,6 +67,7 @@ const initial=displayName.slice(0,1).toUpperCase();
         </article>
       </section>
 
+      <section class="account-creator-panel"><h2>Profile image</h2><p class="muted">Public profile image · PNG, JPEG or WebP, up to 2 MB.</p>{Astro.url.searchParams.get('avatar')==='saved'&&<p role="status">Profile image updated.</p>}<AvatarUpload client:load/></section>
       <section class="account-creator-panel">
         <div class="account-section-head">
           <div>
@@ -73,7 +82,7 @@ const initial=displayName.slice(0,1).toUpperCase();
             <label><span>Display name</span><input name="display_name" maxlength="60" required value={creatorProfile?.display_name??''} placeholder="Your public name" /></label>
             <label><span>Handle</span><input name="handle" maxlength="24" minlength="3" pattern="[a-z0-9_]{3,24}" required value={creatorProfile?.handle??''} placeholder="your_handle" /></label>
           </div>
-          <label><span>Avatar URL</span><input name="avatar_url" type="url" value={creatorProfile?.avatar_url??''} placeholder="https://..." /></label>
+          <label><span>Avatar URL</span><input name="avatar_url" type="url" value={(labProfile?.avatar_url || creatorProfile?.avatar_url)??''} placeholder="https://..." /></label>
           <label><span>Bio</span><textarea name="bio" maxlength="240" rows="3" placeholder="What do you like predicting?">{creatorProfile?.bio??''}</textarea></label>
           <button class="button" type="submit">{creatorProfile?'Update profile':'Create profile'}</button>
         </form>
