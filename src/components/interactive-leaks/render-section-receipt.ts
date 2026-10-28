@@ -1,3 +1,4 @@
+import {downloadLongCanvas} from '../../lib/downloads/result-pdf';
 import type { ReceiptMetric, ReceiptKind } from './DownloadSectionReceipt';
 
 /** Loaded only when a reader downloads a result; no simulation logic lives here. */
@@ -73,6 +74,7 @@ export async function renderSectionReceipt({ kind, deviceName, metrics, thermalP
   ctx.fillStyle='#94a3b8'; ctx.font='22px Arial';
   ctx.fillText('PHONEFUTURIST LAB  •  SIMULATION RESULTS',64,height-103,950);
   ctx.font='19px Arial';ctx.fillText(new Date().toLocaleDateString('en-GB', {year:'numeric',month:'short',day:'numeric'}),64,height-68);
+  if(await downloadLongCanvas(canvas,`phonefuturist-${kind.toLowerCase()}-${safeFilename(deviceName)}`,{brand:'PHONEFUTURIST / INTERACTIVE LEAKS',title:kind+' results',subtitle:deviceName||'Custom device',summary:'SIMULATION RESULTS'},{top:600,bottom:(300+rows.length*108+(chart?430:0))*2,breaks:[...rows.map((_,i)=>(300+(i+1)*108)*2),...(chart?[(300+rows.length*108+430)*2]:[])]}))return;
   const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve,'image/png'));
   if (!blob) throw new Error('Could not generate image');
   const url=URL.createObjectURL(blob);

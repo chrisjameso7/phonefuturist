@@ -1,4 +1,5 @@
 import { type BomInput, calculateBom } from '../../lib/labs/bom';
+import {downloadLongCanvas} from '../../lib/downloads/result-pdf';
 export async function downloadBomCard(input: BomInput, result: ReturnType<typeof calculateBom>) {
     const rows = result.items.filter(item => item.cost > 0), height = Math.max(1350, 480 + rows.length * 100);
     const canvas = document.createElement('canvas');
@@ -32,6 +33,11 @@ export async function downloadBomCard(input: BomInput, result: ReturnType<typeof
     ctx.fillStyle = '#9baabd';
     ctx.font = '22px sans-serif';
     ctx.fillText(input.resolution + 'p / ' + input.refresh + ' Hz · USD', 64, height - 65, 950);
+    if(await downloadLongCanvas(canvas,'phonefuturist-bom-spec',{
+        title:'Bill of materials',subtitle:input.name?.trim()||'Untitled concept',
+        summary:'Estimated BOM: $'+result.total.toFixed(2)+' / MSRP: $'+result.msrp+' / Margin: '+result.grossMargin.toFixed(1)+'%',
+        footer:'PhoneFuturist / Estimated BOM / USD / '+input.resolution+'p / '+input.refresh+' Hz',
+    },{top:300,bottom:300+rows.length*100,breaks:rows.map((_,i)=>400+i*100)}))return;
     const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
     if (!blob)
         throw new Error('Export failed');
