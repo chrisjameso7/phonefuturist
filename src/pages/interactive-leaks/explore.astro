@@ -82,10 +82,10 @@ const creatorsList=[...creators.values()].slice(0,6);
         <img src="/assets/phonefuturist-mark.svg" alt="" width="42" height="20" />
         <span>Lab</span>
       </a>
-      <nav>
+      <nav aria-label="Community">
         <a href="/">Home</a>
         <a href="/interactive-leaks">Lab</a>
-        <a class="is-active" href="/interactive-leaks/explore">Explore</a>
+        <a class="is-active" aria-current="page" href="/interactive-leaks/explore">Explore</a>
         <a href="/account">Your profile</a>
       </nav>
       <a class="button explore-build" href="/interactive-leaks">Open Interactive Leaks</a>
@@ -215,7 +215,7 @@ const creatorsList=[...creators.values()].slice(0,6);
 .explore-profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.explore-profile-card{padding:14px;border:1px solid #202c39;border-radius:12px;background:#0b121a;color:inherit;text-decoration:none}.explore-profile-card>span{color:#2cd9ff;font-size:.54rem;text-transform:uppercase;letter-spacing:.08em}.explore-profile-card h3{margin:6px 0 4px;font-size:.85rem}.explore-profile-card p{margin:0;color:#718092;font-size:.61rem;text-transform:capitalize}.explore-profile-card>div{display:flex;justify-content:space-between;margin-top:12px;padding-top:9px;border-top:1px solid #1d2834;color:#657486;font-size:.56rem}.explore-profile-card b{font-weight:600}
 .explore-right{display:grid;gap:12px}.explore-side-card{padding:14px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-side-title{margin-bottom:10px;color:#748294;font-size:.59rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}.explore-person{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid #1d2834;color:inherit;text-decoration:none}.explore-person:first-of-type{border-top:0}.explore-person strong{display:block;font-size:.64rem}.explore-person small{display:block;color:#667587;font-size:.55rem}.explore-side-card>p{margin:0;color:#7a8999;font-size:.67rem;line-height:1.55}.explore-side-card>a{display:block;margin-top:10px;color:#62cfff;text-decoration:none;font-size:.64rem}
 .explore-empty{padding:28px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-empty h2{margin:0 0 6px;font-size:1.4rem}.explore-empty p,.explore-empty-inline{color:#718092;font-size:.7rem}
-@media(max-width:1120px){.explore-network{grid-template-columns:170px minmax(0,1fr)}.explore-right{display:none}}@media(max-width:800px){.explore-network{display:block;padding-inline:0}.explore-left{display:none}.explore-feed{border-inline:0}.explore-card-grid{grid-template-columns:1fr}.explore-profile-grid{grid-template-columns:1fr 1fr}.explore-head{padding-inline:18px}}@media(max-width:540px){.explore-profile-grid{grid-template-columns:1fr}.explore-head h1{font-size:3.4rem}.explore-section{padding-inline:12px}}
+@media(max-width:1120px){.explore-network{grid-template-columns:170px minmax(0,1fr)}.explore-right{display:none}}@media(max-width:800px){.explore-network{display:block;padding-inline:0}.explore-left{display:block;position:static;padding:0 12px 12px}.explore-brand,.explore-build{display:none}.explore-left nav{display:flex;gap:6px;overflow-x:auto}.explore-left nav a{display:inline-flex;align-items:center;min-height:44px;white-space:nowrap;padding:0 14px;border:1px solid #202c39}.explore-left nav a.is-active{box-shadow:none;border-color:#168cff}.explore-feed{border-inline:0}.explore-card-grid{grid-template-columns:1fr}.explore-profile-grid{grid-template-columns:1fr 1fr}.explore-head{padding-inline:18px}}@media(max-width:540px){.explore-profile-grid{grid-template-columns:1fr}.explore-head h1{font-size:3.4rem}.explore-section{padding-inline:12px}}
 </style>
 
 
