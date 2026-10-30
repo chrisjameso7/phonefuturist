@@ -104,6 +104,32 @@ describe('phone family geometry and surfaces',()=>{
     model.update({...DEFAULT_DESIGN,usbC:true,speakers:'stereo',antenna:true,selfieDiameter:4,protrusion:4});
     for(const name of ['usb-c-port','speaker-grille','upper-speaker','antenna-cutout','selfie-camera'])expect(model.group.getObjectByName(name)).toBeTruthy();
     const lens=new Box3().setFromObject(model.group.getObjectByName('lens-aperture')!);
-    expect(lens.max.z-DEFAULT_DESIGN.thickness/2).toBeCloseTo(4,2);model.dispose();
+    expect(lens.max.z-DEFAULT_DESIGN.thickness/2).toBeCloseTo(4.96,2);model.dispose();
   });
+});
+
+it('keeps the flexible crease connected and wraps a curved rear spine through the fold motion',()=>{
+ for(const c of CONCEPT_PRESETS.foldables)for(const angle of [0,30,60,90,120,150,180]){
+  const model=createHardwareModel(conceptDesign(c,angle)),book=c.formFactor==='book_foldable';
+  const crease=model.group.getObjectByName('flexible-display-crease') as Mesh,spine=model.group.getObjectByName('articulated-rear-spine') as Mesh;
+  expect(crease).toBeTruthy();expect(spine).toBeTruthy();expect(crease.userData.bendLength).toBeCloseTo(3.02,3);
+  const vertices=crease.geometry.getAttribute('position');
+  const first=new Vector3().fromBufferAttribute(vertices,0),last=new Vector3().fromBufferAttribute(vertices,80);
+  const fold=Math.PI-angle*Math.PI/180,origin=new Vector3(0,0,-c.thickness/2-.25);
+  const end=(book?new Vector3(1.5,0,.1):new Vector3(0,1.5,.1)).applyAxisAngle(book?new Vector3(0,1,0):new Vector3(1,0,0),book?fold:-fold).add(origin);
+  expect(book?first.x:first.y).toBeCloseTo(-1.5,5);expect(first.z).toBeCloseTo(-c.thickness/2-.15,5);
+  expect(book?last.x:last.y).toBeCloseTo(book?end.x:end.y,5);expect(last.z).toBeCloseTo(end.z,5);
+  if(angle===0){const bounds=new Box3().setFromObject(spine);expect(book?bounds.max.x:bounds.max.y).toBeGreaterThan(1);}
+  expect(model.group.getObjectsByProperty('name','fold-camera-lens')).toHaveLength(2);model.dispose();
+ }
+});
+it('sets camera island depth in millimetres independently from chassis and lens cap thickness',()=>{
+ for(const family of ['plateau','duo','halo'] as const){const model=createDeviceModel({...DEFAULT_DESIGN,family});
+  for(const depth of [.5,2,6]){model.update({...DEFAULT_DESIGN,family,protrusion:depth});
+   const island=model.group.getObjectByName(family==='halo'?'circular-housing':family==='duo'?'camera-bar':'camera-island')!;
+   const bounds=new Box3().setFromObject(island),rear=new Box3().setFromObject(model.group.getObjectByName('back')!);
+   expect(bounds.getSize(new Vector3()).z).toBeCloseTo(depth,4);expect(bounds.min.z).toBeCloseTo(rear.max.z,4);expect(bounds.max.z-rear.max.z).toBeCloseTo(depth,4);
+   expect(new Box3().setFromObject(model.group.getObjectByName('chassis')!).getSize(new Vector3()).z).toBeCloseTo(DEFAULT_DESIGN.thickness,4);
+  }model.dispose();
+ }
 });

@@ -37,6 +37,7 @@ export default function DeviceViewport({ design, preferredView, captureRef }: { 
     <div className="device-view-tools" aria-label="Preview controls">
       <button type="button" disabled={status !== 'ready'} onClick={() => scene.current?.view('front')}>Front</button>
       <button type="button" disabled={status !== 'ready'} onClick={() => scene.current?.view('back')}>Back / reset</button>
+      <button type="button" disabled={status !== 'ready'} onClick={() => scene.current?.view('side')}>Side / depth</button>
       <button type="button" disabled={status !== 'ready'} aria-pressed={interactive} onClick={() => {
         const enabled = !interactive; setInteractive(enabled); scene.current?.interact(enabled);
       }}>{interactive ? 'Finish rotating' : 'Rotate device'}</button>

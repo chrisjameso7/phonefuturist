@@ -33,7 +33,7 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   const floor = new THREE.Mesh(floorGeometry, floorMaterial); floor.rotation.x = -Math.PI / 2;
   floor.position.y = -normalizeDesign(initial).height / 2 - 2; floor.receiveShadow = true; scene.add(floor);
   let kind=initial.kind;
-  let disposed = false, inView = true, frames = 2, view: 'front' | 'back' = initial.kind && initial.kind !== 'phone' ? 'front' : 'back';
+  let disposed = false, inView = true, frames = 2, view: 'front' | 'back' | 'side' = initial.kind && initial.kind !== 'phone' ? 'front' : 'back';
   const wake = () => { frames = 90; };
   controls.addEventListener('change', wake);
   function fit(reset = false, size?:{width:number;height:number}) {
@@ -48,7 +48,7 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
     const vertical = THREE.MathUtils.degToRad(camera.fov), horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
     const distance = Math.max(bounds.y / (2 * Math.tan(vertical / 2)), bounds.x / (2 * Math.tan(horizontal / 2))) * 1.25 + bounds.z*.5;
     controls.minDistance = Math.min(180, distance * .7); controls.maxDistance = Math.max(650, distance * 1.6);
-    if (reset) camera.position.set(.4, .3, (view === 'back' ? 1 : -1)*(kind==='laptop'?-1:1)).normalize().multiplyScalar(distance).add(centre);
+    if (reset) camera.position.set(view==='side'?1:.4, view==='side'?.12:.3, view==='side'?.12:(view === 'back' ? 1 : -1)*(kind==='laptop'?-1:1)).normalize().multiplyScalar(distance).add(centre);
     else camera.position.copy(offset.normalize().multiplyScalar(distance).add(centre));
     controls.update(); wake();
   }
@@ -71,7 +71,7 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
       try{return (['front','back'] as const).map(side=>{view=side;fit(true,{width:720,height:760});renderer.render(scene,camera);return canvas.toDataURL('image/png');});}
       finally{renderer.setPixelRatio(pixelRatio);renderer.setSize(Math.max(1,host.clientWidth),Math.max(1,host.clientHeight),false);view=oldView;camera.aspect=Math.max(1,host.clientWidth)/Math.max(1,host.clientHeight);camera.updateProjectionMatrix();camera.position.copy(position);controls.target.copy(target);controls.update();renderer.render(scene,camera);wake();}
     },
-    view(side: 'front' | 'back') { view = side; fit(true); },
+    view(side: 'front' | 'back' | 'side') { view = side; fit(true); },
     interact(enabled: boolean) { controls.enabled = enabled; canvas.style.touchAction = enabled ? 'none' : 'pan-y'; wake(); },
     dispose() {
       if (disposed) return; disposed = true;

@@ -10,7 +10,7 @@ export function displayGeometry(diagonal: number, aspectWidth: number, aspectHei
 export function conceptGeometry(c: DeviceConcept) {
   const primary=displayGeometry(c.diagonal,c.aspectWidth??c.pixelWidth,c.aspectHeight??c.pixelHeight,c.width,c.height,c.bezel??1);
   const book=c.formFactor==='book_foldable', flip=c.formFactor==='flip_foldable';
-  const cover=book||flip?displayGeometry(c.coverDiagonal,c.coverAspectWidth??c.coverWidth,c.coverAspectHeight??c.coverHeight,book?c.width/2:c.width,flip?c.height/2:c.height,c.coverBezel??1):null;
+  const cover=book||flip?displayGeometry(c.coverDiagonal,c.coverAspectWidth??c.coverWidth,c.coverAspectHeight??c.coverHeight,book?(c.width-3)/2:c.width,flip?(c.height-3)/2:c.height,c.coverBezel??1):null;
   return { primary, cover, valid:primary.valid&&(!cover||cover.valid) };
 }
 export function conceptDesign(c: DeviceConcept, hingeAngle: number): DeviceDesign {
@@ -27,7 +27,7 @@ export function withConceptBezel(c:DeviceConcept,cover:boolean,bezel:number):Dev
 }
 export function fitConceptChassis(c:DeviceConcept):DeviceConcept{
   const g=conceptGeometry(c),b=c.bezel??1,cb=c.coverBezel??1,book=c.formFactor==='book_foldable',flip=c.formFactor==='flip_foldable';
-  const width=Math.max(c.width,g.primary.width+2*b,(g.cover?.width??0)*(book?2:1)+2*cb*(book?2:1));
-  const height=Math.max(c.height,g.primary.height+2*b,(g.cover?.height??0)*(flip?2:1)+2*cb*(flip?2:1));
+  const width=Math.max(c.width,g.primary.width+2*b,(g.cover?.width??0)*(book?2:1)+2*cb*(book?2:1)+(book?3:0));
+  const height=Math.max(c.height,g.primary.height+2*b,(g.cover?.height??0)*(flip?2:1)+2*cb*(flip?2:1)+(flip?3:0));
   return {...c,width,height};
 }

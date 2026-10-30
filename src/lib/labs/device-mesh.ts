@@ -5,6 +5,7 @@ import { BACK_FINISHES, FRAME_FINISHES, FRONT_FINISHES } from './device-finishes
 
 /** Flat, uniformly rounded face; extrusion bevel stays independent of the corner radius. */
 export function slab(width: number, height: number, depth: number, radius: number, bevel = .25, corners?: [number,number,number,number]) {
+  bevel=Math.min(bevel,depth*.24);
   const w = width / 2 - bevel, h = height / 2 - bevel, r = Math.min(radius, w, h);
   const [bl,br,tr,tl]=(corners??[r,r,r,r]).map(n=>Math.max(0,Math.min(n,w,h)));
   const shape = new THREE.Shape();
@@ -103,7 +104,7 @@ export function createDeviceModel(initial: DeviceDesign) {
     }
     mesh(slab(1.3, 15, t * .55, .5, .1), frame, 'power-button', w / 2 + .4, h * .12);
     mesh(slab(1.3, 25, t * .55, .5, .1), frame, 'volume-rocker', -w / 2 - .4, h * .2);
-    const protrusion = c.protrusion!, backZ = t / 2 + protrusion * .25;
+    const protrusion = c.protrusion!, rearSurface=t/2+.3, backZ = rearSurface + protrusion/2, islandTop=rearSurface+protrusion;
     const count = c.cameraCount!, family = c.family!;
     const margin = 4, islandW = Math.min(c.cameraWidth!, w - margin*2), islandH = Math.min(c.cameraHeight!, h*.45);
     const circular = family === 'halo' || (!raw.family && c.camera === 'circle');
@@ -114,10 +115,10 @@ export function createDeviceModel(initial: DeviceDesign) {
     const cx=THREE.MathUtils.clamp(baseX+(c.cameraX??0),-w/2+margin+islandWidth/2,w/2-margin-islandWidth/2);
     const cy = THREE.MathUtils.clamp(h/2 - margin - islandHeight/2 + (c.cameraY??0),-h/2+margin+islandHeight/2,h/2-margin-islandHeight/2);
     if (circular) {
-      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion*.5,64),black,'circular-housing',cx,cy,backZ);
+      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,64),black,'circular-housing',cx,cy,backZ);
       housing.rotation.x=Math.PI/2;
     } else if (family !== 'dot') {
-      mesh(slab(islandWidth,islandHeight,protrusion*.5,family==='stealth'?2:family==='duo'?islandHeight/2:8),finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
+      mesh(slab(islandWidth,islandHeight,protrusion,family==='stealth'?2:family==='duo'?islandHeight/2:8),finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
     }
     let positions: Array<[number,number]>;
     if(horizontal) positions=Array.from({length:count},(_,i)=>[cx+(i-(count-1)/2)*(islandWidth-10)/Math.max(count,1),cy]);
@@ -131,11 +132,11 @@ export function createDeviceModel(initial: DeviceDesign) {
     const radius=Math.max(1.5,Math.min(c.lensDiameter!/2,(separation-c.lensSpacing!)/2,edgeDistance-1,islandHeight*.3,islandWidth*.3));
     positions.forEach(([x,y],i)=>{
       const periscope=c.camera==='periscope'&&i===count-1&&count>1;
-      if(periscope){mesh(slab(radius*2,radius*2,protrusion*.5,1,.1),frame,'periscope-block',x,y,backZ+protrusion*.4);mesh(slab(radius*1.5,radius*1.5,protrusion*.08,.6,.03),lens,'periscope-glass',x,y,backZ+protrusion*.7);}
+      if(periscope){mesh(slab(radius*2,radius*2,.5,1,.1),frame,'periscope-block',x,y,islandTop+.25);mesh(slab(radius*1.5,radius*1.5,.12,.6,.03),lens,'periscope-glass',x,y,islandTop+.56);}
       else {
-        const ring=mesh(new THREE.CylinderGeometry(radius,radius,protrusion*.5,40),frame,'lens-ring',x,y,backZ+protrusion*.4);ring.rotation.x=Math.PI/2;
-        const glass=mesh(new THREE.CylinderGeometry(radius*.8,radius*.8,protrusion*.08,40),lens,'camera-lens',x,y,backZ+protrusion*.7);glass.rotation.x=Math.PI/2;
-        const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,protrusion*.02,24),black,'lens-aperture',x,y,backZ+protrusion*.74);pupil.rotation.x=Math.PI/2;
+        const ring=mesh(new THREE.CylinderGeometry(radius,radius,.5,40),frame,'lens-ring',x,y,islandTop+.25);ring.rotation.x=Math.PI/2;
+        const glass=mesh(new THREE.CylinderGeometry(radius*.8,radius*.8,.12,40),lens,'camera-lens',x,y,islandTop+.56);glass.rotation.x=Math.PI/2;
+        const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),black,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
       }
     });
     const flashCandidates:Array<[number,number]>=horizontal?[[cx+islandWidth*.4,cy],[w/2-4,h/2-5]]:[[w/2-4,h/2-5],[-w/2+4,h/2-5],[w/2-4,h*.2]];

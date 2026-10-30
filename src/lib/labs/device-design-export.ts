@@ -4,7 +4,7 @@ import { WALLPAPERS } from './wallpaper-options';
 export function designCardRows(raw:DeviceDesign){
  const d=normalizeDesign(raw),w=d.displayWidth??d.width-2*d.bezel,h=d.displayHeight??d.height-2*d.bezel;
  const mm=(n:number)=>`${Number(n.toFixed(2))} mm`;
- return [['Chassis · height × width × depth',`${d.height} × ${d.width} × ${d.thickness} mm`],['Display · width × height',`${Number(w.toFixed(2))} × ${Number(h.toFixed(2))} mm`],['Bezel',mm(d.bezel)],['Camera bump depth',mm(d.protrusion??3)],['Rear camera lenses',String(d.cameraCount??3)],['Lens diameter',mm(d.lensDiameter??12)],['Side frame',FRAME_FINISHES[d.frameFinish??'brushedTitanium'].label],['Rear surface',BACK_FINISHES[d.backFinish??'titanium'].label],['Front glass',FRONT_FINISHES[d.frontFinish??'antiReflective'].label],['Wallpaper',WALLPAPERS[d.wallpaper??'none']],['Camera module',CAMERA_LAYOUTS[d.camera]],['Design family',DESIGN_FAMILIES[d.family??'plateau']]];
+ return [['Chassis · height × width × depth',`${d.height} × ${d.width} × ${d.thickness} mm`],['Display · width × height',`${Number(w.toFixed(2))} × ${Number(h.toFixed(2))} mm`],['Bezel',mm(d.bezel)],['Camera island depth',mm(d.protrusion??3)],['Rear camera lenses',String(d.cameraCount??3)],['Lens diameter',mm(d.lensDiameter??12)],['Side frame',FRAME_FINISHES[d.frameFinish??'brushedTitanium'].label],['Rear surface',BACK_FINISHES[d.backFinish??'titanium'].label],['Front glass',FRONT_FINISHES[d.frontFinish??'antiReflective'].label],['Wallpaper',WALLPAPERS[d.wallpaper??'none']],['Camera module',CAMERA_LAYOUTS[d.camera]],['Design family',DESIGN_FAMILIES[d.family??'plateau']]];
 }
 export async function downloadDesignCard(design:DeviceDesign,images:string[]){
  if(images.length!==2)throw new Error('Both device views are required');
