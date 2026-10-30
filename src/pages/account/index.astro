@@ -1,6 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
-import AvatarUpload from '../../components/labs/AvatarUpload';
+import CreatorProfileEditor from '../../components/labs/CreatorProfileEditor';
 import '../../styles/lab-simulator.css';
 import '../../styles/labs.css';
 const user=Astro.locals.user!;
@@ -67,7 +67,6 @@ const initial=displayName.slice(0,1).toUpperCase();
         </article>
       </section>
 
-      <section class="account-creator-panel"><h2>Profile image</h2><p class="muted">Public profile image · PNG, JPEG or WebP, up to 2 MB.</p>{Astro.url.searchParams.get('avatar')==='saved'&&<p role="status">Profile image updated.</p>}<AvatarUpload client:load/></section>
       <section class="account-creator-panel">
         <div class="account-section-head">
           <div>
@@ -77,15 +76,9 @@ const initial=displayName.slice(0,1).toUpperCase();
           {creatorProfile&&<a href={`/creator/${creatorProfile.handle}`}>View profile ↗</a>}
         </div>
         <p class="muted">This is how your public PhoneFuturist identity is presented.</p>
-        <form class="account-creator-form" action="/account/api/creator-profile" method="post">
-          <div class="account-form-grid">
-            <label><span>Display name</span><input name="display_name" maxlength="60" required value={creatorProfile?.display_name??''} placeholder="Your public name" /></label>
-            <label><span>Handle</span><input name="handle" maxlength="24" minlength="3" pattern="[a-z0-9_]{3,24}" required value={creatorProfile?.handle??''} placeholder="your_handle" /></label>
-          </div>
-          <label><span>Avatar URL</span><input name="avatar_url" type="url" value={(labProfile?.avatar_url || creatorProfile?.avatar_url)??''} placeholder="https://..." /></label>
-          <label><span>Bio</span><textarea name="bio" maxlength="240" rows="3" placeholder="What do you like predicting?">{creatorProfile?.bio??''}</textarea></label>
-          <button class="button" type="submit">{creatorProfile?'Update profile':'Create profile'}</button>
-        </form>
+        {Astro.url.searchParams.get('profile')==='saved'&&<p role="status">Profile saved.</p>}
+        {Astro.url.searchParams.get('avatar')==='saved'&&<p role="status">Profile image updated.</p>}
+        <CreatorProfileEditor profile={creatorProfile} client:load/>
       </section>
     </main>
   </div>
@@ -212,4 +205,16 @@ const initial=displayName.slice(0,1).toUpperCase();
   .account-creator-form textarea { box-sizing:border-box; max-width:100%; width:100%; min-width:0; }
   .account-feed-head h2 { font-size:clamp(2rem,9vw,2.7rem); line-height:1; }
 }
+</style>
+
+<style is:global>
+.account-creator-panel .creator-profile-view h3{font-weight:500;font-size:1.3rem;margin-bottom:6px}
+.account-creator-panel .creator-profile-view p{line-height:1.6;overflow-wrap:anywhere}
+.account-creator-panel .creator-profile-edit h3{font-size:1.1rem;font-weight:500}
+.account-creator-panel .creator-profile-edit section{margin-top:20px;padding-bottom:20px;border-bottom:1px solid #202c39}
+.account-creator-panel :is(.account-creator-form,.account-form-grid){display:grid;gap:14px;min-width:0}
+.account-creator-panel .account-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.account-creator-panel .account-creator-form label{display:grid;gap:6px;min-width:0}
+.account-creator-panel .account-creator-form input,.account-creator-panel .account-creator-form textarea{width:100%;min-width:0;box-sizing:border-box}
+@media(max-width:600px){.account-creator-panel .account-form-grid{grid-template-columns:minmax(0,1fr)}}
 </style>

@@ -1,3 +1,4 @@
+import { conceptGeometry } from './concept-geometry';
 import { simulateDevice } from '../simulation/engine';
 import type { DeviceFormFactor, SimulationInput } from '../simulation/types';
 export type ConceptFamily = 'foldables' | 'tablets' | 'laptops';
@@ -12,6 +13,8 @@ export type DeviceConcept = {
     pixelWidth: number;
     pixelHeight: number;
     refresh: number;
+    bezel?: number; coverBezel?: number;
+    aspectWidth?: number; aspectHeight?: number; coverAspectWidth?: number; coverAspectHeight?: number;
     coverDiagonal: number;
     coverWidth: number;
     coverHeight: number;
@@ -44,13 +47,14 @@ export function calculateDeviceConcept(concept: DeviceConcept, cover = false) {
     for (const key of ['width', 'height', 'thickness', 'weight', 'diagonal', 'pixelWidth', 'pixelHeight', 'refresh', 'energyWh', 'powerW', 'chargeW'] as const)
         if (!Number.isFinite(concept[key]) || concept[key] <= 0)
             throw new Error('Use positive device specifications.');
-    if (concept.energyWh > 300 || concept.powerW > 300 || concept.chargeW > 400 || concept.diagonal > 30 || concept.width > 600 || concept.height > 600 || concept.usablePercent < 1 || concept.usablePercent > 100 || concept.chargeEfficiency < 1 || concept.chargeEfficiency > 100)
+    if (concept.energyWh > 300 || concept.powerW > 300 || concept.chargeW > 400 || concept.width > 600 || concept.height > 600 || concept.usablePercent < 1 || concept.usablePercent > 100 || concept.chargeEfficiency < 1 || concept.chargeEfficiency > 100)
         throw new Error('Specifications exceed this workspace’s supported range.');
     const foldable = concept.formFactor === 'book_foldable' || concept.formFactor === 'flip_foldable';
     if (foldable && (!Number.isFinite(concept.coverDiagonal) || concept.coverDiagonal <= 0 || !Number.isFinite(concept.coverWidth) || concept.coverWidth <= 0 || !Number.isFinite(concept.coverHeight) || concept.coverHeight <= 0 || !Number.isFinite(concept.coverPowerW) || concept.coverPowerW <= 0))
         throw new Error('Enter valid cover display specifications.');
-    const primary = { diagonalInches: concept.diagonal, resolutionWidthPx: concept.pixelWidth, resolutionHeightPx: concept.pixelHeight, aspectWidth: concept.pixelWidth, aspectHeight: concept.pixelHeight, refreshRateHz: concept.refresh };
-    const input: SimulationInput = { name: concept.name, formFactor: concept.formFactor, dimensions: { widthMm: concept.width, heightMm: concept.height, thicknessMm: concept.thickness, weightG: concept.weight }, displays: { primary, ...(foldable ? { cover: { diagonalInches: concept.coverDiagonal, resolutionWidthPx: concept.coverWidth, resolutionHeightPx: concept.coverHeight, aspectWidth: concept.coverWidth, aspectHeight: concept.coverHeight } } : {}) }, battery: { cells: [{ capacityMah: concept.energyWh / 3.85 * 1000, nominalVoltageV: 3.85 }] } };
+    if (!conceptGeometry(concept).valid) throw new Error('Display dimensions exceed the available chassis. Reduce display size or explicitly resize the chassis.');
+    const primary = { diagonalInches: concept.diagonal, resolutionWidthPx: concept.pixelWidth, resolutionHeightPx: concept.pixelHeight, aspectWidth: concept.aspectWidth ?? concept.pixelWidth, aspectHeight: concept.aspectHeight ?? concept.pixelHeight, refreshRateHz: concept.refresh };
+    const input: SimulationInput = { name: concept.name, formFactor: concept.formFactor, dimensions: { widthMm: concept.width, heightMm: concept.height, thicknessMm: concept.thickness, weightG: concept.weight }, displays: { primary, ...(foldable ? { cover: { diagonalInches: concept.coverDiagonal, resolutionWidthPx: concept.coverWidth, resolutionHeightPx: concept.coverHeight, aspectWidth: concept.coverAspectWidth ?? concept.coverWidth, aspectHeight: concept.coverAspectHeight ?? concept.coverHeight } } : {}) }, battery: { cells: [{ capacityMah: concept.energyWh / 3.85 * 1000, nominalVoltageV: 3.85 }] } };
     const result = simulateDevice(input), activeDisplay = cover && foldable ? result.displays.cover! : result.displays.primary;
     const draw = cover && foldable ? concept.coverPowerW : concept.powerW;
     // Scenario energy balance only. No phone benchmark, battery cohort or thermal

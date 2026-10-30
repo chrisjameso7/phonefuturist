@@ -31,22 +31,10 @@ export const POST: APIRoute = async ({ locals, request }) => {
   const displayName = String(form.get('display_name') ?? '').trim();
   const handle = String(form.get('handle') ?? '').trim().toLowerCase();
   const bio = String(form.get('bio') ?? '').trim();
-  const avatarUrlRaw = String(form.get('avatar_url') ?? '').trim();
 
   if (displayName.length < 1 || displayName.length > 60) return json({ error: 'Display name must be 1 to 60 characters.' }, 400);
   if (!handlePattern.test(handle)) return json({ error: 'Handle must be 3 to 24 lowercase letters, numbers, or underscores.' }, 400);
   if (bio.length > 240) return json({ error: 'Bio must be 240 characters or fewer.' }, 400);
-
-  let avatarUrl: string | null = null;
-  if (avatarUrlRaw) {
-    try {
-      const parsed = new URL(avatarUrlRaw);
-      if (parsed.protocol !== 'https:') return json({ error: 'Avatar URL must use HTTPS.' }, 400);
-      avatarUrl = parsed.toString();
-    } catch {
-      return json({ error: 'Avatar URL is invalid.' }, 400);
-    }
-  }
 
   const { error } = await locals.supabase
     .from('creator_profiles')
@@ -55,13 +43,14 @@ export const POST: APIRoute = async ({ locals, request }) => {
       display_name: displayName,
       handle,
       bio,
-      avatar_url: avatarUrl,
     }, { onConflict: 'user_id' });
 
   if (error) {
     if (error.code === '23505') return json({ error: 'That handle is already taken.' }, 409);
     return json({ error: 'Could not save creator profile.' }, 500);
   }
+
+  if(request.headers.get('accept')?.includes('application/json')) return json({saved:true,handle});
 
   return new Response(null, {
     status: 303,

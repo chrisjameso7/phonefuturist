@@ -1,0 +1,7 @@
+---
+import Page from '../../layouts/Page.astro';
+import DeviceConfigurator from '../../components/labs/DeviceConfigurator';
+import '../../styles/labs.css';
+import '../../styles/device-configurator.css';
+---
+<Page title="3D device studio"><div class="labs"><nav class="lab-nav" aria-label="Labs"><a href="/labs">All labs</a><a href="/labs/bom">BOM</a><a href="/labs/configurator" aria-current="page">3D studio</a><a href="/labs/thermal">Thermal</a><a href="/labs/display">Display PWM</a><a href="/labs/vault">Concept vault</a><a href="/labs/haptics">Haptics</a><a href="/interactive-leaks">Interactive Leaks ↗</a></nav><header class="lab-hero"><p class="lab-kicker">07 / 3D device studio</p><h1>Shape your next device.</h1><p>Compact or Ultra. Titanium or ceramic. Build your own silhouette, refine the finish and find its best angle.</p></header><DeviceConfigurator client:visible/></div></Page>
