@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { WALLPAPERS } from '../../lib/labs/wallpaper-options';
+import { useRef, useState } from 'react';
 
 import LabNumber from './LabNumber';
 
@@ -14,8 +15,10 @@ import { DESIGN_FAMILIES, CAMERA_LAYOUTS, DEFAULT_DESIGN, DESIGN_LIMITS, DEVICE_
 
 export default function DeviceConfigurator() {
 
-  const [design, setDesign] = useState<DeviceDesign>({ ...DEFAULT_DESIGN, family:'plateau',cameraWidth:68,cameraHeight:44,frameFinish:'brushedTitanium',backFinish:'titanium',frontFinish:'antiReflective' });
+  const [design, setDesign] = useState<DeviceDesign>({ ...DEFAULT_DESIGN, family:'plateau',cameraWidth:68,cameraHeight:44,frameFinish:'brushedTitanium',backFinish:'titanium',frontFinish:'antiReflective',wallpaper:'aurora' });
 
+  const captureRef=useRef<(() => string[]) | null>(null);
+  const [exporting,setExporting]=useState(false),[exportStatus,setExportStatus]=useState('');
   const [customDisplay,setCustomDisplay]=useState(false),[diagonal,setDiagonal]=useState(6.5),[ratio,setRatio]=useState({width:9,height:19.5});
 
   const display=customDisplay?displayGeometry(diagonal,ratio.width,ratio.height,design.width,design.height):null;
@@ -34,16 +37,12 @@ export default function DeviceConfigurator() {
 
   }
 
-  function download() {
-
-    const blob = new Blob([JSON.stringify({ format: 'phonefuturist-device-design', version: 1, units: 'mm', design:rendered }, null, 2)], { type: 'application/json' });
-
-    const url = URL.createObjectURL(blob), a = document.createElement('a');
-
-    a.href = url; a.download = `${design.name.replace(/[^a-z0-9]+/gi, '-').slice(0, 60) || 'device'}-design.json`;
-
-    a.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-
+  async function download() {
+    if(!captureRef.current){setExportStatus('Wait for the 3D preview to load, then try again.');return;}
+    setExporting(true);setExportStatus('');
+    try{const images=captureRef.current();const {downloadDesignCard}=await import('../../lib/labs/device-design-export');await downloadDesignCard(rendered,images);setExportStatus('Design card downloaded with front, rear and dimensions.');}
+    catch{setExportStatus('Could not export the design card. Please retry the 3D preview.');}
+    finally{setExporting(false);}
   }
 
   return <div className="device-configurator">
@@ -88,6 +87,7 @@ export default function DeviceConfigurator() {
 
       </fieldset>
 
+      <label>Wallpaper<select aria-label="Wallpaper" value={design.wallpaper??'aurora'} onChange={e=>update('wallpaper',e.target.value as DeviceDesign['wallpaper'])}>{Object.entries(WALLPAPERS).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label>
       <label className="device-color-label">Finish colour<input type="color" value={design.color} onInput={e => update('color', e.currentTarget.value)} onChange={e => update('color', e.target.value)} /></label>
 
       <label>Camera module<select aria-label="Camera module" value={design.camera} onChange={e => update('camera', e.target.value as DeviceDesign['camera'])}>{Object.entries(CAMERA_LAYOUTS).filter(([value])=>value!=='circle'||design.family==='halo').map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
@@ -108,11 +108,11 @@ export default function DeviceConfigurator() {
 
       {(design.family==='stealth'||design.family==='dot')&&<label><input type="checkbox" checked={design.lighting??false} onChange={e=>update('lighting',e.target.checked)}/> Decorative lighting</label>}
 
-      <button type="button" onClick={download}>Download design</button>
+      <button type="button" disabled={exporting||!!(display&&!display.valid)} onClick={download}>{exporting?'Preparing design card…':'Download design card'}</button><p role="status">{exportStatus}</p>
 
     </section>
 
-    <div className="device-studio lab-glass"><DeviceViewport design={rendered} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div>
+    <div className="device-studio lab-glass"><DeviceViewport design={rendered} captureRef={captureRef} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div>
 
   </div>;
 

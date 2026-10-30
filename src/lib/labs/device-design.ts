@@ -1,3 +1,4 @@
+import type { Wallpaper } from './wallpaper-options';
 import type { FrameFinish, BackFinish, FrontFinish } from './device-finishes';
 export type DeviceMaterial = 'titanium' | 'ceramic' | 'glass' | 'steel';
 export type CameraLayout = 'triple' | 'periscope' | 'circle';
@@ -7,6 +8,7 @@ export const DESIGN_FAMILIES = {
 export type DesignFamily = keyof typeof DESIGN_FAMILIES;
 export type HardwareKind = 'phone' | 'tablet' | 'laptop' | 'book_foldable' | 'flip_foldable';
 export type DeviceDesign = {
+  wallpaper?: Wallpaper;
   name: string; width: number; height: number; thickness: number; bezel: number;
   material: DeviceMaterial; color: string; camera: CameraLayout;
   family?: DesignFamily; cameraCount?: number; cornerRadius?: number; lensDiameter?: number;

@@ -36,8 +36,8 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   let disposed = false, inView = true, frames = 2, view: 'front' | 'back' = initial.kind && initial.kind !== 'phone' ? 'front' : 'back';
   const wake = () => { frames = 90; };
   controls.addEventListener('change', wake);
-  function fit(reset = false) {
-    const width = Math.max(1, host.clientWidth), height = Math.max(1, host.clientHeight);
+  function fit(reset = false, size?:{width:number;height:number}) {
+    const width = size?.width??Math.max(1, host.clientWidth), height = size?.height??Math.max(1, host.clientHeight);
     renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
     const box = new THREE.Box3().setFromObject(model.group), bounds = box.getSize(new THREE.Vector3());
     const centre=box.getCenter(new THREE.Vector3()), offset=camera.position.clone().sub(controls.target);
@@ -65,6 +65,12 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   fit(true);
   return {
     update(config: DeviceDesign) { const changed=kind!==config.kind;kind=config.kind;if(changed)view=kind==='phone'?'back':'front';model.update(config);floor.position.y=-normalizeDesign(config).height/2-2;fit(changed); },
+    capture() {
+      const position=camera.position.clone(),target=controls.target.clone(),oldView=view,pixelRatio=renderer.getPixelRatio();
+      renderer.setPixelRatio(2);
+      try{return (['front','back'] as const).map(side=>{view=side;fit(true,{width:720,height:760});renderer.render(scene,camera);return canvas.toDataURL('image/png');});}
+      finally{renderer.setPixelRatio(pixelRatio);renderer.setSize(Math.max(1,host.clientWidth),Math.max(1,host.clientHeight),false);view=oldView;camera.aspect=Math.max(1,host.clientWidth)/Math.max(1,host.clientHeight);camera.updateProjectionMatrix();camera.position.copy(position);controls.target.copy(target);controls.update();renderer.render(scene,camera);wake();}
+    },
     view(side: 'front' | 'back') { view = side; fit(true); },
     interact(enabled: boolean) { controls.enabled = enabled; canvas.style.touchAction = enabled ? 'none' : 'pan-y'; wake(); },
     dispose() {

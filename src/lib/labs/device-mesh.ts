@@ -1,3 +1,4 @@
+import { wallpaperMaterial,screenUV } from './device-wallpaper';
 import * as THREE from 'three';
 import { normalizeDesign, type DeviceDesign } from './device-design';
 import { BACK_FINISHES, FRAME_FINISHES, FRONT_FINISHES } from './device-finishes';
@@ -52,6 +53,7 @@ export function createDeviceModel(initial: DeviceDesign) {
   const screen = new THREE.MeshPhysicalMaterial({ color: '#112837', roughness: .35, metalness: .1, emissive: '#082d3b', emissiveIntensity: .6 });
   const accent = new THREE.MeshStandardMaterial({ color: '#9fb6c9', roughness: .5, metalness: .4 });
   const glow = new THREE.MeshStandardMaterial({ color: '#75e4d1', emissive: '#75e4d1', emissiveIntensity: 1 });
+  const wallpaper=wallpaperMaterial(screen);
   const materials = [finish, frame, black, lens, screen, accent, glow];
   let previous = '';
   function mesh(geometry: THREE.BufferGeometry, material: THREE.Material, name: string, x = 0, y = 0, z = 0) {
@@ -81,6 +83,7 @@ export function createDeviceModel(initial: DeviceDesign) {
     const frameMap = c.frameFinish === 'brushedTitanium' ? brush : null;
     if (frame.normalMap !== frameMap) { frame.normalMap = frameMap; frame.needsUpdate = true; }
     frame.normalScale.set(.08,.08);
+    wallpaper.update(c.wallpaper);
     const signature = [c.width, c.height, c.thickness, c.bezel, c.camera, c.family, c.cameraCount, c.cornerRadius, c.lensDiameter, c.lensSpacing, c.cameraWidth, c.cameraHeight, c.protrusion, c.lighting, c.displayWidth, c.displayHeight, c.usbC, c.speakers, c.antenna, c.selfieDiameter, c.selfieStyle, c.frameProfile, c.cameraX, c.cameraY].join(':');
     if (signature === previous) return;
     previous = signature; clearGeometry();
@@ -91,7 +94,7 @@ export function createDeviceModel(initial: DeviceDesign) {
     mesh(slab(w - .6, h - .6, .35, r - .3, .1), black, 'front-bezel', 0, 0, -t / 2 - .06);
     const dw = c.displayWidth ?? w - 2*b, dh = c.displayHeight ?? h - 2*b;
     if (dw > 0 && dh > 0 && dw <= w - 1 && dh <= h - 1)
-      mesh(slab(dw, dh, .18, Math.max(1, Math.min(r - b, dw/8, dh/8)), .03), screen, 'flat-display', 0, 0, -t / 2 - .25);
+      mesh(screenUV(slab(dw, dh, .18, Math.max(1, Math.min(r - b, dw/8, dh/8)), .03),dw,dh), screen, 'flat-display', 0, 0, -t / 2 - .25);
     addDeviceBrand(group, accent, -h * .34, t/2 + .5, Math.min(20,w*.3));
     const selfie=c.selfieDiameter??2.8;
     if(c.selfieStyle!=='none'&&selfie>0&&dw>selfie*3&&dh>selfie*3){
@@ -160,5 +163,5 @@ export function createDeviceModel(initial: DeviceDesign) {
 
   }
   update(initial);
-  return { group, update, finish, dispose() { clearGeometry(); for (const material of materials) material.dispose(); brush.dispose(); } };
+  return { group, update, finish, dispose() { clearGeometry(); for (const material of materials) material.dispose(); brush.dispose(); wallpaper.dispose(); } };
 }

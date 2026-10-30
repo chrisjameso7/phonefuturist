@@ -1,3 +1,4 @@
+import { wallpaperMaterial,screenUV } from './device-wallpaper';
 import * as THREE from 'three';
 import { createDeviceModel, slab, addDeviceBrand } from './device-mesh';
 import { FRAME_FINISHES,BACK_FINISHES,FRONT_FINISHES } from './device-finishes';
@@ -10,21 +11,24 @@ export function createHardwareModel(initial: DeviceDesign) {
   const rear=new THREE.MeshPhysicalMaterial({color:'#68717d',metalness:.3,roughness:.65});
   const dark=new THREE.MeshStandardMaterial({color:'#080c12',roughness:.7});
   const glass=new THREE.MeshPhysicalMaterial({color:'#113449',roughness:.3,metalness:.1});
+  const wallpaper=wallpaperMaterial(glass);
   const logo=new THREE.MeshStandardMaterial({color:'#b8d8e9',roughness:.5});
   let signature='';
   function clear(){phone?.dispose();phone=null;group.traverse(n=>{if(n instanceof THREE.Mesh)n.geometry.dispose();});group.clear();}
   function panel(parent:THREE.Group,w:number,h:number,t:number,material:THREE.Material,name:string,x=0,y=0,z=0,r=5,corners?:[number,number,number,number]){
-    const node=new THREE.Mesh(slab(w,h,t,r,Math.min(.2,t/4),corners),material);node.name=name;node.position.set(x,y,z);node.castShadow=node.receiveShadow=true;parent.add(node);return node;
+    const geometry=slab(w,h,t,r,Math.min(.2,t/4),corners);if(material===glass)screenUV(geometry,w,h,name!=='laptop-display');
+    const node=new THREE.Mesh(geometry,material);node.name=name;node.position.set(x,y,z);node.castShadow=node.receiveShadow=true;parent.add(node);return node;
   }
   function screen(parent:THREE.Group,w:number,h:number,t:number,name:string,x=0,y=0){if(w<=0||h<=0)return;panel(parent,w,h,.12,glass,name,x,y,-t/2-.08,3);}
   function update(raw:DeviceDesign){
     const c=normalizeDesign(raw),kind=c.kind??'phone';
     if(kind==='phone'){if(!phone){clear();phone=createDeviceModel(c);group.add(phone.group);}else phone.update(c);signature='';group.updateMatrixWorld(true);return;}
+    wallpaper.update(c.wallpaper);
     body.color.set(c.color);rear.color.set(c.color);
     if(c.frameFinish&&FRAME_FINISHES[c.frameFinish]){const {label:_label,...params}=FRAME_FINISHES[c.frameFinish];body.setValues(params);}
     if(c.backFinish&&BACK_FINISHES[c.backFinish]){const {label:_label,...params}=BACK_FINISHES[c.backFinish];rear.setValues(params);}
     if(c.frontFinish&&FRONT_FINISHES[c.frontFinish]){const {label:_label,...params}=FRONT_FINISHES[c.frontFinish];glass.setValues(params);}
-    const {color:_color,frameFinish:_frame,backFinish:_back,frontFinish:_front,...geometry}=c;
+    const {color:_color,frameFinish:_frame,backFinish:_back,frontFinish:_front,wallpaper:_wallpaper,...geometry}=c;
     const next=JSON.stringify(geometry);if(next===signature)return;clear();signature=next;
     const w=c.width,h=c.height,t=c.thickness,dw=c.displayWidth??w-8,dh=c.displayHeight??h-8;
     if(kind==='tablet'){
@@ -74,5 +78,5 @@ export function createHardwareModel(initial: DeviceDesign) {
     group.updateMatrixWorld(true);
   }
   update(initial);
-  return {group,update,dispose(){clear();for(const m of [body,rear,dark,glass,logo])m.dispose();}};
+  return {group,update,dispose(){wallpaper.dispose();clear();for(const m of [body,rear,dark,glass,logo])m.dispose();}};
 }
