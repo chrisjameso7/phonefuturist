@@ -99,7 +99,7 @@ export function createHardwareModel(initial: DeviceDesign) {
       addDeviceBrand(left,logo,-ph*.25,t/2+.3,Math.min(18,pw*.3));
       const bump=c.protrusion??3,camX=-pw*.15,camY=ph/2-15;
       panel(left,Math.min(28,pw*.45),20,bump,dark,'fold-camera',camX,camY,t/2+.1+bump/2,4);
-      for(const x of [-6,6]){const lens=new THREE.Mesh(new THREE.CylinderGeometry(4.6,4.6,.7,32),logo);lens.name='fold-camera-lens';lens.rotation.x=Math.PI/2;lens.position.set(camX+x,camY,t/2+bump+.45);left.add(lens);const pupil=new THREE.Mesh(new THREE.CylinderGeometry(3.5,3.5,.2,32),dark);pupil.rotation.x=Math.PI/2;pupil.position.copy(lens.position).z+=.45;left.add(pupil);}
+      for(const x of [-6,6]){const lens=new THREE.Mesh(new THREE.CylinderGeometry(4.6,4.6,.7,32),body);lens.name='fold-camera-lens';lens.rotation.x=Math.PI/2;lens.position.set(camX+x,camY,t/2+bump+.45);left.add(lens);const pupil=new THREE.Mesh(new THREE.CylinderGeometry(3.5,3.5,.2,32),dark);pupil.rotation.x=Math.PI/2;pupil.position.copy(lens.position).z+=.45;left.add(pupil);}
       panel(left,1.1,13,t*.5,body,'fold-power-button',-pw/2-.3,ph*.08,0,.4);
 
 

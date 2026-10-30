@@ -50,12 +50,13 @@ export function createDeviceModel(initial: DeviceDesign) {
   const finish = new THREE.MeshPhysicalMaterial();
   const frame = new THREE.MeshPhysicalMaterial({ metalness: .9, roughness: .28 });
   const black = new THREE.MeshStandardMaterial({ color: '#080b10', roughness: .65, metalness: 0 });
-  const lens = new THREE.MeshPhysicalMaterial({ color: '#152e43', roughness: .08, metalness: .65, clearcoat: 1 });
+  const lens = new THREE.MeshPhysicalMaterial({ color: '#000000', roughness: .38, metalness: 0, clearcoat: 0, envMapIntensity: .1 });
+  const cameraBlack = new THREE.MeshStandardMaterial({color:'#000000',roughness:.48,metalness:0,envMapIntensity:.1});
   const screen = new THREE.MeshPhysicalMaterial({ color: '#112837', roughness: .35, metalness: .1, emissive: '#082d3b', emissiveIntensity: .6 });
   const accent = new THREE.MeshStandardMaterial({ color: '#9fb6c9', roughness: .5, metalness: .4 });
   const glow = new THREE.MeshStandardMaterial({ color: '#75e4d1', emissive: '#75e4d1', emissiveIntensity: 1 });
   const wallpaper=wallpaperMaterial(screen);
-  const materials = [finish, frame, black, lens, screen, accent, glow];
+  const materials = [finish, frame, black, lens, cameraBlack, screen, accent, glow];
   let previous = '';
   function mesh(geometry: THREE.BufferGeometry, material: THREE.Material, name: string, x = 0, y = 0, z = 0) {
     const node = new THREE.Mesh(geometry, material); node.name = name; node.position.set(x, y, z);
@@ -115,10 +116,12 @@ export function createDeviceModel(initial: DeviceDesign) {
     const cx=THREE.MathUtils.clamp(baseX+(c.cameraX??0),-w/2+margin+islandWidth/2,w/2-margin-islandWidth/2);
     const cy = THREE.MathUtils.clamp(h/2 - margin - islandHeight/2 + (c.cameraY??0),-h/2+margin+islandHeight/2,h/2-margin-islandHeight/2);
     if (circular) {
-      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,64),black,'circular-housing',cx,cy,backZ);
+      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,64),frame,'circular-housing',cx,cy,backZ);
       housing.rotation.x=Math.PI/2;
+      const face=mesh(new THREE.CylinderGeometry(islandWidth/2-.7,islandWidth/2-.7,.12,64),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);face.rotation.x=Math.PI/2;
     } else if (family !== 'dot') {
-      mesh(slab(islandWidth,islandHeight,protrusion,family==='stealth'?2:family==='duo'?islandHeight/2:8),finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
+      mesh(slab(islandWidth,islandHeight,protrusion,family==='stealth'?2:family==='duo'?islandHeight/2:8),horizontal?frame:finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
+      if(horizontal)mesh(slab(islandWidth-1.4,islandHeight-1.4,.12,(islandHeight-1.4)/2,.02),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);
     }
     let positions: Array<[number,number]>;
     if(horizontal) positions=Array.from({length:count},(_,i)=>[cx+(i-(count-1)/2)*(islandWidth-10)/Math.max(count,1),cy]);
@@ -136,7 +139,7 @@ export function createDeviceModel(initial: DeviceDesign) {
       else {
         const ring=mesh(new THREE.CylinderGeometry(radius,radius,.5,40),frame,'lens-ring',x,y,islandTop+.25);ring.rotation.x=Math.PI/2;
         const glass=mesh(new THREE.CylinderGeometry(radius*.8,radius*.8,.12,40),lens,'camera-lens',x,y,islandTop+.56);glass.rotation.x=Math.PI/2;
-        const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),black,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
+        const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),lens,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
       }
     });
     const flashCandidates:Array<[number,number]>=horizontal?[[cx+islandWidth*.4,cy],[w/2-4,h/2-5]]:[[w/2-4,h/2-5],[-w/2+4,h/2-5],[w/2-4,h*.2]];
