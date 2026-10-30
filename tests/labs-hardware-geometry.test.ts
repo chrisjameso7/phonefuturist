@@ -79,7 +79,7 @@ describe('phone family geometry and surfaces',()=>{
     for(const family of Object.keys(DESIGN_FAMILIES) as Array<keyof typeof DESIGN_FAMILIES>)for(const count of [1,2,3,4]){
       const model=createDeviceModel({...DEFAULT_DESIGN,family,cameraCount:count,camera:family==='halo'?'circle':'triple'});
       const lenses=model.group.children.filter(n=>n.name==='lens-ring') as Mesh[];
-      expect(lenses).toHaveLength(family==='duo'?2:count);expect(model.group.getObjectByName('phonefuturist-logo')).toBeTruthy();
+      expect(lenses).toHaveLength(family==='duo'||family==='halo'?0:count);expect(model.group.getObjectByName('phonefuturist-logo')).toBeTruthy();
       identities.add(model.group.children.map(n=>n.name).join(','));
       for(let i=0;i<lenses.length;i++){
         const r=new Box3().setFromObject(lenses[i]).getSize(new Vector3()).x/2;

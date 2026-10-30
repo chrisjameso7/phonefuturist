@@ -51,7 +51,7 @@ export function createDeviceModel(initial: DeviceDesign) {
   const frame = new THREE.MeshPhysicalMaterial({ metalness: .9, roughness: .28 });
   const black = new THREE.MeshStandardMaterial({ color: '#080b10', roughness: .65, metalness: 0 });
   const lens = new THREE.MeshPhysicalMaterial({ color: '#000000', roughness: .38, metalness: 0, clearcoat: 0, envMapIntensity: .1 });
-  const cameraBlack = new THREE.MeshStandardMaterial({color:'#000000',roughness:.48,metalness:0,envMapIntensity:.1});
+  const cameraBlack = new THREE.MeshBasicMaterial({color:'#000000'});
   const screen = new THREE.MeshPhysicalMaterial({ color: '#112837', roughness: .35, metalness: .1, emissive: '#082d3b', emissiveIntensity: .6 });
   const accent = new THREE.MeshStandardMaterial({ color: '#9fb6c9', roughness: .5, metalness: .4 });
   const glow = new THREE.MeshStandardMaterial({ color: '#75e4d1', emissive: '#75e4d1', emissiveIntensity: 1 });
@@ -133,7 +133,8 @@ export function createDeviceModel(initial: DeviceDesign) {
     for(let i=0;i<positions.length;i++)for(let j=i+1;j<positions.length;j++) separation=Math.min(separation,Math.hypot(positions[i][0]-positions[j][0],positions[i][1]-positions[j][1]));
     const edgeDistance=Math.min(...positions.map(([x,y])=>Math.min(w/2-Math.abs(x),h/2-Math.abs(y))));
     const radius=Math.max(1.5,Math.min(c.lensDiameter!/2,(separation-c.lensSpacing!)/2,edgeDistance-1,islandHeight*.3,islandWidth*.3));
-    positions.forEach(([x,y],i)=>{
+    // Duo and Halo use an uninterrupted opaque black camera window.
+    if(family!=='duo'&&family!=='halo')positions.forEach(([x,y],i)=>{
       const periscope=c.camera==='periscope'&&i===count-1&&count>1;
       if(periscope){mesh(slab(radius*2,radius*2,.5,1,.1),frame,'periscope-block',x,y,islandTop+.25);mesh(slab(radius*1.5,radius*1.5,.12,.6,.03),lens,'periscope-glass',x,y,islandTop+.56);}
       else {
