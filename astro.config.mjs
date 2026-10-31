@@ -42,8 +42,10 @@ export default defineConfig({
   },
 
   security: {
-    checkOrigin: true,
+    // Middleware enforces the exact origin allowlist for all unsafe methods, including trusted domain aliases.
+    checkOrigin: false,
     csp: {
+      scriptDirective: { resources: ["'self'"] },
       directives: [
         "default-src 'self'",
         "img-src 'self' data: blob: https:",

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import {HANDLE_PATTERN,HANDLE_HELP} from '../../../lib/security';
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -9,7 +10,7 @@ const json = (data: unknown, status = 200) =>
     },
   });
 
-const handlePattern = /^[a-z0-9_]{3,24}$/;
+
 
 export const GET: APIRoute = async ({ locals }) => {
   if (!locals.supabase || !locals.user) return json({ error: 'Sign in required.' }, 401);
@@ -29,11 +30,11 @@ export const POST: APIRoute = async ({ locals, request }) => {
 
   const form = await request.formData();
   const displayName = String(form.get('display_name') ?? '').trim();
-  const handle = String(form.get('handle') ?? '').trim().toLowerCase();
+  const handle = String(form.get('handle') ?? '');
   const bio = String(form.get('bio') ?? '').trim();
 
   if (displayName.length < 1 || displayName.length > 60) return json({ error: 'Display name must be 1 to 60 characters.' }, 400);
-  if (!handlePattern.test(handle)) return json({ error: 'Handle must be 3 to 24 lowercase letters, numbers, or underscores.' }, 400);
+  if (!HANDLE_PATTERN.test(handle)) return json({ error: HANDLE_HELP }, 400);
   if (bio.length > 240) return json({ error: 'Bio must be 240 characters or fewer.' }, 400);
 
   const { error } = await locals.supabase

@@ -22,6 +22,13 @@ describe('creator editing',()=>{
     const bad=context({...fields,handle:'x'});expect((await POST(bad.ctx)).status).toBe(400);expect(bad.upsert).not.toHaveBeenCalled();
     const conflict=context(fields,{code:'23505'});const response=await POST(conflict.ctx);expect(response.status).toBe(409);expect((await response.json()).error).toContain('already taken');
   });
+  it('rejects uppercase, whitespace and overlong handles without silently changing them',async()=>{
+    for(const handle of ['Creator',' creator','creator ','a'.repeat(21)]){
+      const {ctx,upsert}=context({...fields,handle});const response=await POST(ctx);
+      expect(response.status).toBe(400);expect(upsert).not.toHaveBeenCalled();
+      expect((await response.json()).error).toContain('only lowercase letters, numbers, and underscores');
+    }
+  });
   it('keeps HTML redirect compatibility and rejects anonymous writes',async()=>{
     const {ctx}=context(fields,null,'text/html');expect((await POST(ctx)).status).toBe(303);
     ctx.locals.user=null;expect((await POST(ctx)).status).toBe(401);

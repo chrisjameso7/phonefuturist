@@ -8,7 +8,7 @@ export function sessionClient(cookies: AstroCookies, request: Request, config: {
       setAll: values => {
         for (const {name,value,options} of values) {
           // Keep the SDK's persistent lifetime, rotation and deletion flags.
-          cookies.set(name,value,{...options,path:'/',httpOnly:true,sameSite:'lax',secure:config.origin.startsWith('https:')});
+          cookies.set(name,value,{...options,path:'/',httpOnly:true,sameSite:'lax',secure:new URL(request.url).protocol==='https:'});
         }
       },
     },

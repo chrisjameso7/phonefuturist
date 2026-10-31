@@ -1,5 +1,7 @@
 # Copy to .dev.vars; never commit credentials. APP_ORIGIN must be exact, no path.
 APP_ORIGIN=http://localhost:4321
+# Optional extra exact origins, comma-separated. Production apex/www and legacy Worker are built in.
+ALLOWED_ORIGINS=
 SUPABASE_URL=
 SUPABASE_PUBLISHABLE_KEY=
 VIRTUAL_DEVICE_PROVIDER=gemma

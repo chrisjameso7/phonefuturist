@@ -1,3 +1,4 @@
+import {HANDLE_HELP} from '../../lib/security';
 import { useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import AvatarUpload from './AvatarUpload';
 type Profile = { display_name: string; handle: string; bio: string; avatar_url?: string | null };
@@ -29,8 +30,9 @@ export default function CreatorProfileEditor({ profile }: { profile: Profile | n
     <form className="account-creator-form" onSubmit={save} aria-label="Edit creator profile" aria-busy={busy}>
       <div className="account-form-grid">
         <label><span>Display name</span><input name="display_name" maxLength={60} required disabled={busy} value={draft.display_name} onChange={e=>setDraft(d=>({...d,display_name:e.target.value}))}/></label>
-        <label><span>Handle</span><input name="handle" maxLength={24} minLength={3} pattern="[a-z0-9_]{3,24}" required disabled={busy} value={draft.handle} onChange={e=>setDraft(d=>({...d,handle:e.target.value}))}/></label>
+        <label><span>Handle</span><input name="handle" maxLength={20} minLength={3} pattern="[a-z0-9_]{3,20}" aria-describedby="creator-handle-help" title={HANDLE_HELP} required disabled={busy} value={draft.handle} onChange={e=>setDraft(d=>({...d,handle:e.target.value}))}/></label>
       </div>
+      <p id="creator-handle-help" className="muted">{HANDLE_HELP}</p>
       <label><span>Bio</span><textarea name="bio" maxLength={240} rows={3} disabled={busy} value={draft.bio} onChange={e=>setDraft(d=>({...d,bio:e.target.value}))}/></label>
       {error&&<p role="alert">{error}</p>}
       <div className="lab-action-row"><button className="button" disabled={busy} type="submit">{busy?'Saving…':'Save profile'}</button><button className="secondary" type="button" disabled={busy} onClick={()=>{if(dirty){setConfirmDiscard(true);return;}setEditing(false);setError('');}}>Cancel</button></div>

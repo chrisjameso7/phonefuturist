@@ -1,8 +1,12 @@
 ---
+import RoleBadge from '../../components/RoleBadge.astro';
+import {publicCreatorRoles,searchCreators,type CreatorRole} from '../../lib/creator-identity';
 import Page from '../../layouts/Page.astro';
 import { serverClient, settings } from '../../lib/supabase';
 import '../../styles/lab-simulator.css';
 
+const searchQuery=(Astro.url.searchParams.get('q')??'').slice(0,80);
+let searchError='';let searchResults:any[]=[];let roles=new Map<string,CreatorRole>();
 const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
 
 let simulations: any[] = [];
@@ -69,7 +73,9 @@ const trending = [...simulations]
   })
   .slice(0, 8);
 
-const creatorsList=[...creators.values()].slice(0,6);
+if(client&&searchQuery){const result=await searchCreators(client,searchQuery);searchResults=result.rows;searchError=result.error;}
+const creatorsList=searchQuery?searchResults:[...creators.values()].slice(0,6);
+if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsList.map((c:any)=>c.user_id)]);
 ---
 
 <Page
@@ -101,6 +107,8 @@ const creatorsList=[...creators.values()].slice(0,6);
         <a href="/interactive-leaks">Open Interactive Leaks →</a>
       </header>
 
+      <form method="get" action="/interactive-leaks/explore#creators" class="creator-search" role="search" aria-label="Find creators"><label>Find creators<input type="search" name="q" value={searchQuery} maxlength="20" placeholder="Search by handle" autocomplete="off"/></label><button type="submit">Search</button></form>
+      {searchError&&<p role="status">{searchError}</p>}
       <nav class="explore-tabs" aria-label="Explore sections">
         <a class="is-active" href="#trending">Trending</a>
         <a href="#latest">Latest</a>
@@ -130,7 +138,7 @@ const creatorsList=[...creators.values()].slice(0,6);
               </a>
               {creator && <a class="explore-creator-line" href={'/creator/'+creator.handle}>
                 <span class="explore-avatar">{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
-                <span><strong>{creator.display_name}</strong><small>@{creator.handle}</small></span>
+                <span><strong>{creator.display_name} <RoleBadge role={roles.get(creator.user_id)}/></strong><small>@{creator.handle}</small></span>
               </a>}
             </article>
           })}
@@ -150,7 +158,7 @@ const creatorsList=[...creators.values()].slice(0,6);
               <span class="explore-post-avatar">{creator?.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:(creator?.display_name||'P').slice(0,1).toUpperCase()}</span>
               <div>
                 <div class="explore-post-top">
-                  <strong>{creator?.display_name || 'PhoneFuturist creator'}</strong>
+                  <strong>{creator?.display_name || 'PhoneFuturist creator'} {creator&&<RoleBadge role={roles.get(creator.user_id)}/>}</strong>
                   {creator&&<small>@{creator.handle}</small>}
                   <time datetime={item.updated_at}>{new Date(item.updated_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'})}</time>
                 </div>
@@ -183,13 +191,14 @@ const creatorsList=[...creators.values()].slice(0,6);
       </section>
     </main>
 
-    <aside class="explore-right">
+    <aside class:list={["explore-right",{"search-active":!!searchQuery}]}>
       <section class="explore-side-card">
         <div class="explore-side-title">Creators to watch</div>
+        <span id="creators"></span>
         {creatorsList.length ? creatorsList.map((creator:any)=><a class="explore-person" href={'/creator/'+creator.handle}>
           <span>{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
-          <div><strong>{creator.display_name}</strong><small>@{creator.handle}</small></div>
-        </a>) : <p>No creator profiles yet.</p>}
+          <div><strong>{creator.display_name} <RoleBadge role={roles.get(creator.user_id)}/></strong><small>@{creator.handle}</small></div>
+        </a>) : <p>{searchQuery?'No creators match this handle.':'No creator profiles yet.'}</p>}
       </section>
 
       <section class="explore-side-card">
@@ -216,6 +225,8 @@ const creatorsList=[...creators.values()].slice(0,6);
 .explore-right{display:grid;gap:12px}.explore-side-card{padding:14px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-side-title{margin-bottom:10px;color:#748294;font-size:.59rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}.explore-person{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid #1d2834;color:inherit;text-decoration:none}.explore-person:first-of-type{border-top:0}.explore-person strong{display:block;font-size:.64rem}.explore-person small{display:block;color:#667587;font-size:.55rem}.explore-side-card>p{margin:0;color:#7a8999;font-size:.67rem;line-height:1.55}.explore-side-card>a{display:block;margin-top:10px;color:#62cfff;text-decoration:none;font-size:.64rem}
 .explore-empty{padding:28px;border:1px solid #202c39;border-radius:14px;background:#0b121a}.explore-empty h2{margin:0 0 6px;font-size:1.4rem}.explore-empty p,.explore-empty-inline{color:#718092;font-size:.7rem}
 @media(max-width:1120px){.explore-network{grid-template-columns:170px minmax(0,1fr)}.explore-right{display:none}}@media(max-width:800px){.explore-network{display:block;padding-inline:0}.explore-left{display:block;position:static;padding:0 12px 12px}.explore-brand,.explore-build{display:none}.explore-left nav{display:flex;gap:6px;overflow-x:auto}.explore-left nav a{display:inline-flex;align-items:center;min-height:44px;white-space:nowrap;padding:0 14px;border:1px solid #202c39}.explore-left nav a.is-active{box-shadow:none;border-color:#168cff}.explore-feed{border-inline:0}.explore-card-grid{grid-template-columns:1fr}.explore-profile-grid{grid-template-columns:1fr 1fr}.explore-head{padding-inline:18px}}@media(max-width:540px){.explore-profile-grid{grid-template-columns:1fr}.explore-head h1{font-size:3.4rem}.explore-section{padding-inline:12px}}
+@media(max-width:1120px){.explore-right.search-active{display:grid;position:static;grid-column:2}}
+@media(max-width:800px){.explore-right.search-active{padding:12px;grid-column:auto}.creator-search{margin-inline:12px}}
 </style>
 
 
@@ -249,3 +260,5 @@ const creatorsList=[...creators.values()].slice(0,6);
   .explore-head h1{font-size:2.8rem}
 }
 </style>
+
+<style>.creator-search{display:flex;align-items:end;gap:10px;margin:16px 0}.creator-search label{flex:1;min-width:0}.creator-search input{width:100%;min-height:44px}.creator-search button{min-height:44px;flex-shrink:0}</style>

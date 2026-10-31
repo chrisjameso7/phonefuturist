@@ -1,4 +1,6 @@
 ---
+import RoleBadge from '../../components/RoleBadge.astro';
+import {creatorRole} from '../../lib/creator-identity';
 import Page from '../../layouts/Page.astro';
 import CreatorProfileEditor from '../../components/labs/CreatorProfileEditor';
 import '../../styles/lab-simulator.css';
@@ -26,6 +28,7 @@ const initial=displayName.slice(0,1).toUpperCase();
         {(labProfile?.avatar_url || creatorProfile?.avatar_url) ? <img src={labProfile?.avatar_url || creatorProfile.avatar_url} alt="" /> : <span>{initial}</span>}
       </div>
       <h1>{displayName}</h1>
+      <RoleBadge role={creatorRole(access.roles,badges.some(b=>b.badge_name==='Pro'))}/>
       {badges.map(badge=><span class="lab-badge">{badge.badge_name}</span>)}
       {creatorProfile?.handle && <p class="account-handle">@{creatorProfile.handle}</p>}
       <p class="account-email">{user.email}</p>

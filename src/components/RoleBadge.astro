@@ -1,0 +1,9 @@
+---
+import {ROLE_BADGES,type CreatorRole} from '../lib/creator-identity';
+const {role}=Astro.props as {role?:CreatorRole|null};
+const badge=role?ROLE_BADGES[role]:null;
+---
+{badge&&<span class="role-badge" data-role={role} role="img" aria-label={`${badge.label} verified`} title={`${badge.label} verified`}>
+ <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill={badge.background} d="m12 1.8 2.6 1.6 3.1.1 1.5 2.7 2.6 1.6-.1 3.1 1.5 2.7-1.6 2.6-.1 3.1-2.7 1.5-1.6 2.6-3.1-.1L12 24.8l-2.6-1.6-3.1-.1-1.5-2.7-2.6-1.6.1-3.1-1.5-2.7 1.6-2.6.1-3.1 2.7-1.5 1.6-2.6 3.1.1Z" transform="translate(1 0) scale(.91)"/><path fill="none" stroke={badge.color} stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m7.5 12 3 3 6-6"/></svg>
+</span>}
+<style>.role-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex:none;vertical-align:-3px;line-height:1}.role-badge svg{display:block}</style>
