@@ -4,7 +4,7 @@
 - Removed the outer duplicate device-category navigation; the in-workspace selector retains each category configuration.
 - Replaced repeated slogans with concise tool names and functional section headings. Reduced shared lab heading size and introductory spacing.
 - Normalized the shared browser-title suffix and corrected Labs, Pro and Community titles.
-- Kept visual spec/design exports prominent; moved BOM configuration and haptic pattern JSON into explicitly labelled Advanced export disclosures. Audio download and haptic profiles remain available.
+- Kept visual spec/design exports prominent; moved BOM configuration, haptic pattern and simulation-record JSON into explicitly labelled Advanced export disclosures. Audio download and haptic profiles remain available.
 - Kept one Beta / Simulated designation in the Interactive Leaks workspace, removing duplicate outer and Simple Mode beta labels. Feedback remains available.
 - Community renders only populated feed sections and useful section links. When no builds or reusable profiles exist, it shows one invitation to publish. Creator search and its no-match feedback remain available.
 - Consolidated scoped newsroom mobile rules, retained their final declaration values, merged duplicate lab input/alignment styling and removed unused old lab-nav styles.

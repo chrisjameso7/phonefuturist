@@ -4999,3 +4999,5 @@
   padding-top: .85rem;
   border-top: 1px solid #ffffff12;
 }
+
+.il-advanced-export summary{display:flex;align-items:center;min-height:44px;cursor:pointer}
