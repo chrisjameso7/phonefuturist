@@ -14,3 +14,5 @@ No simulation algorithms, calibration data, component prices, authentication, ro
 Deployment is separate from this cleanup commit.
 
 Verification so far: Astro check passed with zero errors/warnings; production build passed with the existing oversized-asset warnings. Browser verified the native tool switcher at 360, 390, 430 and 768px without horizontal overflow; JSON export is hidden until expanded; empty Community shows one invitation and retains search; title is Explore followed by one brand suffix.
+
+Final verification: 222 test files / 904 tests passed with `npm.cmd test -- --maxWorkers=1 --testTimeout=15000`. Final `npm.cmd run check`: zero errors, warnings or hints. Final `npm.cmd run build`: passed; existing >500 KiB simulation-data and Three.js scene warnings remain. Newsroom scoped CSS final declaration maps compare equal before/after consolidation. No deployment performed.
