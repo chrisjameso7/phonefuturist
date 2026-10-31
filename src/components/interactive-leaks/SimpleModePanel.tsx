@@ -145,7 +145,7 @@ export default function SimpleModePanel({
       <div className="il-simple-intro">
         <div>
           <strong>Simple Mode</strong>
-          <span>Beta · free</span>
+
         </div>
 
       </div>

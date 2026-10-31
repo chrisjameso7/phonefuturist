@@ -1,6 +1,7 @@
 ---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
 import Page from '../../layouts/Page.astro';
 import ThermalLab from '../../components/labs/ThermalLab';
 import '../../styles/labs.css';
 ---
-<Page title="The thermal simulator"><div class="labs"><nav class="lab-nav" aria-label="Labs"><a href="/labs">All labs</a><a href="/labs/configurator">3D studio</a><a href="/labs/bom" >BOM</a><a href="/labs/thermal" aria-current="page">Thermal</a><a href="/labs/vault" >Concept vault</a><a href="/labs/display">Display PWM</a><a href="/labs/haptics">Haptics</a><a href="/interactive-leaks">Interactive Leaks ↗</a></nav><header class="lab-hero"><p class="lab-kicker">Performance under pressure</p><h1>The thermal simulator</h1><p>Explore a 15-minute cooling scenario with temperature and FPS charts.</p></header><ThermalLab client:load /></div></Page>
+<Page title="Thermal simulator"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Thermal simulator</h1><p>Configure cooling and inspect temperature and FPS.</p></header><ThermalLab client:load /></div></Page>

@@ -1,6 +1,7 @@
 ---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
 import Page from '../../layouts/Page.astro';
 import HapticLab from '../../components/labs/HapticLab';
 import '../../styles/labs.css';
 ---
-<Page title="Haptic playground"><div class="labs"><nav class="lab-nav" aria-label="Labs"><a href="/labs">All labs</a><a href="/labs/configurator">3D studio</a><a href="/labs/bom">BOM</a><a href="/labs/thermal">Thermal</a><a href="/labs/display">Display PWM</a><a href="/labs/vault">Concept vault</a><a href="/labs/haptics" aria-current="page">Haptics</a><a href="/interactive-leaks">Interactive Leaks ↗</a></nav><header class="lab-hero"><p class="lab-kicker">06 / Haptic playground</p><h1>Make it feel like you.</h1><p>Mechanical clicks. Soft taps. Springy rebounds. Create your own touch signature.</p></header><HapticLab client:load/></div></Page>
+<Page title="Haptics"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Haptics</h1><p>Test profiles and create your own pulse pattern.</p></header><HapticLab client:load/></div></Page>

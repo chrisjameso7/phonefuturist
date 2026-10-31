@@ -1,6 +1,7 @@
 ---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
 import Page from '../../layouts/Page.astro';
 import ConceptVault from '../../components/labs/ConceptVault';
 import '../../styles/labs.css';
 ---
-<Page title="Tomorrow has more than one fork."><div class="labs"><nav class="lab-nav" aria-label="Labs"><a href="/labs">All labs</a><a href="/labs/configurator">3D studio</a><a href="/labs/bom" >BOM</a><a href="/labs/thermal" >Thermal</a><a href="/labs/vault" aria-current="page">Concept vault</a><a href="/labs/display">Display PWM</a><a href="/labs/haptics">Haptics</a><a href="/interactive-leaks">Interactive Leaks ↗</a></nav><header class="lab-hero"><p class="lab-kicker">The concept vault</p><h1>Tomorrow has more than one fork.</h1><p>Lock your hardware predictions before seeing the community consensus.</p></header><ConceptVault client:load /></div></Page>
+<Page title="Concept vault"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Concept vault</h1><p>Lock a prediction and follow the outcome.</p></header><ConceptVault client:load /></div></Page>

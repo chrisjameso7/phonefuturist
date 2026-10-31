@@ -46,30 +46,21 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
   .newsroom-empty p{margin:0;color:var(--muted)}
   .newsroom-pagination{display:flex;justify-content:space-between;padding-top:30px;font-size:.72rem}
   @media(max-width:650px){
-    .newsroom-index{width:100%;padding:0 0 64px}
-    .newsroom-head{padding:24px 16px 16px}
-    .newsroom-head h1{margin:6px 0 8px;font-size:2.45rem;line-height:.98;letter-spacing:-.055em}
+    .newsroom-index{width:100%;padding:0 0 84px}
+    .newsroom-head{padding:22px 18px 16px}
+    .newsroom-head h1{margin:6px 0 8px;letter-spacing:-.055em;font-size:2.7rem;line-height:.94}
     .newsroom-head>p:not(.eyebrow){font-size:.82rem;line-height:1.45}
-    .newsroom-tabs{margin:0;padding:0 8px 9px;border:0;border-bottom:1px solid #18212b;border-radius:0;background:transparent;gap:1px}
-    .newsroom-tabs a{padding:8px 10px}
+    .newsroom-tabs{border-bottom:1px solid #18212b;border-radius:0;margin:0 0 12px;padding:0 12px 2px;border:0;background:transparent;gap:7px}
+    .newsroom-tabs a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid #202b37;border-radius:999px;background:#0b1118}
     .newsroom-pagination{padding:20px 16px 0}
     .newsroom-empty{margin:0 16px;border-radius:12px}
+  .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
+  .newsroom-index .article-card{border:1px solid #202b37!important;border-radius:22px!important;background:#0b1118!important;overflow:hidden}
   }
 </style>
 
 
-<style>
-@media(max-width:650px){
-  .newsroom-index{padding:0 0 84px}
-  .newsroom-head{padding:22px 18px 16px}
-  .newsroom-head h1{font-size:2.7rem;line-height:.94}
-  .newsroom-tabs{margin:0 0 12px;padding:0 12px 2px;border:0;background:transparent;gap:7px}
-  .newsroom-tabs a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid #202b37;border-radius:999px;background:#0b1118}
-  .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
-  .newsroom-index .article-card{border:1px solid #202b37!important;border-radius:22px!important;background:#0b1118!important;overflow:hidden}
-  .newsroom-pagination{padding:20px 16px 0}
-}
-</style>
+
 
 <style is:global>
 /* Newsroom mobile: full-width editorial cards, never a compressed desktop row. */

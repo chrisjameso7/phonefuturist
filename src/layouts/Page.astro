@@ -68,7 +68,7 @@ if(showAds&&Astro.csp){
       content={privatePage ? 'noindex, nofollow' : 'noindex'}
     />
 
-    <title>{title} · PhoneFuturist</title>
+    <title>{title.replace(/(?:\s*·\s*PhoneFuturist)+$/i, '')} · PhoneFuturist</title>
     {showAds&&<><meta name="google-adsense-account" content={ADSENSE_CLIENT}/><script is:inline nonce={adsNonce} async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script></>}
   </head>
 

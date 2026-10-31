@@ -5,7 +5,7 @@
   padding:36px clamp(16px,4vw,64px) 100px;
   color:#edf3fb}
 .lab-hero{
-  padding:32px 0 46px;
+  padding:12px 0 24px;
   max-width:850px}
 .lab-kicker{
   font-size:.72rem;
@@ -13,29 +13,14 @@
   text-transform:uppercase;
   color:#75e4d1}
 .lab-hero h1{
-  font-size:clamp(2.8rem,7vw,6rem);
+  font-size:clamp(2rem,4vw,3rem);
   line-height:1.05;
   letter-spacing:-.06em;
-  margin:14px 0 24px}
+  margin:6px 0 10px}
 .lab-hero p:not(.lab-kicker){
   color:#aebbc9;
   max-width:650px;
   line-height:1.7}
-.lab-nav{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:12px 0 30px}
-.lab-nav a{
-  padding:12px 18px;
-  border:1px solid #29394a;
-  border-radius:30px;
-  color:#dce7f3;
-  text-decoration:none;
-  min-height:44px}
-.lab-nav a[aria-current=page]{
-  background:#75e4d1;
-  color:#07151a}
 .lab-card-grid,.lab-poll-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -68,6 +53,7 @@
   color:#75e4d1;
   margin-top:auto}
 .lab-split{
+  align-items:start;
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
   gap:22px}
@@ -217,8 +203,6 @@
   grid-template-columns:minmax(0,1fr)}
 .lab-glass{
   padding:20px}
-.lab-nav a{
-  padding:11px 14px}
 .lab-metric-row{
   gap:12px}
 }
@@ -244,8 +228,6 @@
   transition:none}
 }
 .lab-field-wide{grid-column:1/-1}
-.lab-split{align-items:start}
-.labs input:not([type=range]):not([type=checkbox]){width:100%;border:1px solid #324153;border-radius:10px;padding:12px;background:#0c1827;color:#eef5ff}
 .lab-bom-groups{margin:26px 0}
 .lab-spec-group{border-top:1px solid #ffffff1c;margin:12px 0}
 .lab-spec-group>summary{font-size:1.05rem;color:#edf3fb;font-weight:600;display:flex;justify-content:space-between;gap:12px}
@@ -273,3 +255,5 @@
 .lab-build-name{font-size:1.2rem;color:#dce7f3}
 @media(max-width:800px){.lab-bom-summary{position:static}.lab-bom-summary .lab-breakdown{max-height:none}.lab-pattern-editor{grid-template-columns:repeat(2,minmax(0,1fr))}.lab-profile-grid{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.lab-haptic-pad.is-playing{animation:none}}
+
+.lab-advanced-export{margin-top:14px}.lab-advanced-export summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#aebbc9}.lab-advanced-export button{margin-top:8px}

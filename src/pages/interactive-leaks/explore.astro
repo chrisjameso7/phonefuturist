@@ -79,7 +79,7 @@ if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsL
 ---
 
 <Page
-  title="Explore · PhoneFuturist"
+  title="Explore"
   description="Discover public PhoneFuturist simulations, creators and reusable component profiles."
 >
   <div class="explore-network">
@@ -109,13 +109,13 @@ if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsL
 
       <form method="get" action="/interactive-leaks/explore#creators" class="creator-search" role="search" aria-label="Find creators"><label>Find creators<input type="search" name="q" value={searchQuery} maxlength="20" placeholder="Search by handle" autocomplete="off"/></label><button type="submit">Search</button></form>
       {searchError&&<p role="status">{searchError}</p>}
-      <nav class="explore-tabs" aria-label="Explore sections">
-        <a class="is-active" href="#trending">Trending</a>
-        <a href="#latest">Latest</a>
-        <a href="#profiles">Profiles</a>
-      </nav>
+      {(simulations.length>0||profiles.length>0)&&<nav class="explore-tabs" aria-label="Explore sections">
+        {simulations.length>0&&<><a class="is-active" href="#trending">Trending</a><a href="#latest">Latest</a></>}
+        {profiles.length>0&&<a href="#profiles">Profiles</a>}
+      </nav>}
+      {!simulations.length&&!profiles.length&&<section class="explore-empty"><h2>Share the first public build</h2><p>Publish a device concept or reusable profile to start the community feed.</p><a class="button" href="/interactive-leaks">Build a device</a></section>}
 
-      <section id="trending" class="explore-section">
+      {simulations.length>0&&<section id="trending" class="explore-section">
         <div class="explore-section-head">
           <div><span>Trending now</span><small>Ranked by public forks, then recency</small></div>
           <span>{trending.length}</span>
@@ -143,9 +143,9 @@ if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsL
             </article>
           })}
         </div> : <div class="explore-empty"><h2>No public simulations yet.</h2><p>The first one gets the whole feed.</p><a class="button" href="/interactive-leaks">Open Interactive Leaks →</a></div>}
-      </section>
+      </section>}
 
-      <section id="latest" class="explore-section">
+      {simulations.length>0&&<section id="latest" class="explore-section">
         <div class="explore-section-head">
           <div><span>Latest</span><small>Fresh public builds</small></div>
           <span>{simulations.length}</span>
@@ -169,9 +169,9 @@ if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsL
             </a>
           })}
         </div> : <p class="explore-empty-inline">Nothing published yet.</p>}
-      </section>
+      </section>}
 
-      <section id="profiles" class="explore-section">
+      {profiles.length>0&&<section id="profiles" class="explore-section">
         <div class="explore-section-head">
           <div><span>Reusable profiles</span><small>Component assumptions from the community</small></div>
           <span>{profiles.length}</span>
@@ -188,24 +188,18 @@ if(client)roles=await publicCreatorRoles(client,[...creators.keys(),...creatorsL
             </a>
           })}
         </div> : <p class="explore-empty-inline">No public profiles yet.</p>}
-      </section>
+      </section>}
     </main>
 
     <aside class:list={["explore-right",{"search-active":!!searchQuery}]}>
-      <section class="explore-side-card">
-        <div class="explore-side-title">Creators to watch</div>
+      {(creatorsList.length>0||!!searchQuery)&&<section class="explore-side-card">
+        <div class="explore-side-title">{searchQuery?'Creator results':'Creators to watch'}</div>
         <span id="creators"></span>
         {creatorsList.length ? creatorsList.map((creator:any)=><a class="explore-person" href={'/creator/'+creator.handle}>
           <span>{creator.avatar_url?<img src={creator.avatar_url} alt="" loading="lazy"/>:creator.display_name.slice(0,1).toUpperCase()}</span>
           <div><strong>{creator.display_name} <RoleBadge role={roles.get(creator.user_id)}/></strong><small>@{creator.handle}</small></div>
         </a>) : <p>{searchQuery?'No creators match this handle.':'No creator profiles yet.'}</p>}
-      </section>
-
-      <section class="explore-side-card">
-        <div class="explore-side-title">What can I do here?</div>
-        <p>Open a public simulation, fork it, change one assumption and publish your own branch.</p>
-        <a href="/interactive-leaks">Open Interactive Leaks →</a>
-      </section>
+      </section>}
     </aside>
   </div>
 </Page>
