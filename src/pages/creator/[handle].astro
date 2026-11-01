@@ -1,4 +1,5 @@
 ---
+import CommunityPeople from '../../components/community/CommunityPeople';
 import RoleBadge from '../../components/RoleBadge.astro';
 import {publicCreatorRoles,type CreatorRole} from '../../lib/creator-identity';
 import Page from '../../layouts/Page.astro';
@@ -63,7 +64,7 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
               <h1>{creator.display_name}</h1>
               <RoleBadge role={role}/>{badges.map(badge=><span class="creator-badge">{badge.badge_name}</span>)}
             </div>
-            <p class="creator-handle">@{creator.handle}</p>
+            <p class="creator-handle">@{creator.handle}</p><CommunityPeople personId={creator.user_id} title="Community" client:load/>
             {creator.bio && <p class="creator-bio">{creator.bio}</p>}
           </div>
           <a class="button" href="/interactive-leaks/explore">Explore community</a>

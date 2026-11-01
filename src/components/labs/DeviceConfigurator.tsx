@@ -1,5 +1,6 @@
+import PublishBuild from '../community/PublishBuild';
 import { WALLPAPERS } from '../../lib/labs/wallpaper-options';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import LabNumber from './LabNumber';
 
@@ -15,7 +16,7 @@ import { DESIGN_FAMILIES, CAMERA_LAYOUTS, DEFAULT_DESIGN, DESIGN_LIMITS, DEVICE_
 
 export default function DeviceConfigurator() {
 
-  const [design, setDesign] = useState<DeviceDesign>({ ...DEFAULT_DESIGN, family:'plateau',cameraWidth:68,cameraHeight:44,frameFinish:'brushedTitanium',backFinish:'titanium',frontFinish:'antiReflective',wallpaper:'aurora' });
+  const [design, setDesignState] = useState<DeviceDesign>({ ...DEFAULT_DESIGN, family:'plateau',cameraWidth:68,cameraHeight:44,frameFinish:'brushedTitanium',backFinish:'titanium',frontFinish:'antiReflective',wallpaper:'aurora' });
 
   const captureRef=useRef<(() => string[]) | null>(null);
   const [exporting,setExporting]=useState(false),[exportStatus,setExportStatus]=useState('');
@@ -23,6 +24,10 @@ export default function DeviceConfigurator() {
 
   const display=customDisplay?displayGeometry(diagonal,ratio.width,ratio.height,design.width,design.height):null;
 
+  const importTouched=useRef(false);
+  const [importStatus,setImportStatus]=useState(''),[communitySource,setCommunitySource]=useState<string|null>(null);
+  const setDesign:typeof setDesignState=value=>{importTouched.current=true;setDesignState(value);};
+  useEffect(()=>{const id=new URLSearchParams(window.location.search).get('communityBuild');if(!id||!/^[a-f0-9-]{36}$/i.test(id))return;const ctrl=new AbortController();setImportStatus('Loading your Community copy…');fetch('/api/community?kind=design&id='+encodeURIComponent(id),{signal:ctrl.signal}).then(async response=>{const body=await response.json();if(!response.ok)throw new Error(body.error??'Could not load this copy.');if(!importTouched.current){setDesignState(body.design);setCommunitySource(body.forkedFrom);setImportStatus('Community design loaded. Edit it, then share your version.');}else setImportStatus('Your edits were kept. Reload to import the saved copy.');}).catch(e=>{if(e.name!=='AbortError')setImportStatus(e.message);});return()=>ctrl.abort();},[]);
   const rendered={...design,...(display?{displayWidth:display.valid?display.width:0,displayHeight:display.valid?display.height:0}:{})};
 
   function dimension(key:'width'|'height',value:number){const r=ratio.width/ratio.height;const w=key==='width'?value:value*r,h=key==='height'?value:value/r;setDiagonal(Math.hypot(w,h)/25.4);}
@@ -108,7 +113,7 @@ export default function DeviceConfigurator() {
 
       {(design.family==='stealth'||design.family==='dot')&&<label><input type="checkbox" checked={design.lighting??false} onChange={e=>update('lighting',e.target.checked)}/> Decorative lighting</label>}
 
-      <button type="button" disabled={exporting||!!(display&&!display.valid)} onClick={download}>{exporting?'Preparing design card…':'Download design card'}</button><p role="status">{exportStatus}</p>
+      <button type="button" disabled={exporting||!!(display&&!display.valid)} onClick={download}>{exporting?'Preparing design card…':'Download design card'}</button><p role="status">{exportStatus}</p><PublishBuild design={rendered} forkedFrom={communitySource}/><p role="status">{importStatus}</p>
 
     </section>
 

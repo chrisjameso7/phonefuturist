@@ -674,3 +674,5 @@ body:not(.product-mode) .mobile-app-brand {
     margin-inline: auto;
   }
 }
+
+.community-publish{margin:16px 0;max-width:100%;font-size:.85rem}.community-publish summary{cursor:pointer;min-height:44px;line-height:44px}.community-publish p{line-height:1.55;color:#a8b9ca}.community-publish label{display:grid;gap:8px}.community-publish textarea{box-sizing:border-box;width:100%;max-width:100%;padding:12px;border:1px solid #334458;border-radius:10px;background:#0c141e;color:#eaf2fb;font:inherit}.community-publish button,.community-publish>a{display:inline-flex;align-items:center;min-height:44px;margin-top:10px}

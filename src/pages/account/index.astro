@@ -1,4 +1,5 @@
 ---
+import CommunityPeople from '../../components/community/CommunityPeople';
 import RoleBadge from '../../components/RoleBadge.astro';
 import {creatorRole} from '../../lib/creator-identity';
 import Page from '../../layouts/Page.astro';
@@ -31,7 +32,7 @@ const initial=displayName.slice(0,1).toUpperCase();
       <RoleBadge role={creatorRole(access.roles,badges.some(b=>b.badge_name==='Pro'))}/>
       {badges.map(badge=><span class="lab-badge">{badge.badge_name}</span>)}
       {creatorProfile?.handle && <p class="account-handle">@{creatorProfile.handle}</p>}
-      <p class="account-email">{user.email}</p>
+      <p class="account-email">{user.email}</p>{creatorProfile?.handle&&<CommunityPeople personId={user.id} title="Your community" client:load/>}
 
       <nav aria-label="Account">
         <a class="is-active" href="/account">Overview</a>
@@ -55,6 +56,7 @@ const initial=displayName.slice(0,1).toUpperCase();
         <p>One identity across the newsroom and publishing tools.</p>
       </header>
 
+      <CommunityPeople title="Start following" client:load/>
       <section class="account-status-grid">
         <article>
           <span>Account</span>

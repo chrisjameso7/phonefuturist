@@ -1,3 +1,4 @@
+import PublishBuild from '../community/PublishBuild';
 import {useEffect,useState} from 'react';
 import type {AlphaRun} from '../../lib/simulation/alpha-workspace';
 import {canWebShare,filename,renderPng,resultSummary,receiptSections,RECEIPT_DISCLAIMER} from '../../lib/simulation/result-export';
@@ -27,7 +28,7 @@ export default function ShareResult({run}:{run:AlphaRun}) {
     {open&&<section id="share-result-options" aria-label="Share this simulation">
       <p>Exports use this calculated result, even if you have since edited the inputs. Downloads are generated on your device. The receipt and simulation record include your supplied configuration; review them before sharing.</p>
       <div className="il-share-actions"><button type="button" disabled={busy} onClick={()=>download('card')}>Download result card</button><button type="button" disabled={busy} onClick={()=>download('receipt')}>Download simulation receipt (PDF)</button><button type="button" onClick={copy}>Copy result summary</button>{webShare&&<button type="button" onClick={share}>Share</button>}</div>
-      <p role="status">{message}</p>
+      <p role="status">{message}</p><PublishBuild run={run}/>
       <details className="il-advanced-export"><summary>Advanced export</summary><button type="button" onClick={downloadRecord}>Download simulation record (.json)</button></details>
       {preview&&(previewPdf?<a href={preview} target="_blank" rel="noopener noreferrer">Open PDF receipt ↗</a>:<img src={preview} alt="Generated simulation export preview" className="il-export-preview"/>)}
       {manualCopy&&<label>Result summary<textarea readOnly rows={9} value={resultSummary(run)} onFocus={event=>event.currentTarget.select()}/></label>}
