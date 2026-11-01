@@ -1,3 +1,4 @@
+import type { SimpleBatteryResult } from '../../lib/valuation/simple-battery';
 import PublishBuild from '../community/PublishBuild';
 import {communitySimulation,type CommunitySimulation,type SharedSimulationConfiguration} from '../../lib/community/simulation';
 import DownloadSectionReceipt from './DownloadSectionReceipt';
@@ -11,7 +12,7 @@ import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
 import SimpleModePanel from './SimpleModePanel';
@@ -1192,6 +1193,9 @@ export default function InteractiveLeaksSimulator() {
   const [simulationResult, setSimulationResult] = useState<ReturnType<typeof simulateDevice> | null>(null);
   const activeWorker = useRef<Worker | null>(null);
   const jobNumber = useRef(0);
+  const simpleBatteryAbort = useRef<AbortController | null>(null);
+  const [simpleBattery, setSimpleBattery] = useState<SimpleBatteryResult | null>(null);
+  const [simpleBatteryPending, setSimpleBatteryPending] = useState(false);
   const [form, setForm] =
     useState<FormState>(initialForm);
 
@@ -1220,14 +1224,19 @@ export default function InteractiveLeaksSimulator() {
     >({ status: 'idle' });
 
   const result = simulationResult;
+  const publishRun = useMemo(() => communityRun && workspaceMode === 'simple' && simpleBattery ? {...communityRun, endurance:simpleBattery} : communityRun, [communityRun, workspaceMode, simpleBattery]);
 
   useEffect(() => () => {
     jobNumber.current++;
+    simpleBatteryAbort.current?.abort();
     activeWorker.current?.terminate();
   }, []);
 
   function calculateInWorker(input: SimulationInput, shared?:SharedSimulationConfiguration) {
     const configuration:SharedSimulationConfiguration=shared??{mode:'advanced',socName:form.socName,socVendor:form.socVendor,coolingClass:form.coolingClass,wiredWatts:form.wiredChargeW,wirelessWatts:form.wirelessChargeW,parameters:Object.fromEntries(Object.entries(form).filter((entry):entry is [string,string]=>typeof entry[1]==='string'))};
+    simpleBatteryAbort.current?.abort();
+    setSimpleBattery(null);
+    setSimpleBatteryPending(false);
     setCommunityRun(null);
     const job = ++jobNumber.current;
     activeWorker.current?.terminate();
@@ -1580,7 +1589,29 @@ export default function InteractiveLeaksSimulator() {
         : [],
     );
 
-    calculateInWorker(expansion.simulationInput,{mode:'simple',socName:input.socName??'',socVendor:input.socVendor??'',coolingClass:expansion.advanced.coolingClass,wiredWatts:String(input.wiredChargingWatts??''),wirelessWatts:String(input.wirelessChargingWatts??''),parameters:{usagePreset:usage,brightnessNits:String(input.brightnessNits??''),socPowerScenario:powerScenario}});
+    calculateInWorker(expansion.simulationInput,{mode:'simple',socName:input.socName??'',socVendor:input.socVendor??'',coolingClass:expansion.advanced.coolingClass,wiredWatts:String(input.wiredChargingWatts??''),wirelessWatts:String(input.wirelessChargingWatts??''),parameters:{softwareTuning:input.softwareTuning??'standard',batteryVoltageV:String(input.batteryVoltageV??3.85),usagePreset:usage,brightnessNits:String(input.brightnessNits??''),socPowerScenario:powerScenario}});
+    const batteryJob = jobNumber.current;
+    const controller = new AbortController();
+    simpleBatteryAbort.current = controller;
+    setSimpleBatteryPending(true);
+    const timeout = window.setTimeout(() => {
+      if (batteryJob === jobNumber.current) setSimpleBatteryPending(false);
+      controller.abort();
+    }, 25000);
+    const display = expansion.simulationInput.displays.primary;
+    const missingCpu = (['geekbench6_single','geekbench6_multi'] as const).filter(domain => estimateLivePeakPerformance({domain,manufacturer:input.manufacturer,socName:input.socName,socVendor:input.socVendor,batteryMah:input.batteryMah,displayDiagonalInches:input.displayDiagonalInches,refreshRateHz:input.refreshRateHz,coolingClass:expansion.advanced.coolingClass}).status !== 'resolved');
+    void fetch('/api/hardware-analysis', {
+      method:'POST', headers:{'content-type':'application/json'}, signal:controller.signal,
+      body:JSON.stringify({kind:'simple-battery', analyze:true, parameters:{input:{...input, customResolutionWidthPx:display.resolutionWidthPx, customResolutionHeightPx:display.resolutionHeightPx}, usage, powerScenario, missingCpu, software:input.softwareTuning ?? 'standard'}}),
+    }).then(async response => {
+      if (!response.ok) throw new Error('Battery analysis unavailable');
+      const analysis = await response.json() as SimpleBatteryResult;
+      if (controller.signal.aborted || batteryJob !== jobNumber.current) return;
+      if (!['scenario','unresolved'].includes(analysis.status) || (analysis.status === 'scenario' && (!Number.isFinite(analysis.runtimeHours) || analysis.runtimeHours! <= 0))) throw new Error('Invalid battery response');
+      setSimpleBattery(analysis);
+    }).catch(() => { /* Existing battery reference remains available on network failure. */ })
+      .finally(() => { window.clearTimeout(timeout); if (!controller.signal.aborted && batteryJob === jobNumber.current) setSimpleBatteryPending(false); });
+
   }
 
   function simulate() {
@@ -2199,6 +2230,12 @@ export default function InteractiveLeaksSimulator() {
         }),
       }))
     : [];
+  const simpleDisplayCpuScores = simpleCpuScores.map(row => {
+    const fallback = row.domain === 'geekbench6_single' ? simpleBattery?.singleCore : simpleBattery?.multiCore;
+    return workspaceMode === 'simple' && row.estimate.status !== 'resolved' && fallback !== undefined
+      ? {...row, aiFallback:true, estimate:{...row.estimate,status:'resolved' as const,adjustedExpected:fallback,assumptionApplied:true}}
+      : {...row,aiFallback:false};
+  });
 
   const peakPerformanceEstimate =
     simulationInput && result
@@ -3162,7 +3199,7 @@ export default function InteractiveLeaksSimulator() {
               type="button"
               className={workspaceMode === 'advanced' ? 'active' : ''}
               aria-pressed={workspaceMode === 'advanced'}
-              onClick={() => { setWorkspaceMode('advanced'); setHasSimulated(false); }}
+              onClick={() => { simpleBatteryAbort.current?.abort(); setSimpleBatteryPending(false); setWorkspaceMode('advanced'); setHasSimulated(false); }}
             >
               Advanced
             </button>
@@ -5701,7 +5738,7 @@ export default function InteractiveLeaksSimulator() {
             </div>
           ) : (
             <>
-              {communityRun&&<PublishBuild run={communityRun}/>}
+              {communityRun&&!(workspaceMode === 'simple' && simpleBatteryPending)&&<PublishBuild run={publishRun!}/>}
               <div className="il-result-identity">
                 <span>
                   {simulationInput?.formFactor
@@ -5719,12 +5756,12 @@ export default function InteractiveLeaksSimulator() {
                 <div className="il-result-group">
                   <span className="il-result-label">CPU performance</span>
                   <div className="il-metrics" aria-label="CPU benchmark scores">
-                    {simpleCpuScores.map(({domain, estimate}) => (
+                    {simpleDisplayCpuScores.map(({domain, estimate, aiFallback}) => (
                       <div key={domain}>
                         <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
-                            ? format(estimate.adjustedExpected, 0) : 'Insufficient data'}</strong>
+                            ? format(estimate.adjustedExpected, 0) : simpleBatteryPending ? 'Calculating…' : 'Insufficient data'}</strong>
                         <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
-                        <small>{estimate.status === 'resolved' ? (estimate.assumptionApplied ? 'Projected Geekbench 6 · scenario' : 'Geekbench 6 · estimated') : 'Insufficient benchmark data'}</small>
+                        <small>{estimate.status === 'resolved' ? (aiFallback ? 'AI simulated · Geekbench 6' : estimate.assumptionApplied ? 'Projected Geekbench 6 · scenario' : 'Geekbench 6 · estimated') : 'Insufficient benchmark data'}</small>
                       </div>
                     ))}
                   </div>
@@ -5740,7 +5777,7 @@ export default function InteractiveLeaksSimulator() {
                     </div>
                   </div>
                   <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
-                    {simpleCpuScores.map(({domain, estimate}) => {
+                    {simpleDisplayCpuScores.map(({domain, estimate, aiFallback}) => {
                       const peak = estimate.adjustedExpected;
                       const sustained = peak !== undefined
                         ? projectedSustainedCpuScore({
@@ -5752,9 +5789,9 @@ export default function InteractiveLeaksSimulator() {
                         : undefined;
                       return (
                         <div key={domain}>
-                          <strong>{sustained !== undefined ? format(sustained, 0) : 'Unavailable'}</strong>
+                          <strong>{sustained !== undefined ? format(sustained, 0) : simpleBatteryPending ? 'Calculating…' : 'Unavailable'}</strong>
                           <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
-                          <small>Sustained performance</small>
+                          <small>{aiFallback ? 'AI simulated · sustained performance' : 'Sustained performance'}</small>
                         </div>
                       );
                     })}
@@ -5806,7 +5843,8 @@ export default function InteractiveLeaksSimulator() {
                   )}
                   <div className="il-simple-battery-readout">
                     <span className="il-result-label">Active-use endurance · one charge</span>
-                    <strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
+                    <strong>{simpleBatteryPending ? 'Calculating…' : simpleBattery?.runtimeHours ? `${format(simpleBattery.runtimeHours, 1)} hours` : batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
+                    <small role="status">{simpleBatteryPending ? 'Analyzing battery configuration…' : simpleBattery?.summary ?? 'Reference estimate shown. Additional battery analysis is unavailable.'}</small>
                     <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
                     <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature.</small>
                   </div>
@@ -8266,8 +8304,8 @@ export default function InteractiveLeaksSimulator() {
 
               </>
               )}
-              {simulationInput && workspaceMode === 'simple' && (
-                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleCpuScores.some(item => item.estimate.assumptionApplied)} powerScenario={simpleSocPowerScenario} />
+              {simulationInput && workspaceMode === 'simple' && !simpleBatteryPending && (
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={simpleBattery?.runtimeHours ?? batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleDisplayCpuScores.some(item => item.estimate.assumptionApplied)} powerScenario={simpleSocPowerScenario} />
               )}
 
               <p className="il-help">Simulated estimates. Actual device performance may vary.</p>

@@ -67,6 +67,8 @@ export default function SimpleModePanel({
     useState('1.3');
   const [aperture, setAperture] =
     useState('1.8');
+  const [softwareTuning, setSoftwareTuning] = useState<NonNullable<SimpleModeInput['softwareTuning']>>('standard');
+  const [batteryVoltage, setBatteryVoltage] = useState('3.85');
   const [error, setError] = useState('');
   const [usage, setUsage] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
 
@@ -75,9 +77,9 @@ export default function SimpleModePanel({
     const diagonal = number(displaySize);
     const hz = number(refreshRate);
 
-    if (!battery || !diagonal || !hz) {
+    if (!battery || !diagonal || !hz || !number(batteryVoltage) || Number(batteryVoltage) < 3 || Number(batteryVoltage) > 5) {
       setError(
-        'Battery, display size and refresh rate are required.',
+        'Enter battery, display size, refresh rate and a cell voltage between 3 and 5 V.',
       );
       return;
     }
@@ -100,6 +102,8 @@ export default function SimpleModePanel({
         ? { manufacturer: manufacturer.trim() }
         : {}),
       batteryMah: battery,
+      softwareTuning,
+      batteryVoltageV: number(batteryVoltage),
       ...(number(wiredWatts)
         ? {
             wiredChargingWatts:
@@ -163,6 +167,18 @@ export default function SimpleModePanel({
 
       </fieldset>
       <div className="il-simple-grid">
+        <label className="il-field"><span>Software tuning</span>
+          <select value={softwareTuning} onChange={event => setSoftwareTuning(event.target.value as NonNullable<SimpleModeInput['softwareTuning']>)}>
+            <option value="standard">Standard</option>
+            <option value="optimized">Optimized · scenario</option>
+            <option value="background-heavy">Background-heavy · scenario</option>
+          </select>
+          <small>Optional software energy scenario.</small>
+        </label>
+        <label className="il-field"><span>Nominal cell voltage (V)</span>
+          <input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} />
+          <small>Use the battery specification; default is a scenario value.</small>
+        </label>
         <label className="il-field il-wide">
           <span>Device name</span>
           <input

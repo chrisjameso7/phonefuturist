@@ -8,10 +8,12 @@ export const POST: APIRoute = async (context) => {
     let body: Record<string, unknown>;
     try {
         body = object(await smallJson(context.request));
-        if (body.kind !== 'bom' && body.kind !== 'battery')
+        if (body.kind !== 'bom' && body.kind !== 'battery' && body.kind !== 'simple-battery')
             throw new Error();
         if (body.kind === 'bom')
             deviceParameters(body.parameters);
+        else if (body.kind === 'simple-battery')
+            (await import('../../lib/valuation/simple-battery')).simpleBatteryParameters(body.parameters);
         else
             (await import('../../lib/valuation/battery')).batteryParameters(body.parameters);
     }
@@ -34,6 +36,10 @@ export const POST: APIRoute = async (context) => {
         catch {
             generate = undefined;
         }
+    if (body.kind === 'simple-battery') {
+        const { analyzeSimpleBatteryWithFallback } = await import('../../lib/valuation/simple-battery');
+        return json(await analyzeSimpleBatteryWithFallback(body.parameters, generate));
+    }
     if (body.kind === 'battery') {
         const { analyzeBattery } = await import('../../lib/valuation/battery');
         return json(await analyzeBattery(body.parameters, generate));

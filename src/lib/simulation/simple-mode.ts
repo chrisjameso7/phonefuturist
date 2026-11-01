@@ -23,6 +23,9 @@ export interface SimpleModeInput {
   formFactor?: Extract<DeviceFormFactor, 'phone'>;
 
   batteryMah: number;
+  /** Explicit Simple-only pack voltage and software scenarios. */
+  batteryVoltageV?: number;
+  softwareTuning?: 'standard' | 'optimized' | 'background-heavy';
   wiredChargingWatts?: number;
   wirelessChargingWatts?: number;
   batteryChemistry?: string;
