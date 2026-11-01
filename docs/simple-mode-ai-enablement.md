@@ -36,4 +36,12 @@ Configured Wrangler rate limiter:
 ]
 ```
 
-Confirm the namespace is unused before applying it. This bounds requests per account per Cloudflare location; it is not an account-wide spending cap. Leave credentials in Cloudflare secrets. The original task requires approval before changing production Worker settings. After that approval, enable the flag, add the binding, rebuild and deploy with npm.cmd run deploy, and verify a signed-in missing-data request against the actual provider. Do not claim the AI fallback is live before that verification.
+This bounds requests per account per Cloudflare location; it is not an account-wide spending cap. Credentials remain in Cloudflare secrets. Deployment command: npm.cmd run deploy.
+
+## November 1 production verification
+
+- Live Worker version: af2f845f-5d19-4450-9ff7-a8392fe4c1c8.
+- Cloudflare confirmed AI_VALUATION_ENABLED=true and AI_VALUATION_LIMITER=2 requests/60 seconds on that version.
+- Apex and www Interactive Leaks pages returned 200 and contained the new controls.
+- Simple battery requests on both origins returned 200 with positive Simulated endurance; malformed input returned 400 and an untrusted Origin returned 403.
+- Browser session is signed out. Actual authenticated AI-provider inference remains unverified; anonymous requests deliberately use reference calculations. No credentials or authentication policies were changed.
