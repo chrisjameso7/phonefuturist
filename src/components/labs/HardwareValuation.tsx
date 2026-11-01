@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_PARAMETERS, type DeviceParameters, type ValuationResponse } from '../../lib/valuation/types';
 const money = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+function SpecificationNumber({label,value,min,max,step,onValue}:{label:string;value:number;min:number;max:number;step:number;onValue:(value:number)=>void}) {
+    const [draft,setDraft]=useState(String(value)),[focused,setFocused]=useState(false),[error,setError]=useState('');
+    useEffect(()=>{if(!focused)setDraft(String(value));},[value,focused]);
+    function parsed(raw:string){const n=raw.trim()?Number(raw):NaN;return Number.isFinite(n)&&n>=min&&n<=max&&(step!==1||Number.isInteger(n))?n:undefined;}
+    return <label>{label}<input type="number" min={min} max={max} step={step} value={draft} aria-invalid={!!error} onFocus={()=>{setFocused(true);setError('');}} onChange={e=>{const raw=e.currentTarget.value;setDraft(raw);setError('');const n=parsed(raw);if(n!==undefined)onValue(n);}} onBlur={()=>{setFocused(false);setError(parsed(draft)===undefined?'Use '+min+'–'+max+'. The last valid value was kept.':'');}}/>{error&&<small role="alert">{error}</small>}</label>;
+}
 export default function HardwareValuation() {
     const [p, setP] = useState<DeviceParameters>(() => structuredClone(DEFAULT_PARAMETERS)), [result, setResult] = useState<ValuationResponse | null>(null), [status, setStatus] = useState(''), [busy, setBusy] = useState(false);
     const sequence = useRef(0), controller = useRef<AbortController | null>(null);
@@ -24,8 +30,9 @@ export default function HardwareValuation() {
     } }
     useEffect(() => { setResult(null); setStatus(''); const timer = setTimeout(() => void analyze(), 450); return () => { clearTimeout(timer); controller.current?.abort(); sequence.current++; }; }, [p]);
     function update<K extends keyof DeviceParameters>(key: K, value: DeviceParameters[K]) { setP(current => ({ ...current, [key]: value })); }
-    function numeric(label: string, value: number, min: number, max: number, change: (n: number) => void, step = 1) { return <label>{label}<input type="number" min={min} max={max} step={step} value={value} onChange={e => { const n = e.currentTarget.valueAsNumber; if (Number.isFinite(n) && n >= min && n <= max)
-        change(n); }}/></label>; }
+    function numeric(label: string, value: number, min: number, max: number, change: (n: number) => void, step = 1) {
+        return <SpecificationNumber label={label} value={value} min={min} max={max} step={step} onValue={change}/>;
+    }
     return <section className="lab-hardware-analysis" aria-label="Custom hardware analysis"><h3>Custom hardware analysis</h3><p>Configure a separate component valuation.</p><div className="lab-fields">
  <label>SoC foundry<select value={p.soc.foundry} onChange={e => update('soc', { ...p.soc, foundry: e.currentTarget.value as DeviceParameters['soc']['foundry'] })}>{['tsmc', 'samsung', 'other'].map(v => <option key={v} value={v}>{v === 'tsmc' ? 'TSMC' : v === 'samsung' ? 'Samsung' : 'Other / custom'}</option>)}</select></label>
  {numeric('Process node · nm', p.soc.nodeNm, 2, 14, n => update('soc', { ...p.soc, nodeNm: n }), .1)}{numeric('Die area · mm²', p.soc.dieAreaMm2, 20, 800, n => update('soc', { ...p.soc, dieAreaMm2: n }))}

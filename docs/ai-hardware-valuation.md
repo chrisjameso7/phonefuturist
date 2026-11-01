@@ -40,3 +40,12 @@ Run node node_modules/tsx/dist/cli.mjs scripts/audit-hardware-battery.ts for a r
 ## Advanced build sharing
 
 The public Interactive Leaks simulator now renders Share build to Community directly with its calculated result. It snapshots the submitted input, result and Advanced settings before asynchronous calculation finishes; later edits cannot silently replace that shared configuration. Selected processor, charging, cooling and other hardware parameters persist in the published build. Publishing remains explicit and uses existing community_create_post and RLS. No new table or migration is needed.
+
+## Verification record (2026-11-01)
+
+- npm.cmd run check: 583 files, zero errors/warnings/hints.
+- Full npm.cmd test -- --maxWorkers=1 --testTimeout=15000: 227 files / 933 tests passed; one unchanged PGlite database fixture timed out during setup/cleanup and skipped three tests. Its isolated retry passed all three in 6.84 seconds. All 936 tests passed across the run and retry; the initial full command exited 1, not 0. No test timeout or assertion was weakened.
+- The production build passed with the existing >500 KiB simulation-data and Three.js scene warnings. Server prompt, pricing logic and environment references were absent from client JavaScript.
+- Local browser harness: changed RAM 12→24 GB and added a camera, valuation updated USD493.62→USD551.54 while the catalog BOM remained USD538.97. No horizontal overflow at 360/390/430/768px. Advanced example generated and displayed Community sharing, caption and signed-out handling. Unit/API tests verify frozen input/configuration and atomic existing publishing RPC usage. No production posts or follows created.
+- Astro dev timed out on local startup. The built Worker starts under Wrangler local mode. Provider JSON, failures, truncation, response bounds and permission/rate-limit guards were tested with fixtures; no live paid AI completion or authenticated production posting was performed.
+- Implementation commits: 455c38a (Advanced sharing), ee24eac (valuation/battery service). New work has not been deployed or merged. Existing deployment is unchanged.
