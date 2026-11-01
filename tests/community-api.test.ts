@@ -31,3 +31,9 @@ it('bounds JSON in bytes and rejects non-finite or unsupported design fields',as
  await expect(communityJson(new Request('https://example.com',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'x'.repeat(350001)})}))).rejects.toThrow('too large');
  expect(()=>communityDesign({width:Infinity})).toThrow();expect(()=>communityDesign({frameFinish:'invalid'})).toThrow();
 });
+
+it('publishes an Advanced simulation with its submitted configuration',async()=>{
+ const configuration={mode:'advanced',socName:'Snapdragon 8 Elite',socVendor:'Qualcomm',coolingClass:'large-vapor-chamber',wiredWatts:'120',wirelessWatts:'50',parameters:{targetSocPowerW:'8'}};
+ const response=await POST(context({action:'publish',caption:'Advanced build',run:{input:{name:'My advanced phone',formFactor:'phone',battery:{cells:[{capacityMah:6000}]}},device:{formFactor:'phone'},configuration}}));
+ expect(response.status).toBe(200);expect(rpc).toHaveBeenCalledWith('community_create_post',expect.objectContaining({p_state:expect.objectContaining({configuration}),p_name:'My advanced phone'}));
+});

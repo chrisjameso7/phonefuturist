@@ -1,4 +1,6 @@
 ---
+import SharedBuild from '../../../components/community/SharedBuild';
+import '../../../components/community/community.css';
 import RoleBadge from '../../../components/RoleBadge.astro';
 import {publicCreatorRoles,type CreatorRole} from '../../../lib/creator-identity';
 import Page from '../../../layouts/Page.astro';
@@ -52,6 +54,8 @@ if (uuid.test(id)) {
     }
   }
 }
+const communityBuild=simulation?.state?.input||simulation?.state?.community_design;
+const sharedConfig=simulation?.state?.configuration;
 ---
 
 <Page
@@ -94,12 +98,15 @@ if (uuid.test(id)) {
           </form>
         </div>
 
-        <section class="il-share-grid">
+        {communityBuild ? (<>
+          <SharedBuild client:load build={{id:simulation.id,name:simulation.name,device:simulation.device_key,processor:simulation.processor_key,state:simulation.state,results:simulation.result_snapshot}}/>
+          {sharedConfig&&<section class="il-share-grid"><article><span>Mode</span><strong>{sharedConfig.mode==='advanced'?'Advanced':'Simple'}</strong></article><article><span>Cooling</span><strong>{sharedConfig.coolingClass?.replaceAll('-',' ')||'Not specified'}</strong></article><article><span>Wired charging</span><strong>{sharedConfig.wiredWatts?sharedConfig.wiredWatts+' W':'Not specified'}</strong></article><article><span>Wireless charging</span><strong>{sharedConfig.wirelessWatts?sharedConfig.wirelessWatts+' W':'Not specified'}</strong></article></section>}
+        </>) : (<section class="il-share-grid">
           <article><span>Processor</span><strong>{simulation.processor_key?.replaceAll('_', ' ') || 'Unknown'}</strong></article>
           <article><span>Battery</span><strong>{simulation.state?.batteryCapacityMah ? `${simulation.state.batteryCapacityMah} mAh` : 'Unknown'}</strong></article>
           <article><span>Profile</span><strong>{simulation.state?.processorProfile || 'Expected'}</strong></article>
           <article><span>Usage</span><strong>{simulation.state?.experience?.preset || 'Unknown'}</strong></article>
-        </section>
+        </section>)}
 
         {simulation.result_snapshot?.headline && (
           <section class="il-shared-result">

@@ -1,3 +1,4 @@
+import {sharedConfiguration} from '../../lib/community/simulation';
 import type {APIRoute} from 'astro';
 import {labClient,json} from '../../lib/labs/http';
 import {communityDesign,communityJson} from '../../lib/community/build';
@@ -52,8 +53,9 @@ export const POST:APIRoute=async context=>{
   if(body.design&&typeof body.design==='object'){
    let design;try{design=communityDesign(body.design);}catch{return json({error:'Choose valid design dimensions and finishes.'},400);}name=design.name;state={community_design:design};
   }else{
-   if(!body.run||typeof body.run!=='object'||!body.run.input||typeof body.run.input!=='object'||!body.run.device)return json({error:'Calculate a valid result before sharing.'},400);
-   name=typeof body.run.input.name==='string'?body.run.input.name.slice(0,120):'Device concept';state={input:body.run.input};results={device:body.run.device,battery:body.run.battery??null,endurance:body.run.endurance??null};
+   if(!body.run||typeof body.run!=='object'||!body.run.input||typeof body.run.input!=='object'||Array.isArray(body.run.input)||!body.run.device||typeof body.run.device!=='object'||Array.isArray(body.run.device))return json({error:'Calculate a valid result before sharing.'},400);
+   let configuration;try{configuration=sharedConfiguration(body.run.configuration);}catch{return json({error:'Choose a valid simulation configuration.'},400);}
+   name=typeof body.run.input.name==='string'?body.run.input.name.slice(0,120):'Device concept';state={input:body.run.input,...(configuration?{configuration}:{})};results={device:body.run.device,battery:body.run.battery??null,endurance:body.run.endurance??null};
   }
   result=await client.rpc('community_create_post',{p_name:name,p_state:state,p_results:results,p_caption:body.caption.trim(),p_fork:validUuid(body.forkedFrom)?body.forkedFrom:null});break;
  }

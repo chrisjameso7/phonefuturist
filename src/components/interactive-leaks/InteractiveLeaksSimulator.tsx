@@ -1,3 +1,5 @@
+import PublishBuild from '../community/PublishBuild';
+import {communitySimulation,type CommunitySimulation,type SharedSimulationConfiguration} from '../../lib/community/simulation';
 import DownloadSectionReceipt from './DownloadSectionReceipt';
 import ThermalPerformanceCharts from './ThermalPerformanceCharts';
 import './simulation-results-layout.css';
@@ -1184,6 +1186,7 @@ function DeterministicShareCard({
 }
 
 export default function InteractiveLeaksSimulator() {
+  const [communityRun,setCommunityRun]=useState<CommunitySimulation|null>(null);
   const [simulationPending, setSimulationPending] = useState(false);
   const [simulationError, setSimulationError] = useState('');
   const [simulationResult, setSimulationResult] = useState<ReturnType<typeof simulateDevice> | null>(null);
@@ -1223,7 +1226,9 @@ export default function InteractiveLeaksSimulator() {
     activeWorker.current?.terminate();
   }, []);
 
-  function calculateInWorker(input: SimulationInput) {
+  function calculateInWorker(input: SimulationInput, shared?:SharedSimulationConfiguration) {
+    const configuration:SharedSimulationConfiguration=shared??{mode:'advanced',socName:form.socName,socVendor:form.socVendor,coolingClass:form.coolingClass,wiredWatts:form.wiredChargeW,wirelessWatts:form.wirelessChargeW,parameters:Object.fromEntries(Object.entries(form).filter((entry):entry is [string,string]=>typeof entry[1]==='string'))};
+    setCommunityRun(null);
     const job = ++jobNumber.current;
     activeWorker.current?.terminate();
     activeWorker.current = null;
@@ -1235,6 +1240,7 @@ export default function InteractiveLeaksSimulator() {
     const finish = (nextResult: ReturnType<typeof simulateDevice>) => {
       if (job !== jobNumber.current) return;
       setSimulationInput(input);
+      setCommunityRun(communitySimulation(input,nextResult,configuration));
       setSimulationResult(nextResult);
       setHasSimulated(true);
       setSimulationPending(false);
@@ -1574,7 +1580,7 @@ export default function InteractiveLeaksSimulator() {
         : [],
     );
 
-    calculateInWorker(expansion.simulationInput);
+    calculateInWorker(expansion.simulationInput,{mode:'simple',socName:input.socName??'',socVendor:input.socVendor??'',coolingClass:expansion.advanced.coolingClass,wiredWatts:String(input.wiredChargingWatts??''),wirelessWatts:String(input.wirelessChargingWatts??''),parameters:{usagePreset:usage,brightnessNits:String(input.brightnessNits??''),socPowerScenario:powerScenario}});
   }
 
   function simulate() {
@@ -5695,6 +5701,7 @@ export default function InteractiveLeaksSimulator() {
             </div>
           ) : (
             <>
+              {communityRun&&<PublishBuild run={communityRun}/>}
               <div className="il-result-identity">
                 <span>
                   {simulationInput?.formFactor
