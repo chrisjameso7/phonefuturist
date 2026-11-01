@@ -19,7 +19,7 @@ Research reviewed 2026-11-01:
 
 The AI receives only validated numerical/enumerated specs, baseline items and curated evidence summaries. It has no browsing/tools, account identity or private editorial notes. Cost changes must stay within 25% of the approved scenario; every ID/label must match, totals reconcile to cents, multiplier remain unchanged and confidence stay capped (0.55 unreleased, 0.75 otherwise). Invalid/truncated JSON, provider HTTP/timeout/envelope failures or contradictory totals return the deterministic baseline. Responses never include raw provider failures or credentials.
 
-## Enablement (not deployed automatically)
+## AI enablement (currently disabled)
 
 Reuse existing server-side CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_API_TOKEN and VIRTUAL_DEVICE_MODEL; optional BOM_VALUATION_MODEL overrides the model. Set AI_VALUATION_ENABLED=true only after provider acceptance testing and budget review. No provider key may be PUBLIC_ or checked in. Bind AI_VALUATION_LIMITER using the existing Cloudflare account's chosen unused namespace ID, for example this Wrangler binding (replace the illustrative namespace after checking account configuration):
 
@@ -48,4 +48,8 @@ The public Interactive Leaks simulator now renders Share build to Community dire
 - The production build passed with the existing >500 KiB simulation-data and Three.js scene warnings. Server prompt, pricing logic and environment references were absent from client JavaScript.
 - Local browser harness: changed RAM 12→24 GB and added a camera, valuation updated USD493.62→USD551.54 while the catalog BOM remained USD538.97. No horizontal overflow at 360/390/430/768px. Advanced example generated and displayed Community sharing, caption and signed-out handling. Unit/API tests verify frozen input/configuration and atomic existing publishing RPC usage. No production posts or follows created.
 - Astro dev timed out on local startup. The built Worker starts under Wrangler local mode. Provider JSON, failures, truncation, response bounds and permission/rate-limit guards were tested with fixtures; no live paid AI completion or authenticated production posting was performed.
-- Implementation commits: 455c38a (Advanced sharing), ee24eac (valuation/battery service). New work has not been deployed or merged. Existing deployment is unchanged.
+- Implementation commits: 455c38a (Advanced sharing), ee24eac (valuation/battery service). New work was deployed after the user renewed Cloudflare authentication and explicitly requested deployment; no merge to main.
+
+## Live deployment
+
+Deployed 2026-11-01 with node node_modules/wrangler/bin/wrangler.js deploy. Worker version: daafb0ff-c358-40ef-9b6b-9c5b0f72c4fc. Live www BOM, Interactive Leaks and Community pages and their component assets returned 200. The valuation API returned baseline USD493.62 for the default custom scenario, 400 for invalid specifications, and 403 for a hostile origin. Anonymous Community publishing returned 401. Live browser verification confirmed the custom panel hydrates, invalid node input recovers to the last valid value, correction clears the error, totals render, and the console has no errors. AI inference remains disabled pending provider/rate-limiter acceptance; no production test posts were created.
