@@ -18,9 +18,9 @@ Requests are tied to the submitted job, canceled on another calculation or switc
 - Local built Cloudflare Worker: Simple POST returns 200. Browser test showed 10.1 hours on the standard scenario and 10.7 hours on the optimized scenario, with the same values on the share card. These are UI consistency checks, not real-device battery accuracy validation.
 - At 390px the document did not overflow horizontally. Switching to Advanced preserved 5500 mAh, 6.8 inches and 1440 x 3200 resolution. Advanced recalculated 10.1 hours, independently of the Simple-only optimized software setting. No browser console errors were reported.
 
-## Production enablement required
+## Production enablement
 
-No production setting has been changed by this implementation. The AI path requires all of:
+User approved enablement and deployment on November 1, 2026. The Worker configuration now enables AI_VALUATION_ENABLED and the AI_VALUATION_LIMITER binding below. Existing provider secrets were verified by name only; no secret values were read. The previous live version had no rate limiter, so namespace 1002 does not conflict with an existing Worker binding. The AI path requires all of:
 
 - AI_VALUATION_ENABLED=true.
 - Existing server-only CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_AI_API_TOKEN.
@@ -28,7 +28,7 @@ No production setting has been changed by this implementation. The AI path requi
 - AI_VALUATION_LIMITER Worker binding.
 - An active, verified signed-in account. Public reference calculations remain available anonymously.
 
-Proposed Wrangler rate limiter (not applied):
+Configured Wrangler rate limiter:
 
 ```json
 "ratelimits": [
