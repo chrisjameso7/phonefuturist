@@ -1,3 +1,5 @@
+import {lazy,Suspense} from 'react';
+const HardwareValuation=lazy(()=>import('./HardwareValuation'));
 import { useMemo, useState } from 'react';
 import { BOM_GROUPS, BOM_OPTION_COUNT, DEFAULT_BOM, bomPreset, selectedBomId, calculateBom, bomUnitPrice, type BomInput } from '../../lib/labs/bom';
 import type { BomDevice } from '../../lib/labs/bom-catalog';
@@ -5,6 +7,7 @@ const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD',
 const money = (n: number) => usd.format(n);
 const sections = [...new Set(BOM_GROUPS.map(g => g.section))];
 export default function BomCalculator() {
+    const [analysisOpen,setAnalysisOpen]=useState(false);
     const [input, setInput] = useState(DEFAULT_BOM), [status, setStatus] = useState(''), [search, setSearch] = useState('');
     const result = useMemo(() => calculateBom(input), [input]);
     function update<K extends keyof BomInput>(key: K, value: BomInput[K]) { setInput(current => ({ ...current, [key]: value })); }
@@ -52,5 +55,5 @@ export default function BomCalculator() {
             if (n >= 1 && n <= 20000)
                 update('retail', n);
         }}/></label></div>
-    </div><div className="lab-glass lab-results lab-bom-summary"><p className="lab-kicker">Estimated BOM / USD</p><h2>{money(result.total)}</h2><p className="lab-build-name">{input.name?.trim() || 'Untitled concept'}</p><p>{result.items.filter(item => item.cost > 0).length} priced components in your build</p><div className="lab-metric-row"><div><strong>{result.grossMargin.toFixed(1)}%</strong><span>Component margin</span></div><div><strong>{money(result.msrp)}</strong><span>Target MSRP</span></div></div><dl className="lab-breakdown">{result.items.filter(item => item.cost > 0).map(item => <div key={item.id}><dt>{item.label}<small>{item.name}{item.quantity !== 1 ? ' × ' + item.quantity : ''}</small></dt><dd>{money(item.cost)}</dd></div>)}</dl><div className="lab-action-row"><button onClick={exportCard}>Download spec card ↓</button></div><details className="lab-advanced-export"><summary>Advanced export</summary><button onClick={exportSpec}>Download configuration (.json)</button></details><p role="status">{status}</p></div></section>;
+    </div><div className="lab-glass lab-results lab-bom-summary"><p className="lab-kicker">Estimated BOM / USD</p><h2>{money(result.total)}</h2><p className="lab-build-name">{input.name?.trim() || 'Untitled concept'}</p><p>{result.items.filter(item => item.cost > 0).length} priced components in your build</p><div className="lab-metric-row"><div><strong>{result.grossMargin.toFixed(1)}%</strong><span>Component margin</span></div><div><strong>{money(result.msrp)}</strong><span>Target MSRP</span></div></div><dl className="lab-breakdown">{result.items.filter(item => item.cost > 0).map(item => <div key={item.id}><dt>{item.label}<small>{item.name}{item.quantity !== 1 ? ' × ' + item.quantity : ''}</small></dt><dd>{money(item.cost)}</dd></div>)}</dl><details className="lab-custom-valuation" onToggle={e=>setAnalysisOpen(e.currentTarget.open)}><summary>Custom hardware analysis</summary><Suspense fallback={<p>Loading analysis…</p>}>{analysisOpen&&<HardwareValuation/>}</Suspense></details><div className="lab-action-row"><button onClick={exportCard}>Download spec card ↓</button></div><details className="lab-advanced-export"><summary>Advanced export</summary><button onClick={exportSpec}>Download configuration (.json)</button></details><p role="status">{status}</p></div></section>;
 }

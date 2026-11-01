@@ -1,0 +1,73 @@
+{
+  "protocol": "Updated Tom’s Guide continuous web-surfing battery test used on newer 2025-2026 phones; display set to 150 nits and cellular connectivity used until shutdown.",
+  "source": "https://www.tomsguide.com/us/smartphones-best-battery-life,review-2857.html",
+  "method": "Leave-one-device-out; all target variants/publishers removed. No coefficient fitting. Neutral software adjustment. Same Tom’s Guide current protocol only.",
+  "rows": [
+    {
+      "device": "OnePlus 15",
+      "observedHours": 25.216666666666665,
+      "predictedHours": null,
+      "absoluteErrorPercent": null,
+      "status": "unresolved",
+      "heldOutRecords": 11,
+      "referenceCount": 0
+    },
+    {
+      "device": "OnePlus 15R",
+      "observedHours": 21.9,
+      "predictedHours": 21.386,
+      "absoluteErrorPercent": 2.3470319634703167,
+      "status": "resolved",
+      "heldOutRecords": 4,
+      "referenceCount": 1
+    },
+    {
+      "device": "Motorola Moto G (2026)",
+      "observedHours": 19.166666666666668,
+      "predictedHours": 15.027999999999997,
+      "absoluteErrorPercent": 21.59304347826089,
+      "status": "resolved",
+      "heldOutRecords": 5,
+      "referenceCount": 1
+    },
+    {
+      "device": "Motorola Moto G Play (2026)",
+      "observedHours": 18.833333333333332,
+      "predictedHours": 15.027999999999997,
+      "absoluteErrorPercent": 20.205309734513285,
+      "status": "resolved",
+      "heldOutRecords": 4,
+      "referenceCount": 1
+    },
+    {
+      "device": "Motorola Moto G Power (2026)",
+      "observedHours": 18.366666666666667,
+      "predictedHours": 15.027999999999997,
+      "absoluteErrorPercent": 18.177858439201472,
+      "status": "resolved",
+      "heldOutRecords": 6,
+      "referenceCount": 1
+    },
+    {
+      "device": "Apple iPhone 17 Pro Max",
+      "observedHours": 17.9,
+      "predictedHours": null,
+      "absoluteErrorPercent": null,
+      "status": "unresolved",
+      "heldOutRecords": 11,
+      "referenceCount": 0
+    },
+    {
+      "device": "Samsung Galaxy S25 Ultra",
+      "observedHours": 14.45,
+      "predictedHours": null,
+      "absoluteErrorPercent": null,
+      "status": "unresolved",
+      "heldOutRecords": 9,
+      "referenceCount": 0
+    }
+  ],
+  "meanAbsolutePercentageError": 15.58081090386149,
+  "coverage": "4/7",
+  "warning": "Small retrospective cohort. Not prospective validation, not a software-optimization benchmark, and not validation of the optional benchmark-power scenario."
+}
