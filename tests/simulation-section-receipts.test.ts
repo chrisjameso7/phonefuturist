@@ -12,7 +12,7 @@ describe('section receipts', () => {
     }
   });
   it('keeps the original summary card scoped to Simple Mode', () => {
-    expect(file).toMatch(/workspaceMode === 'simple' && \(\s*<DeterministicShareCard/);
+    expect(file).toMatch(/workspaceMode === 'simple' && (?:!simpleBatteryPending && )?\(\s*<DeterministicShareCard/);
   });
   it('loads the image renderer on demand and exposes download progress', () => {
     expect(control).toContain("await import('./render-section-receipt')");
