@@ -427,18 +427,6 @@ main {
   color: var(--muted);
 }
 
-/* Footer */
-
-footer {
-  margin-top: 24px;
-  border-color: color-mix(in srgb,var(--ink) 19%,transparent);
-  color: var(--muted);
-}
-
-footer a:last-child {
-  color: var(--ink);
-}
-
 /* Studio */
 
 .studio-fields,
@@ -870,13 +858,6 @@ footer a:last-child {
     padding: 0;
   }
 
-  /* Footer */
-
-  footer {
-    margin-top: 8px;
-    padding: 26px 14px;
-    border-top-color: color-mix(in srgb,var(--ink) 14%,transparent);
-  }
 }
 
 /* Narrow phones */

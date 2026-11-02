@@ -27,7 +27,6 @@ button:hover,.button:hover,.lab-cta:hover { background:var(--accent); color:var(
 .panel,.article-card,.auth-card { background:var(--surface); border-color:var(--line); }
 .notice { background:var(--surface-raised); color:var(--ink); }
 .error { background:color-mix(in srgb,var(--error) 10%,var(--surface)); color:var(--error); }
-footer { color:var(--muted); }
 /* Images remain cinematic in either theme, with a reliably dark text scrim. */
 .observatory .hero { background:#0b1424; color:#edf6ff; }
 .observatory .hero::after { background:linear-gradient(90deg,rgb(6 13 26 / .94),rgb(6 13 26 / .2) 75%),linear-gradient(0deg,rgb(6 13 26 / .82),transparent 65%); }
@@ -45,10 +44,8 @@ footer { color:var(--muted); }
 .site-header .theme-choice select { color:#edf6ff; background:#142238; border-color:#425b76; }
 .header-actions .theme-choice > span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .mobile-account .theme-choice { justify-content:space-between; margin:0 4px 14px; }
-footer .theme-choice { flex-shrink:0; }
 @media (max-width:760px) {
   .observatory .hero-copy { background:#0b1424; }
-  footer { flex-wrap:wrap; }
 }
 @media (forced-colors:active) {
   body,.panel,.article-card,.auth-card { background:Canvas; color:CanvasText; }
@@ -351,15 +348,6 @@ button:hover,
   border-color: #202c39;
 }
 
-/* Footer */
-footer {
-  border-color: #1d2834;
-}
-
-footer .brand-lockup .brand-word {
-  font-size: .88rem;
-}
-
 @media (max-width: 1279px) {
   .site-header {
     width: min(96%, 760px);
@@ -405,8 +393,7 @@ footer .brand-lockup .brand-word {
   }
 
   body:not(.product-mode) .header-scroll-sentinel,
-  body:not(.product-mode) > .site-header,
-  body:not(.product-mode) > footer {
+  body:not(.product-mode) > .site-header {
     display: none !important;
   }
 
@@ -1501,7 +1488,6 @@ footer .brand-lockup .brand-word {
     box-shadow:0 0 22px rgb(22 140 255/.10)!important;
   }
 
-  footer { display:none!important; }
 
   body:not(.product-mode) main,
   body:not(.product-mode) main.home-page {
@@ -1836,12 +1822,6 @@ footer .brand-lockup .brand-word {
     padding:36px 16px!important;
   }
 
-  footer{
-    display:flex!important;
-    margin-top:10px!important;
-    padding:24px 14px!important;
-    flex-wrap:wrap!important;
-  }
 }
 
 @media(max-width:460px){

@@ -1,0 +1,57 @@
+<footer class="publication-footer">
+  <div class="footer-main">
+    <div class="footer-identity">
+      <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
+        <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
+        <span class="brand-word">PhoneFuturist</span>
+      </a>
+      <p>Technology, examined.</p>
+    </div>
+    <nav aria-label="Explore PhoneFuturist">
+      <h2>Explore</h2>
+      <a href="/articles">Newsroom</a>
+      <a href="/interactive-leaks">Interactive Leaks</a>
+      <a href="/labs">Labs</a>
+      <a href="/interactive-leaks/explore">Community</a>
+    </nav>
+    <nav aria-label="About the publication">
+      <h2>Company</h2>
+      <a href="/about">About PhoneFuturist</a>
+      <a href="mailto:contact@phonefuturist.com">Contact</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 PhoneFuturist. All rights reserved.</p>
+    <p>A Lumière Media &amp; Entertainment publication.</p>
+  </div>
+</footer>
+
+<style>
+  .publication-footer {
+    display: block;
+    width: min(100%, 1500px);
+    margin: 48px auto 0;
+    padding: 36px clamp(16px, 3vw, 48px) 24px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  .footer-main { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; padding-bottom: 32px; }
+  .footer-identity p { margin: 12px 0 0; line-height: 1.6; }
+  nav { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+  nav h2 { margin: 0 0 8px; color: var(--ink); font-size: .75rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+  nav a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; color: var(--muted); text-decoration: none; overflow-wrap: anywhere; }
+  nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  a:focus-visible { outline: 2px solid var(--accent, #168cff); outline-offset: 4px; border-radius: 3px; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: baseline; gap: 16px 32px; padding-top: 22px; border-top: 1px solid var(--line); font-size: .75rem; line-height: 1.7; }
+  .footer-bottom p { margin: 0; }
+  .footer-bottom p:last-child { text-align: right; }
+  @media (max-width: 700px) {
+    .publication-footer { margin-top: 28px; }
+    .footer-main { grid-template-columns: 1fr 1fr; gap: 24px 20px; }
+    .footer-identity { grid-column: 1 / -1; }
+    .footer-bottom { flex-direction: column; gap: 6px; }
+    .footer-bottom p:last-child { text-align: left; }
+  }
+  @media print { .publication-footer { margin-top: 24px; padding: 16px 0; } .footer-main { display: none; } .footer-bottom { color: #333; border-color: #ccc; } }
+</style>

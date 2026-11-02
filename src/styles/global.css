@@ -281,26 +281,6 @@ code {
   white-space: nowrap;
 }
 
-/* Footer */
-
-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  max-width: 1500px;
-  margin: auto;
-  padding: 2.5rem 3%;
-  border-top: 1px solid var(--line);
-  font-size: .75rem;
-  color: var(--muted);
-}
-
-footer a:last-child {
-  color: #ddd;
-  text-decoration: none;
-}
-
 /* Hero */
 
 .hero {
@@ -1625,26 +1605,7 @@ footer a:last-child {
     min-height: 230px;
   }
 
-  /* Footer */
-
-  footer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 26px 16px;
-    font-size: .7rem;
   }
-
-  footer .brand {
-    font-size: 1.25rem;
-  }
-
-  footer a:last-child {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-}
 
 /* Narrow phones */
 
