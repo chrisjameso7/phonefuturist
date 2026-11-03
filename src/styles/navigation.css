@@ -574,7 +574,7 @@ html {
     scroll-behavior: auto;
   }
 
-  
+
   .site-header * {
     transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out !important;
     animation: none !important;
@@ -582,14 +582,14 @@ html {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  
+
   .site-header .mobile-menu-panel {
     background: var(--pf-surface);
   }
 }
 
 @media (forced-colors: active) {
-  
+
   .site-header .mobile-menu-panel {
     border: 1px solid CanvasText;
     background: Canvas;

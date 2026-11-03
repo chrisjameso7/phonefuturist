@@ -38,3 +38,15 @@ The pre-existing tests/simulation-battery-experience.test.ts edit remains outsid
 - Fixed-header browser checks: dark/light at 1280, 1440 and 1920px. Header remains at top zero and full viewport width, square corners, no blur at top, 18px blur only after scrolling; no other element blurs. Mobile navigation remains available and opaque.
 - All ten interaction journeys pass again on the final header/theme implementation, including PDF export, thermal replay/mobile results, 3D dimensions, Simple/Advanced, tablet/foldable/laptop selection, creator retry, Studio and articles. Zero page errors.
 - Source preservation and whitespace checks pass. Existing uncommitted battery test changes remain unstaged.
+
+## Deployment
+
+Deployed the original project configuration (not the local fixture configuration) with existing production variables preserved:
+
+`wrangler deploy --config dist/server/wrangler.json --keep-vars`
+
+Worker: phonefuturist-dev. Version: `05c54040-c9df-4a0d-aede-1f76ca49542b`. Release implementation commit: `7f582f7`.
+
+The live Supabase migration remains recorded as `20261103135403`. No change to Cloudflare production variables, secrets, domains or authentication settings was requested or made.
+
+Live read-only smoke checks passed on both phonefuturist.com and www.phonefuturist.com: HTTP 200, production content (no local fixtures), neutral dark background, full-width fixed navigation, scroll blur, Light mode persisting across reload, Labs/BOM/Interactive Leaks/login/articles routes, and the mobile appearance menu/Community link. No page-level JavaScript errors or mobile overflow. The browser check waits for DOM readiness rather than global network-idle, since advertising/network activity can remain ongoing.
