@@ -75,6 +75,6 @@ export function calculateBom(input: BomInput) {
         if (quantity > 0)
             items.push({ id, label: group.label, name: option.name, unitPrice: price, quantity, cost: price * quantity });
     }
-    const total = Math.round(items.reduce((sum, item) => sum + item.cost, 0) * 100) / 100, msrp = Math.ceil(total * input.multiplier / 10) * 10;
+    const total = Math.round(items.reduce((sum, item) => sum + item.cost, 0) * 100) / 100, msrp = input.retail;
     return { items, total, msrp, grossProfit: input.retail - total, grossMargin: (input.retail - total) / input.retail * 100 };
 }

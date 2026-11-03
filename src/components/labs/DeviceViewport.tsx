@@ -29,8 +29,9 @@ export default function DeviceViewport({ design, preferredView, captureRef }: { 
   useEffect(()=>{if(preferredView)scene.current?.view(preferredView);},[preferredView]);
   return <section className="device-preview" aria-label="Device preview">
     <div className="device-viewport" ref={host} role="img" aria-label={`${design.name}, ${design.backFinish?BACK_FINISHES[design.backFinish].label:DEVICE_MATERIALS[design.material]} rear, ${design.frameFinish?FRAME_FINISHES[design.frameFinish].label:'metal'} frame, ${design.frontFinish?FRONT_FINISHES[design.frontFinish].label:'glass'} front, ${CAMERA_LAYOUTS[design.camera]}, ${design.height} by ${design.width} by ${design.thickness} millimetres`} />
-    {status !== 'ready' && <div className="device-preview-status" role="status">
+    {status !== 'ready' && <div className="device-preview-status" role="status" aria-busy={status === 'loading'}>
       <div className="device-fallback" style={{ background: design.color, aspectRatio: `${design.width}/${design.height}` }} aria-hidden="true"><span /></div>
+      {status === 'loading' && <progress aria-label="Opening the studio" />}
       <p>{status === 'loading' ? 'Opening the studio…' : '3D preview is unavailable in this browser. You can continue editing. Retry the preview to export a visual design card.'}</p>
       {status === 'unavailable' && <button type="button" onClick={() => setAttempt(n => n + 1)}>Retry 3D preview</button>}
     </div>}

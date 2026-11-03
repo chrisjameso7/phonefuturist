@@ -1,4 +1,5 @@
 ---
+import ConfidenceTag from './ConfidenceTag.astro';
 import type { PublishedArticle } from '../lib/editorial';
 
 interface Props {
@@ -53,7 +54,7 @@ function articleImage(article: PublishedArticle) {
             },
           ]}
         >
-          {image && (
+          {image ? (
             <a
               class="card-image"
               href={article.canonical_path}
@@ -66,9 +67,9 @@ function articleImage(article: PublishedArticle) {
                 decoding="async"
               />
             </a>
-          )}
+          ) : <a class="card-image card-image-fallback" href={article.canonical_path} aria-label={`Read ${article.title}`}></a>}
 
-          <div class="card-content">
+          <div class="card-content"><ConfidenceTag article={article}/>
             <span class="card-section">
               {article.section}
             </span>

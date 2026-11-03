@@ -1,3 +1,6 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
+import FormSection from '../labs/FormSection';
+import ResultPanel from '../labs/ResultPanel';
 import type { SimpleBatteryResult } from '../../lib/valuation/simple-battery';
 import PublishBuild from '../community/PublishBuild';
 import {communitySimulation,type CommunitySimulation,type SharedSimulationConfiguration} from '../../lib/community/simulation';
@@ -762,6 +765,7 @@ function NumericField({
         {suffix ? <small>{suffix}</small> : null}
       </span>
 
+      <span className="instrument-unit">
       <input
         type="number"
         inputMode="decimal"
@@ -772,6 +776,8 @@ function NumericField({
           onChange(event.currentTarget.value)
         }
       />
+      {suffix ? <span aria-hidden="true">{suffix}</span> : null}
+      </span>
     </label>
   );
 }
@@ -1187,6 +1193,7 @@ function DeterministicShareCard({
 }
 
 export default function InteractiveLeaksSimulator() {
+ useInstrumentReady('InteractiveLeaksSimulator');
   const [communityRun,setCommunityRun]=useState<CommunitySimulation|null>(null);
   const [simulationPending, setSimulationPending] = useState(false);
   const [simulationError, setSimulationError] = useState('');
@@ -3261,18 +3268,17 @@ export default function InteractiveLeaksSimulator() {
         </div>
       ) : null}
 
-      <div hidden={workspaceMode !== 'simple'}>
-        <SimpleModePanel onRun={runSimpleMode} />
-      </div>
+
 
       <div
         className={`il-workspace ${workspaceMode === 'simple' ? 'il-workspace-simple' : ''}`}
       >
+        <div className="il-simple-builder" hidden={workspaceMode !== 'simple'}><SimpleModePanel onRun={runSimpleMode} busy={simulationPending} /></div>
         <section
           className={`il-builder ${workspaceMode === 'simple' ? 'il-builder-hidden' : ''}`}
           aria-label="Simulation inputs"
         >
-          <div className="il-section">
+          <FormSection title="Device" summary={form.name || 'Untitled concept'}><div className="il-section">
             <div className="il-section-heading">
               <span>01</span>
               <div>
@@ -3378,9 +3384,9 @@ export default function InteractiveLeaksSimulator() {
                 }
               />
             </div>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Display" summary={`${form.diagonalInches}″ · ${form.refreshRateHz} Hz`}><div className="il-section">
             <div className="il-section-heading">
               <span>02</span>
               <div>
@@ -3664,9 +3670,9 @@ export default function InteractiveLeaksSimulator() {
                 />
               </div>
             </details>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Battery" summary={`${form.batteryCapacityMah} mAh`}><div className="il-section">
             <div className="il-section-heading">
               <span>03</span>
               <div>
@@ -3886,9 +3892,9 @@ export default function InteractiveLeaksSimulator() {
                 />
               </div>
             </details>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Charging" summary={`${form.wiredChargeW} W`}><div className="il-section">
             <div className="il-section-heading">
               <span>04</span>
               <div>
@@ -4004,9 +4010,9 @@ export default function InteractiveLeaksSimulator() {
               chemistry, cell architecture and charging standard refine
               comparable-device selection when known.
             </p>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Connectivity" summary={form.connectivityMode}><div className="il-section">
             <div className="il-section-heading">
               <span>05</span>
               <div>
@@ -4160,9 +4166,9 @@ export default function InteractiveLeaksSimulator() {
               Enter measured or explicit radio power when you want an energy
               estimate.
             </p>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Thermal & performance" summary={form.coolingClass}><div className="il-section">
             <div className="il-section-heading">
               <span>06</span>
               <div>
@@ -4893,9 +4899,9 @@ export default function InteractiveLeaksSimulator() {
               assumption. Sustained performance remains evidence-calibrated
               thermal behavior.
             </p>
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Cameras" summary={`${cameras.length} cameras`}><div className="il-section">
             <div className="il-section-heading il-section-heading-action">
               <div className="il-heading-copy">
                 <span>07</span>
@@ -5613,9 +5619,9 @@ export default function InteractiveLeaksSimulator() {
                 ))}
               </div>
             )}
-          </div>
+          </div></FormSection>
 
-          <div className="il-section">
+          <FormSection title="Packaging" summary={`${form.widthMm} × ${form.heightMm} × ${form.thicknessMm} mm`}><div className="il-section">
             <div className="il-section-heading">
               <span>08</span>
               <div>
@@ -5691,7 +5697,7 @@ export default function InteractiveLeaksSimulator() {
                 />
               </div>
             </details>
-          </div>
+          </div></FormSection>
 
           <div className="il-run">
             {simulationPending && <p role="status" aria-live="polite">Simulating device performance in the background…</p>}
@@ -5713,6 +5719,7 @@ export default function InteractiveLeaksSimulator() {
           </div>
         </section>
 
+        <ResultPanel label="Simulation result" summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h` : simulationInput?.name || 'Estimated'}>
         <aside
           key={resultRevision}
           className="il-results"
@@ -8311,7 +8318,7 @@ export default function InteractiveLeaksSimulator() {
               <p className="il-help">Simulated estimates. Actual device performance may vary.</p>
             </>
           )}
-        </aside>
+        </aside></ResultPanel>
       </div>
     </div>
   );

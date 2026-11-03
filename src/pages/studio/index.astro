@@ -53,7 +53,7 @@ if(error){Astro.response.status=503;console.error('studio_list_failed',{code:err
                   <small>{item.section} · revision {item.current_revision}</small>
                 </div>
                 <div class="studio-row-meta">
-                  <span>{item.state.replaceAll('_',' ')}</span>
+                  {!(item.state==='published'&&item.public_revision&&!item.withdrawn)&&<span>{item.state.replaceAll('_',' ')}</span>}
                   <b>{item.withdrawn?'Withdrawn':item.public_revision?'Published':'Private'}</b>
                 </div>
               </a>)}

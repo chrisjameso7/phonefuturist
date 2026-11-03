@@ -36,6 +36,7 @@ beforeAll(async()=>{
   if(['publisher','admin'].includes(role))await db.query("insert into auth.mfa_factors values($1,$1,'verified')",[id]);
  }
  await db.exec(readFileSync(new URL('../supabase/migrations/20260924111314_public_article_card_images.sql',import.meta.url),'utf8'));
+ await db.exec(readFileSync(new URL('../supabase/migrations/20261103135403_article_confidence_label.sql',import.meta.url),'utf8'));
 },30000);
 afterAll(async()=>db.close());
 describe('current Studio publishing policy and historical integrity',()=>{
@@ -129,4 +130,11 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await as('reader');expect((await db.query('select * from storage.objects')).rows).toEqual([]);
   await as('publisher','aal1');await db.query("insert into storage.objects(bucket_id,name) values('article-media',$1)",['articles/'+ids.publisher+'/x.png']);
  });
+});
+
+it('publishes optional confidence without exposing private metadata and rejects invalid values',async()=>{
+ await as('writer','aal1');
+ const article=await command(null,null,'save_publish',{...payload('confidence-test'),section:'analysis',confidence:'rumor'});
+ await expect(command(null,null,'save_publish',{...payload('bad-confidence'),confidence:'verified'})).rejects.toThrow('Check the article fields');
+ await as('anon');const rows=await publicRead(article.path!);expect(rows[0].confidence).toBe('rumor');expect(JSON.stringify(rows)).not.toContain('CONFIDENTIAL_TEST_MARKER');
 });

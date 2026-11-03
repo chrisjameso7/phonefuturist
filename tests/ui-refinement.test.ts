@@ -1,0 +1,5 @@
+import {it,expect} from 'vitest';
+import {articleConfidence} from '../src/lib/editorial';
+import {calculateBom,DEFAULT_BOM,bomPreset} from '../src/lib/labs/bom';
+it('uses one retail price for displayed MSRP, profit and margin across every build type',()=>{for(const device of ['phone','foldable','tablet','laptop'] as const){const input={...bomPreset(device),retail:1300};const result=calculateBom(input);expect(result.msrp).toBe(input.retail);expect(result.grossProfit).toBeCloseTo(input.retail-result.total);expect(result.grossMargin).toBeCloseTo((input.retail-result.total)/input.retail*100);}const updated=calculateBom({...DEFAULT_BOM,retail:1350});expect(updated.msrp).toBe(1350);});
+it('maps only the requested editorial defaults and respects optional overrides',()=>{expect(articleConfidence({section:'news'})).toBe('confirmed');expect(articleConfidence({section:'leaks'})).toBe('reported');for(const section of ['analysis','reports'])expect(articleConfidence({section})).toBeNull();expect(articleConfidence({section:'news',confidence:'rumor'})).toBe('rumor');expect(articleConfidence({section:'leaks',withdrawn:true})).toBeNull();});

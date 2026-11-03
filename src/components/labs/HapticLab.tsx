@@ -1,3 +1,4 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { HAPTIC_PROFILES, compileHaptic, hapticPack, hapticWav, type HapticInput } from '../../lib/labs/haptics';
 const defaultInput: HapticInput = { pattern: [...HAPTIC_PROFILES[0].pattern], tempo: 100, repeats: 1, tone: HAPTIC_PROFILES[0].tone, volume: .15 };
@@ -6,6 +7,7 @@ function cancelVibration() { try {
 }
 catch { /* The browser may block vibration independently of audio. */ } }
 export default function HapticLab() {
+ useInstrumentReady('HapticLab');
     const [input, setInput] = useState(defaultInput), [name, setName] = useState('Mechanical Click'), [profile, setProfile] = useState('mechanical'), [status, setStatus] = useState(''), [support, setSupport] = useState(false), [playing, setPlaying] = useState(false), [audio, setAudio] = useState(true);
     const context = useRef<AudioContext | null>(null), nodes = useRef<OscillatorNode[]>([]), timer = useRef<ReturnType<typeof setTimeout> | null>(null), generation = useRef(0);
     const compiled = useMemo(() => {

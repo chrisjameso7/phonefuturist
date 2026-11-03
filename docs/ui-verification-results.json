@@ -1,0 +1,636 @@
+{
+  "date": "2026-11-03",
+  "environment": "Isolated local Cloudflare Worker production build in headless Microsoft Edge; synthetic account and editorial fixtures; external requests and writes blocked.",
+  "sourcePreservation": {
+    "baselineCommit": "39f013d",
+    "routes": 56,
+    "baselineControls": 667,
+    "currentControls": 678,
+    "missingRoutes": [],
+    "missingControls": []
+  },
+  "layout": {
+    "report": [
+      {
+        "path": "/",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Technology, examined \u00b7 PhoneFuturist",
+        "controls": 0,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/articles",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "The latest \u00b7 PhoneFuturist",
+        "controls": 0,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/articles",
+        "width": 360,
+        "scroll": 360,
+        "overflow": [
+          "NAV.section-tabs newsroom-tabs instrument-tabs",
+          "A."
+        ]
+      },
+      {
+        "path": "/articles",
+        "width": 390,
+        "scroll": 390,
+        "overflow": [
+          "NAV.section-tabs newsroom-tabs instrument-tabs"
+        ]
+      },
+      {
+        "path": "/articles",
+        "width": 430,
+        "scroll": 430,
+        "overflow": [
+          "NAV.section-tabs newsroom-tabs instrument-tabs"
+        ]
+      },
+      {
+        "path": "/articles",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/about",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "About \u00b7 PhoneFuturist",
+        "controls": 0,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/about",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/about",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/about",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/about",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Labs \u00b7 PhoneFuturist",
+        "controls": 0,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/bom",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "BOM calculator \u00b7 PhoneFuturist",
+        "controls": 95,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/bom",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/bom",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/bom",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/bom",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/thermal",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Thermal simulator \u00b7 PhoneFuturist",
+        "controls": 7,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/thermal",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/thermal",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/thermal",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/thermal",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/configurator",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "3D device studio \u00b7 PhoneFuturist",
+        "controls": 41,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/configurator",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/configurator",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/configurator",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/configurator",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/display",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Display PWM \u00b7 PhoneFuturist",
+        "controls": 8,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/display",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/display",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/display",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/display",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/haptics",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Haptics \u00b7 PhoneFuturist",
+        "controls": 19,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/haptics",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/haptics",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/haptics",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/haptics",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/labs/vault",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Concept vault \u00b7 PhoneFuturist",
+        "controls": 0,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/labs/vault",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/labs/vault",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/labs/vault",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/labs/vault",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Interactive Leaks \u00b7 PhoneFuturist",
+        "controls": 144,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/tablets",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Tablets \u00b7 Interactive Leaks \u00b7 PhoneFuturist",
+        "controls": 34,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/tablets",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/tablets",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/tablets",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/tablets",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/foldables",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Foldables \u00b7 Interactive Leaks \u00b7 PhoneFuturist",
+        "controls": 47,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/foldables",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/foldables",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/foldables",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/foldables",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/laptops",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Laptops \u00b7 Interactive Leaks \u00b7 PhoneFuturist",
+        "controls": 35,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/laptops",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/laptops",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/laptops",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/laptops",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/explore",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Community \u00b7 PhoneFuturist",
+        "controls": 3,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/explore",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/explore",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/explore",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/interactive-leaks/explore",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/login",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Sign in \u00b7 PhoneFuturist",
+        "controls": 4,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/login",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/login",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/login",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/login",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/join",
+        "width": 1440,
+        "scroll": 1440,
+        "title": "Create account \u00b7 PhoneFuturist",
+        "controls": 4,
+        "bodyfont": "\"Schibsted Grotesk\", Arial, sans-serif",
+        "overflow": []
+      },
+      {
+        "path": "/join",
+        "width": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/join",
+        "width": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/join",
+        "width": 430,
+        "scroll": 430,
+        "overflow": []
+      },
+      {
+        "path": "/join",
+        "width": 768,
+        "scroll": 768,
+        "overflow": []
+      }
+    ],
+    "errors": []
+  },
+  "journeys": {
+    "checks": [
+      {
+        "name": "BOM retail, margin, persistence and PDF export",
+        "pass": true
+      },
+      {
+        "name": "Thermal controls, replay, chart fit and mobile expansion",
+        "pass": true
+      },
+      {
+        "name": "3D fields, collapse, invalid size and preview",
+        "pass": true
+      },
+      {
+        "name": "Simple run, worker result and consistent Advanced layout",
+        "pass": true
+      },
+      {
+        "name": "tablets control persistence and rendering",
+        "pass": true
+      },
+      {
+        "name": "foldables control persistence and rendering",
+        "pass": true
+      },
+      {
+        "name": "laptops control persistence and rendering",
+        "pass": true
+      },
+      {
+        "name": "Account logos and creator timeout/retry/empty states",
+        "pass": true
+      },
+      {
+        "name": "Studio published once and optional confidence control",
+        "pass": true
+      },
+      {
+        "name": "Missing and failed image fallback, confidence and article containment",
+        "pass": true
+      }
+    ],
+    "errors": []
+  },
+  "checks": {
+    "astro": "594 files; 0 errors, warnings or hints",
+    "fullSuite": "230 files; 947 passed",
+    "focusedFinal": "3 files; 15 passed",
+    "build": "passed; existing >500kB warnings remain"
+  }
+}

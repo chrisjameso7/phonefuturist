@@ -5,7 +5,7 @@ function SpecificationNumber({label,value,min,max,step,onValue}:{label:string;va
     const [draft,setDraft]=useState(String(value)),[focused,setFocused]=useState(false),[error,setError]=useState('');
     useEffect(()=>{if(!focused)setDraft(String(value));},[value,focused]);
     function parsed(raw:string){const n=raw.trim()?Number(raw):NaN;return Number.isFinite(n)&&n>=min&&n<=max&&(step!==1||Number.isInteger(n))?n:undefined;}
-    return <label>{label}<input type="number" min={min} max={max} step={step} value={draft} aria-invalid={!!error} onFocus={()=>{setFocused(true);setError('');}} onChange={e=>{const raw=e.currentTarget.value;setDraft(raw);setError('');const n=parsed(raw);if(n!==undefined)onValue(n);}} onBlur={()=>{setFocused(false);setError(parsed(draft)===undefined?'Use '+min+'–'+max+'. The last valid value was kept.':'');}}/>{error&&<small role="alert">{error}</small>}</label>;
+    return <label>{label}<span className="instrument-unit"><input type="number" min={min} max={max} step={step} value={draft} aria-invalid={!!error} onFocus={()=>{setFocused(true);setError('');}} onChange={e=>{const raw=e.currentTarget.value;setDraft(raw);setError('');const n=parsed(raw);if(n!==undefined)onValue(n);}} onBlur={()=>{setFocused(false);setError(parsed(draft)===undefined?'Use '+min+'–'+max+'. The last valid value was kept.':'');}}/>{label.includes(" · ")&&<span aria-hidden="true">{label.split(" · ").at(-1)}</span>}</span>{error&&<small role="alert">{error}</small>}</label>;
 }
 export default function HardwareValuation() {
     const [p, setP] = useState<DeviceParameters>(() => structuredClone(DEFAULT_PARAMETERS)), [result, setResult] = useState<ValuationResponse | null>(null), [status, setStatus] = useState(''), [busy, setBusy] = useState(false);

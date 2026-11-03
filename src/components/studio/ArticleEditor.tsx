@@ -1,3 +1,4 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
 import { useEffect, useState } from 'react';
 import {
   emptyArticle,
@@ -19,6 +20,7 @@ export default function ArticleEditor({
   roles,
   userId,
 }: Props) {
+ useInstrumentReady('ArticleEditor');
   const [article, setArticle] = useState(initial);
   const [draft, setDraft] = useState<ArticlePayload>(
     () => initial?.payload ?? emptyArticle(),
@@ -220,6 +222,11 @@ export default function ArticleEditor({
               />
             </label>
 
+            <label>Confidence (optional)
+              <select value={draft.confidence??''} onChange={event=>change('confidence',(event.currentTarget.value||null) as ArticlePayload['confidence'])}>
+                <option value="">None (use section default)</option><option value="confirmed">Confirmed</option><option value="reported">Reported</option><option value="rumor">Rumor</option>
+              </select>
+            </label>
             <div className="studio-pair">
               <label>
                 Section

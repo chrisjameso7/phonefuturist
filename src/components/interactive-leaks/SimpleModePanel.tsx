@@ -11,6 +11,7 @@ import type {
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
 type Props = {
+  busy?: boolean;
   onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy', powerScenario: SocPowerWhatIf) => void;
 };
 
@@ -34,8 +35,10 @@ function number(value: string) {
 
 export default function SimpleModePanel({
   onRun,
+  busy = false,
 }: Props) {
   const [name, setName] = useState('');
+  const [hasRun,setHasRun]=useState(false);
   const [manufacturer, setManufacturer] =
     useState('');
   const [batteryMah, setBatteryMah] =
@@ -96,6 +99,7 @@ export default function SimpleModePanel({
 
     setError('');
 
+    setHasRun(true);
     onRun({
       ...(name.trim() ? { name: name.trim() } : {}),
       ...(manufacturer.trim()
@@ -176,7 +180,7 @@ export default function SimpleModePanel({
           <small>Optional software energy scenario.</small>
         </label>
         <label className="il-field"><span>Nominal cell voltage (V)</span>
-          <input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} />
+          <span className="instrument-unit"><input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} /><span aria-hidden="true">V</span></span>
           <small>Use the battery specification; default is a scenario value.</small>
         </label>
         <label className="il-field il-wide">
@@ -197,7 +201,7 @@ export default function SimpleModePanel({
 
         <label className="il-field">
           <span>Battery</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             value={batteryMah}
@@ -206,12 +210,12 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">mAh</span></span>
         </label>
 
         <label className="il-field">
           <span>Wired charging</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             value={wiredWatts}
@@ -220,12 +224,12 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">W</span></span>
         </label>
 
         <label className="il-field">
           <span>Display size</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             step="0.1"
@@ -235,7 +239,7 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">in</span></span>
         </label>
 
         <label className="il-field">
@@ -267,8 +271,8 @@ export default function SimpleModePanel({
 
         {resolution === 'custom' && (
           <div className="il-grid">
-            <label className="il-field"><span>Width (pixels)</span><input type="number" min="1" step="1" value={customWidth} onChange={event => setCustomWidth(event.currentTarget.value)} placeholder="1220" /></label>
-            <label className="il-field"><span>Height (pixels)</span><input type="number" min="1" step="1" value={customHeight} onChange={event => setCustomHeight(event.currentTarget.value)} placeholder="2712" /></label>
+            <label className="il-field"><span>Width (pixels)</span><span className="instrument-unit"><input type="number" min="1" step="1" value={customWidth} onChange={event => setCustomWidth(event.currentTarget.value)} placeholder="1220" /><span aria-hidden="true">px</span></span></label>
+            <label className="il-field"><span>Height (pixels)</span><span className="instrument-unit"><input type="number" min="1" step="1" value={customHeight} onChange={event => setCustomHeight(event.currentTarget.value)} placeholder="2712" /><span aria-hidden="true">px</span></span></label>
           </div>
         )}
 
@@ -437,10 +441,14 @@ export default function SimpleModePanel({
       <button
         type="button"
         className="il-simple-run"
+        aria-busy={busy}
+        disabled={busy}
+        data-success={hasRun && !busy || undefined}
         onClick={submit}
       >
         Run simulation
       </button>
+      {hasRun && !busy && <p role="status">Simulation complete.</p>}
 
 
     </div>

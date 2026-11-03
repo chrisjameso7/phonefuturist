@@ -131,12 +131,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     height: 520px;
     right: -150px;
     top: 20px;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      rgba(136, 149, 255, 0.12),
-      rgba(136, 149, 255, 0) 68%
-    );
+    border-radius: var(--pf-radius-md);
+    background: var(--pf-surface);
     pointer-events: none;
   }
 
@@ -191,8 +187,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-principles span {
     padding: 9px 12px;
     border: 1px solid var(--line);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.025);
+    border-radius: var(--pf-radius-md);
+    background: color-mix(in srgb,var(--pf-raised) 3%,transparent);
     color: var(--muted);
     font-size: 0.78rem;
   }
@@ -211,18 +207,12 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     height: 440px;
     position: relative;
     z-index: 2;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 38px;
+    border: 1px solid color-mix(in srgb,var(--pf-border) 16%,transparent);
+    border-radius: var(--pf-radius-md);
     background:
-      linear-gradient(
-        145deg,
-        rgba(255, 255, 255, 0.08),
-        rgba(255, 255, 255, 0.015)
-      ),
-      #11171d;
+      var(--pf-surface);
     box-shadow:
-      0 45px 100px rgba(0, 0, 0, 0.45),
-      inset 0 1px rgba(255, 255, 255, 0.08);
+      none;
     transform: rotate(8deg);
   }
 
@@ -230,26 +220,20 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     content: "";
     position: absolute;
     inset: 9px;
-    border: 1px solid rgba(255, 255, 255, 0.045);
-    border-radius: 30px;
+    border: 1px solid color-mix(in srgb,var(--pf-border) 5%,transparent);
+    border-radius: var(--pf-radius-md);
   }
 
   .model-camera {
     position: absolute;
     width: 54px;
     height: 54px;
-    border: 7px solid #202832;
-    border-radius: 50%;
+    border: 7px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
     background:
-      radial-gradient(
-        circle at 40% 35%,
-        #596675 0 4%,
-        #121820 18%,
-        #030506 57%
-      );
+      var(--pf-surface);
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 8px 20px rgba(0, 0, 0, 0.35);
+      none;
   }
 
   .model-camera-one {
@@ -273,8 +257,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     left: 118px;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: #d8d2b4;
+    border-radius: var(--pf-radius-md);
+    background: var(--pf-raised);
   }
 
   .model-mark {
@@ -301,8 +285,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
   .model-orbit {
     position: absolute;
-    border: 1px solid rgba(136, 149, 255, 0.13);
-    border-radius: 50%;
+    border: 1px solid color-mix(in srgb,var(--pf-brand) 13%,transparent);
+    border-radius: var(--pf-radius-md);
   }
 
   .model-orbit-one {
@@ -364,9 +348,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell {
     overflow: hidden;
     border: 1px solid var(--line);
-    border-radius: 24px;
+    border-radius: var(--pf-radius-md);
     background: var(--surface);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+    box-shadow: none;
   }
 
   /*
@@ -392,7 +376,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     justify-content: space-between;
     gap: 20px;
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.018);
+    background: color-mix(in srgb,var(--pf-raised) 2%,transparent);
   }
 
   .interactive-simulator-shell .il-toolbar > div:first-child {
@@ -449,12 +433,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     top: 120px;
     align-self: start;
     background:
-      linear-gradient(
-        180deg,
-        rgba(136, 149, 255, 0.035),
-        rgba(0, 0, 0, 0) 220px
-      ),
-      rgba(0, 0, 0, 0.12);
+      var(--pf-surface);
   }
 
   /* INPUT SECTIONS */
@@ -554,7 +533,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
   .interactive-simulator-shell .il-field > span small {
     margin-left: 3px;
-    color: #747d89;
+    color: var(--pf-muted);
     font-size: 0.64rem;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -567,28 +546,26 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     min-height: 44px;
     margin: 0;
     padding: 10px 12px;
-    border: 1px solid #39434f;
-    border-radius: 9px;
-    background: #0d1319;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    background: var(--pf-surface);
     color: var(--ink);
     font: inherit;
     font-size: 0.82rem;
     outline: none;
     transition:
-      border-color 150ms ease,
-      background 150ms ease,
-      box-shadow 150ms ease;
+      transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
   }
 
   .interactive-simulator-shell .il-field input:focus,
   .interactive-simulator-shell .il-field select:focus {
-    border-color: rgba(136, 149, 255, 0.72);
-    background: #10171e;
-    box-shadow: 0 0 0 3px rgba(136, 149, 255, 0.08);
+    border-color: color-mix(in srgb,var(--pf-brand) 72%,transparent);
+    background: var(--pf-surface);
+    box-shadow: none;
   }
 
   .interactive-simulator-shell .il-field input::placeholder {
-    color: #59616c;
+    color: var(--pf-muted);
   }
 
   /* ADVANCED */
@@ -621,7 +598,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell .il-empty {
     padding: 18px;
     border: 1px dashed var(--line);
-    border-radius: 10px;
+    border-radius: var(--pf-radius-sm);
     color: var(--muted);
     font-size: 0.76rem;
     line-height: 1.55;
@@ -635,8 +612,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell .il-camera {
     padding: 18px;
     border: 1px solid var(--line);
-    border-radius: 13px;
-    background: rgba(0, 0, 0, 0.12);
+    border-radius: var(--pf-radius-md);
+    background: color-mix(in srgb,var(--pf-bg) 12%,transparent);
   }
 
   .interactive-simulator-shell .il-camera-title {
@@ -657,8 +634,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     min-height: 32px;
     margin: 0;
     padding: 6px 10px;
-    border: 1px solid rgba(255, 155, 168, 0.25);
-    border-radius: 7px;
+    border: 1px solid color-mix(in srgb,var(--pf-border) 25%,transparent);
+    border-radius: var(--pf-radius-sm);
     background: transparent;
     color: var(--error);
     font-size: 0.68rem;
@@ -679,10 +656,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     min-height: 46px;
     margin: 0;
     padding: 11px 17px;
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 9px;
+    border: 1px solid color-mix(in srgb,var(--pf-border) 13%,transparent);
+    border-radius: var(--pf-radius-sm);
     background: var(--accent);
-    color: #fff;
+    color: var(--pf-primary);
     font-weight: 700;
     font-size: 0.78rem;
     cursor: pointer;
@@ -746,8 +723,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     display: grid;
     place-items: center;
     position: relative;
-    border: 1px solid rgba(136, 149, 255, 0.28);
-    border-radius: 50%;
+    border: 1px solid color-mix(in srgb,var(--pf-brand) 28%,transparent);
+    border-radius: var(--pf-radius-md);
   }
 
   .interactive-simulator-shell .il-orbit::after {
@@ -755,15 +732,15 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     position: absolute;
     width: 76px;
     height: 31px;
-    border: 1px solid rgba(136, 149, 255, 0.18);
-    border-radius: 50%;
+    border: 1px solid color-mix(in srgb,var(--pf-brand) 18%,transparent);
+    border-radius: var(--pf-radius-md);
     transform: rotate(-28deg);
   }
 
   .interactive-simulator-shell .il-orbit span {
     width: 7px;
     height: 7px;
-    border-radius: 50%;
+    border-radius: var(--pf-radius-md);
     background: var(--accent);
   }
 
@@ -816,9 +793,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell .il-metrics > div {
     min-width: 0;
     padding: 11px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid color-mix(in srgb,var(--pf-border) 6%,transparent);
+    border-radius: var(--pf-radius-sm);
+    background: color-mix(in srgb,var(--pf-raised) 3%,transparent);
   }
 
   .interactive-simulator-shell .il-metrics strong {
@@ -850,9 +827,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     justify-content: space-between;
     gap: 12px;
     padding: 9px 11px;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid color-mix(in srgb,var(--pf-border) 6%,transparent);
+    border-radius: var(--pf-radius-sm);
+    background: color-mix(in srgb,var(--pf-raised) 2%,transparent);
   }
 
   .interactive-simulator-shell .il-battery-workloads strong {
@@ -871,9 +848,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell .il-camera-result {
     margin-top: 12px;
     padding: 13px;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    border-radius: 11px;
-    background: rgba(255, 255, 255, 0.018);
+    border: 1px solid color-mix(in srgb,var(--pf-border) 6%,transparent);
+    border-radius: var(--pf-radius-md);
+    background: color-mix(in srgb,var(--pf-raised) 2%,transparent);
   }
 
   .interactive-simulator-shell .il-camera-result > strong {
@@ -896,9 +873,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     align-items: baseline;
     flex-wrap: wrap;
     gap: 6px;
-    border: 1px solid rgba(136, 149, 255, 0.15);
-    border-radius: 10px;
-    background: rgba(136, 149, 255, 0.04);
+    border: 1px solid color-mix(in srgb,var(--pf-brand) 15%,transparent);
+    border-radius: var(--pf-radius-sm);
+    background: color-mix(in srgb,var(--pf-brand) 4%,transparent);
   }
 
   .interactive-simulator-shell .il-volume-number strong {
@@ -908,7 +885,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   }
 
   .interactive-simulator-shell .il-volume-number > span {
-    color: #59616c;
+    color: var(--pf-muted);
   }
 
   .interactive-simulator-shell .il-volume-number small {
@@ -923,18 +900,18 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     margin-top: 18px;
     padding: 16px;
     border: 1px solid var(--line);
-    border-radius: 11px;
-    background: rgba(255, 255, 255, 0.025);
+    border-radius: var(--pf-radius-md);
+    background: color-mix(in srgb,var(--pf-raised) 3%,transparent);
   }
 
   .interactive-simulator-shell .il-verdict.passes {
-    border-color: rgba(136, 149, 255, 0.24);
-    background: rgba(136, 149, 255, 0.045);
+    border-color: color-mix(in srgb,var(--pf-brand) 24%,transparent);
+    background: color-mix(in srgb,var(--pf-brand) 5%,transparent);
   }
 
   .interactive-simulator-shell .il-verdict.fails {
-    border-color: rgba(255, 155, 168, 0.28);
-    background: rgba(255, 155, 168, 0.045);
+    border-color: color-mix(in srgb,var(--pf-border) 28%,transparent);
+    background: color-mix(in srgb,var(--pf-raised) 5%,transparent);
   }
 
   .interactive-simulator-shell .il-verdict strong {
@@ -960,9 +937,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .interactive-simulator-shell .il-warning {
     margin-top: 9px;
     padding: 12px;
-    border: 1px solid rgba(255, 155, 168, 0.2);
-    border-radius: 9px;
-    background: rgba(255, 155, 168, 0.035);
+    border: 1px solid color-mix(in srgb,var(--pf-border) 20%,transparent);
+    border-radius: var(--pf-radius-sm);
+    background: color-mix(in srgb,var(--pf-raised) 4%,transparent);
   }
 
   .interactive-simulator-shell .il-warning strong {
@@ -1015,7 +992,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     margin-top: 55px;
     background: var(--line);
     border: 1px solid var(--line);
-    border-radius: 20px;
+    border-radius: var(--pf-radius-md);
     overflow: hidden;
   }
 
@@ -1131,7 +1108,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     }
 
     .interactive-simulator-shell {
-      border-radius: 17px;
+      border-radius: var(--pf-radius-md);
     }
 
     .interactive-simulator-shell .il-toolbar {
@@ -1180,10 +1157,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 .interactive-simulator-shell .il-share-card{
   margin:18px 0 0;
   padding:16px;
-  border:1px solid #24272c;
-  border-radius:18px;
-  background:#050505;
-  box-shadow:0 18px 48px rgb(0 0 0/.28);
+  border:1px solid var(--pf-border);
+  border-radius:var(--pf-radius-md);
+  background:var(--pf-bg);
+  box-shadow:none;
 }
 .interactive-simulator-shell .il-share-card-brand{
   display:flex;
@@ -1192,15 +1169,15 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   gap:12px;
   margin-bottom:12px;
   padding-bottom:11px;
-  border-bottom:1px solid #1d1f22;
+  border-bottom:1px solid var(--pf-border);
 }
 .interactive-simulator-shell .il-share-card-brand span{
-  color:#fff;
+  color:var(--pf-primary);
   font-size:.75rem;
   font-weight:760;
 }
 .interactive-simulator-shell .il-share-card-brand small{
-  color:#8d9299;
+  color:var(--pf-muted);
   font-size:.55rem;
   font-weight:700;
   letter-spacing:.11em;
@@ -1208,7 +1185,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 }
 .interactive-simulator-shell .il-share-card>strong{
   display:block;
-  color:#fff;
+  color:var(--pf-primary);
   font-size:1.15rem;
   letter-spacing:-.035em;
 }
@@ -1220,10 +1197,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 }
 .interactive-simulator-shell .il-share-card-metrics span{
   padding:7px 9px;
-  border:1px solid #202327;
-  border-radius:999px;
-  background:#0c0d0f;
-  color:#d7dadd;
+  border:1px solid var(--pf-border);
+  border-radius:var(--pf-radius-md);
+  background:var(--pf-bg);
+  color:var(--pf-primary);
   font-size:.61rem;
 }
 .interactive-simulator-shell .il-share-card-actions{
@@ -1234,29 +1211,29 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 }
 .interactive-simulator-shell .il-share-card-actions button{
   min-height:40px;
-  border:1px solid #2a2d31;
-  border-radius:999px;
-  background:#111214;
-  color:#fff;
+  border:1px solid var(--pf-border);
+  border-radius:var(--pf-radius-md);
+  background:var(--pf-surface);
+  color:var(--pf-primary);
   font:inherit;
   font-size:.66rem;
   font-weight:720;
   cursor:pointer;
 }
 .interactive-simulator-shell .il-share-card-actions button:first-child{
-  background:#f4f4f5;
-  color:#090a0b;
-  border-color:#f4f4f5;
+  background:var(--pf-raised);
+  color:var(--pf-muted);
+  border-color:var(--pf-border);
 }
 .interactive-simulator-shell .il-share-card>small{
   display:block;
   margin-top:9px;
-  color:#8e9399;
+  color:var(--pf-muted);
   font-size:.58rem;
 }
 @media(max-width:620px){
   .interactive-simulator-shell .il-share-card{
-    border-radius:16px;
+    border-radius:var(--pf-radius-md);
   }
   .interactive-simulator-shell .il-share-card-actions{
     grid-template-columns:1fr;
@@ -1265,27 +1242,27 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 </style>
 <style is:global>
  /* Shared editorial branding, quieter engineering workspace. */
- body .interactive-page{color:#f3f0e9;padding-top:32px}
+ body .interactive-page{color:var(--pf-primary);padding-top:32px}
  body .interactive-hero{min-height:0;gap:28px;padding:0 0 28px;grid-template-columns:minmax(0,1fr) 220px}
  body .interactive-hero h1{font-size:clamp(36px,5vw,64px);line-height:1.05;margin:12px 0 18px}
- body .interactive-hero h1 span{color:#89dce8}
+ body .interactive-hero h1 span{color:var(--pf-brand)}
  body .interactive-model-wrap{min-height:200px;max-height:240px;overflow:hidden}
  body .interactive-model-wrap .model-phone{transform:scale(.65) rotate(-12deg)}
- body .interactive-description,body .interactive-context p,body .interactive-method-grid p{color:#c1c8ce}
- body .interactive-principles span{color:#c1c8ce;border-color:#606a72}
+ body .interactive-description,body .interactive-context p,body .interactive-method-grid p{color:var(--pf-secondary)}
+ body .interactive-principles span{color:var(--pf-secondary);border-color:var(--pf-border)}
  body .interactive-community-link{display:flex;flex-wrap:wrap;gap:12px 24px}
- body .interactive-community-link a{color:#9de3eb}
+ body .interactive-community-link a{color:var(--pf-brand)}
  body .workspace-jump{font-weight:700}
  body .interactive-context{padding:20px 0;margin-bottom:28px;gap:20px}
  body .interactive-context h2{font-size:24px}
  body .interactive-workspace{scroll-margin-top:100px}
- body .interactive-simulator-shell{background:#1c2126;border-color:#41494f}
- body .il-section{background:#20262b;border:1px solid #3f484f;border-radius:14px;margin-bottom:18px;padding:22px}
- body .il-section-heading p,body .il-field>span,body .il-engine{color:#c1c8ce}
- body .il-field input,body .il-field select{background:#14191e;color:#f3f0e9;border-color:#55616b;min-height:46px}
- body .il-field input:focus-visible,body .il-field select:focus-visible{outline:2px solid #81deeb;outline-offset:2px}
- body .il-advanced{background:#1a2025;border-color:#424b53}
- body .il-result-empty{background:#1a2025;color:#c1c8ce}
+ body .interactive-simulator-shell{background:var(--pf-raised);border-color:var(--pf-border)}
+ body .il-section{background:var(--pf-raised);border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);margin-bottom:18px;padding:22px}
+ body .il-section-heading p,body .il-field>span,body .il-engine{color:var(--pf-secondary)}
+ body .il-field input,body .il-field select{background:var(--pf-surface);color:var(--pf-primary);border-color:var(--pf-border);min-height:46px}
+ body .il-field input:focus-visible,body .il-field select:focus-visible{outline:2px solid var(--pf-brand);outline-offset:2px}
+ body .il-advanced{background:var(--pf-raised);border-color:var(--pf-border)}
+ body .il-result-empty{background:var(--pf-raised);color:var(--pf-secondary)}
  @media(max-width:760px){
   body .interactive-page{width:calc(100% - 32px);padding:24px 0 32px}
   body .interactive-hero{display:block}
@@ -1316,18 +1293,18 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     align-items:center;
     gap:4px;
     padding:4px;
-    border:1px solid #41494f;
-    border-radius:999px;
-    background:#15191d;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
 
   .il-mode-switch button{
     min-height:34px;
     padding:0 13px;
     border:0;
-    border-radius:999px;
+    border-radius:var(--pf-radius-md);
     background:transparent;
-    color:#aeb8bf;
+    color:var(--pf-secondary);
     font:inherit;
     font-size:.68rem;
     font-weight:720;
@@ -1335,16 +1312,16 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   }
 
   .il-mode-switch button.active{
-    background:#e9f7f9;
-    color:#0b171a;
+    background:var(--pf-raised);
+    color:var(--pf-muted);
   }
 
   .il-simple-panel{
     margin:0 0 20px;
     padding:22px;
-    border:1px solid #3f484f;
-    border-radius:16px;
-    background:#20262b;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-raised);
   }
 
   .il-simple-intro{
@@ -1367,9 +1344,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
   .il-simple-intro span{
     padding:4px 8px;
-    border-radius:999px;
-    background:#233a3e;
-    color:#9be1e9;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-raised);
+    color:var(--pf-brand);
     font-size:.58rem;
     font-weight:750;
     letter-spacing:.04em;
@@ -1379,7 +1356,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .il-simple-intro p{
     max-width:570px;
     margin:0;
-    color:#b5bec4;
+    color:var(--pf-secondary);
     font-size:.78rem;
     line-height:1.55;
   }
@@ -1395,9 +1372,9 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     min-height:48px;
     margin-top:16px;
     border:0;
-    border-radius:12px;
-    background:#e9f7f9;
-    color:#0b171a;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-raised);
+    color:var(--pf-muted);
     font:inherit;
     font-weight:800;
     cursor:pointer;
@@ -1411,20 +1388,20 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   }
 
   .il-simple-note{
-    color:#98a3aa;
+    color:var(--pf-secondary);
   }
 
   .il-simple-error{
-    color:#ffb4b4;
+    color:var(--pf-rumor);
   }
 
   .il-feedback-trigger{
     min-height:36px;
     padding:0 13px;
-    border:1px solid #48545d;
-    border-radius:999px;
-    background:#182126;
-    color:#bcecf1;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-raised);
+    color:var(--pf-brand);
     font:inherit;
     font-size:.66rem;
     font-weight:720;
@@ -1438,8 +1415,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     display:grid;
     place-items:center;
     padding:24px;
-    background:rgba(5,8,10,.76);
-    backdrop-filter:blur(10px);
+    background:color-mix(in srgb,var(--pf-bg) 76%,transparent);
+    backdrop-filter:none;
   }
 
   .il-feedback-modal{
@@ -1447,10 +1424,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     max-height:min(760px,calc(100vh - 48px));
     overflow:auto;
     padding:22px;
-    border:1px solid #4a555e;
-    border-radius:18px;
-    background:#1b2126;
-    box-shadow:0 24px 80px #0009;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-raised);
+    box-shadow:none;
   }
 
   .il-feedback-head{
@@ -1461,7 +1438,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   }
 
   .il-feedback-head span{
-    color:#8adce6;
+    color:var(--pf-brand);
     font-size:.6rem;
     font-weight:760;
     letter-spacing:.08em;
@@ -1476,10 +1453,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .il-feedback-head>button{
     width:38px;
     height:38px;
-    border:1px solid #46515a;
-    border-radius:50%;
-    background:#14191d;
-    color:#fff;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
+    color:var(--pf-primary);
     font-size:1.4rem;
     cursor:pointer;
   }
@@ -1491,10 +1468,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .il-feedback-modal textarea{
     width:100%;
     resize:vertical;
-    border:1px solid #55616b;
-    border-radius:10px;
-    background:#14191e;
-    color:#f3f0e9;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-sm);
+    background:var(--pf-surface);
+    color:var(--pf-primary);
     padding:12px;
     font:inherit;
     font-size:16px;
@@ -1502,7 +1479,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
   .il-feedback-disclosure{
     margin:12px 0;
-    color:#99a4aa;
+    color:var(--pf-secondary);
     font-size:.66rem;
     line-height:1.55;
   }
@@ -1517,10 +1494,10 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   .il-feedback-actions button{
     min-height:40px;
     padding:0 14px;
-    border:1px solid #46515a;
-    border-radius:10px;
-    background:#e9f7f9;
-    color:#0b171a;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-sm);
+    background:var(--pf-raised);
+    color:var(--pf-muted);
     font:inherit;
     font-size:.7rem;
     font-weight:760;
@@ -1528,13 +1505,13 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
   }
 
   .il-feedback-actions button.secondary{
-    background:#151a1f;
-    color:#d6dde1;
+    background:var(--pf-surface);
+    color:var(--pf-primary);
   }
 
   .il-feedback-status{
     margin:12px 0 0;
-    color:#bcecf1;
+    color:var(--pf-brand);
     font-size:.68rem;
     line-height:1.5;
   }
@@ -1581,7 +1558,7 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 
     .il-feedback-modal{
       max-height:calc(100vh - 110px);
-      border-radius:18px;
+      border-radius:var(--pf-radius-md);
       padding:16px;
     }
   }
@@ -1618,48 +1595,48 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 <style is:global>
 /* Advanced workspace palette: remove leftover graphite from legacy simulator styles. */
 .interactive-page .interactive-simulator-shell {
-  background:#091321;
-  border-color:#23374f;
+  background:var(--pf-surface);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-workspace,
 .interactive-page .il-builder,
 .interactive-page .il-results {
-  background:#0a1422;
-  border-color:#23374f;
+  background:var(--pf-surface);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-section,
 .interactive-page .il-simple-panel {
-  background:#0e1b2c;
-  border-color:#243b56;
+  background:var(--pf-surface);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-advanced,
 .interactive-page .il-result-empty,
 .interactive-page .il-sensitivity-card {
-  background:#0c1828;
-  border-color:#253b54;
+  background:var(--pf-surface);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-field input,
 .interactive-page .il-field select,
 .interactive-page .il-field textarea {
-  background:#080f1a;
-  border-color:#324762;
-  color:#f0f7ff;
+  background:var(--pf-surface);
+  border-color:var(--pf-brand);
+  color:var(--pf-primary);
 }
 .interactive-page .il-section details,
 .interactive-page .il-section details > summary {
   background:transparent;
 }
 .interactive-page .il-section details > summary {
-  color:#85c6ff;
-  border-color:#253b54;
+  color:var(--pf-brand);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-section-heading p,
 .interactive-page .il-field > span,
 .interactive-page .il-engine {
-  color:#b1c5dd;
+  color:var(--pf-secondary);
 }
 @media (max-width:760px) {
-  .interactive-page .il-section {background:#0e1b2c;}
+  .interactive-page .il-section {background:var(--pf-surface);}
 }
 </style>
 
@@ -1669,36 +1646,36 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
 .interactive-page .il-app[data-mode="simple"] .il-section,
 .interactive-page .il-app[data-mode="simple"] .il-results,
 .interactive-page .il-app[data-mode="simple"] .il-result-empty {
-  background:#0e1b2c;
-  border-color:#243b56;
+  background:var(--pf-surface);
+  border-color:var(--pf-border);
 }
 .interactive-page .il-app[data-mode="simple"] .il-mode-switch {
-  background:#091321;
-  border-color:#2a405a;
+  background:var(--pf-surface);
+  border-color:var(--pf-brand);
 }
 .interactive-page .il-app[data-mode="simple"] .il-mode-switch button:not(.active) {
   background:transparent;
-  color:#b0c5dd;
+  color:var(--pf-secondary);
 }
 .interactive-page .il-app[data-mode="simple"] .il-simple-intro span,
 .interactive-page .il-app[data-mode="simple"] .il-simple-note,
 .interactive-page .il-app[data-mode="simple"] .il-feedback-trigger {
-  background:#10243a;
-  border-color:#2a435f;
+  background:var(--pf-raised);
+  border-color:var(--pf-brand);
 }
 .interactive-page .il-app[data-mode="simple"] .il-field input,
 .interactive-page .il-app[data-mode="simple"] .il-field select {
-  background:#080f1a;
-  border-color:#324762;
-  color:#f0f7ff;
+  background:var(--pf-surface);
+  border-color:var(--pf-brand);
+  color:var(--pf-primary);
 }
 .interactive-page .il-feedback-modal {
-  background:#0e1b2c;
-  border-color:#304b67;
+  background:var(--pf-surface);
+  border-color:var(--pf-brand);
 }
 .interactive-page .il-feedback-modal textarea,
 .interactive-page .il-feedback-head > button {
-  background:#080f1a;
-  border-color:#324762;
+  background:var(--pf-surface);
+  border-color:var(--pf-brand);
 }
 </style>

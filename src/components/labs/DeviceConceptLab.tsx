@@ -1,3 +1,4 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
 import PublishBuild from '../community/PublishBuild';
 import { useMemo, useState } from 'react';
 import { CONCEPT_PRESETS, calculateDeviceConcept, type ConceptFamily, type DeviceConcept } from '../../lib/labs/device-concepts';
@@ -9,6 +10,7 @@ type Metric = ReturnType<typeof calculateDeviceConcept>;
 export default function DeviceConceptLab({ family }: {
     family: ConceptFamily;
 }) {
+ useInstrumentReady('DeviceConceptLab');
     const [builds, setBuilds] = useState<Record<ConceptFamily, DeviceConcept>>(() => ({ foldables: { ...CONCEPT_PRESETS.foldables[0] }, tablets: { ...CONCEPT_PRESETS.tablets[0] }, laptops: { ...CONCEPT_PRESETS.laptops[0] } }));
     const [active, setActive] = useState(family), [cover, setCover] = useState(false), [baseline, setBaseline] = useState<{
         name: string;

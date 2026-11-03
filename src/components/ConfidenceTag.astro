@@ -1,0 +1,6 @@
+---
+import {articleConfidence,type Confidence} from '../lib/editorial';
+interface Props {article:{section:string;confidence?:Confidence|null;withdrawn?:boolean}}
+const confidence=articleConfidence(Astro.props.article);
+---
+{confidence&&<span class:list={['confidence-tag',`confidence-${confidence}`]}><span aria-hidden="true"></span>{confidence==='confirmed'?'Confirmed':confidence==='reported'?'Reported':'Rumor'}</span>}

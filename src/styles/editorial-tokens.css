@@ -1,0 +1,15 @@
+/* Canonical interface palette. Hardware materials, imagery and export assets retain their own colors. */
+:root {
+ --pf-bg:#07090D; --pf-surface:#0E131B; --pf-raised:#151C27; --pf-border:#1E2735;
+ --pf-primary:#E6EAF0; --pf-secondary:#9AA5B5; --pf-muted:#7A8699;
+ --pf-brand:#1A8CFF; --pf-confirmed:#5EEAD4; --pf-reported:#F5B14A; --pf-rumor:#F87171;
+ --pf-border-hover:color-mix(in srgb,var(--pf-border),var(--pf-secondary) 35%);
+ --font-ui:'Schibsted Grotesk',Arial,sans-serif; --font-body:'Newsreader',Georgia,serif; --font-data:'IBM Plex Mono',monospace;
+ --paper:var(--pf-bg); --surface-deep:var(--pf-bg); --surface:var(--pf-surface); --surface-raised:var(--pf-raised);
+ --ink:var(--pf-primary); --muted:var(--pf-secondary); --line:var(--pf-border); --accent:var(--pf-brand); --on-accent:var(--pf-bg);
+ --error:var(--pf-rumor); --lab-accent:var(--pf-brand); --violet:var(--pf-brand);
+ --pf-width-content:1280px; --pf-radius-sm:8px; --pf-radius-md:12px; --pf-radius-lg:14px;
+ --pf-space-1:8px; --pf-space-2:8px; --pf-space-3:16px; --pf-space-4:16px; --pf-space-5:24px; --pf-space-6:32px; --pf-space-7:48px; --pf-space-8:64px;
+ --pf-motion-fast:150ms; --pf-motion-base:220ms;
+ color-scheme:dark;
+}

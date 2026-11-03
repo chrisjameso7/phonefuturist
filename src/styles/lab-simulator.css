@@ -28,17 +28,7 @@
   position: relative;
   overflow: clip;
   background:
-    radial-gradient(
-      circle at 76% -8%,
-      color-mix(in srgb, var(--violet) 12%, transparent),
-      transparent 31rem
-    ),
-    radial-gradient(
-      circle at 17% 9%,
-      color-mix(in srgb, var(--accent) 9%, transparent),
-      transparent 28rem
-    ),
-    var(--paper);
+    var(--pf-surface);
   color: var(--ink);
 }
 
@@ -49,17 +39,9 @@
   pointer-events: none;
   opacity: 0.28;
   background-image:
-    linear-gradient(
-      color-mix(in srgb, var(--ink) 3%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--ink) 3%, transparent) 1px,
-      transparent 1px
-    );
+    var(--pf-surface);
   background-size: 56px 56px;
-  mask-image: linear-gradient(to bottom, black, transparent 48rem);
+  mask-image: linear-gradient(to bottom, var(--pf-bg), transparent 48rem);
 }
 
 .lab-product > * {
@@ -159,7 +141,7 @@
   align-items: center;
   gap: 8px;
   border: 1px solid var(--lab-border);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   color: var(--muted);
   font-size: 0.67rem;
   font-weight: 650;
@@ -173,23 +155,21 @@
 .lab-product-live-dot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   background: var(--lab-cyan);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--lab-cyan) 80%, transparent);
+  box-shadow: none;
 }
 
 .lab-product-exit {
   color: var(--ink);
   transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-product-exit:hover {
   border-color: color-mix(in srgb, var(--lab-cyan) 42%, transparent);
   background: color-mix(in srgb, var(--lab-cyan) 7%, transparent);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 
@@ -245,15 +225,10 @@
 .lab-product-system {
   padding: 20px;
   border: 1px solid var(--lab-border);
-  border-radius: 20px;
+  border-radius: var(--pf-radius-md);
   background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--lab-cyan) 6%, transparent),
-      transparent 45%
-    ),
-    color-mix(in srgb, var(--surface) 58%, transparent);
-  backdrop-filter: blur(18px);
+    var(--pf-surface);
+  backdrop-filter: none;
 }
 
 .lab-product-system-head {
@@ -342,17 +317,11 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 26px;
+  border-radius: var(--pf-radius-md);
   background:
-    linear-gradient(
-      140deg,
-      color-mix(in srgb, var(--lab-cyan) 3%, transparent),
-      transparent 28%
-    ),
-    var(--lab-panel);
+    var(--pf-surface);
   box-shadow:
-    0 36px 100px color-mix(in srgb, #000 34%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ink) 5%, transparent);
+    none;
 }
 
 .lab-simulator-shell::before {
@@ -364,12 +333,7 @@
   width: 38%;
   height: 1px;
   pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--lab-cyan) 80%, transparent),
-    transparent
-  );
+  background: var(--pf-surface);
 }
 
 .lab-simulator-shell .il-app {
@@ -425,7 +389,7 @@
   margin: 0;
   padding: 8px 13px;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background: transparent;
   color: var(--ink);
   font: inherit;
@@ -433,15 +397,13 @@
   font-weight: 600;
   cursor: pointer;
   transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-chip:hover {
   border-color: color-mix(in srgb, var(--lab-cyan) 42%, transparent);
   background: color-mix(in srgb, var(--lab-cyan) 6%, transparent);
-  transform: translateY(-1px);
+  transform: none;
 }
 
 
@@ -468,12 +430,7 @@
   top: 94px;
   padding: 28px;
   background:
-    radial-gradient(
-      circle at 40% 0%,
-      color-mix(in srgb, var(--lab-cyan) 10%, transparent),
-      transparent 320px
-    ),
-    color-mix(in srgb, var(--surface-deep) 62%, transparent);
+    var(--pf-surface);
 }
 
 
@@ -511,7 +468,7 @@
 .lab-simulator-shell .il-profile-total {
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 30%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
   color: var(--ink);
   font-size: 0.8rem;
@@ -612,16 +569,14 @@
   margin: 0;
   padding: 10px 13px;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 86%, transparent);
   color: var(--ink);
   font: inherit;
   font-size: 0.8rem;
   outline: none;
   transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    background 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-field input:hover,
@@ -634,7 +589,7 @@
 .lab-simulator-shell textarea:focus {
   border-color: var(--lab-cyan);
   background: var(--surface-deep);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lab-cyan) 11%, transparent);
+  box-shadow: none;
 }
 
 .lab-simulator-shell [aria-invalid="true"] {
@@ -658,7 +613,7 @@
   flex-wrap: wrap;
   gap: 6px;
   border: 1px solid var(--lab-border);
-  border-radius: 15px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 60%, transparent);
   color: var(--ink);
 }
@@ -676,13 +631,11 @@
   align-items: center;
   gap: 8px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   color: var(--muted);
   cursor: pointer;
   transition:
-    color 150ms ease,
-    border-color 150ms ease,
-    background 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-mode label:hover {
@@ -755,7 +708,7 @@
 .lab-simulator-shell .il-advanced-body {
   padding: 18px;
   border: 1px solid var(--lab-border);
-  border-radius: 15px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
 }
 
@@ -799,12 +752,11 @@
   gap: 3px 8px;
   align-items: center;
   border: 1px solid var(--lab-border);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
   cursor: text;
   transition:
-    border-color 150ms ease,
-    background 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-workload:hover {
@@ -838,7 +790,7 @@
   margin: 4px 0 0;
   padding: 7px 10px;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: var(--surface-deep);
   color: var(--ink);
   font: inherit;
@@ -848,7 +800,7 @@
 
 .lab-simulator-shell .il-workload input:focus {
   border-color: var(--lab-cyan);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lab-cyan) 10%, transparent);
+  box-shadow: none;
 }
 
 .lab-simulator-shell .il-derate {
@@ -874,7 +826,7 @@
   display: grid;
   gap: 4px;
   border: 1px solid var(--lab-border);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 48%, transparent);
 }
 
@@ -903,7 +855,7 @@
 .lab-simulator-shell .il-camera {
   padding: 16px;
   border: 1px solid var(--lab-border);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 50%, transparent);
 }
 
@@ -926,7 +878,7 @@
   margin: 0;
   padding: 5px 10px;
   border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background: transparent;
   color: var(--error);
   font: inherit;
@@ -957,27 +909,22 @@
   margin: 0;
   padding: 12px 22px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 70%, var(--ink));
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background:
-    linear-gradient(
-      120deg,
-      var(--lab-cyan),
-      color-mix(in srgb, var(--lab-cyan) 74%, var(--lab-violet))
-    );
+    var(--pf-surface);
   color: var(--on-accent);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--lab-cyan) 13%, transparent);
+  box-shadow: none;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 750;
   cursor: pointer;
   transition:
-    transform 150ms ease,
-    box-shadow 150ms ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-simulate:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 38px color-mix(in srgb, var(--lab-cyan) 20%, transparent);
+  transform: none;
+  box-shadow: none;
 }
 
 .lab-simulator-shell .il-run p {
@@ -1053,10 +1000,9 @@
   display: grid;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 38%, transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   box-shadow:
-    0 0 40px color-mix(in srgb, var(--lab-cyan) 8%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--lab-cyan) 5%, transparent);
+    none;
 }
 
 .lab-simulator-shell .il-orbit::before {
@@ -1065,7 +1011,7 @@
   width: 88px;
   height: 34px;
   border: 1px solid color-mix(in srgb, var(--lab-violet) 22%, transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   transform: rotate(28deg);
 }
 
@@ -1075,7 +1021,7 @@
   width: 88px;
   height: 34px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 22%, transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   transform: rotate(-28deg);
 }
 
@@ -1084,9 +1030,9 @@
   height: 7px;
   position: relative;
   z-index: 2;
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   background: var(--lab-cyan);
-  box-shadow: 0 0 18px var(--lab-cyan);
+  box-shadow: none;
 }
 
 
@@ -1125,19 +1071,9 @@
   position: relative;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 32%, transparent);
-  border-radius: 18px;
+  border-radius: var(--pf-radius-md);
   background:
-    radial-gradient(
-      circle at 12% 0%,
-      color-mix(in srgb, var(--lab-cyan) 15%, transparent),
-      transparent 64%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--lab-violet) 5%, transparent),
-      transparent
-    ),
-    var(--surface);
+    var(--pf-surface);
 }
 
 .lab-simulator-shell .il-runtime-card::after {
@@ -1148,7 +1084,7 @@
   width: 180px;
   height: 180px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 10%, transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   pointer-events: none;
 }
 
@@ -1187,7 +1123,7 @@
   height: 6px;
   margin-top: 18px;
   overflow: hidden;
-  border-radius: 99px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 10%, transparent);
 }
 
@@ -1195,13 +1131,9 @@
   height: 100%;
   display: block;
   border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    var(--lab-cyan),
-    var(--lab-violet)
-  );
-  box-shadow: 0 0 18px color-mix(in srgb, var(--lab-cyan) 28%, transparent);
-  transition: width 400ms ease;
+  background: var(--pf-surface);
+  box-shadow: none;
+  transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .lab-simulator-shell .il-runtime-scale {
@@ -1217,7 +1149,7 @@
   padding: 5px 10px;
   display: inline-block;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   color: var(--ink);
   font-size: 0.61rem;
   font-weight: 650;
@@ -1276,7 +1208,7 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 
@@ -1311,7 +1243,7 @@
   justify-content: space-between;
   gap: 12px;
   border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 
@@ -1344,7 +1276,7 @@
   flex-wrap: wrap;
   gap: 6px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 23%, transparent);
-  border-radius: 13px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--lab-cyan) 5%, transparent);
 }
 
@@ -1374,7 +1306,7 @@
   margin-top: 16px;
   padding: 14px;
   border: 1px solid var(--lab-border);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: var(--lab-soft);
 }
 
@@ -1408,7 +1340,7 @@
 .lab-simulator-shell .il-evidence {
   margin-top: 12px;
   border: 1px solid var(--lab-border);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 45%, transparent);
 }
 
@@ -1454,7 +1386,7 @@
   gap: 3px;
   overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 
@@ -1505,7 +1437,7 @@
   margin-top: 9px;
   padding: 12px;
   border: 1px solid color-mix(in srgb, var(--error) 25%, transparent);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--error) 5%, transparent);
 }
 
@@ -1578,7 +1510,7 @@
   min-height: 42px;
   padding: 9px 14px;
   border: 1px solid var(--lab-border-strong);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background: transparent;
   color: var(--ink);
   font: inherit;
@@ -1600,7 +1532,7 @@
   margin: 15px 0;
   padding: 15px;
   border: 1px solid var(--lab-border);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: var(--lab-soft);
 }
 
@@ -1616,7 +1548,7 @@
   margin: 18px auto;
   display: block;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
 }
 
 .lab-simulator-shell .il-link {
@@ -1711,28 +1643,17 @@
   --lab-border-strong: color-mix(in srgb, var(--ink) 18%, transparent);
 
   background:
-    radial-gradient(
-      circle at 76% -8%,
-      color-mix(in srgb, var(--violet) 9%, transparent),
-      transparent 32rem
-    ),
-    radial-gradient(
-      circle at 17% 8%,
-      color-mix(in srgb, var(--accent) 8%, transparent),
-      transparent 29rem
-    ),
-    var(--paper);
+    var(--pf-surface);
 }
 
 :root[data-theme="light"] .lab-simulator-shell {
   box-shadow:
-    0 32px 80px color-mix(in srgb, var(--ink) 10%, transparent),
-    inset 0 1px 0 #ffffff;
+    none;
 }
 
 :root[data-theme="light"] .lab-product-system,
 :root[data-theme="light"] .lab-simulator-shell .il-toolbar {
-  backdrop-filter: blur(18px);
+  backdrop-filter: none;
 }
 
 
@@ -1835,7 +1756,7 @@
 
   .lab-product-system {
     padding: 16px;
-    border-radius: 16px;
+    border-radius: var(--pf-radius-md);
   }
 
   .lab-product-rule {
@@ -1850,7 +1771,7 @@
   }
 
   .lab-simulator-shell {
-    border-radius: 18px;
+    border-radius: var(--pf-radius-md);
   }
 
   .lab-simulator-shell .il-toolbar {
@@ -2039,7 +1960,7 @@
   min-height: 24px;
   padding: 4px 9px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface) 85%, transparent);
   color: var(--muted);
   font-size: .63rem;
@@ -2063,7 +1984,7 @@
 .il-secondary {
   min-height: 38px;
   padding: 8px 15px;
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   font: inherit;
   font-size: .75rem;
@@ -2078,7 +1999,7 @@
 }
 
 .il-primary {
-  color: white;
+  color: var(--pf-primary);
   background: var(--accent);
   border-color: var(--accent);
 }
@@ -2089,10 +2010,10 @@
   gap: 7px;
   margin: 3px 0 20px;
   padding: 11px 14px;
-  border: 1px solid color-mix(in srgb, #b78839 25%, transparent);
-  border-radius: 10px;
-  background: color-mix(in srgb, #c7964d 10%, var(--surface));
-  color: color-mix(in srgb, var(--ink) 76%, #7b5a26);
+  border: 1px solid color-mix(in srgb, var(--pf-border) 25%, transparent);
+  border-radius: var(--pf-radius-sm);
+  background: color-mix(in srgb, var(--pf-raised) 10%, var(--surface));
+  color: color-mix(in srgb, var(--ink) 76%, var(--pf-muted));
   font-size: .69rem;
   line-height: 1.45;
 }
@@ -2129,7 +2050,7 @@
 .il-stage-tabs a.is-active {
   color: var(--ink);
   background: var(--surface);
-  box-shadow: 0 1px 3px color-mix(in srgb, #000 10%, transparent);
+  box-shadow: none;
 }
 
 .il-workspace {
@@ -2196,7 +2117,7 @@
 .il-config-main,
 .il-live-preview {
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 16px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -2243,7 +2164,7 @@
   min-height: 34px;
   padding: 7px 11px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -2289,7 +2210,7 @@
   gap: 12px;
   text-align: left;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
   color: var(--ink);
   font: inherit;
@@ -2313,7 +2234,7 @@
 .il-option.is-selected {
   border-color: color-mix(in srgb, var(--accent) 55%, transparent);
   background: color-mix(in srgb, var(--accent) 8%, var(--surface));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: none;
 }
 
 .il-option.is-selected b { color: var(--accent); }
@@ -2404,7 +2325,7 @@
 .il-assumptions-panel {
   padding: 16px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 16px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -2454,7 +2375,7 @@
 .il-engineering-panel {
   margin-bottom: 16px;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
   overflow: hidden;
 }
@@ -2517,14 +2438,14 @@
   gap: 4px;
   margin-bottom: 18px;
   padding: 4px;
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 4%, var(--surface));
 }
 
 .il-mode-tabs button {
   min-height: 36px;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: transparent;
   color: var(--muted);
   font: inherit;
@@ -2538,14 +2459,14 @@
 .il-mode-tabs button.is-active {
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 3px color-mix(in srgb, #000 10%, transparent);
+  box-shadow: none;
 }
 
 .il-compare-view {
   margin-bottom: 22px;
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 16px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -2572,7 +2493,7 @@
 .il-compare-grid article {
   padding: 16px;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 13px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
 }
 
@@ -2616,7 +2537,7 @@
   gap: 10px;
   align-items: end;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
 }
 
@@ -2634,7 +2555,7 @@
   min-height: 36px;
   padding: 7px 9px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 8px;
+  border-radius: var(--pf-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -2682,7 +2603,7 @@
   gap: 5px;
   text-align: left;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
   color: var(--ink);
   font: inherit;
@@ -2708,7 +2629,7 @@
   margin-top: 10px;
   padding: 10px 12px;
   border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
 }
 
@@ -2741,7 +2662,7 @@
   min-height: 36px;
   padding: 7px 9px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 8px;
+  border-radius: var(--pf-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -2772,7 +2693,7 @@
   margin-bottom: 18px;
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 16px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -2800,7 +2721,7 @@
   gap: 4px;
   margin: 14px 0 10px;
   padding: 4px;
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 4%, var(--surface));
 }
 
@@ -2808,7 +2729,7 @@
   min-height: 32px;
   padding: 6px 12px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--pf-radius-sm);
   background: transparent;
   color: var(--muted);
   font: inherit;
@@ -2820,7 +2741,7 @@
 .il-library-tabs button.is-active {
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 3px color-mix(in srgb, #000 9%, transparent);
+  box-shadow: none;
 }
 
 .il-library-list {
@@ -2836,7 +2757,7 @@
   justify-content: space-between;
   gap: 16px;
   border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 1.5%, var(--surface));
 }
 
@@ -2886,7 +2807,7 @@
   min-height: 36px;
   padding: 7px 9px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 8px;
+  border-radius: var(--pf-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -2955,7 +2876,7 @@
   align-content: space-between;
   gap: 12px;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -2977,7 +2898,7 @@
   display: grid;
   gap: 6px;
   border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--accent) 6%, var(--surface));
 }
 
@@ -3109,15 +3030,15 @@
   align-content: start;
   gap: 8px;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
-  transition: transform 150ms ease, border-color 150ms ease;
+  transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .il-community-card:hover {
-  transform: translateY(-2px);
+  transform: none;
   border-color: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
@@ -3181,7 +3102,7 @@
 .il-community-list {
   display: grid;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 14px;
+  border-radius: var(--pf-radius-md);
   overflow: hidden;
   background: var(--surface);
 }
@@ -3390,7 +3311,7 @@
   align-content: space-between;
   gap: 10px;
   border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: var(--surface);
 }
 
@@ -3431,7 +3352,7 @@
   box-sizing: border-box;
   padding: 10px 11px;
   border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -3507,10 +3428,9 @@
   gap: 18px;
   align-items: center;
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
-  border-radius: 18px;
+  border-radius: var(--pf-radius-md);
   background:
-    radial-gradient(circle at 12% 24%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 34%),
-    color-mix(in srgb, var(--ink) 1.5%, var(--surface));
+    var(--pf-surface);
 }
 
 .il-auto-loading::after {
@@ -3518,8 +3438,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(105deg, transparent 0 42%, color-mix(in srgb, var(--accent) 7%, transparent) 49%, transparent 56% 100%);
-  animation: il-auto-scan 2.2s linear infinite;
+  background: var(--pf-surface);
+  animation: none;
 }
 
 .il-auto-orbit {
@@ -3527,7 +3447,7 @@
   height: 72px;
   position: relative;
   border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
 }
 
 .il-auto-orbit::before,
@@ -3535,7 +3455,7 @@
 .il-auto-orbit span {
   content: '';
   position: absolute;
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
 }
 
 .il-auto-orbit::before {
@@ -3550,7 +3470,7 @@
   left: calc(50% - 4px);
   background: var(--accent);
   transform-origin: 4px 40px;
-  animation: il-auto-orbit 1.35s linear infinite;
+  animation: none;
 }
 
 .il-auto-orbit span:nth-child(1) {
@@ -3622,7 +3542,7 @@
   width: 8px;
   height: 8px;
   flex: 0 0 8px;
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
@@ -3632,8 +3552,8 @@
 
 .il-auto-steps li.is-active > span {
   background: var(--accent);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 12%, transparent);
-  animation: il-auto-pulse 1s ease-in-out infinite;
+  box-shadow: none;
+  animation: none;
 }
 
 .il-auto-steps li.is-done > span {
@@ -3715,7 +3635,7 @@
   grid-template-columns: repeat(2, minmax(84px, 1fr));
   gap: 4px;
   padding: 4px;
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--ink) 4%, var(--surface));
 }
 
@@ -3723,7 +3643,7 @@
   min-height: 34px;
   padding: 6px 14px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--pf-radius-sm);
   background: transparent;
   color: var(--muted);
   font: inherit;
@@ -3735,7 +3655,7 @@
 .il-simulator-mode button.is-active {
   background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 3px color-mix(in srgb, #000 9%, transparent);
+  box-shadow: none;
 }
 
 .il-simulator-actions {
@@ -3879,7 +3799,7 @@
   margin-top: 14px;
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface) 92%, var(--ink) 2%);
 }
 
@@ -3904,7 +3824,7 @@
   height: 7px;
   margin: 10px 0 12px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
@@ -3913,7 +3833,7 @@
   height: 100%;
   border-radius: inherit;
   background: currentColor;
-  transition: width 140ms ease;
+  transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .il-thermal-result[data-state="stable"] {
@@ -3921,11 +3841,11 @@
 }
 
 .il-thermal-result[data-state="hot"] {
-  color: #b46a13;
+  color: var(--pf-muted);
 }
 
 .il-thermal-result[data-state="throttling"] {
-  color: #b53535;
+  color: var(--pf-muted);
 }
 
 .il-thermal-metrics {
@@ -3974,10 +3894,9 @@
   margin: 0 0 18px;
   padding: 20px;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  border-radius: 16px;
+  border-radius: var(--pf-radius-md);
   background:
-    linear-gradient(140deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent 42%),
-    color-mix(in srgb, var(--surface) 82%, transparent);
+    var(--pf-surface);
 }
 
 .il-device-picker-copy h2 {
@@ -4022,7 +3941,7 @@
   margin: 0;
   padding: 11px 100px 11px 14px;
   border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 92%, transparent);
   color: var(--ink);
   font: inherit;
@@ -4032,7 +3951,7 @@
 
 .il-device-search-wrap input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 11%, transparent);
+  box-shadow: none;
 }
 
 .il-device-search-state {
@@ -4054,9 +3973,9 @@
   overflow: auto;
   padding: 6px;
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-  border-radius: 12px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 98%, transparent);
-  box-shadow: 0 20px 60px rgb(0 0 0 / .34);
+  box-shadow: none;
 }
 
 .il-device-results button {
@@ -4068,7 +3987,7 @@
   justify-content: space-between;
   gap: 14px;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--pf-radius-sm);
   background: transparent;
   box-shadow: none;
   color: var(--ink);
@@ -4125,7 +4044,7 @@
   min-height: 58px;
   padding: 13px 14px;
   border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 11px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 58%, transparent);
 }
 
@@ -4172,7 +4091,7 @@
   margin-top: 8px;
   padding: 9px 11px;
   border: 1px dashed color-mix(in srgb, var(--accent) 34%, var(--lab-border));
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
   background: color-mix(in srgb, var(--accent) 5%, transparent);
   color: var(--ink);
   box-shadow: none;
@@ -4203,11 +4122,9 @@
   margin: 18px 0;
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--lab-cyan) 24%, var(--lab-border));
-  border-radius: 18px;
+  border-radius: var(--pf-radius-md);
   background:
-    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--lab-cyan) 10%, transparent), transparent 46%),
-    linear-gradient(145deg, color-mix(in srgb, var(--lab-violet) 4%, transparent), transparent),
-    var(--surface);
+    var(--pf-surface);
 }
 
 .lab-simulator-shell .il-quick-result-head {
@@ -4241,7 +4158,7 @@
   justify-content: space-between;
   gap: 4px;
   border: 1px solid var(--lab-border);
-  border-radius: 13px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb, var(--surface-deep) 62%, transparent);
 }
 
@@ -4270,7 +4187,7 @@
   .lab-simulator-shell .il-quick-result {
     margin-inline: -2px;
     padding: 14px;
-    border-radius: 16px;
+    border-radius: var(--pf-radius-md);
   }
 
   .lab-simulator-shell .il-quick-result-head {
@@ -4346,8 +4263,8 @@
 .lab-simulator-shell .il-quick-confidence-track {
   height: 6px;
   overflow: hidden;
-  border-radius: 999px;
-  background: #121c27;
+  border-radius: var(--pf-radius-md);
+  background: var(--pf-surface);
 }
 
 .lab-simulator-shell .il-quick-confidence-track > span {
@@ -4355,8 +4272,8 @@
   height: 100%;
   min-width: 8%;
   border-radius: inherit;
-  background: linear-gradient(90deg,var(--lab-violet),var(--lab-cyan));
-  box-shadow: 0 0 16px color-mix(in srgb,var(--lab-cyan) 32%,transparent);
+  background: var(--pf-surface);
+  box-shadow: none;
 }
 
 @media (max-width:620px) {
@@ -4376,9 +4293,9 @@
 
 /* Neutral benchmark-card treatment for Quick Sim. */
 .lab-simulator-shell .il-quick-result {
-  border-color: #24272c;
-  background: #050505;
-  box-shadow: 0 18px 48px rgb(0 0 0 / .34);
+  border-color: var(--pf-border);
+  background: var(--pf-bg);
+  box-shadow: none;
 }
 
 .lab-simulator-shell .il-quick-result::before {
@@ -4392,7 +4309,7 @@
   gap: 14px;
   margin-bottom: 16px;
   padding-bottom: 13px;
-  border-bottom: 1px solid #1d1f22;
+  border-bottom: 1px solid var(--pf-border);
 }
 
 .lab-simulator-shell .il-quick-result-lockup {
@@ -4409,14 +4326,14 @@
 }
 
 .lab-simulator-shell .il-quick-result-lockup span {
-  color: #fff;
+  color: var(--pf-primary);
   font-size: .78rem;
   font-weight: 760;
   letter-spacing: -.03em;
 }
 
 .lab-simulator-shell .il-quick-result-brand > span {
-  color: #8d9299;
+  color: var(--pf-muted);
   font-size: .58rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -4424,24 +4341,24 @@
 }
 
 .lab-simulator-shell .il-quick-result .eyebrow {
-  color: #a4a8ad;
+  color: var(--pf-secondary);
 }
 
 .lab-simulator-shell .il-quick-result-head h3,
 .lab-simulator-shell .il-quick-result-hero > strong,
 .lab-simulator-shell .il-quick-result-grid article > strong,
 .lab-simulator-shell .il-quick-confidence > div:first-child strong {
-  color: #fff;
+  color: var(--pf-primary);
 }
 
 .lab-simulator-shell .il-quick-result .il-pill {
-  border-color: #2a2d31;
-  background: #111214;
-  color: #d5d7da;
+  border-color: var(--pf-border);
+  background: var(--pf-surface);
+  color: var(--pf-primary);
 }
 
 .lab-simulator-shell .il-quick-result-hero {
-  border-color: #1d1f22;
+  border-color: var(--pf-border);
 }
 
 .lab-simulator-shell .il-quick-result-hero > span,
@@ -4449,26 +4366,26 @@
 .lab-simulator-shell .il-quick-confidence > div:first-child,
 .lab-simulator-shell .il-quick-result-grid article > span,
 .lab-simulator-shell .il-quick-result-grid article > small {
-  color: #8e9399;
+  color: var(--pf-muted);
 }
 
 .lab-simulator-shell .il-quick-confidence-track {
-  background: #17191c;
+  background: var(--pf-surface);
 }
 
 .lab-simulator-shell .il-quick-confidence-track > span {
-  background: #f4f4f5;
+  background: var(--pf-raised);
   box-shadow: none;
 }
 
 .lab-simulator-shell .il-quick-result-grid article {
-  border-color: #202327;
-  background: #0c0d0f;
+  border-color: var(--pf-border);
+  background: var(--pf-bg);
 }
 
 @media (max-width:620px) {
   .lab-simulator-shell .il-quick-result {
-    background: #050505;
+    background: var(--pf-bg);
   }
 }
 
@@ -4501,23 +4418,23 @@
   flex-direction: column;
   gap: 4px;
   border: 1px solid var(--lab-border);
-  border-radius: 14px;
-  background: #0c0f13;
-  color: #d7dbe0;
+  border-radius: var(--pf-radius-md);
+  background: var(--pf-bg);
+  color: var(--pf-primary);
   font-size: .82rem;
   font-weight: 680;
   letter-spacing: -.02em;
 }
 
 .lab-simulator-shell .il-simple-usage .il-mode label:hover {
-  border-color: #343941;
-  background: #101419;
+  border-color: var(--pf-border);
+  background: var(--pf-surface);
 }
 
 .lab-simulator-shell .il-simple-usage .il-mode label:has(:checked) {
-  border-color: #f1f3f5;
-  background: #f3f4f6;
-  color: #090a0b;
+  border-color: var(--pf-border);
+  background: var(--pf-raised);
+  color: var(--pf-muted);
   box-shadow: none;
 }
 
@@ -4564,11 +4481,10 @@
     gap:14px;
     margin:0 0 10px;
     padding:18px;
-    border:1px solid #202b37;
-    border-radius:26px;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
     background:
-      radial-gradient(circle at 88% 8%,rgb(22 140 255/.12),transparent 35%),
-      #0b1118;
+      var(--pf-surface);
   }
   .il-device-picker-copy h2{
     margin:5px 0 6px;
@@ -4580,22 +4496,22 @@
   .il-device-search-wrap input{
     min-height:48px;
     padding:11px 13px;
-    border-radius:16px;
-    background:#070c12;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-bg);
   }
   .il-device-results{
     margin-top:8px;
     padding:6px;
-    border-radius:18px;
-    background:#080d13;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-bg);
   }
   .il-device-results button{
     min-height:58px;
-    border-radius:14px;
+    border-radius:var(--pf-radius-md);
   }
   .il-device-use-anyway{
     min-height:44px;
-    border-radius:14px;
+    border-radius:var(--pf-radius-md);
   }
 
   .il-product-actions{
@@ -4612,9 +4528,9 @@
     padding:0 12px;
     display:inline-flex;
     align-items:center;
-    border:1px solid #202b37;
-    border-radius:999px;
-    background:#0b1118;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
 
   .il-mode-tabs{
@@ -4622,39 +4538,39 @@
     gap:5px;
     margin:0 0 10px;
     padding:5px;
-    border:1px solid #202b37;
-    border-radius:999px;
-    background:#0b1118;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
   .il-mode-tabs button{
     min-height:40px;
-    border-radius:999px;
+    border-radius:var(--pf-radius-md);
     font-size:.58rem;
     letter-spacing:.08em;
   }
   .il-mode-tabs button.is-active{
-    background:linear-gradient(180deg,rgb(255 255 255/.09),rgb(255 255 255/.04));
-    box-shadow:inset 0 0 0 1px rgb(255 255 255/.035);
+    background:var(--pf-surface);
+    box-shadow:none;
   }
 
   .il-simulator-bar{
     margin:0 0 8px;
     padding:12px;
-    border:1px solid #202b37;
-    border-radius:22px;
-    background:#0b1118;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
   .il-simulator-mode{
     padding:4px;
-    border-radius:999px;
-    background:#070c12;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-bg);
   }
-  .il-simulator-mode button{min-height:38px;border-radius:999px}
+  .il-simulator-mode button{min-height:38px;border-radius:var(--pf-radius-md)}
   .il-simulator-actions{grid-template-columns:1fr auto}
   .il-simulator-actions .il-primary,
   .il-simulator-actions .il-chip{
     min-height:40px;
-    border-radius:999px;
+    border-radius:var(--pf-radius-md);
   }
   .il-simulator-hint{
     margin:0 4px 12px;
@@ -4664,9 +4580,9 @@
   .il-auto-notice{
     margin:0 4px 12px;
     padding:11px 13px;
-    border:1px solid #202b37;
-    border-radius:16px;
-    background:#0b1118;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
     line-height:1.5;
   }
 
@@ -4674,10 +4590,9 @@
     margin:0 0 12px;
     padding:18px;
     grid-template-columns:58px minmax(0,1fr);
-    border-radius:26px;
+    border-radius:var(--pf-radius-md);
     background:
-      radial-gradient(circle at 12% 24%,rgb(22 140 255/.13),transparent 34%),
-      #0b1118;
+      var(--pf-surface);
   }
   .il-auto-loading-copy h2{font-size:1.3rem}
   .il-auto-steps{grid-template-columns:1fr 1fr}
@@ -4692,9 +4607,9 @@
 
   .lab-simulator-shell .il-simple-usage{
     padding:18px!important;
-    border:1px solid #202b37;
-    border-radius:26px;
-    background:#0b1118;
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
   .lab-simulator-shell .il-simple-usage .il-section-heading{
     margin-bottom:14px;
@@ -4710,13 +4625,13 @@
   .lab-simulator-shell .il-simple-usage .il-mode label{
     min-height:76px;
     padding:14px;
-    border-radius:18px;
-    background:#080d13;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-bg);
   }
   .lab-simulator-shell .il-simple-usage .il-mode label:has(:checked){
-    border-color:rgb(44 217 255/.36);
-    background:linear-gradient(155deg,rgb(22 140 255/.18),rgb(22 140 255/.07));
-    color:#fff;
+    border-color:color-mix(in srgb,var(--pf-brand) 36%,transparent);
+    background:var(--pf-surface);
+    color:var(--pf-primary);
   }
 
   .lab-simulator-shell .il-results-quick{
@@ -4725,9 +4640,9 @@
   .lab-simulator-shell .il-quick-result{
     margin:0;
     padding:18px;
-    border:1px solid #262a30;
-    border-radius:28px;
-    box-shadow:0 20px 54px rgb(0 0 0/.32);
+    border:1px solid var(--pf-border);
+    border-radius:var(--pf-radius-md);
+    box-shadow:none;
   }
   .lab-simulator-shell .il-quick-result-brand{
     margin-bottom:14px;
@@ -4752,17 +4667,17 @@
   .lab-simulator-shell .il-quick-result-grid article{
     min-height:102px;
     padding:13px;
-    border-radius:18px;
-    background:#0c0e11;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-bg);
   }
 
   .il-library{
     padding:16px;
-    border-radius:24px;
-    background:#0b1118;
+    border-radius:var(--pf-radius-md);
+    background:var(--pf-surface);
   }
-  .il-library-tabs{border-radius:999px}
-  .il-library-tabs button{border-radius:999px}
+  .il-library-tabs{border-radius:var(--pf-radius-md)}
+  .il-library-tabs button{border-radius:var(--pf-radius-md)}
 }
 
 
@@ -4785,19 +4700,19 @@
   gap: .75rem;
   align-items: center;
   padding: .72rem .8rem;
-  border: 1px solid #ffffff12;
-  border-radius: 10px;
-  background: #ffffff05;
+  border: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
+  border-radius: var(--pf-radius-sm);
+  background: color-mix(in srgb,var(--pf-raised) 2%,transparent);
   font-size: .76rem;
 }
 
 .il-thermal-row strong {
-  color: #fff;
+  color: var(--pf-primary);
   font-size: .78rem;
 }
 
 .il-thermal-row span {
-  color: #aeb5c0;
+  color: var(--pf-secondary);
 }
 
 @media (max-width: 760px) {
@@ -4831,27 +4746,27 @@
   display: grid;
   gap: .32rem;
   padding: .9rem;
-  border: 1px solid #ffffff14;
-  border-radius: 12px;
+  border: 1px solid color-mix(in srgb,var(--pf-border) 8%,transparent);
+  border-radius: var(--pf-radius-md);
   background:
-    linear-gradient(180deg, #ffffff08, #ffffff03);
+    var(--pf-surface);
 }
 
 .il-sensitivity-card strong {
   margin-bottom: .15rem;
   font-size: .78rem;
-  color: #fff;
+  color: var(--pf-primary);
 }
 
 .il-sensitivity-card span {
   font-size: .72rem;
-  color: #c2c8d1;
+  color: var(--pf-secondary);
 }
 
 .il-sensitivity-card small {
   margin-top: .15rem;
   font-size: .65rem;
-  color: #8f98a5;
+  color: var(--pf-secondary);
 }
 
 @media (max-width: 760px) {
@@ -4868,14 +4783,14 @@
   display: grid;
   gap: .7rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 .il-camera-evidence .il-metrics small {
   display: block;
   margin-top: .22rem;
   font-size: .62rem;
-  color: #838d9a;
+  color: var(--pf-muted);
 }
 
 
@@ -4886,7 +4801,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 
@@ -4897,7 +4812,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 .il-packaging-bars {
@@ -4919,26 +4834,26 @@
 }
 
 .il-packaging-bar strong {
-  color: #dce2e8;
+  color: var(--pf-primary);
   text-transform: capitalize;
 }
 
 .il-packaging-bar span {
-  color: #9099a5;
+  color: var(--pf-secondary);
 }
 
 .il-packaging-track {
   height: 6px;
   overflow: hidden;
-  border-radius: 999px;
-  background: #151a20;
+  border-radius: var(--pf-radius-md);
+  background: var(--pf-surface);
 }
 
 .il-packaging-track > span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #eef2f6;
+  background: var(--pf-raised);
 }
 
 
@@ -4949,7 +4864,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 .il-packaging-sensitivity .il-sensitivity-card {
@@ -4964,7 +4879,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 
@@ -4975,7 +4890,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 
@@ -4986,7 +4901,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 
@@ -4997,7 +4912,7 @@
   display: grid;
   gap: .75rem;
   padding-top: .85rem;
-  border-top: 1px solid #ffffff12;
+  border-top: 1px solid color-mix(in srgb,var(--pf-border) 7%,transparent);
 }
 
 .il-advanced-export summary{display:flex;align-items:center;min-height:44px;cursor:pointer}

@@ -42,7 +42,7 @@
   nav h2 { margin: 0 0 8px; color: var(--ink); font-size: .75rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
   nav a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; color: var(--muted); text-decoration: none; overflow-wrap: anywhere; }
   nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
-  a:focus-visible { outline: 2px solid var(--accent, #168cff); outline-offset: 4px; border-radius: 3px; }
+  a:focus-visible { outline: 2px solid var(--accent, var(--pf-brand)); outline-offset: 4px; border-radius: var(--pf-radius-sm); }
   .footer-bottom { display: flex; justify-content: space-between; align-items: baseline; gap: 16px 32px; padding-top: 22px; border-top: 1px solid var(--line); font-size: .75rem; line-height: 1.7; }
   .footer-bottom p { margin: 0; }
   .footer-bottom p:last-child { text-align: right; }
@@ -53,5 +53,5 @@
     .footer-bottom { flex-direction: column; gap: 6px; }
     .footer-bottom p:last-child { text-align: left; }
   }
-  @media print { .publication-footer { margin-top: 24px; padding: 16px 0; } .footer-main { display: none; } .footer-bottom { color: #333; border-color: #ccc; } }
+  @media print { .publication-footer { margin-top: 24px; padding: 16px 0; } .footer-main { display: none; } .footer-bottom { color: var(--pf-muted); border-color: var(--pf-border); } }
 </style>

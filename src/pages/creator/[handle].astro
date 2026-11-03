@@ -133,38 +133,38 @@ if(client && /^[a-z0-9_]{3,24}$/.test(handle)){
 
 <style>
 .creator-network-page{width:min(100%,980px);margin:0 auto;padding:20px 18px 80px}
-.creator-cover{height:210px;position:relative;overflow:visible;border:1px solid #202c39;border-radius:20px;background:radial-gradient(circle at 78% 22%,rgb(22 140 255/.2),transparent 34%),linear-gradient(145deg,#111a25,#070b11)}
-.creator-cover-grid{position:absolute;inset:0;border-radius:inherit;background-image:linear-gradient(rgb(255 255 255/.025) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255/.025) 1px,transparent 1px);background-size:36px 36px;mask-image:linear-gradient(#000,transparent)}
+.creator-cover{height:210px;position:relative;overflow:visible;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
+.creator-cover-grid{position:absolute;inset:0;border-radius:inherit;background-image:var(--pf-surface);background-size:36px 36px;mask-image:linear-gradient(var(--pf-muted),transparent)}
 .creator-avatar{position:absolute;left:28px;bottom:-48px;width:104px;height:104px;display:grid;place-items:center;border:3px solid var(--paper);border-radius:50%;overflow:hidden;background:linear-gradient(145deg,#142131,#0a0f16);color:#fff;font-size:2rem;font-weight:760}
 .creator-avatar img{width:100%;height:100%;object-fit:cover}
-.creator-profile-head{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:64px 6px 22px;border-bottom:1px solid #202c39}
+.creator-profile-head{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:64px 6px 22px;border-bottom:1px solid var(--pf-border)}
 .creator-profile-head>div{min-width:0;max-width:100%}.creator-name-row{display:flex;align-items:center;flex-wrap:wrap;gap:10px;min-width:0}
 .creator-name-row h1{margin:0;font-size:clamp(2rem,4vw,3.25rem);line-height:1.1;letter-spacing:-.035em;font-weight:500;overflow-wrap:anywhere}
-.creator-badge{padding:4px 7px;border-radius:999px;background:rgb(22 140 255/.12);color:#61c9ff;font-size:.56rem;font-weight:760;text-transform:uppercase;letter-spacing:.08em}
-.creator-handle{margin:6px 0 0;color:#6f7e90;font-size:.74rem}
-.creator-bio{max-width:620px;margin:14px 0 0;color:#a2afbd;line-height:1.6}
-.creator-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid #202c39}
+.creator-badge{padding:4px 7px;border-radius:999px;background:color-mix(in srgb,var(--pf-brand) 12%,transparent);color:var(--pf-brand);font-size:.56rem;font-weight:760;text-transform:uppercase;letter-spacing:.08em}
+.creator-handle{margin:6px 0 0;color:var(--pf-muted);font-size:.74rem}
+.creator-bio{max-width:620px;margin:14px 0 0;color:var(--pf-secondary);line-height:1.6}
+.creator-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--pf-border)}
 .creator-stats article{padding:18px 8px;text-align:center}
 .creator-stats strong{display:block;font-size:1.35rem}
-.creator-stats span{display:block;margin-top:3px;color:#687789;font-size:.6rem}
-.creator-tabs{display:flex;gap:4px;padding:12px 0;border-bottom:1px solid #202c39}
-.creator-tabs a{display:inline-flex;align-items:center;min-height:44px;padding:8px 11px;border-radius:8px;color:#7c8a9a;text-decoration:none;font-size:.68rem}
-.creator-tabs a.is-active{color:#fff;background:#101821;box-shadow:inset 0 -1px #168cff}
+.creator-stats span{display:block;margin-top:3px;color:var(--pf-muted);font-size:.6rem}
+.creator-tabs{display:flex;gap:4px;padding:12px 0;border-bottom:1px solid var(--pf-border)}
+.creator-tabs a{display:inline-flex;align-items:center;min-height:44px;padding:8px 11px;border-radius:var(--pf-radius-sm);color:var(--pf-muted);text-decoration:none;font-size:.68rem}
+.creator-tabs a.is-active{color:var(--pf-primary);background:var(--pf-surface);box-shadow:none}
 .creator-feed-section{padding-top:28px}
 .creator-section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}
 .creator-section-head h2{margin:4px 0 0;font-size:1.7rem}
-.creator-section-head>span{color:#6d7c8d;font-size:.68rem}
+.creator-section-head>span{color:var(--pf-muted);font-size:.68rem}
 .creator-feed{display:grid}
-.creator-post{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 2px;border-top:1px solid #1d2834;color:var(--ink);text-decoration:none}
-.creator-post:hover{background:linear-gradient(90deg,rgb(22 140 255/.035),transparent)}
-.creator-post-icon{width:46px;height:46px;display:grid;place-items:center;border:1px solid #243342;border-radius:12px;background:#0b121a}
+.creator-post{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 2px;border-top:1px solid var(--pf-border);color:var(--ink);text-decoration:none}
+.creator-post:hover{background:var(--pf-surface)}
+.creator-post-icon{width:46px;height:46px;display:grid;place-items:center;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
 .creator-post-icon img{width:34px}
-.creator-post-icon-profile{color:#61c9ff;font-size:.72rem;font-weight:800}
-.creator-post-body>span{color:#2cd9ff;font-size:.56rem;text-transform:uppercase;letter-spacing:.08em}
+.creator-post-icon-profile{color:var(--pf-brand);font-size:.72rem;font-weight:800}
+.creator-post-body>span{color:var(--pf-brand);font-size:.56rem;text-transform:uppercase;letter-spacing:.08em}
 .creator-post-body h3{margin:3px 0;font-size:.95rem}
-.creator-post-body p{margin:0;color:#728193;font-size:.66rem;text-transform:capitalize}
-.creator-post>b{color:#6fbfff;font-size:.64rem}
-.creator-empty{padding:22px;border:1px solid #202c39;border-radius:12px;color:#718092;background:#0b121a}
+.creator-post-body p{margin:0;color:var(--pf-muted);font-size:.66rem;text-transform:capitalize}
+.creator-post>b{color:var(--pf-brand);font-size:.64rem}
+.creator-empty{padding:22px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);color:var(--pf-muted);background:var(--pf-surface)}
 .creator-missing{min-height:62vh;display:grid;place-items:start;align-content:center;max-width:620px}
 .creator-missing img{width:90px}
 .creator-missing h1{margin:16px 0 8px;font-size:3rem}

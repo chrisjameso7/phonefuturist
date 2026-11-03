@@ -12,8 +12,8 @@
   gap:9px;
   min-width:0;
   padding:16px;
-  border-radius:14px;
-  background:rgba(148,163,184,.07);
+  border-radius:var(--pf-radius-md);
+  background:color-mix(in srgb,var(--pf-raised) 7%,transparent);
   overflow-wrap:anywhere;
   line-height:1.5;
 }
@@ -48,8 +48,8 @@
   gap:8px;
   min-width:0;
   padding:10px 12px;
-  border-radius:9px;
-  background:rgba(148,163,184,.055);
+  border-radius:var(--pf-radius-sm);
+  background:color-mix(in srgb,var(--pf-raised) 6%,transparent);
   font-variant-numeric:tabular-nums;
   font-size:13px;
 }
@@ -57,9 +57,9 @@
 .il-thermal-row > strong {font-size:13px}
 .il-thermal-plot {
   min-width:0;
-  border-radius:15px;
+  border-radius:var(--pf-radius-md);
   padding:14px;
-  background:rgba(148,163,184,.065);
+  background:color-mix(in srgb,var(--pf-raised) 7%,transparent);
 }
 .il-thermal-plot-heading {
   display:flex;
@@ -87,19 +87,19 @@
   max-width:100%;
   min-height:44px;
   padding:0.7rem 1rem;
-  border:1px solid rgba(125,211,252,.45);
-  border-radius:12px;
-  background:rgba(56,189,248,.09);
-  color:#b9e9ff;
+  border:1px solid color-mix(in srgb,var(--pf-brand) 45%,transparent);
+  border-radius:var(--pf-radius-md);
+  background:color-mix(in srgb,var(--pf-brand) 9%,transparent);
+  color:var(--pf-brand);
   font:inherit;
   font-size:0.88rem;
   font-weight:700;
   letter-spacing:0.01em;
   cursor:pointer;
-  transition:background .15s ease,transform .15s ease;
+  transition:transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
-.il-section-receipt-button:hover { background:rgba(56,189,248,.19);transform:translateY(-1px) }
-.il-section-receipt-button:focus-visible { outline:2px solid #7dd3fc;outline-offset:3px }
+.il-section-receipt-button:hover { background:color-mix(in srgb,var(--pf-brand) 19%,transparent);transform:none }
+.il-section-receipt-button:focus-visible { outline:2px solid var(--pf-brand);outline-offset:3px }
 @media(max-width:560px) { .il-section-receipt-button {width:100%} }
 
 /* Allow controls, receipts and comparison names to shrink inside narrow cards. */

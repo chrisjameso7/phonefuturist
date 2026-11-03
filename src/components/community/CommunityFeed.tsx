@@ -1,7 +1,9 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
 import {useEffect,useRef,useState} from 'react';
 import Identity from './Identity';import CommunityBuild from './CommunityBuild';import CommunityPeople from './CommunityPeople';
 import {communityRequest,communityAction,type Person,type Post,type Reply} from './types';import './community.css';
 export default function CommunityFeed(){
+ useInstrumentReady('CommunityFeed');
  const [posts,setPosts]=useState<Post[]>([]),[people,setPeople]=useState<Record<string,Person>>({}),[viewer,setViewer]=useState<string|null>(null),[admin,setAdmin]=useState(false),[builds,setBuilds]=useState<{id:string;name:string;visibility?:string}[]>([]),[build,setBuild]=useState(''),[caption,setCaption]=useState(''),[status,setStatus]=useState('Loading community…'),[loaded,setLoaded]=useState(false),[more,setMore]=useState(false),[busy,setBusy]=useState(false),[previewId,setPreviewId]=useState<string|null>(null),[forkTarget,setForkTarget]=useState<string|null>(null),[thread,setThread]=useState<string|null>(null),[replies,setReplies]=useState<Record<string,Reply[]>>({}),[drafts,setDrafts]=useState<Record<string,string>>({});const lock=useRef(false),sequence=useRef(0);
  function mergePeople(rows:Person[]){setPeople(current=>({...current,...Object.fromEntries(rows.map(p=>[p.id,p]))}));}
  async function load(append=false,signal?:AbortSignal){const seq=++sequence.current;const last=append?posts.at(-1):null;const q=last?'?before='+encodeURIComponent(last.created_at)+'&cursor='+last.id:'';const body=await communityRequest(q,signal);if(seq!==sequence.current)return;setPosts(current=>append?[...current,...body.posts.filter((p:Post)=>!current.some(c=>c.id===p.id))]:body.posts);mergePeople(body.people);setViewer(body.viewer);setAdmin(body.admin);setMore(body.posts.length===20);setLoaded(true);setStatus('');}
