@@ -3,8 +3,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import {ADSENSE_CLIENT,canShowAds} from '../lib/advertising';
 import '../styles/global.css';
 import '../styles/observatory.css';
-import '../styles/navigation-glass.css';
-import '../styles/optical-pointer.css';
+import '../styles/navigation.css';
 import '../styles/brand-theme.css';
 import '../styles/mobile-editorial.css';
 import '../styles/phonefuturist-ui.css';
@@ -89,6 +88,7 @@ if(showAds&&Astro.csp){
               <summary aria-label="Browse PhoneFuturist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary>
               <div class="mobile-app-menu-panel">
                 <p>Explore PhoneFuturist</p>
+                <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
                 <nav aria-label="Browse all pages">
                   <a href="/">Home</a><a href="/articles">Newsroom</a>
                   <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
@@ -257,6 +257,7 @@ if(showAds&&Astro.csp){
             </nav>
 
             <div class="header-actions">
+              <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
               {
                 signedIn ? (
                   <>

@@ -56,7 +56,7 @@ export default function DeviceConfigurator() {
 
   return <div className="device-configurator">
 
-    <section className="lab-glass device-design-controls" aria-label="Device design controls">
+    <section className="lab-panel device-design-controls" aria-label="Device design controls">
 
       <label>Concept name<input type="text" value={design.name} maxLength={80} onChange={e => setDesign(c => ({ ...c, name: e.target.value }))} /></label>
 
@@ -121,7 +121,7 @@ export default function DeviceConfigurator() {
 
     </section>
 
-    <ResultPanel label="Device preview" summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-glass"><DeviceViewport design={rendered} captureRef={captureRef} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
+    <ResultPanel label="Device preview" summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-panel"><DeviceViewport design={rendered} captureRef={captureRef} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
 
   </div>;
 

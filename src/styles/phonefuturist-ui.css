@@ -89,7 +89,7 @@ body:not(.product-mode) .desktop-nav a[aria-current="page"] { color:var(--ink); 
 body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px; display:inline-flex; align-items:center; }
 @media (max-width:760px) {
   body:not(.product-mode) { background:var(--paper)!important; color:var(--ink)!important; }
-  body:not(.product-mode) .mobile-appbar { background:color-mix(in srgb,var(--surface-deep) 93%,transparent)!important; border-bottom:1px solid var(--line)!important; }
+  body:not(.product-mode) .mobile-appbar { background:var(--pf-surface)!important; border-bottom:1px solid var(--line)!important; }
   body:not(.product-mode) .mobile-app-brand { color:var(--ink)!important; }
   body:not(.product-mode) .mobile-app-menu-panel { background:var(--surface)!important; border-color:var(--line)!important; }
   body:not(.product-mode) .mobile-app-menu-panel a { color:var(--ink)!important; border-color:var(--line)!important; }
@@ -391,10 +391,6 @@ body:not(.product-mode) .header-actions :is(.button,.sign-in) { min-height:44px;
 /* Palette refinement: midnight navy instead of flat graphite.
    Preserve existing responsive geometry and mobile experience. */
 :root {
-  --glass-fallback:var(--pf-surface);
-  --glass-base:color-mix(in srgb,var(--pf-muted) 86%,transparent);
-  --glass-menu:color-mix(in srgb,var(--pf-surface) 97%,transparent);
-  --glass-rail:color-mix(in srgb,var(--pf-muted) 40%,transparent);
 }
 body:not(.product-mode) {
   background:var(--pf-surface);
@@ -414,7 +410,7 @@ body:not(.product-mode) .site-header {
 }
 @media(max-width:760px) {
   body:not(.product-mode) { background:var(--paper)!important; }
-  body:not(.product-mode) .mobile-appbar { background:color-mix(in srgb,var(--pf-surface) 96%,transparent)!important; }
+  body:not(.product-mode) .mobile-appbar { background:var(--pf-surface)!important; }
   body:not(.product-mode) .mobile-tabbar,
   body:not(.product-mode) .mobile-tabbar[data-compact="true"] {
     background:var(--pf-surface)!important;
@@ -430,7 +426,7 @@ body:not(.product-mode) footer .brand-lockup {
 body:not(.product-mode) .site-header .brand-mark,
 body:not(.product-mode) footer .brand-mark {
   display:block; width:46px; height:29px; flex:0 0 46px; object-fit:contain;
-  background:transparent; border:0; border-radius:0;
+  background:var(--pf-surface); border:0; border-radius:0;
 }
 body:not(.product-mode) .site-header .brand-word,
 body:not(.product-mode) footer .brand-word {

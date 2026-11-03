@@ -1,39 +1,5 @@
-/* ================================================================
-   PHONEFUTURIST / FROSTED OPTICAL GLASS
-   Global navigation material.
-
-   Transparent, cool-toned optical glass with restrained cyan/violet
-   refraction. Navigation behaviour remains independent of material.
-   ================================================================ */
-
+/* Solid navigation surfaces; interaction and responsive geometry are preserved. */
 :root {
-  --glass-base: color-mix(in srgb,var(--pf-muted) 58%,transparent);
-  --glass-base-strong: color-mix(in srgb,var(--pf-muted) 78%,transparent);
-  --glass-fallback: var(--pf-surface);
-  --glass-menu: color-mix(in srgb,var(--pf-surface) 86%,transparent);
-
-  --glass-border: color-mix(in srgb,var(--pf-brand) 18%,transparent);
-  --glass-border-bright: color-mix(in srgb,var(--pf-brand) 31%,transparent);
-
-  --glass-highlight: color-mix(in srgb,var(--pf-primary) 22%,transparent);
-  --glass-cyan: color-mix(in srgb,var(--pf-brand) 23%,transparent);
-  --glass-violet: color-mix(in srgb,var(--pf-brand) 16%,transparent);
-
-  --glass-shade: color-mix(in srgb,var(--pf-muted) 28%,transparent);
-
-  --glass-shadow:
-    0 20px 55px color-mix(in srgb,var(--pf-border) 20%,transparent),
-    0 5px 16px color-mix(in srgb,var(--pf-border) 12%,transparent);
-
-  --glass-blur: 26px;
-  --glass-saturation: 145%;
-
-  --glass-text: var(--pf-primary);
-  --glass-muted: color-mix(in srgb,var(--pf-primary) 70%,transparent);
-
-  --glass-rail: color-mix(in srgb,var(--pf-muted) 18%,transparent);
-  --glass-lens: color-mix(in srgb,var(--pf-brand) 9%,transparent);
-  --glass-lens-active: color-mix(in srgb,var(--pf-brand) 14%,transparent);
 
   --nav-top: max(14px, env(safe-area-inset-top, 0px));
   --nav-clearance: 116px;
@@ -72,11 +38,6 @@ html {
   pointer-events: none;
 }
 
-
-/* ================================================================
-   MAIN GLASS SHELL
-   ================================================================ */
-
 .site-header {
   position: sticky;
   top: var(--nav-top);
@@ -95,87 +56,8 @@ html {
   border: 0;
   border-radius: var(--pf-radius-md);
 
-  background: transparent;
+  background: var(--pf-surface);
   box-shadow: none;
-
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
-
-/*
-   The actual glass lives on a pseudo-element so compression never
-   changes the header's reserved document geometry.
-*/
-
-.site-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-
-  pointer-events: none;
-
-  border: 1px solid var(--glass-border);
-  border-radius: inherit;
-
-  background:
-    var(--pf-surface);
-
-  box-shadow:
-    none;
-
-  transition:
-    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
-}
-
-
-/*
-   Optical highlight layer.
-   Deliberately subtle. This is not a chrome/plastic reflection.
-*/
-
-.site-header::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-
-  pointer-events: none;
-
-  border-radius: inherit;
-
-  background:
-    var(--pf-surface);
-
-  box-shadow:
-    none;
-
-  transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
-}
-
-
-/* Real frosted glass when supported. */
-
-@supports (
-  (backdrop-filter: blur(1px)) or
-  (-webkit-backdrop-filter: blur(1px))
-) {
-  .site-header::before {
-    background:
-      var(--pf-surface);
-
-    -webkit-backdrop-filter:
-      none;
-
-    backdrop-filter:
-      none;
-  }
-}
-
-.site-header[data-scrolled="true"]::before,
-.site-header[data-scrolled="true"]::after {
-  inset: 3px 0;
 }
 
 
@@ -185,7 +67,7 @@ html {
 
 .site-header .brand {
   flex-shrink: 0;
-  color: var(--glass-text);
+  color: var(--pf-primary);
 }
 
 
@@ -204,7 +86,7 @@ html {
   border: 1px solid color-mix(in srgb,var(--pf-brand) 11%,transparent);
   border-radius: var(--pf-radius-md);
 
-  background: var(--glass-rail);
+  background: var(--pf-raised);
 
   box-shadow:
     none;
@@ -222,26 +104,23 @@ html {
   border: 1px solid transparent;
   border-radius: var(--pf-radius-md);
 
-  color: var(--glass-muted);
+  color: var(--pf-secondary);
 
   transition:
     transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .site-header .desktop-nav a:hover {
-  color: var(--glass-text);
+  color: var(--pf-primary);
 
   background:
     var(--pf-surface);
 }
 
-
-/* Active optical lens */
-
 .site-header
   :is(.desktop-nav, .mobile-menu-primary)
   a[aria-current="page"] {
-  color: var(--glass-text);
+  color: var(--pf-primary);
   font-weight: 650;
   text-decoration: none;
 
@@ -280,9 +159,6 @@ html {
   font: inherit;
 }
 
-
-/* Primary CTA becomes luminous frosted cyan instead of cream. */
-
 .site-header
   :is(
     .header-actions .button,
@@ -305,11 +181,11 @@ html {
     .header-actions .secondary,
     .mobile-account-secondary
   ) {
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--pf-border);
 
-  background: color-mix(in srgb,var(--pf-surface) 17%,transparent);
+  background: var(--pf-surface);
 
-  color: var(--glass-text);
+  color: var(--pf-primary);
 }
 
 .site-header :is(a, button, summary):focus-visible {
@@ -371,7 +247,7 @@ html {
 
     display: block;
 
-    color: var(--glass-text);
+    color: var(--pf-primary);
   }
 
   .mobile-nav > summary {
@@ -387,12 +263,12 @@ html {
     list-style: none;
     cursor: pointer;
 
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--pf-border);
     border-radius: var(--pf-radius-md);
 
-    background: color-mix(in srgb,var(--pf-surface) 16%,transparent);
+    background: var(--pf-surface);
 
-    color: var(--glass-text);
+    color: var(--pf-primary);
 
     font-size: 0.78rem;
     font-weight: 600;
@@ -403,12 +279,12 @@ html {
   }
 
   .mobile-nav[open] > summary {
-    border-color: var(--glass-border-bright);
+    border-color: var(--pf-border);
 
     background:
       var(--pf-surface);
 
-    color: var(--glass-text);
+    color: var(--pf-primary);
 
     box-shadow:
       none;
@@ -460,9 +336,6 @@ html {
     transform: rotate(-45deg);
   }
 
-
-  /* Mobile frosted panel */
-
   .site-header .mobile-menu-panel {
     position: absolute;
     top: calc(100% + 7px);
@@ -495,29 +368,13 @@ html {
     overflow-y: auto;
     overscroll-behavior: contain;
 
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--pf-border);
     border-radius: var(--pf-radius-md);
 
-    background: var(--glass-fallback);
+    background: var(--pf-surface);
 
     box-shadow:
       none;
-  }
-
-  @supports (
-    (backdrop-filter: blur(1px)) or
-    (-webkit-backdrop-filter: blur(1px))
-  ) {
-    .site-header .mobile-menu-panel {
-      background:
-        var(--pf-surface);
-
-      -webkit-backdrop-filter:
-        none;
-
-      backdrop-filter:
-        none;
-    }
   }
 
   .mobile-menu-primary {
@@ -537,13 +394,13 @@ html {
     border: 1px solid transparent;
     border-radius: var(--pf-radius-md);
 
-    color: var(--glass-text);
+    color: var(--pf-primary);
 
     font-size: 0.92rem;
   }
 
   .mobile-menu-primary a:hover {
-    background: var(--glass-lens);
+    background: var(--pf-raised);
   }
 
   .mobile-menu-primary a span:last-child {
@@ -558,7 +415,7 @@ html {
     margin-top: 12px;
     padding: 14px 4px 2px;
 
-    border-top: 1px solid var(--glass-border);
+    border-top: 1px solid var(--pf-border);
   }
 
   .mobile-account-label {
@@ -566,7 +423,7 @@ html {
 
     display: block;
 
-    color: var(--glass-muted);
+    color: var(--pf-secondary);
 
     font-size: 0.65rem;
     letter-spacing: 0.12em;
@@ -666,58 +523,10 @@ html {
   }
 
 
-  /*
-     Full-width glass morphs into the floating navigation lens.
-     Reserved layout height never changes.
-  */
-
-  .site-header::before,
-  .site-header::after {
-    inset: auto;
-    top: 0;
-    left: 50%;
-
-    width: 100%;
-    height: 84px;
-
-    transform: translateX(-50%);
-
-    transition:
-      transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
-  }
-
-  .site-header::after {
-    background:
-      var(--pf-surface);
-
-    box-shadow:
-      none;
-  }
-
-
   /* Compact floating state */
 
   .site-header[data-scrolled="true"] {
     pointer-events: none;
-  }
-
-  .site-header[data-scrolled="true"]::before,
-  .site-header[data-scrolled="true"]::after {
-    inset: auto;
-    top: 0;
-    left: 50%;
-
-    width: var(--capsule-width, 490px);
-    height: 56px;
-
-    border-radius: var(--pf-radius-md);
-  }
-
-  .site-header[data-scrolled="true"]::before {
-    border-color: var(--glass-border-bright);
-
-    box-shadow:
-      none;
   }
 
   .site-header[data-scrolled="true"] .desktop-nav {
@@ -737,64 +546,12 @@ html {
       translateY(-5px)
       scale(0.97);
   }
-
-
-  /*
-     Chromium optical SVG enhancement.
-     If available it adds mild refraction without changing the
-     fallback frosted-glass appearance.
-  */
-
-  .site-header[data-optics="refractive"]::before {
-    background:
-      var(--pf-surface);
-
-    -webkit-backdrop-filter:
-      none;
-
-    backdrop-filter:
-      none;
-  }
 }
 
 
 /* ================================================================
    LIGHT APPEARANCE
    ================================================================ */
-
-:root[data-theme="light"] {
-  --glass-base: color-mix(in srgb,var(--pf-primary) 61%,transparent);
-  --glass-base-strong: color-mix(in srgb,var(--pf-primary) 86%,transparent);
-  --glass-fallback: var(--pf-raised);
-  --glass-menu: color-mix(in srgb,var(--pf-raised) 88%,transparent);
-
-  --glass-border: color-mix(in srgb,var(--pf-brand) 15%,transparent);
-  --glass-border-bright: color-mix(in srgb,var(--pf-brand) 24%,transparent);
-
-  --glass-highlight: color-mix(in srgb,var(--pf-primary) 70%,transparent);
-  --glass-shade: color-mix(in srgb,var(--pf-brand) 8%,transparent);
-
-  --glass-shadow:
-    0 20px 55px color-mix(in srgb,var(--pf-brand) 12%,transparent),
-    0 4px 12px color-mix(in srgb,var(--pf-brand) 7%,transparent);
-
-  --glass-text: var(--pf-muted);
-  --glass-muted: color-mix(in srgb,var(--pf-muted) 72%,transparent);
-
-  --glass-rail: color-mix(in srgb,var(--pf-primary) 18%,transparent);
-  --glass-lens: color-mix(in srgb,var(--pf-primary) 31%,transparent);
-  --glass-lens-active: color-mix(in srgb,var(--pf-primary) 42%,transparent);
-}
-
-:root[data-theme="light"] .site-header::before {
-  background:
-    var(--pf-surface);
-}
-
-:root[data-theme="light"] .site-header::after {
-  background:
-    var(--pf-surface);
-}
 
 :root[data-theme="light"]
   .site-header
@@ -803,8 +560,8 @@ html {
     .header-actions .secondary,
     .mobile-account-secondary
   ) {
-  background: color-mix(in srgb,var(--pf-raised) 18%,transparent);
-  color: var(--glass-text);
+  background: var(--pf-surface);
+  color: var(--pf-primary);
 }
 
 
@@ -817,8 +574,7 @@ html {
     scroll-behavior: auto;
   }
 
-  .site-header::before,
-  .site-header::after,
+  
   .site-header * {
     transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out !important;
     animation: none !important;
@@ -826,27 +582,17 @@ html {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .site-header::before,
+  
   .site-header .mobile-menu-panel {
-    background: var(--glass-fallback);
-
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+    background: var(--pf-surface);
   }
 }
 
 @media (forced-colors: active) {
-  .site-header::before,
+  
   .site-header .mobile-menu-panel {
     border: 1px solid CanvasText;
     background: Canvas;
-
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .site-header::after {
-    display: none;
   }
 
   .site-header :is(a, button, summary) {

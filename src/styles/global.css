@@ -906,7 +906,7 @@ code {
   display: block;
   width: 100%;
   overflow: hidden;
-  background: #0b1017;
+  background: var(--pf-raised);
 }
 
 .card-image img {
@@ -1015,7 +1015,7 @@ code {
     display: block;
     padding: 0;
     border-bottom: 0;
-    background: transparent;
+    background: var(--pf-surface);
   }
 
   .header-brand-row {
@@ -1055,7 +1055,7 @@ code {
     padding: 0 14px;
     border: 1px solid color-mix(in srgb,var(--pf-border) 20%,transparent);
     border-radius: var(--pf-radius-md);
-    background: color-mix(in srgb,var(--pf-raised) 4%,transparent);
+    background: var(--pf-surface);
     color: var(--pf-primary);
     cursor: pointer;
     user-select: none;
@@ -1111,10 +1111,8 @@ code {
     padding: 8px;
     border: 1px solid color-mix(in srgb,var(--pf-border) 16%,transparent);
     border-radius: var(--pf-radius-md);
-    background: color-mix(in srgb,var(--pf-raised) 92%,transparent);
+    background: var(--pf-surface);
     box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
   }
 
   .mobile-menu-primary {
@@ -1135,7 +1133,7 @@ code {
 
   .mobile-menu-primary a:hover,
   .mobile-menu-primary a[aria-current] {
-    background: color-mix(in srgb,var(--pf-raised) 5%,transparent);
+    background: var(--pf-surface);
     color: var(--pf-primary);
   }
 
@@ -1199,12 +1197,12 @@ code {
 
   .mobile-account-secondary {
     border: 1px solid color-mix(in srgb,var(--pf-border) 19%,transparent);
-    background: transparent;
+    background: var(--pf-surface);
     color: var(--pf-primary);
   }
 
   .mobile-account-secondary:hover {
-    background: color-mix(in srgb,var(--pf-raised) 5%,transparent);
+    background: var(--pf-surface);
     color: var(--pf-primary);
     transform: none;
   }

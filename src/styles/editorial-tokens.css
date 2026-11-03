@@ -1,7 +1,7 @@
 /* Canonical interface palette. Hardware materials, imagery and export assets retain their own colors. */
 :root {
- --pf-bg:#07090D; --pf-surface:#0E131B; --pf-raised:#151C27; --pf-border:#1E2735;
- --pf-primary:#E6EAF0; --pf-secondary:#9AA5B5; --pf-muted:#7A8699;
+ --pf-bg:#080808; --pf-surface:#111111; --pf-raised:#1B1B1B; --pf-border:#303030;
+ --pf-primary:#EEEEEC; --pf-secondary:#B0B0AC; --pf-muted:#999995;
  --pf-brand:#1A8CFF; --pf-confirmed:#5EEAD4; --pf-reported:#F5B14A; --pf-rumor:#F87171;
  --pf-border-hover:color-mix(in srgb,var(--pf-border),var(--pf-secondary) 35%);
  --font-ui:'Schibsted Grotesk',Arial,sans-serif; --font-body:'Newsreader',Georgia,serif; --font-data:'IBM Plex Mono',monospace;
@@ -13,3 +13,12 @@
  --pf-motion-fast:150ms; --pf-motion-base:220ms;
  color-scheme:dark;
 }
+
+:root[data-theme="light"] {
+ --pf-bg:#F7F7F4; --pf-surface:#FFFFFF; --pf-raised:#EDEDE8; --pf-border:#D0D0C8;
+ --pf-primary:#171715; --pf-secondary:#484842; --pf-muted:#62625A;
+ --pf-brand:#005CB9; --pf-confirmed:#076752; --pf-reported:#805200; --pf-rumor:#AC2525;
+ --on-accent:#FFFFFF; --pf-action-ink:#FFFFFF;
+ color-scheme:light;
+}
+:root {--pf-action-ink:#080808;}

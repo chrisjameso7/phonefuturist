@@ -939,7 +939,6 @@
   top: 0;
   z-index: 2;
   background: color-mix(in srgb,var(--pf-surface) 94%,transparent);
-  backdrop-filter: none;
 }
 
 .studio-workspace:has(.studio-columns) .rich-editor .ProseMirror {
@@ -986,7 +985,6 @@
   border: 1px solid var(--pf-border);
   border-radius: var(--pf-radius-md);
   background: color-mix(in srgb,var(--pf-bg) 90%,transparent);
-  backdrop-filter: none;
   box-shadow: none;
 }
 

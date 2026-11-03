@@ -21,7 +21,7 @@ export default function CanvasChart({label,unit,maximum,color,points,threshold}:
    }
    frame=requestAnimationFrame(draw);
   };
-  const observer=new ResizeObserver(paint);observer.observe(canvas);paint();return()=>{observer.disconnect();cancelAnimationFrame(frame);};
+  const observer=new ResizeObserver(paint);observer.observe(canvas);window.addEventListener('pf:theme-change',paint);paint();return()=>{observer.disconnect();window.removeEventListener('pf:theme-change',paint);cancelAnimationFrame(frame);};
  },[points,maximum,unit,color,threshold]);
  return <canvas ref={ref} role="img" aria-label={label} style={{display:'block',width:'100%',maxWidth:'100%',minWidth:0,height:'260px'}}>Time-series chart. Current values appear in the metrics above.</canvas>;
 }
