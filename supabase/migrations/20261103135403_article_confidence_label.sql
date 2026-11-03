@@ -174,5 +174,3 @@ create or replace function public.public_articles(p_path text default null,p_off
 language sql stable security invoker set search_path='' as $$ select private.public_articles(p_path,p_offset,p_section); $$;
 revoke all on function public.public_articles(text,integer,text) from public,anon,authenticated;
 grant execute on function public.public_articles(text,integer,text) to anon,authenticated;
-
-
