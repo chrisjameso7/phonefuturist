@@ -196,3 +196,28 @@ body .site-header .header-actions .button,body .rail-panel .button {color:var(--
  body:not(:has(.instrument-result)) .instrument-toast {bottom:16px;}
  body:has(.instrument-result) .instrument-toast {bottom:84px;}
 }
+
+/* Article surfaces and copy always resolve against the same active theme. */
+body .article-card .card-content {background:inherit;color:var(--pf-primary);}
+body .article-card :is(h2,h3) a {color:var(--pf-primary);}
+body .article-card :is(p,.card-meta,.card-section) {color:var(--pf-secondary);}
+body .site-header .mobile-nav>summary {border-radius:6px!important;border-color:var(--pf-border)!important;background:var(--pf-surface)!important;box-shadow:none!important;}
+
+/* Flat simulator workspace with editorial tabs and restrained actions. */
+body #main .interactive-page :is(.interactive-simulator-shell,.il-app,.il-toolbar,.il-toolbar-actions,.il-workspace,.il-builder,.il-simple-panel,.il-section,.il-results,.il-result-group,.il-result-empty) {
+ background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+}
+body #main .interactive-page .il-toolbar {padding:16px 0!important;border-bottom:1px solid var(--pf-border)!important;}
+body #main .interactive-page .il-mode-switch {
+ display:flex;gap:16px;padding:0!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--pf-border)!important;border-radius:0!important;
+}
+body #main .interactive-page .il-mode-switch button {
+ min-height:44px;padding:10px 12px;background:transparent!important;color:var(--pf-secondary)!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;
+}
+body #main .interactive-page .il-mode-switch button[aria-pressed="true"] {color:var(--pf-primary)!important;border-bottom-color:var(--pf-primary)!important;}
+body #main .interactive-page .il-mode-switch .instrument-tab-indicator {display:none;}
+body #main .interactive-page .il-toolbar-actions>button {
+ background:transparent!important;color:var(--pf-primary)!important;border:1px solid var(--pf-border)!important;border-radius:4px!important;box-shadow:none!important;
+}
+body #main .interactive-page :is(input,select,textarea) {border-color:var(--pf-border)!important;}
+body #main .interactive-page .instrument-result {border-radius:0!important;}
