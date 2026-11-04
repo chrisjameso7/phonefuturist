@@ -149,6 +149,8 @@ if(showAds&&Astro.csp){
                         </a>
                       ))
                     }
+                    <a href="/articles?section=reports"><span>Reports</span><span aria-hidden="true">↗</span></a>
+                    <a href="/interactive-leaks"><span>Interactive Leaks</span><span aria-hidden="true">↗</span></a>
                     <a
                       href="/labs"
                       aria-current={active === 'lab' ? 'page' : undefined}
@@ -176,6 +178,8 @@ if(showAds&&Astro.csp){
                   </nav>
 
                   <div class="mobile-account">
+                    <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
+                    {signedIn && <a href="/account/security">Account security</a>}
 
                     <span class="mobile-account-label">Account</span>
 

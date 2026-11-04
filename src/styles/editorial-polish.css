@@ -174,3 +174,25 @@ body .article-engagement-actions>:is(button,a) {background:var(--pf-raised);}
 @media(prefers-reduced-transparency:reduce) {body .site-header[data-scroll-blur="true"] {background:var(--pf-surface)!important;-webkit-backdrop-filter:none;backdrop-filter:none;}}
 
 body .site-header .header-actions .button,body .rail-panel .button {color:var(--pf-action-ink)!important;}
+
+/* Phones share the tablet masthead and right-hand navigation. */
+@media(max-width:760px) {
+ body:not(.product-mode) {padding:70px 0 env(safe-area-inset-bottom,0px)!important;--mobile-tabbar-height:0px;}
+ body:not(.product-mode) .mobile-appbar,
+ body:not(.product-mode) .mobile-tabbar {display:none!important;}
+ body:not(.product-mode) .site-header {display:flex!important;position:fixed!important;inset:0 0 auto!important;top:0!important;width:100%!important;max-width:none!important;min-height:70px;height:70px;margin:0!important;padding:12px 16px!important;border:0!important;border-bottom:1px solid var(--pf-border)!important;border-radius:0!important;z-index:150;}
+ body .site-header .header-brand-row {width:100%;display:flex;align-items:center;justify-content:space-between;}
+ body .site-header .brand-mark {width:42px!important;height:24px!important;object-fit:contain;border-radius:0;}
+ body .site-header .brand-word {font-size:1.08rem!important;letter-spacing:-.02em!important;}
+ body .site-header .mobile-nav {display:block!important;}
+ body .site-header .mobile-nav>summary {min-height:44px;min-width:72px;}
+ body .site-header .mobile-menu-panel {position:fixed!important;inset:70px 0 0 auto!important;width:min(360px,92vw)!important;max-width:none!important;max-height:calc(100dvh - 70px)!important;height:calc(100dvh - 70px);overflow-y:auto;overscroll-behavior:contain;padding:16px 20px calc(20px + env(safe-area-inset-bottom,0px))!important;border:0!important;border-left:1px solid var(--pf-border)!important;border-radius:0!important;background:var(--pf-surface)!important;box-shadow:none!important;}
+ body .site-header .mobile-menu-primary {display:grid;grid-template-columns:1fr;}
+ body .site-header .mobile-menu-primary a {min-height:44px;border-radius:0;}
+ body .site-header .mobile-account {background:var(--pf-surface);padding-top:16px;}
+ body .site-header .appearance-choice {justify-content:space-between;margin-bottom:16px;}
+ body .instrument-result {bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+ body:has(.instrument-result) main#main {padding-bottom:84px!important;}
+ body:not(:has(.instrument-result)) .instrument-toast {bottom:16px;}
+ body:has(.instrument-result) .instrument-toast {bottom:84px;}
+}
