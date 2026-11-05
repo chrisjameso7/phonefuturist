@@ -1,0 +1,43 @@
+---
+import Page from '../../layouts/Page.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { newsletterSettings } from '../../lib/newsletter-settings';
+import { newsletterEmail, requestNewsletterConfirmation, allowNewsletterConfirmation } from '../../lib/newsletter';
+import { boundedForm } from '../../lib/security';
+import { settings } from '../../lib/supabase';
+
+let message = '';
+if (Astro.request.method === 'POST') {
+  const config = newsletterSettings();
+  const app = settings(Astro.request);
+  if (!config || !app) {
+    Astro.response.status = 503;
+    message = 'Newsletter signup is not open yet.';
+  } else {
+    try {
+      const form = await boundedForm(Astro.request);
+      const email = newsletterEmail(form.get('email') ?? '');
+      if (!email || form.get('consent') !== 'yes') {
+        Astro.response.status = 400;
+        message = 'Enter a valid email address and confirm that you want the newsletter.';
+      } else if (!await allowNewsletterConfirmation(Astro.request.headers.get('cf-connecting-ip') ?? Astro.clientAddress)) {
+        Astro.response.status = 429;
+        message = 'Please wait before requesting another confirmation email.';
+      } else {
+        await requestNewsletterConfirmation(config, email, app.origin);
+        message = 'Check your email for a confirmation link.';
+      }
+    } catch {
+      Astro.response.status = 503;
+      message = 'The confirmation email could not be sent. Please try again later.';
+    }
+  }
+}
+---
+<Page title="Newsletter" privatePage>
+  <div class="newsletter-page">
+    {message && <p role="status">{message}</p>}
+    <NewsletterSignup />
+  </div>
+</Page>
+<style>.newsletter-page{max-width:760px;margin:auto;padding:32px 20px}</style>

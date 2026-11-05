@@ -1,0 +1,22 @@
+---
+import { publicTeam } from '../lib/team';
+import { serverClient, settings } from '../lib/supabase';
+import '../styles/team.css';
+const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+const { members, unavailable } = await publicTeam(client);
+---
+{(members.length > 0 || unavailable) && <section class="team-directory" aria-labelledby="team-heading">
+  <h2 id="team-heading">Our team</h2>
+  {unavailable ? <p>Team profiles are temporarily unavailable.</p> : <div class="team-grid">
+    {members.map(member => <article class="team-card">
+      {member.image_url && <a href={'/team/' + member.slug}><img src={member.image_url} alt={member.name} loading="lazy" /></a>}
+      <h3><a href={'/team/' + member.slug}>{member.name}</a></h3>
+      <p>{member.title}</p>
+      {member.bio && <p>{member.bio}</p>}
+      <a href={'/team/' + member.slug}>View profile and articles ↗</a>
+      {member.social_links.length > 0 && <nav class="team-social" aria-label={member.name + ' professional links'}>
+        {member.social_links.map(link => <a href={link.url} rel="noopener noreferrer">{link.label}</a>)}
+      </nav>}
+    </article>)}
+  </div>}
+</section>}

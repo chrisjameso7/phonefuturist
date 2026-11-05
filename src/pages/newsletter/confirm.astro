@@ -1,0 +1,40 @@
+---
+import Page from '../../layouts/Page.astro';
+import { newsletterSettings } from '../../lib/newsletter-settings';
+import { subscribeNewsletter, verifyNewsletterToken } from '../../lib/newsletter';
+import { boundedForm } from '../../lib/security';
+
+const config = newsletterSettings();
+let token = Astro.url.searchParams.get('token') ?? '';
+let email: string | null = null;
+let message = '';
+let confirmed = false;
+try {
+  if (Astro.request.method === 'POST') token = (await boundedForm(Astro.request)).get('token') ?? '';
+  email = config ? await verifyNewsletterToken(token, config.apiKey) : null;
+  if (!email || !config) {
+    Astro.response.status = config ? 400 : 503;
+    message = config ? 'This confirmation link has expired or is invalid. Please request a new one.' : 'Newsletter signup is not open yet.';
+  } else if (Astro.request.method === 'POST') {
+    await subscribeNewsletter(config, email);
+    confirmed = true;
+    message = 'You are subscribed to the PhoneFuturist newsletter.';
+  }
+} catch {
+  Astro.response.status = 503;
+  message = 'Signup could not be completed. Please try again.';
+}
+---
+<Page title="Confirm newsletter signup" privatePage>
+  <section class="newsletter-confirmation">
+    <h1>Confirm your newsletter signup</h1>
+    {message && <p role="status">{message}</p>}
+    {email && !confirmed && <form method="post" action="/newsletter/confirm">
+      <input type="hidden" name="token" value={token} />
+      <p>Confirm that you want to receive PhoneFuturist stories and analysis by email.</p>
+      <button type="submit">Confirm subscription</button>
+    </form>}
+    <a href={confirmed ? '/' : '/newsletter'}>{confirmed ? 'Read PhoneFuturist ↗' : 'Request a new confirmation link ↗'}</a>
+  </section>
+</Page>
+<style>.newsletter-confirmation{max-width:760px;margin:auto;padding:32px 20px}.newsletter-confirmation p{line-height:1.7}.newsletter-confirmation form{margin-bottom:24px}</style>

@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import TeamDirectory from '../components/TeamDirectory.astro';
 const coverage = [
   { title: 'News', description: 'Timely coverage of important developments across the technology industry.' },
   { title: 'Reports', description: 'Deeper examinations of products, companies, technologies and industry movements.' },
@@ -16,6 +17,7 @@ const coverage = [
       <p class="about-tagline">Technology, examined.</p>
       <p class="about-lead">PhoneFuturist is an independent technology publication focused on the ideas, innovations and developments shaping the future of consumer technology.</p>
     </header>
+    <TeamDirectory />
     <div class="about-layout">
       <nav class="about-contents" aria-label="On this page">
         <span>On this page</span>

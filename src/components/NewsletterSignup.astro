@@ -1,0 +1,25 @@
+---
+import { newsletterSettings } from '../lib/newsletter-settings';
+const enabled = !!newsletterSettings();
+---
+<section class="newsletter-signup" aria-labelledby="newsletter-title">
+  <h2 id="newsletter-title">The PhoneFuturist newsletter</h2>
+  <p>Stories and analysis from PhoneFuturist, delivered by email.</p>
+  <form action="/newsletter" method="post">
+    <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" disabled={!enabled} /></label>
+    <label class="newsletter-consent"><input name="consent" type="checkbox" value="yes" required disabled={!enabled} />Email me PhoneFuturist stories and analysis.</label>
+    <button type="submit" disabled={!enabled}>Join newsletter</button>
+  </form>
+  <p>{enabled ? 'Confirm your email to subscribe. You can unsubscribe from any newsletter.' : 'Newsletter signup will open soon.'}</p>
+</section>
+<style>
+ .newsletter-signup {padding-block:24px;margin-bottom:32px;border-bottom:1px solid var(--pf-border);}
+ h2 {font-size:1.3rem;margin:0 0 12px;}
+ p {color:var(--pf-secondary);line-height:1.6;}
+ form {max-width:560px;display:grid;gap:12px;}
+ label {display:grid;gap:8px;}
+ input {background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);}
+ .newsletter-consent {display:flex;align-items:start;line-height:1.6;}
+ .newsletter-consent input {width:auto;margin-top:6px;flex:none;}
+ button {justify-self:start;min-height:44px;}
+</style>

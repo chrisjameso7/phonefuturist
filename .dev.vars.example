@@ -12,3 +12,8 @@ CLOUDFLARE_AI_API_TOKEN=
 # Hardware analysis is baseline-only until explicitly enabled with a platform rate limiter.
 AI_VALUATION_ENABLED=false
 # Optional BOM_VALUATION_MODEL overrides VIRTUAL_DEVICE_MODEL.
+
+# Newsletter remains closed until these are configured. Keep API keys in secrets.
+RESEND_API_KEY=
+NEWSLETTER_FROM=
+NEWSLETTER_SEGMENT_ID=

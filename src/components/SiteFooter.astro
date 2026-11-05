@@ -1,4 +1,10 @@
+---
+import NewsletterSignup from './NewsletterSignup.astro';
+interface Props { showNewsletter?: boolean }
+const { showNewsletter = true } = Astro.props;
+---
 <footer class="publication-footer">
+  {showNewsletter && !Astro.url.pathname.startsWith('/newsletter') && <NewsletterSignup />}
   <div class="footer-main">
     <div class="footer-identity">
       <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">

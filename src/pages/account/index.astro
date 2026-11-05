@@ -35,6 +35,7 @@ const initial=displayName.slice(0,1).toUpperCase();
       <p class="account-email">{user.email}</p>{creatorProfile?.handle&&<CommunityPeople personId={user.id} title="Your community" client:load/>}
 
       <nav aria-label="Account">
+        {access.roles.includes('admin') && <a href="/studio/team">Manage our team</a>}
         <a class="is-active" href="/account">Overview</a>
         <a href="/articles">Newsroom</a>
         <a href="/labs">Labs</a>
@@ -50,6 +51,11 @@ const initial=displayName.slice(0,1).toUpperCase();
     </aside>
 
     <main class="account-feed">
+      {access.roles.includes('admin') && <section class="account-team-shortcut">
+        <h2>Our team</h2>
+        <p>Manage the people published on About PhoneFuturist.</p>
+        <a href="/studio/team">Manage our team ↗</a>
+      </section>}
       <header class="account-feed-head">
         <p class="eyebrow">Your PhoneFuturist</p>
         <h2>Overview</h2>
@@ -90,6 +96,7 @@ const initial=displayName.slice(0,1).toUpperCase();
 </Page>
 
 <style>
+.account-team-shortcut{padding:20px 0;border-bottom:1px solid var(--pf-border)}
 .account-network{width:min(100%,1180px);margin:0 auto;padding:28px 18px 80px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px}
 .account-profile-card{position:sticky;top:96px;align-self:start;padding:20px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
 .account-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;display:grid;place-items:center;margin-bottom:14px;border:1px solid #2b3a49;background:linear-gradient(145deg,#142131,#0a0f16);color:#fff;font-size:1.6rem;font-weight:700}
