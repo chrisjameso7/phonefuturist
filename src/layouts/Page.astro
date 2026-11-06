@@ -18,6 +18,7 @@ interface Props {
   privatePage?: boolean;
   home?: boolean;
   productMode?: boolean;
+  newsletterInContent?: boolean;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   privatePage = false,
   home = false,
   productMode = false,
+  newsletterInContent = false,
 } = Astro.props;
 
 const links = [
@@ -334,7 +336,7 @@ if(showAds&&Astro.csp){
 
     {
       !productMode && (
-        <SiteFooter showNewsletter={!privatePage} />
+        <SiteFooter showNewsletter={!privatePage && !newsletterInContent} />
       )
     }
   </body>

@@ -1,4 +1,4 @@
-export type NewsletterConfig = { apiKey: string; from: string; segmentId: string };
+export type NewsletterConfig = { apiKey: string; from: string; segmentId: string; topicId?: string };
 const encoder = new TextEncoder();
 
 export function newsletterEmail(value: string) {
@@ -31,8 +31,9 @@ export async function verifyNewsletterToken(token: string, secret: string, now =
     return newsletterEmail(data.email);
   } catch { return null; }
 }
-async function resend(config: NewsletterConfig, path: string, method: string, body?: unknown, idempotencyKey?: string) {
-  return fetch('https://api.resend.com' + path, {
+export async function resend(config: NewsletterConfig, path: string, method: string, body?: unknown, idempotencyKey?: string) {
+  for (let attempt = 0; ; attempt++) {
+  const response = await fetch('https://api.resend.com' + path, {
     method,
     headers: {
       authorization: 'Bearer ' + config.apiKey,
@@ -42,6 +43,17 @@ async function resend(config: NewsletterConfig, path: string, method: string, bo
     ...(body ? { body: JSON.stringify(body) } : {}),
     signal: AbortSignal.timeout(10000),
   });
+  if (response.status !== 429 || attempt >= 2) {
+    if (!response.ok && response.status !== 404) console.warn('newsletter_provider_failure', {
+      operation: method + ' ' + (path.includes('/topics') ? 'contact_topics' : path.includes('/segments') ? 'contact_segments' : path.startsWith('/contacts') ? 'contacts' : 'email'),
+      status: response.status,
+    });
+    return response;
+  }
+  const seconds = Number(response.headers.get('retry-after') ?? 1);
+  await response.body?.cancel();
+  await new Promise(resolve => setTimeout(resolve, Math.min(3000, Math.max(1000, seconds * 1000 || 1000))));
+  }
 }
 export async function requestNewsletterConfirmation(config: NewsletterConfig, email: string, origin: string) {
   const token = await newsletterToken(email, config.apiKey);
@@ -58,24 +70,39 @@ export async function requestNewsletterConfirmation(config: NewsletterConfig, em
   }, 'newsletter-confirm-' + encode(new Uint8Array(digest)));
   if (!response.ok) throw new Error('Confirmation email could not be sent. Please try again later.');
 }
-export async function subscribeNewsletter(config: NewsletterConfig, email: string) {
+export async function subscribeNewsletter(config: NewsletterConfig, email: string, firstName?: string) {
   let response = await resend(config, '/contacts/' + encodeURIComponent(email), 'GET');
   let contact: { id: string; unsubscribed?: boolean };
   if (response.status === 404) {
-    response = await resend(config, '/contacts', 'POST', { email, unsubscribed: false });
+    response = await resend(config, '/contacts', 'POST', { email, unsubscribed: false, ...(firstName ? { first_name: firstName } : {}) });
     if (!response.ok) throw new Error('Signup could not be completed. Please retry.');
     contact = await response.json();
   } else {
     if (!response.ok) throw new Error('Signup could not be completed. Please retry.');
     contact = await response.json();
-    if (contact.unsubscribed) {
-      const updated = await resend(config, '/contacts/' + encodeURIComponent(contact.id), 'PATCH', { unsubscribed: false });
+    if (contact.unsubscribed || firstName) {
+      const updated = await resend(config, '/contacts/' + encodeURIComponent(contact.id), 'PATCH', { unsubscribed: false, ...(firstName ? { first_name: firstName } : {}) });
       if (!updated.ok) throw new Error('Signup could not be completed. Please retry.');
     }
   }
   if (typeof contact.id !== 'string' || !contact.id) throw new Error('Signup could not be completed. Please retry.');
   const added = await resend(config, '/contacts/' + encodeURIComponent(contact.id) + '/segments/' + encodeURIComponent(config.segmentId), 'POST');
   if (!added.ok) throw new Error('Signup could not be completed. Please retry.');
+  if (config.topicId) {
+    const path = '/contacts/' + encodeURIComponent(contact.id);
+    const optedIn = await resend(config, path + '/topics', 'PATCH', [{ id: config.topicId, subscription: 'opt_in' }]);
+    if (!optedIn.ok) throw new Error('Signup could not be completed. Please retry.');
+    // Report success only after the configured segment and explicit topic opt-in are readable.
+    const segmentsResponse = await resend(config, path + '/segments', 'GET');
+    const topicsResponse = await resend(config, path + '/topics', 'GET');
+    if (!segmentsResponse.ok || !topicsResponse.ok) throw new Error('Signup could not be verified. Please retry.');
+    const segments = await segmentsResponse.json() as { data?: { id: string }[] };
+    const topics = await topicsResponse.json() as { data?: { id: string; subscription: string }[] };
+    if (!segments.data?.some(segment => segment.id === config.segmentId) ||
+        !topics.data?.some(topic => topic.id === config.topicId && topic.subscription === 'opt_in')) {
+      throw new Error('Signup could not be verified. Please retry.');
+    }
+  }
 }
 
 // A bounded, short-lived throttle limits repeat confirmation requests per worker.

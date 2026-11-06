@@ -19,7 +19,7 @@
 .device-fallback span{position:absolute;left:8px;top:10px;width:26px;height:45px;background:radial-gradient(circle at 50% 24%,#365767 0 5px,#080d13 6px 9px,transparent 10px),radial-gradient(circle at 50% 75%,#365767 0 5px,#080d13 6px 9px,transparent 10px);border-radius:8px}
 .device-view-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .device-view-tools button{padding:10px 12px;font-size:.78rem}
-.device-view-tools button[aria-pressed=true]{background:var(--pf-brand);color:var(--pf-muted)}
+.device-view-tools button[aria-pressed=true]{background:var(--pf-brand);color:var(--pf-action-ink)}
 .device-preview-caption{text-align:center;color:var(--pf-secondary);font-size:.75rem;line-height:1.5;min-height:2.25em}
 .device-design-summary{border-top:1px solid color-mix(in srgb,var(--pf-border) 10%,transparent);padding:18px 8px 4px;overflow-wrap:anywhere}
 .device-design-summary h2{font-size:1.2rem;font-weight:500;margin:0 0 8px}.device-design-summary p{color:var(--pf-secondary);font-size:.8rem;margin:6px 0}

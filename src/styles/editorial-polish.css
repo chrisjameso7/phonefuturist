@@ -113,8 +113,8 @@ body :is(.site-header,.mobile-appbar,.publication-footer) .brand-mark {display:b
 .instrument-unit {width:100%;}
 .il-field>.instrument-unit {display:flex!important;}
 
-body .labs button:not([aria-pressed="false"]):not(.secondary) {color:var(--pf-action-ink);}
-body .labs :is(.device-view-tools button,.device-presets button) {color:var(--pf-primary);}
+body .labs :is(.device-view-tools button,.device-presets button) {background:var(--pf-surface);color:var(--pf-primary);}
+body .labs .device-view-tools button[aria-pressed="true"] {background:var(--pf-brand);color:var(--pf-action-ink);}
 
 body .il-mode-switch {border-radius:8px!important;}
 body :is(.interactive-hero h1 span,.about-section h2 span) {color:var(--pf-primary)!important;}

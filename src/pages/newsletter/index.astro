@@ -2,36 +2,17 @@
 import Page from '../../layouts/Page.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { newsletterSettings } from '../../lib/newsletter-settings';
-import { newsletterEmail, requestNewsletterConfirmation, allowNewsletterConfirmation } from '../../lib/newsletter';
+import { signupNewsletter, type NewsletterLimiter } from '../../lib/newsletter-signup';
 import { boundedForm } from '../../lib/security';
-import { settings } from '../../lib/supabase';
-
+import { env } from 'cloudflare:workers';
 let message = '';
 if (Astro.request.method === 'POST') {
-  const config = newsletterSettings();
-  const app = settings(Astro.request);
-  if (!config || !app) {
-    Astro.response.status = 503;
-    message = 'Newsletter signup is not open yet.';
-  } else {
-    try {
-      const form = await boundedForm(Astro.request);
-      const email = newsletterEmail(form.get('email') ?? '');
-      if (!email || form.get('consent') !== 'yes') {
-        Astro.response.status = 400;
-        message = 'Enter a valid email address and confirm that you want the newsletter.';
-      } else if (!await allowNewsletterConfirmation(Astro.request.headers.get('cf-connecting-ip') ?? Astro.clientAddress)) {
-        Astro.response.status = 429;
-        message = 'Please wait before requesting another confirmation email.';
-      } else {
-        await requestNewsletterConfirmation(config, email, app.origin);
-        message = 'Check your email for a confirmation link.';
-      }
-    } catch {
-      Astro.response.status = 503;
-      message = 'The confirmation email could not be sent. Please try again later.';
-    }
-  }
+  try {
+    const result = await signupNewsletter(await boundedForm(Astro.request), newsletterSettings(), env.NEWSLETTER_LIMITER as NewsletterLimiter | undefined,
+      Astro.request.headers.get('cf-connecting-ip') ?? Astro.clientAddress);
+    message = result.message; Astro.response.status = result.status;
+    if (result.status === 429) Astro.response.headers.set('Retry-After','60');
+  } catch { Astro.response.status = 400; message = 'Invalid signup. Please try again.'; }
 }
 ---
 <Page title="Newsletter" privatePage>

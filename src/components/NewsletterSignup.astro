@@ -1,25 +1,55 @@
 ---
 import { newsletterSettings } from '../lib/newsletter-settings';
 const enabled = !!newsletterSettings();
+const id = 'newsletter-' + crypto.randomUUID();
 ---
-<section class="newsletter-signup" aria-labelledby="newsletter-title">
-  <h2 id="newsletter-title">The PhoneFuturist newsletter</h2>
-  <p>Stories and analysis from PhoneFuturist, delivered by email.</p>
-  <form action="/newsletter" method="post">
-    <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" disabled={!enabled} /></label>
-    <label class="newsletter-consent"><input name="consent" type="checkbox" value="yes" required disabled={!enabled} />Email me PhoneFuturist stories and analysis.</label>
-    <button type="submit" disabled={!enabled}>Join newsletter</button>
+<section class="newsletter-signup" aria-labelledby={id}>
+  <h2 id={id}>The PhoneFuturist newsletter</h2>
+  <p>Technology stories and analysis, delivered weekly.</p>
+  <form action="/newsletter" method="post" data-newsletter-form>
+    <div class="newsletter-fields">
+      <label><span class="newsletter-field-name">First name <small>(optional)</small></span><input name="first_name" autocomplete="given-name" maxlength="80" disabled={!enabled} /></label>
+      <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" disabled={!enabled} /></label>
+    </div>
+    <div class="newsletter-trap" aria-hidden="true"><label>Leave this field empty<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <input name="consent" type="hidden" value="yes" />
+    <p class="newsletter-consent">By subscribing you agree to receive the PhoneFuturist newsletter. You can unsubscribe at any time. <a href="/privacy#newsletter">Privacy</a>.</p>
+    <button type="submit" disabled={!enabled}>Subscribe</button>
+    <p data-newsletter-status role="status" aria-live="polite" aria-atomic="true">{!enabled && 'Newsletter signup is temporarily unavailable.'}</p>
   </form>
-  <p>{enabled ? 'Confirm your email to subscribe. You can unsubscribe from any newsletter.' : 'Newsletter signup will open soon.'}</p>
 </section>
+<script>
+  document.addEventListener('submit', async event => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement) || !form.matches('[data-newsletter-form]')) return;
+    event.preventDefault();
+    if (form.dataset.busy === 'true') return;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const status = form.querySelector<HTMLElement>('[data-newsletter-status]')!;
+    form.dataset.busy = 'true'; form.setAttribute('aria-busy', 'true'); button.disabled = true;
+    button.textContent = 'Subscribing…'; status.textContent = 'Adding your subscription…';
+    try {
+      const response = await fetch('/api/newsletter', { method: 'POST', body: new URLSearchParams(new FormData(form) as unknown as Record<string,string>), signal: AbortSignal.timeout(60000) });
+      const result = await response.json();
+      status.textContent = result.message || 'Signup could not be completed. Please try again.';
+      if (response.ok) form.reset();
+    } catch { status.textContent = 'Signup could not be completed. Please try again.'; }
+    finally { delete form.dataset.busy; form.removeAttribute('aria-busy'); button.disabled = false; button.textContent = 'Subscribe'; }
+  });
+</script>
 <style>
- .newsletter-signup {padding-block:24px;margin-bottom:32px;border-bottom:1px solid var(--pf-border);}
+ .newsletter-signup {padding-block:28px;margin-bottom:32px;border-block:1px solid var(--pf-border);min-width:0;}
  h2 {font-size:1.3rem;margin:0 0 12px;}
  p {color:var(--pf-secondary);line-height:1.6;}
- form {max-width:560px;display:grid;gap:12px;}
- label {display:grid;gap:8px;}
- input {background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);}
- .newsletter-consent {display:flex;align-items:start;line-height:1.6;}
- .newsletter-consent input {width:auto;margin-top:6px;flex:none;}
- button {justify-self:start;min-height:44px;}
+ form {max-width:760px;display:grid;gap:12px;}
+ .newsletter-fields {display:grid;grid-template-columns:1fr 1.5fr;gap:16px;}
+ label {display:grid;gap:8px;min-width:0;}
+ label small {color:var(--pf-secondary);font-size:.85rem;}
+ input {width:100%;min-width:0;box-sizing:border-box;min-height:44px;background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);border-radius:0;padding:12px;font:inherit;}
+ .newsletter-consent {font-size:.85rem;margin:0;}
+ button {justify-self:start;min-height:44px;min-width:120px;border-radius:0;}
+ .newsletter-trap {display:none;}
+ [data-newsletter-status] {margin:0;}
+ :is(input,button,a):focus-visible {outline:2px solid var(--pf-primary);outline-offset:3px;}
+ @media(max-width:600px) {.newsletter-fields{grid-template-columns:1fr;}}
 </style>

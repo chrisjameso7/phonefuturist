@@ -1,0 +1,31 @@
+---
+import Page from '../layouts/Page.astro';
+import { privacyDraft } from '../lib/privacy-draft';
+const providers = [
+ ['Cloudflare — hosting and security','https://www.cloudflare.com/privacypolicy/'],
+ ['Supabase — accounts, database and uploaded files','https://supabase.com/privacy'],
+ ['Resend — newsletter contacts and email delivery','https://resend.com/legal/privacy-policy'],
+ ['Google — advertising and cookies','https://policies.google.com/technologies/ads'],
+ ['Google — privacy controls','https://myadcenter.google.com/'],
+];
+---
+<Page title="Privacy Policy">
+ <article class="privacy-page">
+  <header><p class="eyebrow">Publication information</p><h1>Privacy Policy</h1>
+   <p role="note" class="notice">Draft for legal review. Effective date and legal operator details are pending. Bracketed wording below remains unconfirmed; this draft is not a claim that every proposed integration is active.</p>
+   <p>PhoneFuturist is an independent technology publication with interactive Labs. Questions and privacy requests can go to <a href="mailto:contact@phonefuturist.com?subject=Privacy%20Request">contact@phonefuturist.com</a>.</p>
+  </header>
+  <nav aria-label="Privacy Policy contents"><ol>{privacyDraft.map(section=><li><a href={'#'+section.id}>{section.title.replace(/^\d+\. /,'')}</a></li>)}<li><a href="#service-links">Service links and implementation notes</a></li></ol></nav>
+  {privacyDraft.map(section=><section id={section.id}><h2>{section.title}</h2>{section.paragraphs.map(paragraph=>paragraph.startsWith('- ')?<ul>{paragraph.split('\n').map(line=><li>{line.replace(/^- /,'')}</li>)}</ul>:<p>{paragraph}</p>)}
+   {section.id === 'newsletter' && <aside class="notice"><h3>Newsletter implementation · draft for review</h3><p>Signup sends your email address and optional first name to Resend, joins the Newsletter segment and explicitly subscribes the contact to the newsletter topic. The site does not keep a separate subscriber database. Signup itself sends no email. An existing and a new subscriber receive the same generic success message.</p><p>Unsubscribing changes your preferences in Resend and does not automatically erase your contact. You can <a href="/newsletter">subscribe here</a> or <a href="mailto:contact@phonefuturist.com?subject=Newsletter%20Privacy%20Request">request removal of your newsletter contact</a>. Production newsletters will use Resend’s unsubscribe flow.</p><p>A hidden honeypot and Cloudflare rate limiter help prevent abuse. The limiter uses a hash derived from the requesting IP address, not the subscriber’s email.</p></aside>}
+  </section>)}
+  <section id="service-links"><h2>Service links and implementation notes</h2>
+   <ul>{providers.map(([label,url])=><li><a href={url} rel="noopener noreferrer">{label} ↗</a></li>)}</ul>
+   <p>Google AdSense code is configured in the site. This does not establish whether an ad was served on any particular visit. We have not confirmed a separate analytics provider or a complete consent-management platform in this change.</p>
+   <h3>Planned services</h3><p>Additional advertising partners, analytics services, affiliate networks and AI tools may be added later. Their identities, purposes, privacy links and any required consent controls must be reviewed and added here before activation. These planned categories are not a statement that a provider is currently receiving your data.</p>
+   <h3>Details still awaiting confirmation</h3><p>The legal operator and postal address, effective date, jurisdiction-specific rights, minimum age, retention and backup periods, and advertising consent arrangements remain subject to legal review. Unsubscribing must not be described as automatic data deletion.</p>
+   <p><a href="/account">Account settings</a> · <a href="/interactive-leaks/explore">Community</a> · <a href="/labs">Labs</a> · <a href="mailto:contact@phonefuturist.com?subject=Privacy%20Request">Make a privacy request</a></p>
+  </section>
+ </article>
+</Page>
+<style>.privacy-page{max-width:840px;margin:auto;padding:40px 20px;overflow-wrap:anywhere}.privacy-page :is(p,li){line-height:1.75;color:var(--pf-secondary)}.privacy-page section{padding-block:24px;border-top:1px solid var(--pf-border);scroll-margin-top:120px}.privacy-page h2{font-size:1.55rem}.privacy-page h3{font-size:1.15rem}.notice{border-left:2px solid var(--pf-border);padding:16px 20px}.privacy-page nav{padding:24px 0}</style>

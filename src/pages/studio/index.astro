@@ -17,7 +17,7 @@ if(error){Astro.response.status=503;console.error('studio_list_failed',{code:err
       </a>
 
       <nav aria-label="Studio">
-        {Astro.locals.access?.roles.includes('admin') && <a href="/studio/team">Our team</a>}
+        {Astro.locals.access?.roles.includes('admin') && <><a href="/studio/team">Our team</a><a href="/studio/newsletter">Newsletter</a></>}
         <a class="is-active" href="/studio">Articles</a>
         {canWrite&&<a href="/studio/new">New article</a>}
         {Astro.locals.access?.can_manage_mfa_exceptions&&<a href="/studio/access">Studio access</a>}

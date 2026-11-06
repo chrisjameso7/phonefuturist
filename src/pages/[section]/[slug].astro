@@ -1,4 +1,6 @@
 ---
+import StoryImage from '../../components/StoryImage.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import ConfidenceTag from '../../components/ConfidenceTag.astro';
 import Page from '../../layouts/Page.astro';
 import ArticleEngagement from '../../components/ArticleEngagement';
@@ -16,7 +18,7 @@ const heroImage = article && !article.withdrawn
     : article.blocks.find(block=>block.type==='image' && safeHttps(block.url))
   : null;
 ---
-<Page title={article?.title ?? 'Article unavailable'} description={article?.summary}>
+<Page title={article?.title ?? 'Article unavailable'} description={article?.summary} newsletterInContent={!!article}>
   <div class="reading-page">
     {article ? <article class="story">
       <header class="story-header">
@@ -30,9 +32,7 @@ const heroImage = article && !article.withdrawn
         </div>
       </header>
 
-      {heroImage && <figure class="story-hero">
-        <img src={heroImage.url} alt={heroImage.alt ?? ''} loading="eager" decoding="async" referrerpolicy="no-referrer"/>
-      </figure>}
+      {heroImage && <div class="story-hero"><StoryImage article={article} linked={false} eager /></div>}
 
       {article.withdrawn ? <aside class="notice"><h2>Article withdrawn</h2><p>{article.withdrawal_note}</p></aside> : <>
         <div class="article-body">
@@ -70,6 +70,7 @@ const heroImage = article && !article.withdrawn
           <ol>{article.sources.map(source=><li>{safeHttps(source.url)?<a href={source.url} rel="noopener noreferrer">{source.label} ↗</a>:source.label}{source.note && <p>{source.note}</p>}</li>)}</ol>
         </section>}
       </>}
+      <NewsletterSignup />
     </article> : <section class="story-empty"><h1>{unavailable?'Temporarily unavailable':'Article not found'}</h1><p>{unavailable?'Please retry shortly.':'This story is not available at this address.'}</p></section>}
     <a class="story-back" href="/articles">← Back to the newsroom</a>
   </div>
@@ -80,11 +81,11 @@ const heroImage = article && !article.withdrawn
   .story{display:grid}
   .story-header{width:min(100%,980px);margin:34px auto 42px;text-align:left}
   .story-section{display:inline-flex;margin-bottom:18px;color:var(--cyan);font-size:.64rem;font-weight:760;letter-spacing:.13em;text-transform:uppercase;text-decoration:none}
-  .story-header h1{max-width:960px;margin:0;font-size:clamp(2.25rem,3.8vw,3.75rem);line-height:1.08;letter-spacing:-.035em;font-weight:620}
+  .story-header h1{max-width:960px;margin:0;font-size:clamp(1.85rem,3vw,2.85rem);line-height:1.08;letter-spacing:-.035em;font-weight:620}
   .story-deck{max-width:760px;margin:26px 0 20px;color:var(--pf-secondary);font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.6}
   .story-meta{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:16px;border-top:1px solid var(--pf-border);color:var(--pf-muted);font-size:.72rem}
   .story-hero{width:min(100%,1240px);margin:0 auto 58px}
-  .story-hero img{display:block;width:100%;max-height:720px;object-fit:cover;border:1px solid #202c39;border-radius:18px;background:#0b1118}
+  .story-hero :global(img){max-height:720px}
   .article-body{width:min(100%,760px);margin:0 auto;color:var(--pf-primary);font-size:1.08rem;line-height:1.86}
   .article-body>p{margin:0 0 1.55rem}
   .article-body h2{margin:3.8rem 0 1.2rem;font-size:clamp(1.9rem,3.2vw,3rem);line-height:1.08;letter-spacing:-.045em}

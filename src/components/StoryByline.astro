@@ -1,0 +1,7 @@
+---
+import type { PublishedArticle } from '../lib/editorial';
+interface Props {article: PublishedArticle}
+const {article} = Astro.props;
+---
+<div class="story-byline">{article.byline && <span>By {article.byline}</span>}<time datetime={article.published_at}>{new Date(article.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}</time></div>
+<style>.story-byline{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--pf-secondary);font-size:12px;line-height:1.6;margin-top:12px}</style>

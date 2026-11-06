@@ -74,11 +74,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Preserve Origin on native form POSTs; no-referrer can turn it into null.
   // Send only the origin to HTTPS destinations, never callback paths or codes.
   response.headers.set('Referrer-Policy', 'strict-origin');
-  response.headers.set('X-Frame-Options', 'DENY');
+  const newsletterPreview = path === '/studio/newsletter/preview';
+  response.headers.set('X-Frame-Options', newsletterPreview ? 'SAMEORIGIN' : 'DENY');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   // Preserve Astro's generated script/style policy (Astro may emit it as a header).
   const contentPolicy=response.headers.get('Content-Security-Policy');
-  response.headers.set('Content-Security-Policy', [contentPolicy,"frame-ancestors 'none'; object-src 'none'"].filter(Boolean).join('; '));
+  response.headers.set('Content-Security-Policy', [contentPolicy,newsletterPreview ? "frame-ancestors 'self'; object-src 'none'" : "frame-ancestors 'none'; object-src 'none'"].filter(Boolean).join('; '));
   // Initial foundation has no public response caching. Auth responses must never be shared.
   response.headers.set('Cache-Control', 'private, no-store');
   response.headers.append('Vary', 'Cookie');

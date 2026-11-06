@@ -1,5 +1,7 @@
 ---
 import ConfidenceTag from './ConfidenceTag.astro';
+import StoryImage from './StoryImage.astro';
+import {storyImage} from '../lib/story-image';
 import type { PublishedArticle } from '../lib/editorial';
 
 interface Props {
@@ -8,32 +10,6 @@ interface Props {
 
 const { articles } = Astro.props;
 
-function safeHttps(url?: string | null) {
-  if (!url) return false;
-
-  try {
-    return new URL(url).protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
-function articleImage(article: PublishedArticle) {
-  if(article.withdrawn) return null;
-  if(article.card_image && safeHttps(article.card_image.url)) return {url:article.card_image.url,alt:article.card_image.alt??''};
-  const image = article.blocks.find(
-    (block) =>
-      block.type === 'image' &&
-      safeHttps(block.url),
-  );
-
-  if (!image?.url) return null;
-
-  return {
-    url: image.url,
-    alt: image.alt ?? '',
-  };
-}
 ---
 
 <div
@@ -42,7 +18,7 @@ function articleImage(article: PublishedArticle) {
 >
   {
     articles.map((article, index) => {
-      const image = articleImage(article);
+      const image = storyImage(article);
 
       return (
         <article
@@ -54,20 +30,7 @@ function articleImage(article: PublishedArticle) {
             },
           ]}
         >
-          {image ? (
-            <a
-              class="card-image"
-              href={article.canonical_path}
-              aria-label={`Read ${article.title}`}
-            >
-              <img
-                src={image.url}
-                alt={image.alt}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-              />
-            </a>
-          ) : <a class="card-image card-image-fallback" href={article.canonical_path} aria-label={`Read ${article.title}`}></a>}
+          <StoryImage article={article} eager={index===0} />
 
           <div class="card-content"><ConfidenceTag article={article}/>
             <span class="card-section">
@@ -106,3 +69,5 @@ function articleImage(article: PublishedArticle) {
     })
   }
 </div>
+
+<style>.article-card :global(.story-picture){margin-bottom:0}.article-card :global(figcaption){padding:8px 0;margin:0}.article-card h3 a{text-decoration:none!important}.article-card h3 a:hover{color:var(--pf-brand)}</style>

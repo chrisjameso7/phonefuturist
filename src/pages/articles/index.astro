@@ -16,7 +16,6 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
     <header class="newsroom-head">
       <p class="eyebrow">PhoneFuturist Newsroom</p>
       <h1>{validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}</h1>
-      <p>Reporting, analysis and the signals shaping what comes next.</p>
     </header>
 
     <nav class="section-tabs newsroom-tabs" aria-label="Sections">
@@ -36,7 +35,7 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
 <style>
   .newsroom-index{width:min(100%,1420px);margin:0 auto;padding:42px clamp(18px,3vw,44px) 80px}
   .newsroom-head{max-width:900px;padding:48px 0 36px}
-  .newsroom-head h1{margin:8px 0 14px;font-size:clamp(4rem,8vw,8rem);line-height:.88;letter-spacing:-.075em;font-weight:620}
+  .newsroom-head h1{margin:8px 0 14px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.075em;font-weight:620}
   .newsroom-head>p:not(.eyebrow){max-width:620px;margin:0;color:var(--muted);font-size:1rem}
   .newsroom-tabs{display:flex;gap:4px;margin-bottom:28px;padding:7px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface);overflow-x:auto}
   .newsroom-tabs a{flex:0 0 auto;padding:9px 13px;border-radius:var(--pf-radius-sm);color:var(--pf-muted);text-decoration:none;font-size:.7rem;text-transform:capitalize}

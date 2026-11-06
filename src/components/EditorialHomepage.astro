@@ -1,89 +1,32 @@
 ---
 import ConfidenceTag from './ConfidenceTag.astro';
+import StoryImage from './StoryImage.astro';
+import StoryByline from './StoryByline.astro';
 import type { PublishedArticle } from '../lib/editorial';
-
-interface Props { articles: PublishedArticle[] }
+interface Props {articles: PublishedArticle[]}
 const { articles } = Astro.props;
-const [lead, ...stories] = articles.filter(article => !article.withdrawn);
-const rail = stories.slice(0, 3);
-const latest = stories.slice(3, 9);
-const image = lead?.card_image ?? lead?.blocks.find(block => block.type === 'image');
-const imageUrl = image?.url?.startsWith('https://') ? image.url : undefined;
-const relatedLab = lead && /\b(chip|processor|exynos|snapdragon|silicon|thermal)\b/i.test(lead.title)
-  ? { name: 'Thermal simulator', href: '/labs/thermal', description: 'Change the cooling, ambient temperature and workload to see how sustained performance responds.' }
-  : { name: 'Interactive Leaks', href: '/interactive-leaks', description: 'Explore how different hardware choices affect a simulated device.' };
+const [lead,...stories] = articles.filter(article=>!article.withdrawn);
+const next = stories.slice(0,2);
+const latest = stories.slice(2,8);
 ---
-  <div class="editorial-concept">
-    <header class="edition">
-      <div><p class="kicker">PhoneFuturist</p><h1>Technology, examined.</h1></div>
-      <a href="/articles">All stories ↗</a>
-    </header>
-    {lead ? (
-      <section class="front-page" aria-label="Lead coverage">
-        <article class="lead-story">
-          {imageUrl && <a class="lead-image" href={lead.canonical_path} aria-label={lead.title}><img src={imageUrl} alt={image?.alt ?? ''} fetchpriority="high" /></a>}
-          <div class="story-meta"><span class="kicker">{lead.section}</span><ConfidenceTag article={lead} /></div>
-          <h2><a href={lead.canonical_path}>{lead.title}</a></h2>
-          {lead.summary && <p class="standfirst">{lead.summary}</p>}
-          <a class="story-link" href={lead.canonical_path}>Read the story ↗</a>
-        </article>
-        <aside class="edition-rail" aria-label="Related lab and more stories">
-          <section class="lab-pair">
-            <p class="kicker">From the Labs</p>
-            <h2>{relatedLab.name}</h2>
-            <p>{relatedLab.description}</p>
-            <a href={relatedLab.href}>Open the lab ↗</a>
-          </section>
-          {rail.length > 0 && <section class="story-rail">
-            <h2>Also in the Newsroom</h2>
-            {rail.map(story => <article>
-              <div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story} /></div>
-              <h3><a href={story.canonical_path}>{story.title}</a></h3>
-            </article>)}
-          </section>}
-        </aside>
-      </section>
-    ) : <p>Stories are currently unavailable. <a href="/articles">Open the Newsroom ↗</a></p>}
-    {latest.length > 0 && <section class="latest-edition">
-      <h2>More coverage</h2>
-      {latest.map(story => <article>
-        <div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story} /></div>
-        <h3><a href={story.canonical_path}>{story.title}</a></h3>
-        {story.summary && <p>{story.summary}</p>}
-      </article>)}
-    </section>}
-    <slot />
-    <nav class="edition-links" aria-label="Explore PhoneFuturist">
-      <a href="/articles">All stories ↗</a><a href="/labs">All labs ↗</a><a href="/interactive-leaks/explore">Community ↗</a>
-    </nav>
-  </div>
+<div class="editorial-concept">
+ <header class="edition"><h1>Latest stories</h1><a href="/articles">All stories</a></header>
+ {lead ? <section class="front-page" aria-label="Latest coverage">
+  <article class="lead-story">
+   <StoryImage article={lead} eager />
+   <div class="story-meta"><span class="kicker">{lead.section}</span><ConfidenceTag article={lead}/></div>
+   <h2><a href={lead.canonical_path}>{lead.title}</a></h2>
+   {lead.summary && <p class="standfirst">{lead.summary}</p>}
+   <StoryByline article={lead}/>
+  </article>
+  {next.length>0 && <section class="next-stories" aria-label="More latest stories">
+   {next.map(story=><article><StoryImage article={story}/><div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story}/></div><h3><a href={story.canonical_path}>{story.title}</a></h3><StoryByline article={story}/></article>)}
+  </section>}
+ </section> : <p>Stories are currently unavailable. <a href="/articles">Open the Newsroom</a></p>}
+ {latest.length>0 && <section class="latest-edition"><h2>More stories</h2><div class="latest-grid">{latest.map(story=><article><StoryImage article={story}/><div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story}/></div><h3><a href={story.canonical_path}>{story.title}</a></h3>{story.summary && <p>{story.summary}</p>}<StoryByline article={story}/></article>)}</div></section>}
+ <slot/>
+</div>
 <style>
-  .editorial-concept {padding:clamp(16px,3vw,40px);overflow-wrap:anywhere}
-  .edition,.edition-links {display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;border-block-end:1px solid var(--pf-border);padding-block-end:20px}
-  .edition h1 {margin:4px 0 0;font-size:clamp(2rem,5vw,4rem);line-height:1.05}
-  .kicker {margin:0;color:var(--pf-secondary);font:500 .72rem/1.5 var(--font-data);letter-spacing:.09em;text-transform:uppercase}
-  .front-page {display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:clamp(20px,4vw,54px);padding-block:28px}
-  .lead-image {display:block;background:var(--pf-raised);margin-bottom:20px}
-  .lead-image img {display:block;width:100%;aspect-ratio:16/8;object-fit:cover}
-  .story-meta {display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .story-meta :global(.confidence-tag) {margin:0}
-  .lead-story h2 {font-size:clamp(1.8rem,3.4vw,3.35rem);line-height:1.08;margin:12px 0}
-  h2 a,h3 a {color:inherit;text-decoration:none}
-  h2 a:hover,h3 a:hover {text-decoration:underline}
-  .standfirst {font:400 1.2rem/1.55 var(--font-body);color:var(--pf-secondary);max-width:62ch}
-  .edition-rail {border-inline-start:1px solid var(--pf-border);padding-inline-start:24px}
-  .lab-pair {background:var(--pf-surface);border-block-start:2px solid var(--pf-brand);padding:20px}
-  .lab-pair h2,.story-rail h2 {font-size:1.25rem;margin:8px 0}
-  .lab-pair p:not(.kicker),.latest-edition p {color:var(--pf-secondary);line-height:1.55}
-  .story-rail {margin-top:24px}
-  .story-rail article,.latest-edition article {border-block-start:1px solid var(--pf-border);padding-block:14px}
-  h3 {margin:8px 0;font-size:1.08rem;line-height:1.35}
-  .latest-edition {border-block-start:1px solid var(--pf-border);max-width:76ch}
-  .edition-links {justify-content:flex-start;border-block-start:1px solid var(--pf-border);padding-block:20px}
-  @media(max-width:760px) {
-    .front-page {grid-template-columns:1fr}
-    .edition-rail {border-inline-start:0;padding-inline-start:0}
-    .lead-image img {aspect-ratio:16/10}
-    .edition {align-items:start}
-  }
+.editorial-concept{padding:clamp(16px,3vw,36px);overflow-wrap:anywhere;max-width:var(--pf-width-content);margin:auto;box-sizing:border-box}.edition{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--pf-border);padding-bottom:16px}.edition h1{font-size:1.35rem;margin:0}.edition>a{min-height:44px;display:inline-flex;align-items:center}.front-page{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:32px;padding-block:24px}.front-page article{min-width:0}.story-meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.story-meta :global(.confidence-tag){margin:0}.kicker{font-size:11px;color:var(--pf-secondary);text-transform:uppercase;letter-spacing:.08em}.lead-story h2{font-size:clamp(1.65rem,2.6vw,2.55rem);line-height:1.16;margin:12px 0}h2 a,h3 a{color:var(--pf-primary);text-decoration:none!important}h2 a:hover,h3 a:hover{color:var(--pf-brand)}.standfirst{font:400 1.05rem/1.6 var(--font-body);color:var(--pf-secondary);max-width:62ch}.next-stories{display:grid;gap:24px}.next-stories article+article{border-top:1px solid var(--pf-border);padding-top:24px}.next-stories h3,.latest-edition h3{font-size:1.18rem;line-height:1.3;margin:10px 0}.next-stories :global(.story-picture img){aspect-ratio:16/10}.latest-edition{padding-block:24px;border-top:1px solid var(--pf-border)}.latest-edition>h2{font-size:1.35rem;margin:0 0 24px}.latest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.latest-grid article{min-width:0}.latest-grid p{color:var(--pf-secondary);font-size:1rem;line-height:1.6}
+@media(max-width:760px){.front-page{grid-template-columns:minmax(0,1fr);gap:24px}.next-stories{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.next-stories article+article{padding-top:0;border:0}.next-stories h3{font-size:1rem}.next-stories :global(figcaption){font-size:11px}.latest-grid{grid-template-columns:minmax(0,1fr)}.lead-story h2{font-size:1.7rem}.standfirst{font-size:1rem}.edition h1{font-size:1.2rem}}
 </style>

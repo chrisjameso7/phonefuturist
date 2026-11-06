@@ -24,6 +24,14 @@
         "limit": 2,
         "period": 60
       }
+    },
+    {
+      "name": "NEWSLETTER_LIMITER",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 6,
+        "period": 60
+      }
     }
   ]
 }
