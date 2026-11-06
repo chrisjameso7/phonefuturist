@@ -1,4 +1,5 @@
 ---
+import SocialLinks from '../../components/SocialLinks.astro';
 import Page from '../../layouts/Page.astro';
 import { serverClient, settings } from '../../lib/supabase';
 import type { TeamMember } from '../../lib/team';
@@ -37,9 +38,7 @@ if (!member) Astro.response.status = unavailable ? 503 : 404;
       {member.image_url && <img src={member.image_url} alt={member.name} />}
       {member.bio && <p>{member.bio}</p>}
       {creatorHandle && <a href={'/creator/' + creatorHandle}>Community profile ↗</a>}
-      {member.social_links.length > 0 && <nav class="team-social" aria-label="Social and professional links">
-        {member.social_links.map(link => <a href={link.url} rel="noopener noreferrer">{link.label}</a>)}
-      </nav>}
+      <SocialLinks links={member.social_links} label={member.name+' social and professional links'} />
       {member.responsibilities && <section><h2>Responsibilities</h2><p>{member.responsibilities}</p></section>}
       {member.interests && <section><h2>Professional interests</h2><p>{member.interests}</p></section>}
       {member.extra_details.length > 0 && <section><h2>More about {member.name}</h2><dl>

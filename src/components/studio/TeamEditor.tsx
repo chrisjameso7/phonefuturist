@@ -1,3 +1,4 @@
+import { SOCIAL_PLATFORMS, socialPlatform } from '../../lib/social-platforms';
 import { useInstrumentReady } from '../../lib/use-instrument-ready';
 import { useRef, useState, type SubmitEvent } from 'react';
 import { emptyTeamMember, type TeamMember } from '../../lib/team';
@@ -100,12 +101,22 @@ export default function TeamEditor({ initial, creators }: { initial: TeamMember[
         <label>Photo URL<input type="url" maxLength={2000} value={draft.image_url} onChange={event => change('image_url', event.target.value)} /></label>
         {draft.image_url && <img className="team-photo-preview" src={draft.image_url} alt="Team photo preview" />}
         <h2>Social and professional links</h2>
-        {draft.social_links.map((link, index) => <div className="team-detail-row" key={index}>
-          <label>Link label<input required maxLength={80} value={link.label} onChange={event => change('social_links', draft.social_links.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} /></label>
-          <label>HTTPS link<input required type="url" maxLength={2000} value={link.url} onChange={event => change('social_links', draft.social_links.map((item, i) => i === index ? { ...item, url: event.target.value } : item))} /></label>
-          <button type="button" onClick={() => change('social_links', draft.social_links.filter((_, i) => i !== index))}>Remove link {index + 1}</button>
-        </div>)}
-        <button type="button" disabled={draft.social_links.length >= 12} onClick={() => change('social_links', [...draft.social_links, { label: '', url: '' }])}>Add social link</button>
+        {draft.social_links.map((link, index) => {
+          const platform=socialPlatform(link.label);
+          const updateLink=(patch:Partial<typeof link>)=>change('social_links',draft.social_links.map((item,i)=>i===index?{...item,...patch}:item));
+          return <div className="team-social-row" key={index}>
+            <div className="team-social-fields">
+              <label>Platform<select aria-label={'Social platform '+(index+1)} value={platform.id} onChange={event=>{
+                const selected=SOCIAL_PLATFORMS.find(item=>item.id===event.target.value)!;
+                updateLink({label:selected.id==='other'?'':selected.label});
+              }}>{SOCIAL_PLATFORMS.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+              <label>Profile URL<input aria-label={'Profile URL '+(index+1)} required type="url" pattern="https://.*" maxLength={2000} placeholder={platform.placeholder} value={link.url} onChange={event=>updateLink({url:event.target.value})}/></label>
+              {platform.id==='other' && <label className="team-social-custom">Link label<input aria-label={'Custom link label '+(index+1)} required maxLength={80} value={link.label} onChange={event=>updateLink({label:event.target.value})}/></label>}
+            </div>
+            <button type="button" aria-label={'Remove social link '+(index+1)} onClick={()=>change('social_links',draft.social_links.filter((_,i)=>i!==index))}>Remove</button>
+          </div>;
+        })}
+        <button type="button" disabled={draft.social_links.length >= 12} onClick={() => change('social_links', [...draft.social_links, { label: 'X', url: '' }])}>Add social link</button>
         <h2>Additional public details</h2>
         {draft.extra_details.map((detail, index) => <div className="team-detail-row" key={index}>
           <label>Detail label<input required maxLength={80} value={detail.label} onChange={event => change('extra_details', draft.extra_details.map((item, i) => i === index ? { ...item, label: event.target.value } : item))} /></label>
