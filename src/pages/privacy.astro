@@ -1,31 +1,90 @@
 ---
 import Page from '../layouts/Page.astro';
-import { privacyDraft } from '../lib/privacy-draft';
+const contents = [
+ ['introduction','Introduction'],['information','Information We Collect'],['use','How We Use Information'],
+ ['sharing','How We Share Information'],['cookies','Cookies and Advertising'],['newsletter','Newsletter and Communications'],
+ ['community','Public Contributions and Community Content'],['retention','Data Retention'],['security','Data Security'],
+ ['rights','Your Privacy Rights'],['children','Children’s Privacy'],['transfers','International Data Transfers'],
+ ['third-parties','Third-party Services'],['updates','Policy Updates'],['contact','Contact Us'],
+];
 const providers = [
- ['Cloudflare — hosting and security','https://www.cloudflare.com/privacypolicy/'],
- ['Supabase — accounts, database and uploaded files','https://supabase.com/privacy'],
- ['Resend — newsletter contacts and email delivery','https://resend.com/legal/privacy-policy'],
- ['Google — advertising and cookies','https://policies.google.com/technologies/ads'],
- ['Google — privacy controls','https://myadcenter.google.com/'],
+ ['Cloudflare','Website hosting, delivery and security','https://www.cloudflare.com/privacypolicy/'],
+ ['Supabase','Account authentication, database services and file storage','https://supabase.com/privacy'],
+ ['Resend','Newsletter subscriber management and email delivery','https://resend.com/legal/privacy-policy'],
+ ['Google','Google sign-in, when used, and advertising, where active','https://policies.google.com/privacy'],
 ];
 ---
-<Page title="Privacy Policy">
+<Page title="Privacy Policy" description="How PhoneFuturist collects, uses and protects reader information, and how to contact us about privacy.">
  <article class="privacy-page">
-  <header><p class="eyebrow">Publication information</p><h1>Privacy Policy</h1>
-   <p role="note" class="notice">Draft for legal review. Effective date and legal operator details are pending. Bracketed wording below remains unconfirmed; this draft is not a claim that every proposed integration is active.</p>
-   <p>PhoneFuturist is an independent technology publication with interactive Labs. Questions and privacy requests can go to <a href="mailto:contact@phonefuturist.com?subject=Privacy%20Request">contact@phonefuturist.com</a>.</p>
-  </header>
-  <nav aria-label="Privacy Policy contents"><ol>{privacyDraft.map(section=><li><a href={'#'+section.id}>{section.title.replace(/^\d+\. /,'')}</a></li>)}<li><a href="#service-links">Service links and implementation notes</a></li></ol></nav>
-  {privacyDraft.map(section=><section id={section.id}><h2>{section.title}</h2>{section.paragraphs.map(paragraph=>paragraph.startsWith('- ')?<ul>{paragraph.split('\n').map(line=><li>{line.replace(/^- /,'')}</li>)}</ul>:<p>{paragraph}</p>)}
-   {section.id === 'newsletter' && <aside class="notice"><h3>Newsletter implementation · draft for review</h3><p>Signup sends your email address and optional first name to Resend, joins the Newsletter segment and explicitly subscribes the contact to the newsletter topic. The site does not keep a separate subscriber database. Signup itself sends no email. An existing and a new subscriber receive the same generic success message.</p><p>Unsubscribing changes your preferences in Resend and does not automatically erase your contact. You can <a href="/newsletter">subscribe here</a> or <a href="mailto:contact@phonefuturist.com?subject=Newsletter%20Privacy%20Request">request removal of your newsletter contact</a>. Production newsletters will use Resend’s unsubscribe flow.</p><p>A hidden honeypot and Cloudflare rate limiter help prevent abuse. The limiter uses a hash derived from the requesting IP address, not the subscriber’s email.</p></aside>}
-  </section>)}
-  <section id="service-links"><h2>Service links and implementation notes</h2>
-   <ul>{providers.map(([label,url])=><li><a href={url} rel="noopener noreferrer">{label} ↗</a></li>)}</ul>
-   <p>Google AdSense code is configured in the site. This does not establish whether an ad was served on any particular visit. We have not confirmed a separate analytics provider or a complete consent-management platform in this change.</p>
-   <h3>Planned services</h3><p>Additional advertising partners, analytics services, affiliate networks and AI tools may be added later. Their identities, purposes, privacy links and any required consent controls must be reviewed and added here before activation. These planned categories are not a statement that a provider is currently receiving your data.</p>
-   <h3>Details still awaiting confirmation</h3><p>The legal operator and postal address, effective date, jurisdiction-specific rights, minimum age, retention and backup periods, and advertising consent arrangements remain subject to legal review. Unsubscribing must not be described as automatic data deletion.</p>
-   <p><a href="/account">Account settings</a> · <a href="/interactive-leaks/explore">Community</a> · <a href="/labs">Labs</a> · <a href="mailto:contact@phonefuturist.com?subject=Privacy%20Request">Make a privacy request</a></p>
+  <header><p class="eyebrow">PhoneFuturist</p><h1>Privacy Policy</h1><p class="policy-date">Last updated: <time datetime="2026-11-06">6 November 2026</time></p></header>
+  <nav aria-label="Privacy Policy contents"><ol>{contents.map(([id,title])=><li><a href={'#'+id}>{title}</a></li>)}</ol></nav>
+  <section id="introduction"><h2>1. Introduction</h2>
+   <p>PhoneFuturist is an independent technology publication with interactive Labs and Community features. This policy explains how information is collected, used and shared when you read our stories, use our tools, create an account or communicate with us.</p>
+   <p>For privacy questions or requests, contact <a href="mailto:contact@phonefuturist.com">contact@phonefuturist.com</a>.</p>
   </section>
+  <section id="information"><h2>2. Information We Collect</h2>
+   <ul>
+    <li><strong>Account and profile information:</strong> Your email address, sign-in information, display name, handle and any profile photo, biography or links you provide. If you choose Google sign-in, we receive the account information needed to authenticate you.</li>
+    <li><strong>Content and activity:</strong> Builds, saved simulations, predictions, Community contributions, follows and article reactions associated with your use of these features.</li>
+    <li><strong>Newsletter information:</strong> Your email address, optional first name and subscription preferences.</li>
+    <li><strong>Communications:</strong> Information you include in messages, feedback, tips, correction requests or other correspondence.</li>
+    <li><strong>Technical and readership information:</strong> Information such as your IP address, browser and device details, requested pages, article views and reading activity used to support engagement features, operation and security.</li>
+   </ul>
+   <p>Cookies and similar technologies are described in <a href="#cookies">Cookies and Advertising</a>.</p>
+  </section>
+  <section id="use"><h2>3. How We Use Information</h2>
+   <ul><li>Provide the publication, accounts, Labs and Community features you use.</li><li>Save your preferences and publish content you choose to share.</li><li>Deliver newsletters you subscribe to and account communications connected with your requests.</li><li>Respond to messages, feedback, tips and correction requests.</li><li>Understand article engagement and improve the website and its features.</li><li>Protect accounts, prevent abuse and maintain service reliability.</li><li>Support and measure advertising where it is active.</li></ul>
+   <p>Some optional Labs analysis uses an external AI service to process the device specifications you submit. Those specifications are used to produce the requested analysis. Avoid including personal or confidential information in tool inputs.</p>
+  </section>
+  <section id="sharing"><h2>4. How We Share Information</h2>
+   <p>PhoneFuturist does not sell personal information for money.</p>
+   <p>We share information with service providers that help us operate and maintain the publication and its features. Depending on the service and your interactions, they process information on our behalf or under their own privacy policies.</p>
+   <ul><li><strong>Infrastructure and security:</strong> Hosting, content delivery, account authentication, database services, file storage and abuse prevention.</li><li><strong>Communications:</strong> Newsletter subscriber management, email delivery and reader correspondence.</li><li><strong>Advertising:</strong> Google AdSense and its advertising partners, where advertising is active, to deliver and measure advertisements.</li><li><strong>Requested analysis:</strong> The provider supporting an AI-assisted Labs analysis you choose to request.</li></ul>
+   <p>We may also disclose information where required by law, to protect our rights, address security concerns or protect the safety of readers. Advertising partners may collect information about activity across websites; a statement that we do not sell information for money does not mean advertising involves no data sharing.</p>
+   <p>Provider privacy notices are listed under <a href="#third-parties">Third-party Services</a>.</p>
+  </section>
+  <section id="cookies"><h2>5. Cookies and Advertising</h2>
+   <h3>Essential technologies and preferences</h3><p>Cookies support account authentication and security. Browser storage can also remember your appearance preferences and tool settings or saved configurations.</p>
+   <h3>Readership and engagement</h3><p>Article engagement features use a reader identifier and reading activity to count views, recognise repeat visits and support likes after reading. Account-linked likes and other Community interactions are stored with those features.</p>
+   <h3>Advertising</h3><p>Google AdSense is configured on PhoneFuturist. Where ads are served, Google and its partners may use cookies, device identifiers or similar technologies to deliver advertisements, measure their performance and, depending on settings and consent, personalise advertising.</p>
+   <p>Read about <a href="https://policies.google.com/technologies/ads" rel="noopener noreferrer">Google’s advertising practices</a> and manage available advertising preferences through <a href="https://myadcenter.google.com/" rel="noopener noreferrer">Google My Ad Center</a>.</p>
+   <h3>Your choices</h3><p>You can manage or block cookies and clear stored website data through your browser settings. Doing so may affect staying signed in, saved preferences and other features. For questions about data use or the choices available to you, <a href="#contact">contact us</a>.</p>
+  </section>
+  <section id="newsletter"><h2>6. Newsletter and Communications</h2>
+   <p>Newsletter subscriptions are voluntary. We use Resend to manage subscriber information and deliver newsletters. Your email address, optional first name and preferences are used for that purpose.</p>
+   <p>You can stop newsletter delivery using the unsubscribe link in a newsletter. Unsubscribing changes your subscription preferences; it does not automatically delete your contact record. You can also contact us to request removal of your newsletter information.</p>
+   <p>Messages about account security or a request you made are separate from the newsletter. If you reply to us or send a tip or correction, we use the information you provide to handle that correspondence.</p>
+  </section>
+  <section id="community"><h2>7. Public Contributions and Community Content</h2>
+   <p>Your public profile and content you choose to share, including Community contributions and shared builds or simulations, can be viewed by other readers and may be indexed by search engines. Do not publish information you want to keep private.</p>
+   <p>Use the editing and removal controls available for the relevant feature, or contact us about content associated with your account. Copies made by other readers or search engines may remain outside our control.</p>
+  </section>
+  <section id="retention"><h2>8. Data Retention</h2>
+   <p>Retention depends on the information involved and its purpose, including providing your account and requested features, handling correspondence, maintaining security and meeting legal obligations. Account information and saved content can remain stored while your account is in use.</p>
+   <p>Newsletter preferences may be retained after you unsubscribe to maintain your delivery choices. Unsubscribing is separate from requesting deletion. Contact us about removal of account, newsletter or other personal information; we will assess the request, applicable obligations and any records that need to be retained.</p>
+  </section>
+  <section id="security"><h2>9. Data Security</h2>
+   <p>We use safeguards including encrypted connections, access restrictions and protected account and service credentials. No website or transmission method can guarantee complete security. Keep your sign-in details private and contact us if you suspect unauthorised account activity.</p>
+  </section>
+  <section id="rights"><h2>10. Your Privacy Rights</h2>
+   <p>Depending on where you live, you may have rights to access, correct, delete, restrict or obtain a copy of your information, object to certain uses or withdraw consent. You may also have the right to complain to your local data protection authority.</p>
+   <p>Send requests to <a href="mailto:contact@phonefuturist.com?subject=Privacy%20Request">contact@phonefuturist.com</a> with the subject “Privacy Request”. We may need information to verify your identity and understand your request. Rights and any exceptions depend on applicable law.</p>
+  </section>
+  <section id="children"><h2>11. Children’s Privacy</h2>
+   <p>PhoneFuturist is a technology publication for a general readership. If you believe a child has provided personal information without consent required by applicable law, contact us so we can investigate and address the information concerned.</p>
+  </section>
+  <section id="transfers"><h2>12. International Data Transfers</h2>
+   <p>Our service providers may process information in countries other than the country where you live. Applicable data-protection requirements and the relevant provider’s arrangements govern those transfers. The provider notices below offer further information about their processing practices.</p>
+  </section>
+  <section id="third-parties"><h2>13. Third-party Services</h2>
+   <p>The following services support PhoneFuturist. Their privacy notices explain their own handling of information.</p>
+   <ul class="provider-list">{providers.map(([name,purpose,url])=><li><a href={url} rel="noopener noreferrer">{name}</a><span>{purpose}</span></li>)}</ul>
+   <p>Stories and reader contributions may link to external websites. Your interactions with those sites are governed by their policies. The presence of an external link does not mean it is a PhoneFuturist service provider.</p>
+  </section>
+  <section id="updates"><h2>14. Policy Updates</h2><p>We may update this policy as the publication and its features change. The date at the top shows when the policy was last revised. We will provide additional notice of changes where required by applicable law.</p></section>
+  <section id="contact"><h2>15. Contact Us</h2><p>For privacy questions, requests or concerns, email <a href="mailto:contact@phonefuturist.com">contact@phonefuturist.com</a>.</p></section>
  </article>
 </Page>
-<style>.privacy-page{max-width:840px;margin:auto;padding:40px 20px;overflow-wrap:anywhere}.privacy-page :is(p,li){line-height:1.75;color:var(--pf-secondary)}.privacy-page section{padding-block:24px;border-top:1px solid var(--pf-border);scroll-margin-top:120px}.privacy-page h2{font-size:1.55rem}.privacy-page h3{font-size:1.15rem}.notice{border-left:2px solid var(--pf-border);padding:16px 20px}.privacy-page nav{padding:24px 0}</style>
+<style>
+.privacy-page{max-width:840px;margin:auto;padding:40px 20px;overflow-wrap:anywhere}.privacy-page :is(p,li){line-height:1.75;color:var(--pf-secondary)}.privacy-page header h1{font-size:clamp(2rem,4vw,3rem);margin:12px 0}.policy-date{font-size:.85rem}.privacy-page section{padding-block:24px;border-top:1px solid var(--pf-border);scroll-margin-top:110px}.privacy-page h2{font-size:1.45rem;line-height:1.35}.privacy-page h3{font-size:1.1rem;margin-top:24px}.privacy-page nav{padding:24px 0}.privacy-page nav ol{columns:2;column-gap:32px;padding-left:24px}.privacy-page nav li{break-inside:avoid;padding-block:5px;font-size:.9rem}.provider-list{padding-left:20px}.provider-list li{margin-block:14px}.provider-list li span{display:block;font-size:.9rem}@media(max-width:600px){.privacy-page nav ol{columns:1}.privacy-page{padding-top:24px}}
+</style>

@@ -30,9 +30,15 @@ describe('shared navigation route state',()=>{
 describe('verified session navigation',()=>{
  it('shows guest controls and no Studio for anonymous requests',()=>{expect(navigationFor(null,null)).toEqual({signedIn:false,showStudio:false});});
  it('does not trust user metadata for Studio authorization',()=>{expect(navigationFor({user_metadata:{role:'admin'}},null)).toEqual({signedIn:true,showStudio:false});});
- it('shows Studio navigation only to an active verified administrator',()=>{
+ it('shows Studio to active verified newsroom roles while excluding other accounts',()=>{
   const access={active:true,verified:true,roles:['admin']};expect(navigationFor({},access).showStudio).toBe(true);
-  for(const roles of [['reader'],['writer'],['editor'],['publisher']])expect(navigationFor({},{...access,roles}).showStudio).toBe(false);
+  for(const role of ['writer','editor','publisher','admin']){
+   expect(navigationFor({},{...access,roles:[role]}).showStudio).toBe(true);
+   expect(navigationFor(null,{...access,roles:[role]}).showStudio).toBe(false);
+   expect(navigationFor({},{...access,roles:[role],active:false}).showStudio).toBe(false);
+   expect(navigationFor({},{...access,roles:[role],verified:false}).showStudio).toBe(false);
+  }
+  for(const roles of [['reader'],['moderator'],['pro'],[]])expect(navigationFor({},{...access,roles}).showStudio).toBe(false);
   expect(navigationFor({},{...access,active:false}).showStudio).toBe(false);expect(navigationFor({},{...access,verified:false}).showStudio).toBe(false);
  });
 });

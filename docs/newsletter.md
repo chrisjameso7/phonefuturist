@@ -43,7 +43,7 @@ The approved read-only author-directory and public image-attribution migrations 
 
 ## Privacy draft and limitations
 
-`/privacy` incorporates the supplied 14-section draft and links to Cloudflare, Supabase, Resend and Google notices. Planned providers are explicitly marked as planned. Legal operator, effective date, age threshold, retention and consent arrangements remain unconfirmed. The page is a legal-review draft, not launch clearance.
+`/privacy` presents a conventional 15-section policy with compact Cloudflare, Supabase, Resend and Google disclosures. It includes reader engagement and optional AI-assisted analysis, distinguishes unsubscribing from deletion, and makes no claim that an unverified consent-management system is active. Legal operator details, jurisdiction-specific disclosures, retention schedules and advertising-consent compliance still need internal legal review. The public page contains no bracketed alternatives or development notes.
 
 Browser rendering checks are not Gmail rendering checks. Actual Gmail phone light/dark rendering and unsubscribe delivery must be checked using the approved single test email. No broadcast was sent during development, and no real draft was created automatically.
 
