@@ -1,114 +1,151 @@
-/* PhoneFuturist identity: midnight ink, cyan circuitry, restrained violet. */
+/* Apple Premium Premium : Apple-inspired identity for PhoneFuturist */
+
+/* Sophisticated dark palette with restrained cyan accent */
 :root {
   color-scheme: dark;
-  --paper:#070c18; --surface-deep:#0b1222; --surface:#111c30;
-  --surface-raised:#1b2b43; --ink:#edf6ff; --muted:#afc2d6;
-  --line:#334a65; --accent:#67deed; --violet:#ba9bff;
-  --on-accent:#05202b; --error:#ffb4b4;
-  --glass-graphite:rgb(12 23 40 / .78); --glass-fallback:#142238;
-  --glass-menu:rgb(12 23 40 / .96); --glass-cream:#dffaff;
-  --glass-text:#edf6ff; --glass-border:rgb(174 226 246 / .24);
-  --glass-lens:rgb(139 223 242 / .16);
-  background:var(--paper); color:var(--ink);
+  --paper:#0d0d0d; --surface-deep:#1a1a1a; --surface:#171717;
+  --surface-raised:#242424; --ink:#f4f5f7; --muted:#86868b;
+  --line:#3a3a3c; --accent:#0071e3; --accent-hover:#0051a;
+  --error:#ff2d2d; --accent2:#86868b;
+  --on-accent:#050505; --error:#ff2d2d;
+  --glass-graphite:rgb(13 13 13 / .78); --glass-fallback:#0d0d0d;
+  --glass-menu:rgb(13 13 13 / .9); --glass-cream:#000000;
+  --glass-text:#f4f5f7; --glass-border:rgba(255,255,255, .08);
+  --glass-lens:rgba(0,0,0, .16);
 }
+
+/* Dark theme base */
 :root[data-theme='light'] {
   color-scheme:light;
-  --paper:#f0f6fc; --surface-deep:#e4edf7; --surface:#ffffff;
-  --surface-raised:#e7f0fa; --ink:#132740; --muted:#49617b;
-  --line:#bed0e3; --accent:#006d83; --violet:#7041ba;
-  --on-accent:#ffffff; --error:#9b2639;
+  --paper:#f0f5ff; --surface-deep:#e8ecf5; --surface:#f5f6f7;
+  --surface-raised:#fafbfc; --ink:#1e293b; --muted:#64748b;
+  --line:#cbd5e1; --accent:#0071e3; --accent-hover:#0051a;
+  --error:#ff2d2d; --on-accent:#ffffff;
 }
+
+/* System light theme adoption */
 @media (prefers-color-scheme:light) {
   :root:not([data-theme]) {
     color-scheme:light;
-    --paper:#f0f6fc; --surface-deep:#e4edf7; --surface:#ffffff;
-    --surface-raised:#e7f0fa; --ink:#132740; --muted:#49617b;
-    --line:#bed0e3; --accent:#006d83; --violet:#7041ba;
-    --on-accent:#ffffff; --error:#9b2639;
+    --paper:#f0f5ff; --surface-deep:#e8ecf5; --surface:#f5f6f7;
+    --surface-raised:#fafbfc; --ink:#1e293b; --muted:#64748b;
+    --line:#cbd5e1; --accent:#0071e3; --accent-hover:#0051a;
+    --error:#ff2d2d; --on-accent:#ffffff;
   }
 }
-body { color:var(--ink); background:radial-gradient(ellipse at 0% 0%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 45%),radial-gradient(ellipse at 100% 65%,color-mix(in srgb,var(--violet) 8%,transparent),transparent 48%),var(--paper); }
+
+/* Apple-inspired body */
+body { 
+  color:var(--ink); 
+  background:radial-gradient(ellipse at 0% 0%,color-mix(in srgb,var(--accent) 3%,transparent),transparent 45%),
+              radial-gradient(ellipse at 100% 65%,color-mix(in srgb,var(--accent) 2%,transparent),transparent 50%),
+              var(--paper); 
+}
+
+/* Links */
 a { color:var(--accent); }
-a:hover { color:var(--violet); }
+a:hover { color:var(--accent-hover); }
+
+/* Focus */
 :focus-visible { outline-color:var(--accent); }
+
+/* Selection */
 ::selection { background:var(--accent); color:var(--on-accent); }
+
+/* Brand */
 .brand { color:var(--ink); }
 .brand span { color:var(--accent); }
-input,select,textarea { background:var(--surface-deep); color:var(--ink); border-color:var(--line); accent-color:var(--accent); }
+
+/* Form elements */
+input,select,textarea { 
+  background:var(--surface-deep); 
+  color:var(--ink); 
+  border-color:var(--line); 
+  accent-color:var(--accent); 
+}
 input::placeholder,textarea::placeholder { color:var(--muted); opacity:1; }
-button,.button,.lab-cta,.lab-simulator-shell .il-run { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
-button:hover,.button:hover,.lab-cta:hover { background:var(--accent); color:var(--on-accent); filter:brightness(1.08); }
-.secondary,.button-outline,.lab-ghost { background:transparent; color:var(--ink); border-color:var(--line); }
-.secondary:hover,.button-outline:hover,.lab-ghost:hover { background:var(--surface-raised); color:var(--ink); }
+
+/* Buttons */
+button,.button,.lab-cta { 
+  background:var(--accent); 
+  color:var(--on-accent); 
+  border-color:var(--accent); 
+}
+button:hover,.button:hover,.lab-cta:hover { 
+  background:var(--accent-hover); 
+  color:var(--on-accent); 
+  filter:brightness(1.05); 
+}
+
+/* Outline buttons */
+.secondary,.button-outline,.lab-ghost { 
+  background:transparent; 
+  color:var(--accent); 
+  border-color:var(--line); 
+}
+.secondary:hover,.button-outline:hover,.lab-ghost:hover { 
+  background:var(--surface-raised); 
+  color:var(--ink); 
+}
+
+/* Panels and cards */
 .panel,.article-card,.auth-card { background:var(--surface); border-color:var(--line); }
 .notice { background:var(--surface-raised); color:var(--ink); }
 .error { background:color-mix(in srgb,var(--error) 10%,var(--surface)); color:var(--error); }
-footer { color:var(--muted); }
-/* Images remain cinematic in either theme, with a reliably dark text scrim. */
-.observatory .hero { background:#0b1424; color:#edf6ff; }
-.observatory .hero::after { background:linear-gradient(90deg,rgb(6 13 26 / .94),rgb(6 13 26 / .2) 75%),linear-gradient(0deg,rgb(6 13 26 / .82),transparent 65%); }
-.observatory .hero :is(h1,h2,.eyebrow) { color:#edf6ff; }
-.observatory .hero :is(h1 span,.hero-intro,.hero-caption p,.image-disclosure) { color:#c1d8ed; }
-.observatory .hero .button-outline { color:#edf6ff; border-color:#afc2d6; }
-.home-lab { border-color:var(--line); background:radial-gradient(ellipse at 85% 10%,color-mix(in srgb,var(--violet) 15%,transparent),transparent 60%),var(--surface-deep); }
-/* Color-only adaptation of approved navigation; geometry/optics unchanged. */
-.site-header[data-optics='refractive']::before { background:linear-gradient(to bottom,rgb(18 34 55 / .78),rgb(8 18 34 / .86)); }
-.site-header .brand { color:var(--glass-text); }
-.site-header .brand span { color:#67deed; }
-.theme-choice { display:flex; align-items:center; gap:8px; font-size:.75rem; color:var(--muted); }
-.theme-choice select { width:auto; min-height:40px; margin:0; padding:7px 22px 7px 9px; border:1px solid var(--line); border-radius:999px; font:inherit; cursor:pointer; }
-.site-header .theme-choice { color:var(--glass-text); }
-.site-header .theme-choice select { color:#edf6ff; background:#142238; border-color:#425b76; }
-.header-actions .theme-choice > span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-.mobile-account .theme-choice { justify-content:space-between; margin:0 4px 14px; }
-footer .theme-choice { flex-shrink:0; }
-@media (max-width:760px) {
-  .observatory .hero-copy { background:#0b1424; }
-  footer { flex-wrap:wrap; }
-}
-@media (forced-colors:active) {
-  body,.panel,.article-card,.auth-card { background:Canvas; color:CanvasText; }
-  .theme-choice select { forced-color-adjust:auto; }
-}
 
+/* Footer */
+footer { color:var(--muted); }
+
+/* Hero cinematic wash */
+.observatory .hero { background:#0d0d0d; color:#f4f5f7; }
+.observatory .hero::after { background:linear-gradient(90deg,rgba(0,113,227,.06) 0%,rgba(0,113,227,.02) 75%),linear-gradient(0deg,rgba(0,113,227,.04) 0%,transparent 65%); }
+.observatory .hero :is(h1,h2,.eyebrow) { color:#f4f5f7; }
+.observatory .hero :is(h1 span,.hero-intro,.hero-caption p,.image-disclosure) { color:#86868b; }
+.observatory .hero .button-outline { color:#0071e3; border-color:#0071e3; }
+
+/* Lead card */
 .lead-card { color:var(--ink); }
+
+/* Rail panel */
 .rail-panel { background:var(--surface); border-color:var(--line); }
+
+/* Coverage row */
 .coverage-row { color:var(--ink); border-color:var(--line); }
 .coverage-row > span,.coverage-row small,.brief p { color:var(--muted); }
-.account-feature { color:#edf6ff; }
-.account-feature .eyebrow { color:#67deed; }
-:root:not([data-theme]) .theme-choice { display:none; }
 
-.observatory .hero-caption a { color:#67deed; }
-.observatory .hero-caption a:hover { color:#ba9bff; }
-.lab-simulator-shell :is(.il-field,.il-workload) :is(input,select) { border-color:var(--control-border); }
-:root { --control-border:#59728f; }
-:root[data-theme='light'] { --control-border:#748ca5; }
-@media (prefers-color-scheme:light) { :root:not([data-theme]) { --control-border:#748ca5; } }
+/* Account feature */
+.account-feature { color:#f4f5f7; }
+.account-feature .eyebrow { color:#0071e3; }
 
-/* AMOLED is explicit-only: System continues resolving to light or dark. */
+/* Observ caption */
+.observatory .hero-caption a { color:#0071e3; }
+.observatory .hero-caption a:hover { color:#0051a; }
+
+/* Lab simulator */
+.lab-simulator-shell :is(.il-field,.il-workload) :is(input,select) { border-color:#3a3a3c; }
+:root { --control-border:#3a3a3c; }
+:root[data-theme='light'] { --control-border:#64748b; }
+@media (prefers-color-scheme:light) { :root:not([data-theme]) { --control-border:#64748b; } }
+
+/* AMOLED theme */
 :root[data-theme='amoled'] {
   color-scheme: dark;
-  --paper:#000000; --surface-deep:#000000; --surface:#080b10;
-  --surface-raised:#12171e; --ink:#edf6ff; --muted:#aebfce;
+  --paper:#000000; --surface-deep:#000000; --surface:#0a0a0a;
+  --surface-raised:#141414; --ink:#f4f5f7; --muted:#aebfce;
   --line:#303e4d; --control-border:#63788e;
-  --accent:#67deed; --violet:#ba9bff; --on-accent:#05202b;
-  --glass-base:rgb(7 12 18 / .7);
-  --glass-base-strong:rgb(9 15 22 / .88);
-  --glass-graphite:rgb(7 12 18 / .8);
-  --glass-fallback:#0b1119;
-  --glass-menu:rgb(8 13 20 / .94);
-  --glass-rail:rgb(0 3 7 / .32);
-  --glass-border:rgb(174 226 246 / .23);
-  --glass-border-bright:rgb(196 236 250 / .34);
-  --glass-highlight:rgb(221 248 255 / .16);
-  --glass-lens:rgb(139 223 242 / .09);
-  --glass-lens-active:rgb(160 225 240 / .14);
+  --accent:#0071e3; --violet:#8b9dc3; --on-accent:#050505;
+  --glass-base:rgb(5 10 15 / .7); --glass-base-strong:rgb(7 12 18 / .88);
+  --glass-graphite:rgb(5 10 15 / .8); --glass-fallback:#060910;
+  --glass-menu:rgb(6 11 17 / .94); --glass-rail:rgb(0 3 7 / .2);
+  --glass-border:rgb(0 113 227 / .23); --glass-border-bright:rgb(0 184 255 / .34);
+  --glass-highlight:rgb(0 184 255 / .16); --glass-lens:rgb(0 113 227 / .09);
+  --glass-lens-active:rgb(0 168 252 / .14);
 }
-/* Remove ambient page washes, retain localized optical interaction surfaces. */
+
+/* AMOLED explicit - remove ambient washes */
 :root[data-theme='amoled'] body { background:#000000; }
 :root[data-theme='amoled'] .site-header[data-optics='refractive']::before {
-  background:linear-gradient(to bottom,rgb(12 19 27 / .8),rgb(3 6 10 / .9));
+  background:linear-gradient(to bottom,rgb(7 15 24 / .8),rgb(2 5 9 / .9));
 }
 :root[data-theme='amoled'] .site-header .theme-choice select {
   background:var(--glass-fallback); border-color:var(--control-border);
@@ -122,12 +159,16 @@ footer .theme-choice { flex-shrink:0; }
   background:var(--surface); border-color:var(--line);
 }
 :root[data-theme='amoled'] :is(pre,code) { color:var(--ink); background-color:var(--surface-raised); }
+
+/* Reduced transparency */
 @media (prefers-reduced-transparency:reduce) {
   :root[data-theme='amoled'] .site-header[data-optics]::before,
   :root[data-theme='amoled'] .site-header .mobile-menu-panel {
     background:var(--glass-fallback); -webkit-backdrop-filter:none; backdrop-filter:none;
   }
 }
+
+/* forced-colors */
 @media (forced-colors:active) {
   :root[data-theme='amoled'] body,
   :root[data-theme='amoled'] :is(.lab-page,.lab-product,.latest-section,.home-lab,.panel,.article-card,.auth-card,.rail-panel,pre,code),
@@ -136,3 +177,21 @@ footer .theme-choice { flex-shrink:0; }
     background:Canvas; color:CanvasText;
   }
 }
+
+/* Lead card */
+.lead-card { color:var(--ink); }
+
+/* Rail panel */
+.rail-panel { background:var(--surface); border-color:var(--line); }
+
+/* Coverage row */
+.coverage-row { color:var(--ink); border-color:var(--line); }
+.coverage-row > span,.coverage-row small,.brief p { color:var(--muted); }
+
+/* Account feature */
+.account-feature { color:#f4f5f7; }
+.account-feature .eyebrow { color:#0071e3; }
+
+/* Observ caption */
+.observatory .hero-caption a { color:#0071e3; }
+.observatory .hero-caption a:hover { color:#0051a; }
