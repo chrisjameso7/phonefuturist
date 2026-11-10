@@ -258,3 +258,17 @@
 .lab-advanced-export{margin-top:14px}.lab-advanced-export summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--pf-secondary)}.lab-advanced-export button{margin-top:8px}
 
 .lab-custom-valuation{margin:1.2rem 0}.lab-custom-valuation>summary{cursor:pointer;min-height:44px;display:flex;align-items:center}.lab-hardware-analysis{min-width:0}.lab-hardware-analysis fieldset{min-width:0;border:1px solid color-mix(in srgb,var(--pf-border) 9%,transparent);border-radius:var(--pf-radius-md);padding:1rem;margin:1rem 0}.lab-hardware-analysis button{min-height:44px}.lab-hardware-analysis .lab-breakdown>div{min-width:0}.lab-hardware-analysis dd{white-space:nowrap}
+
+/* Labs directory: a denser, index-like grid of instruments. */
+.labs-directory .lab-hero{border-top:3px solid var(--pf-primary);padding-top:20px;margin-bottom:8px;max-width:none}
+.labs-directory .lab-hero h1{font-size:clamp(2.2rem,4.6vw,3.6rem);letter-spacing:-.03em}
+.labs-directory .lab-card-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:0;border-top:1px solid var(--pf-border);border-left:1px solid var(--pf-border)}
+.labs-directory .lab-card-grid>a{border:0!important;border-right:1px solid var(--pf-border)!important;border-bottom:1px solid var(--pf-border)!important;border-radius:0!important;min-height:240px;margin:0}
+.labs-directory .lab-card{padding:22px 22px 20px;gap:10px}
+.labs-directory .lab-card h2{font-size:clamp(1.25rem,1.8vw,1.5rem);letter-spacing:-.02em;margin:18px 0 4px}
+.labs-directory .lab-card p{font-size:.94rem;line-height:1.55;margin:0}
+.labs-directory .lab-card>span:first-child{font-size:12px;color:var(--pf-muted)}
+.labs-directory .lab-card>span:last-child{padding-top:16px;font-weight:500}
+.labs-directory .lab-card:hover h2{color:var(--pf-brand)!important}
+.labs-directory .lab-suggestion{border-style:dashed!important;min-height:240px;padding:22px;align-items:flex-end;font-weight:500}
+@media (max-width:600px){.labs-directory .lab-card-grid>a{min-height:0}.labs-directory .lab-card h2{margin-top:10px}}
