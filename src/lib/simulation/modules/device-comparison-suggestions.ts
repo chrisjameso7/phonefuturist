@@ -55,6 +55,27 @@ export function suggestDeviceComparisons(corpus: DeviceCorpus, concept: string):
 }
 
 /** Select comparable released phones from other manufacturers using published catalog specifications. */
+/** "Huawei" + "Huawei Nova 14" → "Huawei Nova 14" (never repeat the brand). */
+export function deviceDisplayName(manufacturer:string,modelName:string):string{
+  const brand=manufacturer.trim();const model=modelName.trim();
+  if(!brand)return model;
+  return model.toLowerCase().startsWith(brand.toLowerCase()+' ')||model.toLowerCase()===brand.toLowerCase()?model:`${brand} ${model}`;
+}
+/** Readable card title: drops catalog codenames, SIM/network and storage tokens. */
+export function shortDeviceName(label:string):string{
+  const short=label
+    .replace(/\s*\([^)]*\)\s*$/,'')
+    .replace(/\b(Dual|Single) SIM\b/gi,'')
+    .replace(/\b(TD-LTE|LTE|NFC)\b/g,'')
+    .replace(/\b\d+\s?(GB|TB)\b/gi,'')
+    .replace(/\s+/g,' ').trim();
+  return short||label;
+}
+/** Storage-only variants (256GB vs 1TB) are the same phone for comparison purposes. */
+function comparisonKey(manufacturer:string,modelName:string):string{
+  return deviceDisplayName(manufacturer,modelName).toLowerCase().replace(/\b\d+\s?(gb|tb)\b/g,'').replace(/\s+/g,' ').trim();
+}
+
 export function suggestCompetingDevices(
   corpus: DeviceCorpus,
   options: {manufacturer?: string; batteryMah?: number; displayInches?: number; limit?: number},
@@ -90,15 +111,15 @@ export function suggestCompetingDevices(
   );
   const seen=new Set<string>();
   return scored.filter(({device})=>{
-    const key=normalize(device.variant.identity.manufacturer+' '+device.variant.identity.modelName);
+    const key=comparisonKey(device.variant.identity.manufacturer,device.variant.identity.modelName);
     if(seen.has(key))return false;
     seen.add(key);
     return true;
   }).slice(0,Math.min(Math.max(options.limit ?? 3,1),5)).map(({device})=>({
-    query:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+    query:deviceDisplayName(device.variant.identity.manufacturer,device.variant.identity.modelName),
     role:'related-model' as const,
     status:'found' as const,
-    label:device.variant.identity.manufacturer+' '+device.variant.identity.modelName,
+    label:deviceDisplayName(device.variant.identity.manufacturer,device.variant.identity.modelName),
     deviceId:device.variant.id,
     released:{
       batteryMah:device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah,

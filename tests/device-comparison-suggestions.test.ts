@@ -81,3 +81,28 @@ describe('competitor suggestions',()=>{
     expect(matches.every(item=>item.released?.batteryMah!==undefined)).toBe(true);
   });
 });
+
+describe('competitor labels',()=>{
+  const device=(id:string,modelName:string)=>({
+    variant:{id,identity:{manufacturer:'Huawei',modelName},battery:{capacityMah:5500}},
+    display:{diagonalInches:6.8},
+  });
+  it('does not repeat the manufacturer and collapses storage-only variants',()=>{
+    const corpus={devices:[
+      device('a','Huawei Nova 14 Ultra 1TB'),
+      device('b','Huawei Nova 14 Ultra 256GB'),
+      device('c','Mate 80'),
+    ],measurements:[],sources:[]} as unknown as DeviceCorpus;
+    const items=suggestCompetingDevices(corpus,{batteryMah:5500,displayInches:6.8,limit:5});
+    expect(items.map(item=>item.label).sort()).toEqual(['Huawei Mate 80','Huawei Nova 14 Ultra 1TB']);
+    expect(items.every(item=>!/Huawei Huawei/.test(item.label))).toBe(true);
+  });
+});
+
+describe('short device names',()=>{
+  it('keeps the model and drops catalog noise',async()=>{
+    const {shortDeviceName}=await import('../src/lib/simulation/modules/device-comparison-suggestions');
+    expect(shortDeviceName('Huawei nova 13i Global Dual SIM TD-LTE 128GB CTR-L91 (Huawei Cartier B)')).toBe('Huawei nova 13i Global CTR-L91');
+    expect(shortDeviceName('Galaxy S26 Ultra')).toBe('Galaxy S26 Ultra');
+  });
+});

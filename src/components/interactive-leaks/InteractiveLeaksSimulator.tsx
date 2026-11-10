@@ -15,10 +15,11 @@ import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
+import { shortDeviceName } from '../../lib/simulation/modules/device-comparison-suggestions';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
-import SimpleModePanel from './SimpleModePanel';
+import SimpleModePanel, { type SimplePresetRequest } from './SimpleModePanel';
 
 import {
   expandSimpleMode,
@@ -1628,7 +1629,10 @@ export default function InteractiveLeaksSimulator() {
     calculateInWorker(nextInput);
   }
 
+  const [simplePreset, setSimplePreset] = useState<SimplePresetRequest>();
+
   function loadExample() {
+    setSimplePreset(current => ({ revision: (current?.revision ?? 0) + 1, kind: 'example' }));
     jobNumber.current++;
     activeWorker.current?.terminate();
     activeWorker.current = null;
@@ -1643,6 +1647,7 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function clearSimulation() {
+    setSimplePreset(current => ({ revision: (current?.revision ?? 0) + 1, kind: 'clear' }));
     jobNumber.current++;
     activeWorker.current?.terminate();
     activeWorker.current = null;
@@ -3273,7 +3278,7 @@ export default function InteractiveLeaksSimulator() {
       <div
         className={`il-workspace ${workspaceMode === 'simple' ? 'il-workspace-simple' : ''}`}
       >
-        <div className="il-simple-builder" hidden={workspaceMode !== 'simple'}><SimpleModePanel onRun={runSimpleMode} busy={simulationPending} /></div>
+        <div className="il-simple-builder" hidden={workspaceMode !== 'simple'}><SimpleModePanel onRun={runSimpleMode} busy={simulationPending} preset={simplePreset} /></div>
         <section
           className={`il-builder ${workspaceMode === 'simple' ? 'il-builder-hidden' : ''}`}
           aria-label="Simulation inputs"
@@ -5719,7 +5724,7 @@ export default function InteractiveLeaksSimulator() {
           </div>
         </section>
 
-        <ResultPanel label="Simulation result" summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h` : simulationInput?.name || 'Estimated'}>
+        <ResultPanel label="Simulation result" revealKey={!simulationPending && simulationResult ? resultRevision : 0} summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h` : simulationInput?.name || 'Estimated'}>
         <aside
           key={resultRevision}
           className="il-results"
@@ -5839,7 +5844,7 @@ export default function InteractiveLeaksSimulator() {
                       <div className="il-metrics">
                         {competingDevices.map(device=>(
                           <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
-                            <strong>{device.label}</strong>
+                            <strong title={device.label}>{shortDeviceName(device.label)}</strong>
                             <span style={{display:'block',marginTop:'0.35rem'}}>{device.released?.socName ?? 'Processor unspecified'}</span>
                             {device.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.batteryMah,0)} mAh</small>}
                             {device.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.displayInches,2)}″ display</small>}

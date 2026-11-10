@@ -10,6 +10,11 @@
   --pf-ease-spring: cubic-bezier(.34, 1.4, .64, 1);
   --pf-reveal-distance: 24px;
   --pf-tile-radius: clamp(18px, 2vw, 26px);
+  --pf-thumb: color-mix(in srgb, var(--pf-raised), var(--pf-primary) 14%);
+}
+
+:root[data-theme="light"] {
+  --pf-thumb: #ffffff;
 }
 
 html {
@@ -239,6 +244,143 @@ html body .article-grid > .article-card :is(.card-image, .card-image-fallback) i
 
   html body .article-grid > .article-card:hover :is(.card-image, .card-image-fallback) img {
     transform: scale(1.035);
+  }
+}
+
+/* ---------- Interactive Leaks simulator: iOS-style controls and cards ---------- */
+
+html body #main .interactive-page .il-mode-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--pf-raised) !important;
+}
+
+html body #main .interactive-page .il-mode-switch button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--pf-secondary) !important;
+  font-weight: 500;
+  transition: background-color .35s var(--pf-ease-out), color .35s var(--pf-ease-out), box-shadow .35s var(--pf-ease-out) !important;
+}
+
+html body #main .interactive-page .il-mode-switch button[aria-pressed="true"] {
+  background: var(--pf-thumb) !important;
+  color: var(--pf-primary) !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px -6px rgb(0 0 0 / .35) !important;
+}
+
+/* Sliding selection pill (indicator element is injected by instrument-client). */
+html body #main .interactive-page .il-mode-switch.instrument-tabs {
+  position: relative;
+  isolation: isolate;
+}
+
+html body #main .interactive-page .il-mode-switch .instrument-tab-indicator {
+  display: block !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border: 0 !important;
+  border-radius: 999px;
+  background: var(--pf-thumb);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px -6px rgb(0 0 0 / .35);
+  transition: transform .5s var(--pf-ease-spring), width .4s var(--pf-ease-out) !important;
+  pointer-events: none;
+}
+
+html body #main .interactive-page .il-mode-switch.instrument-tabs button[aria-pressed="true"] {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #main .interactive-page .il-toolbar-actions > button {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px !important;
+}
+
+html body #main .interactive-page .il-builder {
+  padding: clamp(20px, 2.6vw, 32px) !important;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: var(--pf-tile-radius) !important;
+  background: var(--pf-surface) !important;
+}
+
+html body #main .interactive-page .il-simple-builder {
+  padding: clamp(20px, 2.6vw, 32px);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-tile-radius);
+  background: var(--pf-surface);
+}
+
+html body #main .interactive-page .il-simple-builder .il-simple-panel {
+  padding: 0 !important;
+}
+
+html body #main .interactive-page .instrument-result {
+  border-radius: var(--pf-tile-radius) !important;
+  scroll-margin-top: 88px;
+}
+
+html body #main .interactive-page :is(input:not([type=range]):not([type=checkbox]):not([type=radio]), select, textarea) {
+  border-radius: 12px !important;
+  transition: border-color .2s ease, box-shadow .2s ease !important;
+}
+
+html body #main .interactive-page :is(input:not([type=range]):not([type=checkbox]):not([type=radio]), select, textarea):focus {
+  border-color: var(--pf-brand) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--pf-brand) 18%, transparent) !important;
+}
+
+html body #main .interactive-page :is(.il-simple-run, .il-simulate) {
+  min-height: 52px;
+  border-radius: 999px !important;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform .3s var(--pf-ease-out), filter .3s var(--pf-ease-out) !important;
+}
+
+html body #main .interactive-page :is(.il-simple-run, .il-simulate):hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: scale(1.01) !important;
+}
+
+html body #main .interactive-page .il-result-empty .il-orbit {
+  animation: pf-orbit-breathe 3.2s var(--pf-ease-out) infinite alternate;
+}
+
+@keyframes pf-orbit-breathe {
+  from { transform: scale(.96); opacity: .75; }
+  to { transform: scale(1.04); opacity: 1; }
+}
+
+html body #main .interactive-page details:not(.instrument-result):not(.instrument-form-section) {
+  border-radius: 20px !important;
+}
+
+@media (max-width: 760px) {
+  html body #main .interactive-page .il-mode-switch {
+    display: flex;
+    width: 100%;
+  }
+
+  html body #main .interactive-page .il-mode-switch button {
+    flex: 1;
+  }
+
+  html body #main .interactive-page .il-simple-builder {
+    padding: 18px;
+  }
+
+  html body #main .interactive-page .instrument-result {
+    scroll-margin-top: 72px;
   }
 }
 

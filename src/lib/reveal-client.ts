@@ -17,6 +17,8 @@ const TARGETS = [
   '.labs-directory .lab-card',
   '.labs-directory .lab-suggestion',
   '.article-grid > .article-card',
+  '.story-hero',
+  '.story-related-grid > article',
 ].join(',');
 
 export function enhanceReveal(): void {

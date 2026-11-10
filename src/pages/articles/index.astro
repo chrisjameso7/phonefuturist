@@ -32,131 +32,61 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
   </section>
 </Page>
 
-<style>
-  .newsroom-index{width:min(100%,1420px);margin:0 auto;padding:42px clamp(18px,3vw,44px) 80px}
-  .newsroom-head{max-width:900px;padding:48px 0 36px}
-  .newsroom-head h1{margin:8px 0 14px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.075em;font-weight:620}
-  .newsroom-head>p:not(.eyebrow){max-width:620px;margin:0;color:var(--muted);font-size:1rem}
-  .newsroom-tabs{display:flex;gap:4px;margin-bottom:28px;padding:7px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface);overflow-x:auto}
-  .newsroom-tabs a{flex:0 0 auto;padding:9px 13px;border-radius:var(--pf-radius-sm);color:var(--pf-muted);text-decoration:none;font-size:.7rem;text-transform:capitalize}
-  .newsroom-tabs a[aria-current="page"]{color:var(--pf-primary);background:color-mix(in srgb,var(--pf-brand) 12%,transparent);box-shadow:none}
-  .newsroom-index .article-card {border-radius:0;background:transparent;border:0;border-bottom:1px solid var(--pf-border);box-shadow:none}
-  .newsroom-empty{min-height:360px;display:grid;place-content:center;padding:30px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
-  .newsroom-empty h2{margin:0 0 8px;font-size:2rem}
-  .newsroom-empty p{margin:0;color:var(--muted)}
-  .newsroom-pagination{display:flex;justify-content:space-between;padding-top:30px;font-size:.72rem}
-  @media(max-width:650px){
-    .newsroom-index{width:100%;padding:0 0 84px}
-    .newsroom-head{padding:22px 18px 16px}
-    .newsroom-head h1{margin:6px 0 8px;letter-spacing:-.055em;font-size:2.7rem;line-height:.94}
-    .newsroom-head>p:not(.eyebrow){font-size:.82rem;line-height:1.45}
-    .newsroom-tabs{border-bottom:1px solid var(--pf-border);border-radius:0;margin:0 0 12px;padding:0 12px 2px;border:0;background:transparent;gap:7px}
-    .newsroom-tabs a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
-    .newsroom-pagination{padding:20px 16px 0}
-    .newsroom-empty{margin:0 16px;border-radius:var(--pf-radius-md)}
-  .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
-  .newsroom-index .article-card{border:1px solid var(--pf-border)!important;border-radius:var(--pf-radius-md)!important;background:var(--pf-surface)!important;overflow:hidden}
-  }
-</style>
-
-
-
-
 <style is:global>
-/* Newsroom mobile: full-width editorial cards, never a compressed desktop row. */
-@media (max-width:760px) {
-  body:not(.product-mode) #main .newsroom-index {
-    box-sizing:border-box;
-    width:100%;
-    max-width:100%;
-    min-width:0;
-    padding:0 0 24px!important;
-    overflow-x:clip;
-  }
-  body:not(.product-mode) #main .newsroom-index .newsroom-head {
-    padding:24px 18px 18px!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .newsroom-head h1 {
-    font-size:clamp(2.6rem,10vw,3.6rem)!important;
-    line-height:1.02!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-grid,
-  body:not(.product-mode) #main .newsroom-index .article-grid[data-count] {
-    box-sizing:border-box;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    width:100%;
-    max-width:100%;
-    gap:18px!important;
-    padding:0 16px 24px!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card,
-  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image,
-  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image {
-    box-sizing:border-box;
-    display:flex!important;
-    flex-direction:column!important;
-    grid-template-columns:none!important;
-    width:100%!important;
-    max-width:100%;
-    min-height:0!important;
-    height:auto!important;
-    margin:0!important;
-    gap:0!important;
-    border:0!important;
-    border-bottom:1px solid var(--pf-border)!important;
-    border-radius:0!important;
-    background:var(--pf-bg)!important;
-    overflow:hidden;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card .card-image,
-  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-image,
-  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-image {
-    display:block!important;
-    flex:none!important;
-    width:100%!important;
-    max-width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
-    aspect-ratio:16/9!important;
-    border-radius:0!important;
-    overflow:hidden!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card .card-image img {
-    display:block;
-    width:100%!important;
-    height:100%!important;
-    object-fit:cover!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card .card-content,
-  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-content,
-  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-content {
-    box-sizing:border-box;
-    width:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    padding:18px 18px 20px!important;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card h3 {
-    font-size:clamp(1.25rem,5.4vw,1.55rem)!important;
-    line-height:1.25!important;
-    overflow-wrap:break-word;
-    margin:8px 0 10px;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card p {
-    font-size:.9rem!important;
-    line-height:1.55!important;
-    display:-webkit-box!important;
-    -webkit-line-clamp:3;
-    -webkit-box-orient:vertical;
-    overflow:hidden!important;
-    margin-bottom:14px;
-  }
-  body:not(.product-mode) #main .newsroom-index .article-card .card-meta {
-    font-size:.75rem!important;
-    flex-wrap:wrap;
-    gap:8px;
-  }
+/* Newsroom — Apple Newsroom-inspired index: featured story, then a calm grid of tiles. */
+html body:not(.product-mode) #main .newsroom-index{box-sizing:border-box;width:min(100%,1320px);margin:0 auto;padding:clamp(16px,3vw,40px) clamp(16px,3vw,36px) 80px!important;overflow-x:clip}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head{max-width:none;padding:clamp(8px,3vw,40px) 0 clamp(20px,2.6vw,32px)!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head .eyebrow{margin:0;font:500 12px/1.4 var(--font-ui);letter-spacing:.07em;text-transform:uppercase;color:var(--pf-brand)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head h1{margin:10px 0 0;font-size:clamp(2.8rem,7vw,5.6rem)!important;line-height:.96!important;letter-spacing:-.05em!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs{display:inline-flex;max-width:100%;gap:2px;margin:0 0 clamp(28px,4vw,48px);padding:4px;border:0;border-radius:999px;background:var(--pf-raised);overflow-x:auto;scrollbar-width:none}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs::-webkit-scrollbar{display:none}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs .instrument-tab-indicator{display:none!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a{flex:0 0 auto;display:inline-flex;align-items:center;min-height:38px;padding:0 18px;border:0!important;border-radius:999px!important;background:transparent!important;color:var(--pf-secondary)!important;font-size:.9rem;font-weight:500;text-transform:capitalize;text-decoration:none;transition:background-color .35s cubic-bezier(.22,1,.36,1),color .35s cubic-bezier(.22,1,.36,1)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a:hover{color:var(--pf-primary)!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a[aria-current="page"]{background:var(--pf-thumb,var(--pf-surface))!important;color:var(--pf-primary)!important;box-shadow:0 1px 2px rgb(0 0 0 / .25),0 4px 14px -6px rgb(0 0 0 / .35)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:clamp(36px,4vw,56px) clamp(20px,2.4vw,32px)!important;padding:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card{display:flex!important;flex-direction:column!important;min-width:0;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;gap:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card::before{display:none!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover{transform:none!important;box-shadow:none!important;border-color:transparent!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:hover{border-color:var(--pf-border)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture{margin:0 0 16px!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture a{display:block;overflow:hidden;border-radius:clamp(14px,1.8vw,22px);background:var(--pf-raised);transform:translateZ(0)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture img{display:block;width:100%!important;height:auto!important;aspect-ratio:16/10;object-fit:cover;border-radius:0!important;transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover .story-picture img{transform:scale(1.035)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card figcaption{padding:8px 0 0!important;font-size:11px!important;color:var(--pf-muted)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:not(.has-card-image)::after{content:"";order:-1;display:block;aspect-ratio:16/10;margin-bottom:16px;border-radius:clamp(14px,1.8vw,22px);background:url(/assets/phonefuturist-mark.svg) center/72px auto no-repeat,radial-gradient(120% 90% at 20% 0%,color-mix(in srgb,var(--pf-brand) 16%,transparent),transparent 60%),var(--pf-raised)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content{display:flex!important;flex-direction:column;align-items:flex-start;flex:1;gap:0;width:100%!important;min-height:0!important;padding:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content .confidence-tag{order:1;margin:0 0 10px!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-section{order:0;margin:0 0 8px;font:500 12px/1.4 var(--font-ui)!important;letter-spacing:.07em!important;text-transform:uppercase;color:var(--pf-brand)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content h3{order:2;margin:0 0 10px!important;font-size:clamp(1.2rem,1.7vw,1.45rem)!important;line-height:1.2!important;letter-spacing:-.022em!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content h3 a{color:var(--pf-primary)!important;transition:color .3s ease}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover h3 a{color:color-mix(in srgb,var(--pf-primary),var(--pf-brand) 35%)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content>p{order:3;margin:0 0 14px!important;color:var(--pf-secondary)!important;font-size:.98rem!important;line-height:1.55!important;display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-meta{order:4;display:flex!important;flex-wrap:wrap;gap:4px 14px;margin-top:auto;padding:0!important;border:0!important;font-size:12px!important;color:var(--pf-muted)!important}
+/* Featured: the first story spans the row, image beside text. */
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card{grid-column:1/-1;display:grid!important;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:center;gap:clamp(24px,4vw,56px)!important;padding-bottom:clamp(36px,4vw,56px)!important;border-bottom:1px solid var(--pf-border)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .story-picture{margin:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:not(.has-card-image){grid-template-columns:minmax(0,1fr)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:not(.has-card-image)::after{display:none}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card h3{font-size:clamp(1.8rem,2.9vw,2.6rem)!important;line-height:1.05!important;letter-spacing:-.035em!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .card-content>p{font:400 1.15rem/1.55 var(--font-body)!important;-webkit-line-clamp:5}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty{display:grid;place-content:center;min-height:320px;padding:32px;text-align:center;border:1px solid var(--pf-border);border-radius:28px;background:radial-gradient(90% 120% at 50% 0%,color-mix(in srgb,var(--pf-brand) 12%,transparent),transparent 60%),var(--pf-surface)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty h2{margin:0 0 8px;font-size:clamp(1.5rem,3vw,2.2rem)!important;letter-spacing:-.03em!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty p{margin:0;color:var(--pf-secondary)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination{display:flex;justify-content:space-between;gap:12px;padding-top:clamp(32px,4vw,56px);font-size:.95rem}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination a{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:999px;background:var(--pf-raised);color:var(--pf-primary);text-decoration:none;font-weight:500}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination a:hover{background:color-mix(in srgb,var(--pf-raised),var(--pf-primary) 8%)}
+@media(max-width:1020px){html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:760px){
+ html body:not(.product-mode) #main .newsroom-index{padding:8px 16px 48px!important}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-head h1{font-size:clamp(2.6rem,12vw,3.4rem)!important}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-tabs{display:flex}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a{padding:0 14px}
+ html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{grid-template-columns:minmax(0,1fr)!important;gap:36px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card{grid-template-columns:minmax(0,1fr);gap:0!important;padding-bottom:36px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .story-picture{margin:0 0 16px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card h3{font-size:1.9rem!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .card-content>p{font-size:1.05rem!important}
 }
+@media(prefers-reduced-motion:reduce){html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture img{transition:none}html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover .story-picture img{transform:none}}
 </style>

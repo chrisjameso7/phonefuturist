@@ -2,7 +2,7 @@ import { SOC_MODELS } from '../../lib/simulation/soc-model-catalog';
 import type { SocPowerWhatIf } from '../../lib/simulation/modules/soc-power-what-if';
 import BrandSelect from './BrandSelect';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES } from '../../lib/simulation/camera-option-catalog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   SimpleCoolingPreset,
   SimpleModeInput,
@@ -10,8 +10,12 @@ import type {
 } from '../../lib/simulation/simple-mode';
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
+/** Toolbar "Load example" / "Clear" requests; `revision` changes on each click. */
+export type SimplePresetRequest = { revision: number; kind: 'example' | 'clear' };
+
 type Props = {
   busy?: boolean;
+  preset?: SimplePresetRequest;
   onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy', powerScenario: SocPowerWhatIf) => void;
 };
 
@@ -36,6 +40,7 @@ function number(value: string) {
 export default function SimpleModePanel({
   onRun,
   busy = false,
+  preset,
 }: Props) {
   const [name, setName] = useState('');
   const [hasRun,setHasRun]=useState(false);
@@ -74,6 +79,39 @@ export default function SimpleModePanel({
   const [batteryVoltage, setBatteryVoltage] = useState('3.85');
   const [error, setError] = useState('');
   const [usage, setUsage] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
+
+  // Keep the shared toolbar actions meaningful in Simple mode: they previously
+  // only reset the Advanced form, leaving the visible Simple fields unchanged.
+  useEffect(() => {
+    if (!preset) return;
+    const example = preset.kind === 'example';
+    setName(example ? 'Flagship reference' : '');
+    setManufacturer(example ? 'Samsung' : '');
+    setBatteryMah(example ? '5000' : '5500');
+    setWiredWatts('60');
+    setDisplaySize(example ? '6.7' : '6.8');
+    setResolution('qhd');
+    setAspectRatio('9:20');
+    setCustomAspectWidth('');
+    setCustomAspectHeight('');
+    setRenderingScale(100);
+    setCustomWidth('');
+    setCustomHeight('');
+    setRefreshRate('120');
+    setBrightness('');
+    setSocVendor('Qualcomm');
+    setSocName(example ? 'Snapdragon 8 Elite Gen 5' : '');
+    setSocPowerScenario('neutral');
+    setCooling('large-vc');
+    setCameraMp('50');
+    setSensorDenominator('1.3');
+    setAperture('1.8');
+    setSoftwareTuning('standard');
+    setBatteryVoltage('3.85');
+    setUsage('Typical');
+    setError('');
+    setHasRun(false);
+  }, [preset?.revision]);
 
   function submit() {
     const battery = number(batteryMah);
@@ -171,18 +209,6 @@ export default function SimpleModePanel({
 
       </fieldset>
       <div className="il-simple-grid">
-        <label className="il-field"><span>Software tuning</span>
-          <select value={softwareTuning} onChange={event => setSoftwareTuning(event.target.value as NonNullable<SimpleModeInput['softwareTuning']>)}>
-            <option value="standard">Standard</option>
-            <option value="optimized">Optimized · scenario</option>
-            <option value="background-heavy">Background-heavy · scenario</option>
-          </select>
-          <small>Optional software energy scenario.</small>
-        </label>
-        <label className="il-field"><span>Nominal cell voltage (V)</span>
-          <span className="instrument-unit"><input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} /><span aria-hidden="true">V</span></span>
-          <small>Use the battery specification; default is a scenario value.</small>
-        </label>
         <label className="il-field il-wide">
           <span>Device name</span>
           <input
@@ -429,6 +455,18 @@ export default function SimpleModePanel({
             <option value="">Select aperture</option>
             {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
           </select>
+        </label>
+        <label className="il-field"><span>Software tuning</span>
+          <select value={softwareTuning} onChange={event => setSoftwareTuning(event.target.value as NonNullable<SimpleModeInput['softwareTuning']>)}>
+            <option value="standard">Standard</option>
+            <option value="optimized">Optimized · scenario</option>
+            <option value="background-heavy">Background-heavy · scenario</option>
+          </select>
+          <small>Optional software energy scenario.</small>
+        </label>
+        <label className="il-field"><span>Nominal cell voltage (V)</span>
+          <span className="instrument-unit"><input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} /><span aria-hidden="true">V</span></span>
+          <small>Use the battery specification; default is a scenario value.</small>
         </label>
       </div>
 
