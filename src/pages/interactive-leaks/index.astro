@@ -124,18 +124,6 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     overflow: hidden;
   }
 
-  .interactive-hero::after {
-    content: "";
-    position: absolute;
-    width: 520px;
-    height: 520px;
-    right: -150px;
-    top: 20px;
-    border-radius: var(--pf-radius-md);
-    background: var(--pf-surface);
-    pointer-events: none;
-  }
-
   .interactive-eyebrow,
   .interactive-section-label {
     margin: 0 0 18px;
@@ -145,6 +133,8 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     letter-spacing: 0.14em;
     text-transform: uppercase;
   }
+
+  .interactive-hero-copy { min-width: 0; }
 
   .interactive-hero h1 {
     margin: 0;
@@ -191,6 +181,11 @@ import InteractiveLeaksSimulator from '../../components/interactive-leaks/Intera
     background: color-mix(in srgb,var(--pf-raised) 3%,transparent);
     color: var(--muted);
     font-size: 0.78rem;
+  }
+
+  @media (min-width: 761px) and (max-width: 1000px) {
+    .interactive-page.pf-ui .interactive-hero { display: block; }
+    .interactive-page.pf-ui .interactive-model-wrap { display: none; }
   }
 
   /* HERO DEVICE */

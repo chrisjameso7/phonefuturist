@@ -35,8 +35,9 @@ a:hover {
 }
 
 .skip {
-  position: absolute;
-  top: -5rem;
+  position: fixed;
+  inset: 0 auto auto 0;
+  transform: translateY(-110%);
   padding: .7rem;
   background: var(--pf-raised);
   color: var(--pf-muted);
@@ -44,7 +45,7 @@ a:hover {
 }
 
 .skip:focus {
-  top: 0;
+  transform: translateY(0);
 }
 
 /* Header */

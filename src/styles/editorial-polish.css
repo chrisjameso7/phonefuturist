@@ -221,3 +221,7 @@ body #main .interactive-page .il-toolbar-actions>button {
 }
 body #main .interactive-page :is(input,select,textarea) {border-color:var(--pf-border)!important;}
 body #main .interactive-page .instrument-result {border-radius:0!important;}
+@media(max-width:760px){
+  body #main .interactive-page .instrument-result {position:static;inset:auto;max-height:none;}
+  body #main .interactive-page .instrument-result-content {max-height:none;overflow:visible;}
+}
