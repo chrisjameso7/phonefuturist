@@ -38,8 +38,8 @@ const id = 'newsletter-' + crypto.randomUUID();
   });
 </script>
 <style>
- .newsletter-signup {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);grid-template-rows:auto 1fr;column-gap:clamp(24px,5vw,64px);padding:clamp(20px,3vw,36px);margin:16px 0 32px;background:var(--pf-surface);border:1px solid var(--pf-border);border-top:3px solid var(--pf-brand);min-width:0;box-sizing:border-box;}
- h2 {grid-column:1;font-size:clamp(1.3rem,2vw,1.7rem);line-height:1.15;margin:0 0 12px;}
+ .newsletter-signup {position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);grid-template-rows:auto 1fr;column-gap:clamp(24px,5vw,72px);padding:clamp(24px,4.5vw,56px);margin:24px 0 40px;background:radial-gradient(90% 120% at 0% 0%,color-mix(in srgb,var(--pf-brand) 14%,transparent),transparent 60%),var(--pf-surface);border:1px solid var(--pf-border);border-radius:clamp(20px,2.6vw,32px);min-width:0;box-sizing:border-box;}
+ h2 {grid-column:1;font-size:clamp(1.6rem,2.8vw,2.4rem)!important;line-height:1.05!important;letter-spacing:-.035em!important;margin:0 0 14px;}
  h2+p {grid-column:1;margin:0;font-family:var(--font-body);font-size:1.08rem;}
  p {color:var(--pf-secondary);line-height:1.6;}
  form {grid-column:2;grid-row:1 / span 2;max-width:760px;display:grid;gap:12px;}
@@ -47,9 +47,10 @@ const id = 'newsletter-' + crypto.randomUUID();
  .newsletter-fields {display:grid;grid-template-columns:1fr 1.5fr;gap:16px;}
  label {display:grid;gap:8px;min-width:0;}
  label small {color:var(--pf-secondary);font-size:.85rem;}
- input {width:100%;min-width:0;box-sizing:border-box;min-height:44px;background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);border-radius:0;padding:12px;font:inherit;}
+ input {width:100%;min-width:0;box-sizing:border-box;min-height:44px;background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);border-radius:14px!important;padding:12px 14px;font:inherit;transition:border-color .2s ease,box-shadow .2s ease;}
+ input:focus{border-color:var(--pf-brand);box-shadow:0 0 0 4px color-mix(in srgb,var(--pf-brand) 18%,transparent)!important;}
  .newsletter-consent {font-size:.85rem;margin:0;}
- button {justify-self:start;min-height:44px;min-width:120px;border-radius:0;}
+ button {justify-self:start;min-height:46px;min-width:132px;padding:0 24px;border-radius:999px!important;font-weight:500;}
  .newsletter-trap {display:none;}
  [data-newsletter-status] {margin:0;}
  :is(input,button,a):focus-visible {outline:2px solid var(--pf-primary);outline-offset:3px;}

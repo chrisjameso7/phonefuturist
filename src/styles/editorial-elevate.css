@@ -1,0 +1,289 @@
+/*
+  Editorial elevate layer: calm, Apple-inspired motion and surfaces for the
+  public publication (home, Labs directory, newsroom cards, header actions).
+  Loaded after editorial-polish.css. Simulator/Studio controls are untouched.
+  Everything here collapses to static under prefers-reduced-motion.
+*/
+
+:root {
+  --pf-ease-out: cubic-bezier(.22, 1, .36, 1);
+  --pf-ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  --pf-reveal-distance: 24px;
+  --pf-tile-radius: clamp(18px, 2vw, 26px);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body :is(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+body :is(p, li) {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--pf-brand) 35%, transparent);
+  color: var(--pf-primary);
+}
+
+/* ---------- Scroll reveal (classes are added by reveal-client.ts) ---------- */
+
+.pf-reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--pf-reveal-distance), 0) scale(.985);
+}
+
+/* The hidden state must apply instantly; only the entrance is animated. */
+html body .pf-reveal.pf-reveal:not(.pf-reveal-in) {
+  transition: none !important;
+}
+
+html body .pf-reveal.pf-reveal.pf-reveal-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity .9s var(--pf-ease-out),
+    transform 1.1s var(--pf-ease-out) !important;
+  transition-delay: calc(var(--pf-reveal-i, 0) * 70ms) !important;
+}
+
+/* ---------- Page entrance: soften the existing cross-document fade ---------- */
+
+::view-transition-old(root) {
+  animation: pf-route-out 220ms var(--pf-ease-out) both;
+}
+
+::view-transition-new(root) {
+  animation: pf-route-in 420ms var(--pf-ease-out) both;
+}
+
+@keyframes pf-route-out {
+  to { opacity: 0; transform: scale(.995); }
+}
+
+@keyframes pf-route-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Header actions: pill buttons ---------- */
+
+html body .site-header :is(.button, a[href="/join"], a[href="/login"], form button) {
+  border-radius: 999px !important;
+  padding-inline: 18px;
+  transition:
+    background-color .3s var(--pf-ease-out),
+    transform .3s var(--pf-ease-out),
+    opacity .3s var(--pf-ease-out) !important;
+}
+
+html body .site-header :is(.button, a[href="/join"]):hover {
+  transform: scale(1.03) !important;
+}
+
+/* ---------- Home: tiles lift gently on hover (overrides flat polish rule) ---------- */
+
+@media (hover: hover) {
+  html body .pf-home-paths .pf-home-path:hover {
+    transform: translateY(-4px) !important;
+    background: var(--pf-surface) !important;
+    border-color: var(--pf-border-hover) !important;
+    box-shadow: 0 28px 56px -32px rgb(0 0 0 / .5) !important;
+  }
+}
+
+:root[data-theme="light"] body .pf-home-paths .pf-home-path:hover {
+  box-shadow: 0 28px 56px -30px rgb(20 20 15 / .22) !important;
+}
+
+/* ---------- Labs directory: rounded tiles ---------- */
+
+.labs-directory .lab-hero {
+  max-width: none;
+  padding: clamp(8px, 3vw, 40px) 0 clamp(24px, 3vw, 40px);
+}
+
+html body .labs-directory .lab-hero h1 {
+  font-size: clamp(2.8rem, 7vw, 5.6rem) !important;
+  line-height: .96 !important;
+  letter-spacing: -.05em !important;
+  margin: 0 0 16px;
+}
+
+.labs-directory .lab-hero p {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  line-height: 1.5;
+}
+
+.labs-directory .lab-card-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+
+html body .labs-directory .lab-card-grid > a {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 260px;
+  margin: 0;
+  border: 1px solid var(--pf-border) !important;
+  border-radius: var(--pf-tile-radius) !important;
+  background: var(--pf-surface) !important;
+  transition:
+    transform .6s var(--pf-ease-out),
+    border-color .4s var(--pf-ease-out),
+    box-shadow .6s var(--pf-ease-out),
+    opacity .9s var(--pf-ease-out) !important;
+}
+
+.labs-directory .lab-card-grid > a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--pf-brand) 16%, transparent), transparent 55%);
+  opacity: 0;
+  transition: opacity .6s var(--pf-ease-out);
+}
+
+.labs-directory .lab-card {
+  padding: 26px 26px 24px;
+  gap: 10px;
+}
+
+html body .labs-directory .lab-card h2 {
+  font-size: clamp(1.35rem, 2vw, 1.65rem) !important;
+  letter-spacing: -.03em !important;
+  line-height: 1.1;
+  margin: 28px 0 6px;
+  transition: color .3s var(--pf-ease-out);
+}
+
+.labs-directory .lab-card p {
+  font-size: .96rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.labs-directory .lab-card > span:first-child {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--pf-raised);
+  font-size: 12px;
+  color: var(--pf-secondary);
+}
+
+.labs-directory .lab-card > span:last-child {
+  padding-top: 20px;
+  font-weight: 500;
+}
+
+html body .labs-directory .lab-card-grid > a.lab-suggestion {
+  align-items: flex-end;
+  padding: 26px;
+  border-style: dashed !important;
+  font-weight: 500;
+  background: transparent !important;
+}
+
+@media (hover: hover) {
+  html body .labs-directory .lab-card-grid > a:hover {
+    transform: translateY(-4px) !important;
+    border-color: var(--pf-border-hover) !important;
+    box-shadow: 0 28px 56px -32px rgb(0 0 0 / .5) !important;
+    background: var(--pf-surface) !important;
+  }
+
+  .labs-directory .lab-card-grid > a:hover::before {
+    opacity: 1;
+  }
+
+  html body .labs-directory .lab-card:hover h2 {
+    color: var(--pf-brand) !important;
+  }
+}
+
+:root[data-theme="light"] body .labs-directory .lab-card-grid > a:hover {
+  box-shadow: 0 28px 56px -30px rgb(20 20 15 / .22) !important;
+}
+
+/* ---------- Newsroom cards (articles index) ---------- */
+
+html body .article-grid > .article-card {
+  border-radius: var(--pf-tile-radius) !important;
+  overflow: hidden;
+  transition:
+    transform .6s var(--pf-ease-out),
+    border-color .4s var(--pf-ease-out),
+    box-shadow .6s var(--pf-ease-out),
+    opacity .9s var(--pf-ease-out) !important;
+}
+
+html body .article-grid > .article-card :is(.card-image, .card-image-fallback) img {
+  transition: transform 1.1s var(--pf-ease-out);
+}
+
+@media (hover: hover) {
+  html body .article-grid > .article-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 28px 56px -32px rgb(0 0 0 / .45) !important;
+  }
+
+  html body .article-grid > .article-card:hover :is(.card-image, .card-image-fallback) img {
+    transform: scale(1.035);
+  }
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 760px) {
+  :root {
+    --pf-reveal-distance: 16px;
+  }
+
+  .labs-directory .lab-card-grid {
+    gap: 12px;
+  }
+
+  html body .labs-directory .lab-card-grid > a {
+    min-height: 0;
+  }
+
+  html body .labs-directory .lab-card h2 {
+    margin-top: 18px;
+  }
+}
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .pf-reveal,
+  .pf-reveal.pf-reveal-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  html body :is(.pf-home-paths .pf-home-path, .labs-directory .lab-card-grid > a, .article-grid > .article-card):hover {
+    transform: none !important;
+  }
+}
+
+@media print {
+  .pf-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -10,6 +10,7 @@ import '../styles/phonefuturist-ui.css';
 import '../styles/editorial-fonts.css';
 import '../styles/editorial-tokens.css';
 import '../styles/editorial-polish.css';
+import '../styles/editorial-elevate.css';
 import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
@@ -348,6 +349,8 @@ if(showAds&&Astro.csp){
   enhanceNavigation();
   import { enhanceInstruments } from '../lib/instrument-client';
   enhanceInstruments();
+  import { enhanceReveal } from '../lib/reveal-client';
+  enhanceReveal();
   const mobileMenu=document.querySelector<HTMLDetailsElement>('.mobile-app-menu');
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileMenu?.open){mobileMenu.open=false;mobileMenu.querySelector('summary')?.focus();}});
   document.addEventListener('click',event=>{if(mobileMenu?.open&&event.target instanceof Node&&!mobileMenu.contains(event.target))mobileMenu.open=false;});
