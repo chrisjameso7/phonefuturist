@@ -6,6 +6,6 @@ export function suggestLiveDeviceComparisons(concept: string) {
   return suggestDeviceComparisons(buildCalibrationRegistry(),concept);
 }
 
-export function suggestLiveCompetingDevices(options: {manufacturer?: string; batteryMah?: number; displayInches?: number; limit?: number}) {
+export function suggestLiveCompetingDevices(options: {manufacturer?: string; batteryMah?: number; displayInches?: number; socName?: string; limit?: number}) {
   return suggestCompetingDevices(buildCalibrationRegistry(), options);
 }

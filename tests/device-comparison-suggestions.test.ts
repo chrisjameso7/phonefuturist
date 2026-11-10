@@ -102,7 +102,39 @@ describe('competitor labels',()=>{
 describe('short device names',()=>{
   it('keeps the model and drops catalog noise',async()=>{
     const {shortDeviceName}=await import('../src/lib/simulation/modules/device-comparison-suggestions');
-    expect(shortDeviceName('Huawei nova 13i Global Dual SIM TD-LTE 128GB CTR-L91 (Huawei Cartier B)')).toBe('Huawei nova 13i Global CTR-L91');
+    expect(shortDeviceName('Huawei nova 13i Global Dual SIM TD-LTE 128GB CTR-L91 (Huawei Cartier B)')).toBe('Huawei nova 13i');
+    expect(shortDeviceName('Sharp Aquos R10 5G SG SH-M31SG')).toBe('Sharp Aquos R10 5G');
+    expect(shortDeviceName('Apple iPhone 17 Pro Max 5G A3525 MEA JP MX CA')).toBe('Apple iPhone 17 Pro Max 5G');
+    expect(shortDeviceName('Samsung Galaxy S26 Ultra')).toBe('Samsung Galaxy S26 Ultra');
+    expect(shortDeviceName('Sharp Aquos R10 5G A501SH')).toBe('Sharp Aquos R10 5G');
+    const {shortChipName}=await import('../src/lib/simulation/modules/device-comparison-suggestions');
+    expect(shortChipName('Qualcomm Snapdragon 8S Gen 3 Sm8635')).toBe('Snapdragon 8s Gen 3');
+    expect(shortChipName('Apple A19 Pro Apl1v12 T8150')).toBe('A19 Pro');
+    expect(shortChipName('Mediatek Dimensity 8350 Mt6897')).toBe('Dimensity 8350');
     expect(shortDeviceName('Galaxy S26 Ultra')).toBe('Galaxy S26 Ultra');
+  });
+});
+
+describe('chip class weighting',()=>{
+  it('classifies common chip names by product tier',async()=>{
+    const {socClass}=await import('../src/lib/simulation/modules/device-comparison-suggestions');
+    expect(socClass('Snapdragon 8 Elite Gen 5')).toBe(3);
+    expect(socClass('Qualcomm Snapdragon 8S Gen 3 Sm8635')).toBe(3);
+    expect(socClass('Dimensity 9500')).toBe(3);
+    expect(socClass('A19 Pro')).toBe(3);
+    expect(socClass('Qualcomm Snapdragon 7s Gen 3')).toBe(2);
+    expect(socClass('Dimensity 8500-Ultra')).toBe(2);
+    expect(socClass('Qualcomm Snapdragon 680 Sm6225')).toBe(1);
+    expect(socClass('MediaTek Helio G99')).toBe(1);
+    expect(socClass('Mystery chip')).toBeUndefined();
+  });
+  it('prefers phones in the same chip class as the concept',()=>{
+    const phone=(id:string,soc:string)=>({
+      variant:{id,identity:{manufacturer:'Brand',modelName:id},battery:{capacityMah:5000},soc:{name:soc}},
+      display:{diagonalInches:6.7},
+    });
+    const corpus={devices:[phone('Budget A','Snapdragon 680'),phone('Flagship B','Snapdragon 8 Elite'),phone('Budget C','Helio G99')],measurements:[],sources:[]} as unknown as DeviceCorpus;
+    const items=suggestCompetingDevices(corpus,{batteryMah:5000,displayInches:6.7,socName:'Snapdragon 8 Elite Gen 5',limit:3});
+    expect(items[0].label).toBe('Brand Flagship B');
   });
 });

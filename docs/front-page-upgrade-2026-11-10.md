@@ -25,4 +25,7 @@ Verified in a production build (`astro preview`): entrance animates and settles,
 
 **Simulator look:** segmented pill switches with a sliding thumb (reuses the existing tab indicator), pill toolbar actions, rounded builder/result cards, rounded fields with a focus halo, a larger pill Run button and a gently breathing empty-state orbit.
 
-Not changed (recommendations): competitor suggestions match only battery and screen size, so a flagship example is compared with budget phones (e.g. nova 13i, Moto G35); weighting by SoC tier/release year would fix that but changes simulation output and needs a product decision. The result panel repeats its title ("Simulation result" summary, inner eyebrow and phone name); trimming it changes visible copy, so it was left.
+### Follow-up (approved)
+
+- **Comparison phones:** suggestions now also weigh chip class and release age. `socClass()` classifies public chip names (flagship / upper-mid / entry; unknown stays unknown, it is not a performance measurement) and adds 0.35 per class step (0.2 if the catalog chip is unknown); phones older than a year drift down by 0.06/year (max 0.25). Battery and screen still gate eligibility. Carrier/region editions with identical maker, chip, battery and screen collapse to one card; names drop region and model codes, and chip names drop part numbers (full names in tooltips). Example: the flagship reference now compares with Sharp Aquos R9 Pro, iPhone 17 Pro Max and Xperia 1 VII instead of nova 13i / Moto G35.
+- **Result title:** the panel bar reads "Simulation result · Estimated" (or runtime · Estimated); the duplicate inner "Simulation result / Estimated" row was removed, and the phone name appears once below.

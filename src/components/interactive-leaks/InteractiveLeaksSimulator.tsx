@@ -15,7 +15,7 @@ import BrandSelect from './BrandSelect';
 import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
 import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
-import { shortDeviceName } from '../../lib/simulation/modules/device-comparison-suggestions';
+import { shortChipName, shortDeviceName } from '../../lib/simulation/modules/device-comparison-suggestions';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BetaFeedbackPanel from './BetaFeedbackPanel';
@@ -2223,6 +2223,7 @@ export default function InteractiveLeaksSimulator() {
         manufacturer: form.manufacturer.trim() || undefined,
         batteryMah: result.battery?.totalCapacityMah,
         displayInches: simulationInput.displays.primary.diagonalInches,
+        socName: form.socName.trim() || undefined,
         limit: 3,
       })
     : [];
@@ -5724,21 +5725,13 @@ export default function InteractiveLeaksSimulator() {
           </div>
         </section>
 
-        <ResultPanel label="Simulation result" revealKey={!simulationPending && simulationResult ? resultRevision : 0} summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h` : simulationInput?.name || 'Estimated'}>
+        <ResultPanel label="Simulation result" revealKey={!simulationPending && simulationResult ? resultRevision : 0} summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h · Estimated` : 'Estimated'}>
         <aside
           key={resultRevision}
           className="il-results"
           aria-live="polite"
           aria-label="Simulation results"
         >
-          <div className="il-results-top">
-            <span className="eyebrow">
-              Simulation result
-            </span>
-
-            <span>Estimated</span>
-          </div>
-
           {!hasSimulated || !result ? (
             <div className="il-result-empty">
               <div className="il-orbit" aria-hidden="true">
@@ -5845,7 +5838,7 @@ export default function InteractiveLeaksSimulator() {
                         {competingDevices.map(device=>(
                           <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
                             <strong title={device.label}>{shortDeviceName(device.label)}</strong>
-                            <span style={{display:'block',marginTop:'0.35rem'}}>{device.released?.socName ?? 'Processor unspecified'}</span>
+                            <span style={{display:'block',marginTop:'0.35rem'}} title={device.released?.socName}>{device.released?.socName ? shortChipName(device.released.socName) : 'Processor unspecified'}</span>
                             {device.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.batteryMah,0)} mAh</small>}
                             {device.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.displayInches,2)}″ display</small>}
                           </div>

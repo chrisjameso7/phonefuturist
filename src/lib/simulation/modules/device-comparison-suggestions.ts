@@ -61,24 +61,54 @@ export function deviceDisplayName(manufacturer:string,modelName:string):string{
   if(!brand)return model;
   return model.toLowerCase().startsWith(brand.toLowerCase()+' ')||model.toLowerCase()===brand.toLowerCase()?model:`${brand} ${model}`;
 }
-/** Readable card title: drops catalog codenames, SIM/network and storage tokens. */
-export function shortDeviceName(label:string):string{
-  const short=label
+/** Catalog noise: codenames, SIM/network, storage, region codes and model numbers. */
+function stripCatalogNoise(label:string):string{
+  return label
     .replace(/\s*\([^)]*\)\s*$/,'')
     .replace(/\b(Dual|Single) SIM\b/gi,'')
-    .replace(/\b(TD-LTE|LTE|NFC)\b/g,'')
+    .replace(/\b(TD-LTE|LTE|NFC|Global|Standard Edition)\b/g,'')
     .replace(/\b\d+\s?(GB|TB)\b/gi,'')
-    .replace(/\s+/g,' ').trim();
-  return short||label;
+    .split(/\s+/)
+    // Region codes (ID, SG, JP, MEA…) and model numbers (SH-M31SG, A3525, XT2433-1), never "S26" or "5G".
+    .filter(token=>!/^(?:[A-Z]{2}|MEA|EEA|LATAM|APAC)$/.test(token) && !/^[A-Z0-9]+-[A-Z0-9-]*\d[A-Z0-9-]*$/.test(token) && !/^[A-Z]{1,3}\d{4,}[A-Z0-9]*$/.test(token) && !/^[A-Z]{1,3}\d{3,}[A-Z]{1,3}$/.test(token))
+    .join(' ').replace(/\s+/g,' ').trim();
 }
+/** "Qualcomm Snapdragon 8S Gen 3 Sm8635" → "Snapdragon 8s Gen 3" (part numbers dropped). */
+export function shortChipName(name:string):string{
+  const short=name
+    .replace(/^(Qualcomm|Mediatek|MediaTek|Apple|Samsung|Google|HiSilicon|Hisilicon)\s+/,'')
+    .split(/\s+/)
+    .filter(token=>!/^(sm|mt|apl|t)\d[\w]*$/i.test(token) && !/^apl\w*\d\w*$/i.test(token) && !/^5G$/.test(token))
+    .join(' ')
+    .replace(/\b8S\b/,'8s');
+  return short.trim()||name;
+}
+/** Readable card title for a catalog device; falls back to the full label. */
+export function shortDeviceName(label:string):string{
+  return stripCatalogNoise(label)||label;
+}
+/**
+ * Coarse chip class from the public product name: 3 flagship, 2 upper-mid, 1 entry.
+ * A naming classification only — never a performance measurement. Unknown → undefined.
+ */
+export function socClass(name?:string):1|2|3|undefined{
+  const n=(name??'').toLowerCase().replace(/^(qualcomm|mediatek|samsung|google|apple|huawei|hisilicon)\s+/,'').trim();
+  if(!n)return undefined;
+  if(/snapdragon\s+8(\s|$)|snapdragon\s+8\+|snapdragon\s+8s?\s+(gen|elite)|snapdragon\s+8\d\d|dimensity\s+9\d{3}|exynos\s+(2\d{3}|990)|^a1\d(\s|$)|^a\d{2}\s+pro|tensor|kirin\s+9\d{3}|xring/.test(n))return 3;
+  if(/snapdragon\s+7|snapdragon\s+8s|dimensity\s+[78]\d{3}|dimensity\s+1\d{3}|exynos\s+1[3-9]\d{2}|kirin\s+8\d{2,3}/.test(n))return 2;
+  if(/snapdragon\s+[46]|snapdragon\s+[2-6]\d{2}|dimensity\s+[4-6]\d{3}|dimensity\s+[78]\d{2}(\D|$)|helio|exynos\s+(8\d{2}|1[0-2]\d{2})|unisoc|tiger|kirin\s+[67]\d{2}/.test(n))return 1;
+  return undefined;
+}
+
 /** Storage-only variants (256GB vs 1TB) are the same phone for comparison purposes. */
 function comparisonKey(manufacturer:string,modelName:string):string{
-  return deviceDisplayName(manufacturer,modelName).toLowerCase().replace(/\b\d+\s?(gb|tb)\b/g,'').replace(/\s+/g,' ').trim();
+  const name=deviceDisplayName(manufacturer,modelName);
+  return (stripCatalogNoise(name)||name).toLowerCase();
 }
 
 export function suggestCompetingDevices(
   corpus: DeviceCorpus,
-  options: {manufacturer?: string; batteryMah?: number; displayInches?: number; limit?: number},
+  options: {manufacturer?: string; batteryMah?: number; displayInches?: number; socName?: string; limit?: number},
 ): SuggestedComparison[] {
   const normalize=(v:string)=>v.trim().toLowerCase();
   const targetManufacturer=normalize(options.manufacturer ?? '');
@@ -89,6 +119,7 @@ export function suggestCompetingDevices(
   // Without a comparable target dimension this would be a random phone recommendation.
   if (!targetBattery && !targetDisplay) return [];
   const today=new Date().toISOString().slice(0,10);
+  const targetClass=socClass(options.socName);
   const candidates=corpus.devices.filter(device=>
     Boolean(device.variant.identity.modelName) &&
     (!targetManufacturer || normalize(device.variant.identity.manufacturer) !== targetManufacturer) &&
@@ -103,7 +134,13 @@ export function suggestCompetingDevices(
     if (targetDisplay && (!diagonal || !Number.isFinite(diagonal) || diagonal<=0)) return [];
     const batteryPenalty=targetBattery && capacity ? Math.abs(capacity-targetBattery)/targetBattery : 0;
     const sizePenalty=targetDisplay && diagonal ? Math.abs(diagonal-targetDisplay)/targetDisplay : 0;
-    return [{device,score:batteryPenalty+sizePenalty}];
+    // Same chip class first: a flagship concept should not be compared with entry phones.
+    const candidateClass=socClass(device.variant.soc?.name);
+    const classPenalty=targetClass===undefined ? 0 : candidateClass===undefined ? 0.2 : Math.abs(candidateClass-targetClass)*0.35;
+    // Prefer current phones; older releases drift down gradually.
+    const ageYears=device.releaseDate ? (Date.parse(today)-Date.parse(device.releaseDate))/31_557_600_000 : undefined;
+    const agePenalty=ageYears===undefined ? 0.05 : Math.min(0.25,Math.max(0,ageYears-1)*0.06);
+    return [{device,score:batteryPenalty+sizePenalty+classPenalty+agePenalty}];
   }).filter(entry=>entry.score<0.6).sort((a,b)=>
     a.score-b.score ||
     (a.device.variant.identity.manufacturer+' '+a.device.variant.identity.modelName)
@@ -112,8 +149,14 @@ export function suggestCompetingDevices(
   const seen=new Set<string>();
   return scored.filter(({device})=>{
     const key=comparisonKey(device.variant.identity.manufacturer,device.variant.identity.modelName);
-    if(seen.has(key))return false;
+    // Carrier/region editions share a maker, chip, battery and screen: show one of them.
+    const capacity=device.variant.battery?.typicalCapacityMah ?? device.variant.battery?.capacityMah;
+    const specs=device.variant.soc?.name && capacity && device.display?.diagonalInches
+      ? ['specs',normalize(device.variant.identity.manufacturer),normalize(device.variant.soc.name),capacity,device.display.diagonalInches].join('|')
+      : undefined;
+    if(seen.has(key)||(specs&&seen.has(specs)))return false;
     seen.add(key);
+    if(specs)seen.add(specs);
     return true;
   }).slice(0,Math.min(Math.max(options.limit ?? 3,1),5)).map(({device})=>({
     query:deviceDisplayName(device.variant.identity.manufacturer,device.variant.identity.modelName),
