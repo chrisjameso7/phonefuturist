@@ -1,6 +1,7 @@
 import { wallpaperMaterial,screenUV } from './device-wallpaper';
 import * as THREE from 'three';
 import { normalizeDesign, type DeviceDesign } from './device-design';
+import { rearCameraLayout } from './camera-layout';
 import { BACK_FINISHES, FRAME_FINISHES, FRONT_FINISHES } from './device-finishes';
 
 /** Flat, uniformly rounded face; extrusion bevel stays independent of the corner radius. */
@@ -106,15 +107,8 @@ export function createDeviceModel(initial: DeviceDesign) {
     mesh(slab(1.3, 15, t * .55, .5, .1), frame, 'power-button', w / 2 + .4, h * .12);
     mesh(slab(1.3, 25, t * .55, .5, .1), frame, 'volume-rocker', -w / 2 - .4, h * .2);
     const protrusion = c.protrusion!, rearSurface=t/2+.3, backZ = rearSurface + protrusion/2, islandTop=rearSurface+protrusion;
-    const count = c.cameraCount!, family = c.family!;
-    const margin = 4, islandW = Math.min(c.cameraWidth!, w - margin*2), islandH = Math.min(c.cameraHeight!, h*.45);
-    const circular = family === 'halo' || (!raw.family && c.camera === 'circle');
-    const horizontal = family === 'duo';
-    const islandWidth = horizontal ? islandW : circular ? Math.min(w-8,islandW) : islandW;
-    const islandHeight = horizontal ? Math.min(islandH, w*.5) : circular ? islandWidth : islandH;
-    const baseX = horizontal || circular ? 0 : -w/2 + margin + islandWidth/2;
-    const cx=THREE.MathUtils.clamp(baseX+(c.cameraX??0),-w/2+margin+islandWidth/2,w/2-margin-islandWidth/2);
-    const cy = THREE.MathUtils.clamp(h/2 - margin - islandHeight/2 + (c.cameraY??0),-h/2+margin+islandHeight/2,h/2-margin-islandHeight/2);
+    const camLayout = rearCameraLayout(raw), { family, circular, horizontal, islandWidth, islandHeight, cx, cy, positions, radius } = camLayout;
+    const count = positions.length;
     if (circular) {
       const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,64),frame,'circular-housing',cx,cy,backZ);
       housing.rotation.x=Math.PI/2;
@@ -123,16 +117,6 @@ export function createDeviceModel(initial: DeviceDesign) {
       mesh(slab(islandWidth,islandHeight,protrusion,family==='stealth'?2:family==='duo'?islandHeight/2:8),horizontal?frame:finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
       if(horizontal)mesh(slab(islandWidth-1.4,islandHeight-1.4,.12,(islandHeight-1.4)/2,.02),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);
     }
-    let positions: Array<[number,number]>;
-    if(horizontal) positions=Array.from({length:count},(_,i)=>[cx+(i-(count-1)/2)*(islandWidth-10)/Math.max(count,1),cy]);
-    else if(circular) positions=count===1?[[cx,cy]]:Array.from({length:count},(_,i)=>[cx+Math.cos(i*Math.PI*2/count-Math.PI/2)*islandWidth*.24,cy+Math.sin(i*Math.PI*2/count-Math.PI/2)*islandWidth*.24]);
-    else if(family==='column'||family==='stealth')positions=Array.from({length:count},(_,i)=>i<3?[cx,cy+(1-i)*islandHeight*.32]:[cx+islandWidth*.95,cy-islandHeight*.12]);
-    else if(family==='dot')positions=([[-.27,.3],[-.27,-.03],[.24,-.15],[.24,-.42]] as Array<[number,number]>).slice(0,count).map(([x,y])=>[cx+x*islandWidth,cy+y*islandHeight]);
-    else positions=([[-.29,.23],[-.29,-.23],[-.02,0],[.25,-.2]] as Array<[number,number]>).slice(0,count).map(([x,y])=>[cx+x*islandWidth,cy+y*islandHeight]);
-    let separation=Infinity;
-    for(let i=0;i<positions.length;i++)for(let j=i+1;j<positions.length;j++) separation=Math.min(separation,Math.hypot(positions[i][0]-positions[j][0],positions[i][1]-positions[j][1]));
-    const edgeDistance=Math.min(...positions.map(([x,y])=>Math.min(w/2-Math.abs(x),h/2-Math.abs(y))));
-    const radius=Math.max(1.5,Math.min(c.lensDiameter!/2,(separation-c.lensSpacing!)/2,edgeDistance-1,islandHeight*.3,islandWidth*.3));
     // Duo and Halo use an uninterrupted opaque black camera window.
     if(family!=='duo'&&family!=='halo')positions.forEach(([x,y],i)=>{
       const periscope=c.camera==='periscope'&&i===count-1&&count>1;
@@ -143,8 +127,7 @@ export function createDeviceModel(initial: DeviceDesign) {
         const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),lens,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
       }
     });
-    const flashCandidates:Array<[number,number]>=horizontal?[[cx+islandWidth*.4,cy],[w/2-4,h/2-5]]:[[w/2-4,h/2-5],[-w/2+4,h/2-5],[w/2-4,h*.2]];
-    const [flashX,flashY]=flashCandidates.find(([x,y])=>positions.every(([px,py])=>Math.hypot(x-px,y-py)>radius+2.5))??flashCandidates[0];
+    const [flashX,flashY]=camLayout.flash;
     const flash=mesh(new THREE.CylinderGeometry(1.5,1.5,.4,20),accent,'flash',flashX,flashY,t/2+.5);flash.rotation.x=Math.PI/2;
     if(family==='stealth'){
       const fan=mesh(new THREE.CylinderGeometry(8,8,.4,32),black,'cooling-fan',-w*.2,-h*.05,t/2+.5);fan.rotation.x=Math.PI/2;
