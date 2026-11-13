@@ -1,5 +1,8 @@
+import { SOC_MODELS } from '../../lib/simulation/soc-model-catalog';
+import type { SocPowerWhatIf } from '../../lib/simulation/modules/soc-power-what-if';
+import BrandSelect from './BrandSelect';
+import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES } from '../../lib/simulation/camera-option-catalog';
 import { useState } from 'react';
-import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
 import type {
   SimpleCoolingPreset,
   SimpleModeInput,
@@ -8,7 +11,8 @@ import type {
 import type { SocVendor } from '../../lib/simulation/modules/device-variant';
 
 type Props = {
-  onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy') => void;
+  busy?: boolean;
+  onRun: (input: SimpleModeInput, usage: 'Light' | 'Typical' | 'Heavy', powerScenario: SocPowerWhatIf) => void;
 };
 
 const vendors: SocVendor[] = [
@@ -31,8 +35,10 @@ function number(value: string) {
 
 export default function SimpleModePanel({
   onRun,
+  busy = false,
 }: Props) {
   const [name, setName] = useState('');
+  const [hasRun,setHasRun]=useState(false);
   const [manufacturer, setManufacturer] =
     useState('');
   const [batteryMah, setBatteryMah] =
@@ -43,11 +49,19 @@ export default function SimpleModePanel({
     useState('6.8');
   const [resolution, setResolution] =
     useState<SimpleResolutionPreset>('qhd');
+  const [aspectRatio, setAspectRatio] = useState('9:20');
+  const [customAspectWidth, setCustomAspectWidth] = useState('');
+  const [customAspectHeight, setCustomAspectHeight] = useState('');
+  const [renderingScale, setRenderingScale] = useState<100 | 75 | 50>(100);
+  const [customWidth, setCustomWidth] = useState('');
+  const [customHeight, setCustomHeight] = useState('');
   const [refreshRate, setRefreshRate] =
     useState('120');
+  const [brightness, setBrightness] = useState('');
   const [socVendor, setSocVendor] =
     useState<SocVendor>('Qualcomm');
   const [socName, setSocName] = useState('');
+  const [socPowerScenario, setSocPowerScenario] = useState<SocPowerWhatIf>('neutral');
   const [cooling, setCooling] =
     useState<SimpleCoolingPreset>('large-vc');
   const [cameraMp, setCameraMp] =
@@ -56,6 +70,8 @@ export default function SimpleModePanel({
     useState('1.3');
   const [aperture, setAperture] =
     useState('1.8');
+  const [softwareTuning, setSoftwareTuning] = useState<NonNullable<SimpleModeInput['softwareTuning']>>('standard');
+  const [batteryVoltage, setBatteryVoltage] = useState('3.85');
   const [error, setError] = useState('');
   const [usage, setUsage] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
 
@@ -64,21 +80,34 @@ export default function SimpleModePanel({
     const diagonal = number(displaySize);
     const hz = number(refreshRate);
 
-    if (!battery || !diagonal || !hz) {
+    if (!battery || !diagonal || !hz || !number(batteryVoltage) || Number(batteryVoltage) < 3 || Number(batteryVoltage) > 5) {
       setError(
-        'Battery, display size and refresh rate are required.',
+        'Enter battery, display size, refresh rate and a cell voltage between 3 and 5 V.',
       );
+      return;
+    }
+
+    if (resolution === 'custom' && (!number(customWidth) || !number(customHeight))) {
+      setError('Enter both pixel dimensions for the custom display resolution.');
+      return;
+    }
+
+    if (aspectRatio === 'custom' && (!number(customAspectWidth) || !number(customAspectHeight))) {
+      setError('Enter both dimensions of the custom aspect ratio.');
       return;
     }
 
     setError('');
 
+    setHasRun(true);
     onRun({
       ...(name.trim() ? { name: name.trim() } : {}),
       ...(manufacturer.trim()
         ? { manufacturer: manufacturer.trim() }
         : {}),
       batteryMah: battery,
+      softwareTuning,
+      batteryVoltageV: number(batteryVoltage),
       ...(number(wiredWatts)
         ? {
             wiredChargingWatts:
@@ -87,7 +116,12 @@ export default function SimpleModePanel({
         : {}),
       displayDiagonalInches: diagonal,
       displayResolution: resolution,
+      aspectRatioWidth: aspectRatio === 'custom' ? number(customAspectWidth) : Number(aspectRatio.split(':')[0]),
+      aspectRatioHeight: aspectRatio === 'custom' ? number(customAspectHeight) : Number(aspectRatio.split(':')[1]),
+      renderingScalePercent: renderingScale,
+      ...(resolution === 'custom' ? { customResolutionWidthPx: number(customWidth), customResolutionHeightPx: number(customHeight) } : {}),
       refreshRateHz: hz,
+      ...(number(brightness) ? { brightnessNits: number(brightness) } : {}),
       socVendor,
       ...(socName.trim()
         ? { socName: socName.trim() }
@@ -111,7 +145,7 @@ export default function SimpleModePanel({
           : {}),
         equivalentFocalLengthMm: 24,
       },
-    }, usage);
+    }, usage, socPowerScenario);
   }
 
   return (
@@ -119,17 +153,13 @@ export default function SimpleModePanel({
       <div className="il-simple-intro">
         <div>
           <strong>Simple Mode</strong>
-          <span>Beta · free</span>
+
         </div>
-        <p>
-          Pick the headline specs. PhoneFuturist
-          translates them into the same simulation engine
-          used by Advanced Lab.
-        </p>
+
       </div>
 
       <fieldset className="il-simple-usage" aria-label="Daily usage profile">
-        <legend>How do you use your phone?</legend>
+        <legend>Usage</legend>
         <div className="il-mode-switch">
           {(['Light', 'Typical', 'Heavy'] as const).map((preset) => (
             <button key={preset} type="button" className={usage === preset ? 'active' : ''}
@@ -138,12 +168,21 @@ export default function SimpleModePanel({
             </button>
           ))}
         </div>
-        <p className="il-help">
-          {SIMPLE_USAGE_SCENARIOS[usage].description}
-          {' '}{SIMPLE_USAGE_SCENARIOS[usage].disclaimer}
-        </p>
+
       </fieldset>
       <div className="il-simple-grid">
+        <label className="il-field"><span>Software tuning</span>
+          <select value={softwareTuning} onChange={event => setSoftwareTuning(event.target.value as NonNullable<SimpleModeInput['softwareTuning']>)}>
+            <option value="standard">Standard</option>
+            <option value="optimized">Optimized · scenario</option>
+            <option value="background-heavy">Background-heavy · scenario</option>
+          </select>
+          <small>Optional software energy scenario.</small>
+        </label>
+        <label className="il-field"><span>Nominal cell voltage (V)</span>
+          <span className="instrument-unit"><input type="number" min="3" max="5" step="0.01" value={batteryVoltage} onChange={event => setBatteryVoltage(event.target.value)} /><span aria-hidden="true">V</span></span>
+          <small>Use the battery specification; default is a scenario value.</small>
+        </label>
         <label className="il-field il-wide">
           <span>Device name</span>
           <input
@@ -157,20 +196,12 @@ export default function SimpleModePanel({
 
         <label className="il-field">
           <span>Brand</span>
-          <input
-            value={manufacturer}
-            placeholder="Samsung"
-            onChange={(event) =>
-              setManufacturer(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <BrandSelect value={manufacturer} onChange={setManufacturer} />
         </label>
 
         <label className="il-field">
           <span>Battery</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             value={batteryMah}
@@ -179,12 +210,12 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">mAh</span></span>
         </label>
 
         <label className="il-field">
           <span>Wired charging</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             value={wiredWatts}
@@ -193,12 +224,12 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">W</span></span>
         </label>
 
         <label className="il-field">
           <span>Display size</span>
-          <input
+          <span className="instrument-unit"><input
             type="number"
             inputMode="decimal"
             step="0.1"
@@ -208,7 +239,7 @@ export default function SimpleModePanel({
                 event.currentTarget.value,
               )
             }
-          />
+          /><span aria-hidden="true">in</span></span>
         </label>
 
         <label className="il-field">
@@ -222,9 +253,65 @@ export default function SimpleModePanel({
               )
             }
           >
-            <option value="fhd">FHD class</option>
-            <option value="qhd">QHD class</option>
+            <option value="hd">HD · 720 × 1600</option>
+            <option value="hd-plus">HD+ · 720 × 1650</option>
+            <option value="fhd">FHD · 1080 × 2400</option>
+            <option value="fhd-plus">FHD+ · 1080 × 2520</option>
+            <option value="1200p">1200p · 1200 × 2640</option>
+            <option value="1220p">1.5K · 1220 × 2712</option>
+            <option value="1260p">1260p · 1260 × 2800</option>
+            <option value="1280p">1280p · 1280 × 2856</option>
+            <option value="1344p">1344p · 1344 × 2992</option>
+            <option value="qhd">QHD · 1440 × 3200</option>
+            <option value="qhd-plus">QHD+ · 1440 × 3120</option>
+            <option value="4k">4K-class · 1644 × 3840</option>
+            <option value="custom">Custom pixel resolution</option>
           </select>
+        </label>
+
+        {resolution === 'custom' && (
+          <div className="il-grid">
+            <label className="il-field"><span>Width (pixels)</span><span className="instrument-unit"><input type="number" min="1" step="1" value={customWidth} onChange={event => setCustomWidth(event.currentTarget.value)} placeholder="1220" /><span aria-hidden="true">px</span></span></label>
+            <label className="il-field"><span>Height (pixels)</span><span className="instrument-unit"><input type="number" min="1" step="1" value={customHeight} onChange={event => setCustomHeight(event.currentTarget.value)} placeholder="2712" /><span aria-hidden="true">px</span></span></label>
+          </div>
+        )}
+
+        <label className="il-field">
+          <span>Aspect ratio · portrait</span>
+          <select value={aspectRatio} onChange={event => setAspectRatio(event.currentTarget.value)}>
+            <optgroup label="Portrait phone">
+              <option value="9:21">21:9</option>
+              <option value="9:20.5">20.5:9</option>
+              <option value="9:20">20:9</option>
+              <option value="9:19.5">19.5:9</option>
+              <option value="9:19">19:9</option>
+              <option value="9:18.5">18.5:9</option>
+              <option value="9:18">18:9</option>
+              <option value="9:17">17:9</option>
+            </optgroup>
+            <optgroup label="Wide portrait and foldables">
+              <option value="9.5:16">16:9.5 · Huawei Pura X View</option>
+              <option value="10:16">16:10 · Huawei Pura X</option>
+              <option value="3:4">4:3</option>
+              <option value="1:1">1:1</option>
+            </optgroup>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+        {aspectRatio === 'custom' && (
+          <div className="il-grid">
+            <label className="il-field"><span>Ratio width</span><input type="number" min="0.1" step="0.1" value={customAspectWidth} onChange={event => setCustomAspectWidth(event.currentTarget.value)} /></label>
+            <label className="il-field"><span>Ratio height</span><input type="number" min="0.1" step="0.1" value={customAspectHeight} onChange={event => setCustomAspectHeight(event.currentTarget.value)} /></label>
+          </div>
+        )}
+        <label className="il-field">
+          <span>GPU rendering resolution</span>
+          <select value={renderingScale} onChange={event => setRenderingScale(Number(event.currentTarget.value) as 100 | 75 | 50)}>
+            <option value={100}>Native (100% per dimension)</option>
+            <option value={75}>Scaled (75% per dimension)</option>
+            <option value={50}>Scaled (50% per dimension)</option>
+          </select>
+          <small>The physical panel stays at its native resolution. Scaling changes rendered pixel count, not measured battery life; real savings depend on GPU workload and display electronics.</small>
         </label>
 
         <label className="il-field">
@@ -246,14 +333,25 @@ export default function SimpleModePanel({
         </label>
 
         <label className="il-field">
+          <span>Screen brightness</span>
+          <select value={brightness} onChange={event => setBrightness(event.currentTarget.value)}>
+            <option value="">Reference conditions · unchanged</option>
+            <option value="200">200 nits · indoor</option>
+            <option value="400">400 nits · bright room</option>
+            <option value="800">800 nits · outdoors</option>
+            <option value="1200">1,200 nits · bright sunlight</option>
+          </select>
+          <small>Explicit brightness scenario. Reference-lab brightness varies; these are not measured battery tests.</small>
+        </label>
+
+        <label className="il-field">
           <span>SoC vendor</span>
           <select
             value={socVendor}
-            onChange={(event) =>
-              setSocVendor(
-                event.currentTarget.value as SocVendor,
-              )
-            }
+            onChange={(event) => {
+              setSocVendor(event.currentTarget.value as SocVendor);
+              setSocName('');
+            }}
           >
             {vendors.map((vendor) => (
               <option key={vendor} value={vendor}>
@@ -265,13 +363,24 @@ export default function SimpleModePanel({
 
         <label className="il-field il-wide">
           <span>SoC model</span>
-          <input
-            value={socName}
-            placeholder="Snapdragon 8 Elite Gen 5"
-            onChange={(event) =>
-              setSocName(event.currentTarget.value)
-            }
-          />
+          <select value={(SOC_MODELS[socVendor]?.released ?? []).concat(SOC_MODELS[socVendor]?.preview ?? []).includes(socName) ? socName : ''} onChange={event => setSocName(event.currentTarget.value)}>
+            <option value="">Select processor</option>
+            {(SOC_MODELS[socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)}
+            {(SOC_MODELS[socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}
+          </select>
+        </label>
+
+        <label className="il-field il-wide">
+          <span>Processor power scenario</span>
+          <select
+            value={socPowerScenario}
+            onChange={event => setSocPowerScenario(event.currentTarget.value as SocPowerWhatIf)}
+          >
+            <option value="neutral">Neutral · no chip efficiency assumption</option>
+            <option value="efficiency">Efficiency-focused · assume 12% less loaded SoC power</option>
+            <option value="performance">Performance-focused · assume 12% more loaded SoC power</option>
+          </select>
+          <small>What-if only. Actual Exynos and Snapdragon efficiency is not established.</small>
         </label>
 
         <label className="il-field">
@@ -308,32 +417,18 @@ export default function SimpleModePanel({
 
         <label className="il-field">
           <span>Sensor format</span>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            value={sensorDenominator}
-            onChange={(event) =>
-              setSensorDenominator(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <select value={sensorDenominator} onChange={(event) => setSensorDenominator(event.currentTarget.value)}>
+            <option value="">Select sensor format</option>
+            {CAMERA_SENSOR_FORMATS.map(value => <option key={value} value={String(value)}>1/{value}″ type</option>)}
+          </select>
         </label>
 
         <label className="il-field">
           <span>Main aperture</span>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            value={aperture}
-            onChange={(event) =>
-              setAperture(
-                event.currentTarget.value,
-              )
-            }
-          />
+          <select value={aperture} onChange={(event) => setAperture(event.currentTarget.value)}>
+            <option value="">Select aperture</option>
+            {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+          </select>
         </label>
       </div>
 
@@ -346,17 +441,16 @@ export default function SimpleModePanel({
       <button
         type="button"
         className="il-simple-run"
+        aria-busy={busy}
+        disabled={busy}
+        data-success={hasRun && !busy || undefined}
         onClick={submit}
       >
-        Simulate device
+        Run simulation
       </button>
+      {hasRun && !busy && <p role="status">Simulation complete.</p>}
 
-      <p className="il-simple-note">
-        Simple Mode uses documented presets for resolution
-        and cooling classes. It does not invent thermal
-        resistance, thermal mass or other hidden engineering
-        values.
-      </p>
+
     </div>
   );
 }

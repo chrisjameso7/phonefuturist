@@ -1,0 +1,7 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import DisplayPwmLab from '../../components/labs/DisplayPwmLab';
+import '../../styles/labs.css';
+---
+<Page title="Display PWM"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Display PWM</h1><p>Compare frequency, duty cycle and brightness.</p></header><DisplayPwmLab client:load/></div></Page>

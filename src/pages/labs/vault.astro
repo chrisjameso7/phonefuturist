@@ -1,0 +1,7 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import ConceptVault from '../../components/labs/ConceptVault';
+import '../../styles/labs.css';
+---
+<Page title="Concept vault"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Concept vault</h1><p>Lock a prediction and follow the outcome.</p></header><ConceptVault client:load /></div></Page>

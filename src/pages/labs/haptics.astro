@@ -1,0 +1,7 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import HapticLab from '../../components/labs/HapticLab';
+import '../../styles/labs.css';
+---
+<Page title="Haptics"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Haptics</h1><p>Test profiles and create your own pulse pattern.</p></header><HapticLab client:load/></div></Page>

@@ -1,0 +1,20 @@
+---
+import {socialIcon} from '../lib/social-platforms';
+import {safeHttps} from '../lib/editorial';
+import type {TeamLink} from '../lib/team';
+interface Props {links: TeamLink[]; label?: string}
+const {links,label='Social and professional links'}=Astro.props;
+const visible=links.filter(link=>safeHttps(link.url));
+---
+{visible.length>0 && <nav class="profile-socials" aria-label={label}>
+ {visible.map(link=>{
+  const platform=socialIcon(link);
+  const title=platform.id==='other'||platform.label===link.label?link.label:platform.label+' — '+link.label;
+  return <a href={link.url} target="_blank" rel="noopener noreferrer" title={title} aria-label={title}>
+   <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill={platform.outlined?'none':'currentColor'} stroke={platform.outlined?'currentColor':'none'} stroke-width={platform.outlined?1.7:undefined} stroke-linecap="round" stroke-linejoin="round"><path d={platform.icon}/></svg>
+  </a>;
+ })}
+</nav>}
+<style>
+.profile-socials{display:flex;flex-wrap:wrap;gap:8px;margin-block:18px}.profile-socials a{display:inline-grid;place-items:center;width:44px;height:44px;box-sizing:border-box;border:1px solid var(--pf-border);border-radius:4px;color:var(--pf-primary);background:transparent;text-decoration:none}.profile-socials a:hover{background:var(--pf-raised);border-color:var(--pf-secondary)}.profile-socials a:focus-visible{outline:2px solid var(--pf-primary);outline-offset:3px}.profile-socials svg{display:block;flex:none}
+</style>

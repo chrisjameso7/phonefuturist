@@ -19,6 +19,20 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              { name: 'react-runtime', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 20 },
+              // Keep immutable evidence payloads out of the executable simulator chunks.
+              { name: 'simulation-data', test: /data[\\/](calibration|catalog)[\\/]/, maxSize: 200000, priority: 15 },
+              { name: 'simulation-modules', test: /src[\\/]lib[\\/]simulation[\\/]/, minSize: 40000, maxSize: 240000, priority: 10 },
+            ],
+          },
+        },
+      },
+    },
     optimizeDeps: {
       include: [
         'astro/assets/services/noop',
@@ -28,8 +42,10 @@ export default defineConfig({
   },
 
   security: {
-    checkOrigin: true,
+    // Middleware enforces the exact origin allowlist for all unsafe methods, including trusted domain aliases.
+    checkOrigin: false,
     csp: {
+      scriptDirective: { resources: ["'self'"] },
       directives: [
         "default-src 'self'",
         "img-src 'self' data: blob: https:",

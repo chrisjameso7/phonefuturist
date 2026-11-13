@@ -1,0 +1,81 @@
+---
+import Page from '../../layouts/Page.astro';
+import '../../components/studio/studio.css';
+import { newsletterSettings } from '../../lib/newsletter-settings';
+import { newsletterIssue } from '../../lib/newsletter-issue';
+import { newsletterSubject, createNewsletterDraft, sendNewsletterTest } from '../../lib/newsletter-delivery';
+import { NEWSLETTER_TEST_ADDRESS, renderNewsletter } from '../../lib/newsletter-template';
+import { boundedForm } from '../../lib/security';
+import { env } from 'cloudflare:workers';
+import type { NewsletterLimiter } from '../../lib/newsletter-signup';
+if (!Astro.locals.access?.roles.includes('admin')) return new Response('Admin access required.', {status:403});
+let form = new URLSearchParams();
+let error = '', message = '', draftUrl = '';
+if (Astro.request.method === 'POST') { try { form = await boundedForm(Astro.request); } catch { error = 'Invalid newsletter form.'; Astro.response.status = 400; } }
+const config = newsletterSettings();
+let loaded: Awaited<ReturnType<typeof newsletterIssue>> | null = null;
+try {
+ loaded = await newsletterIssue(form, Astro.request.method !== 'POST');
+ const action = form.get('action');
+ if (Astro.request.method === 'POST' && !error && action && action !== 'preview') {
+  if (!['test','draft'].includes(action)) throw new Error('Unknown newsletter action.');
+  if (!config?.topicId) throw new Error('Missing Worker settings: RESEND_API_KEY, RESEND_SEGMENT_ID or RESEND_TOPIC_ID.');
+  if (form.get('confirm') !== 'yes') throw new Error('Confirm the selected action first.');
+  if (!loaded.issue.stories.length) throw new Error('Select at least one published story.');
+  if (!loaded.issue.previewText.trim()) throw new Error('Supply preview text for this issue.');
+  const subject = newsletterSubject(form.get('subject') ?? '');
+  const limiter = env.NEWSLETTER_LIMITER as NewsletterLimiter | undefined;
+  if (!limiter || !(await limiter.limit({key:'newsletter-admin:'+Astro.locals.user!.id})).success) throw new Error('Please wait a minute before trying again.');
+  if (action === 'test') {
+   await sendNewsletterTest(config,subject,loaded.issue,NEWSLETTER_TEST_ADDRESS);
+   message = 'One test email sent to ' + NEWSLETTER_TEST_ADDRESS + '. No broadcast was sent.';
+  } else {
+   const result = await createNewsletterDraft(config,subject,loaded.issue); draftUrl = result.url;
+   message = 'Draft created for the configured Newsletter segment and topic. Nothing was sent. Review it in Resend; sending is manual.';
+  }
+ }
+} catch (failure) { error = failure instanceof Error ? failure.message : 'Newsletter could not be prepared.'; Astro.response.status = 503; }
+const previewQuery = new URLSearchParams(form);
+previewQuery.delete('action'); previewQuery.delete('confirm');
+if (Astro.request.method !== 'POST' && loaded) for (const id of loaded.selected) previewQuery.append('article',id);
+const ready = loaded && loaded.issue.stories.length > 0 && !error;
+const rendered = loaded ? renderNewsletter(loaded.issue) : null;
+---
+<Page title="Newsletter Studio" privatePage>
+ <section class="studio-shell newsletter-studio">
+  <a href="/studio">← Studio</a>
+  <h1>Newsletter</h1>
+  <p>Choose published stories, review the email, then send a single test or create a Resend draft. Broadcast sending stays in Resend.</p>
+  {!config && <p role="alert">Newsletter actions are unavailable. Required Worker settings: RESEND_API_KEY, RESEND_SEGMENT_ID and RESEND_TOPIC_ID.</p>}
+  {error && <p class="studio-message" role="alert">{error}</p>}
+  {message && <p role="status">{message} {draftUrl && <a href={draftUrl} target="_blank" rel="noopener noreferrer">Open draft in Resend ↗</a>}</p>}
+  {loaded && <>
+   <form method="post" action="/studio/newsletter" class="studio-fields">
+    <label>Subject<input name="subject" maxlength="200" value={form.get('subject') ?? ''} /></label>
+    <label>Preview text<input name="preview_text" maxlength="200" value={form.get('preview_text') ?? ''} /></label>
+    <fieldset><legend>Published stories · choose up to eight</legend>
+     {loaded.articles.map(article=><label class="newsletter-choice"><input type="checkbox" name="article" value={article.id} checked={loaded!.selected.includes(article.id)} />{article.title}</label>)}
+     {!loaded.articles.length && <p>No published stories are available yet.</p>}
+    </fieldset>
+    <label class="newsletter-choice"><input type="checkbox" name="lab" value="yes" checked={form.get('lab') === 'yes'} />Include “Try a lab”</label>
+    <label>A note from us (optional)<textarea name="note" maxlength="3000" rows="4">{form.get('note') ?? ''}</textarea></label>
+    <button name="action" value="preview">Update preview</button>
+   </form>
+   {ready && <>
+    <h2>Email preview</h2>
+    <p><a href={'/studio/newsletter/preview?'+previewQuery.toString()} target="_blank" rel="noopener">Open full preview ↗</a></p>
+    <iframe title="PhoneFuturist newsletter email preview" src={'/studio/newsletter/preview?'+previewQuery.toString()} sandbox="allow-same-origin" loading="lazy"></iframe>
+    <details><summary>Plain-text version</summary><pre>{rendered?.text}</pre></details>
+    {(['test','draft'] as const).map(action=><form method="post" action="/studio/newsletter" class="newsletter-action">
+     {Array.from(previewQuery.entries()).map(([name,value])=><input type="hidden" name={name} value={value} />)}
+     <input type="hidden" name="action" value={action} />
+     <label class="newsletter-choice"><input name="confirm" type="checkbox" value="yes" required />{action === 'test' ? 'Send one test only to '+NEWSLETTER_TEST_ADDRESS : 'Create a draft for the configured Newsletter segment and topic. Do not send.'}</label>
+     <button type="submit" disabled={!config}>{action === 'test' ? 'Send test email' : 'Create draft in Resend'}</button>
+    </form>)}
+   </>}
+  </>}
+ </section>
+</Page>
+<style>
+.newsletter-studio{display:block;max-width:1000px;padding:32px 20px}.newsletter-studio p{line-height:1.7}.studio-fields{display:grid;gap:18px}.newsletter-choice{display:flex;gap:12px;align-items:start;margin:12px 0}.newsletter-choice input{width:auto;min-height:24px;flex:none}iframe{width:100%;max-width:640px;height:820px;border:1px solid var(--pf-border);background:#faf9f5}pre{white-space:pre-wrap;overflow-wrap:anywhere}.newsletter-action{border-top:1px solid var(--pf-border);padding-block:24px}input,textarea{max-width:100%;box-sizing:border-box}
+</style>

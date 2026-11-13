@@ -1,8 +1,16 @@
 # Copy to .dev.vars; never commit credentials. APP_ORIGIN must be exact, no path.
 APP_ORIGIN=http://localhost:4321
+# Optional extra exact origins, comma-separated. Production apex/www and legacy Worker are built in.
+ALLOWED_ORIGINS=
 SUPABASE_URL=
 SUPABASE_PUBLISHABLE_KEY=
 VIRTUAL_DEVICE_PROVIDER=gemma
 VIRTUAL_DEVICE_MODEL=@cf/google/gemma-4-26b-a4b-it
 CLOUDFLARE_ACCOUNT_ID=
 CLOUDFLARE_AI_API_TOKEN=
+
+# Hardware analysis is baseline-only until explicitly enabled with a platform rate limiter.
+AI_VALUATION_ENABLED=false
+# Optional BOM_VALUATION_MODEL overrides VIRTUAL_DEVICE_MODEL.
+
+# Newsletter credentials are existing Worker settings; see docs/newsletter.md.

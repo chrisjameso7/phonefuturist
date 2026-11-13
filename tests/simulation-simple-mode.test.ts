@@ -140,3 +140,18 @@ describe('Simple Mode translation', () => {
     ).toThrow(/refresh rate/i);
   });
 });
+
+
+describe('Simple brightness scenario handoff', () => {
+  const input = { batteryMah: 5500, displayDiagonalInches: 6.8,
+    displayResolution: 'qhd' as const, refreshRateHz: 120, cooling: 'large-vc' as const };
+  it('preserves explicit brightness for the advanced battery and display adapters', () => {
+    expect(expandSimpleMode({ ...input, brightnessNits: 800 }).advanced.brightnessNits).toBe(800);
+  });
+  it('keeps reference conditions unspecified instead of inventing a lab brightness', () => {
+    expect(expandSimpleMode(input).advanced).not.toHaveProperty('brightnessNits');
+  });
+  it.each([0, -1, NaN, Infinity])('rejects invalid explicit brightness %s', brightnessNits => {
+    expect(() => expandSimpleMode({ ...input, brightnessNits })).toThrow('brightness must be positive');
+  });
+});

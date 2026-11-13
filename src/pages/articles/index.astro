@@ -1,7 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
 import ArticleCards from '../../components/ArticleCards.astro';
-import MobileTopics from '../../components/MobileTopics.astro';
 import {publishedArticles} from '../../lib/publication';
 import {sections} from '../../lib/editorial';
 const section=Astro.url.searchParams.get('section');
@@ -14,11 +13,9 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
 ---
 <Page title={validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}>
   <section class="publication-index newsroom-index">
-    <MobileTopics/>
     <header class="newsroom-head">
       <p class="eyebrow">PhoneFuturist Newsroom</p>
       <h1>{validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}</h1>
-      <p>Reporting, analysis and the signals shaping what comes next.</p>
     </header>
 
     <nav class="section-tabs newsroom-tabs" aria-label="Sections">
@@ -38,37 +35,128 @@ const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),..
 <style>
   .newsroom-index{width:min(100%,1420px);margin:0 auto;padding:42px clamp(18px,3vw,44px) 80px}
   .newsroom-head{max-width:900px;padding:48px 0 36px}
-  .newsroom-head h1{margin:8px 0 14px;font-size:clamp(4rem,8vw,8rem);line-height:.88;letter-spacing:-.075em;font-weight:620}
+  .newsroom-head h1{margin:8px 0 14px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.075em;font-weight:620}
   .newsroom-head>p:not(.eyebrow){max-width:620px;margin:0;color:var(--muted);font-size:1rem}
-  .newsroom-tabs{display:flex;gap:4px;margin-bottom:28px;padding:7px;border:1px solid #202c39;border-radius:12px;background:#0b1118;overflow-x:auto}
-  .newsroom-tabs a{flex:0 0 auto;padding:9px 13px;border-radius:8px;color:#8593a3;text-decoration:none;font-size:.7rem;text-transform:capitalize}
-  .newsroom-tabs a[aria-current="page"]{color:#fff;background:rgb(22 140 255/.12);box-shadow:inset 0 -1px rgb(44 217 255/.25)}
-  .newsroom-empty{min-height:360px;display:grid;place-content:center;padding:30px;border:1px solid #202c39;border-radius:16px;background:#0c131c}
+  .newsroom-tabs{display:flex;gap:4px;margin-bottom:28px;padding:7px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface);overflow-x:auto}
+  .newsroom-tabs a{flex:0 0 auto;padding:9px 13px;border-radius:var(--pf-radius-sm);color:var(--pf-muted);text-decoration:none;font-size:.7rem;text-transform:capitalize}
+  .newsroom-tabs a[aria-current="page"]{color:var(--pf-primary);background:color-mix(in srgb,var(--pf-brand) 12%,transparent);box-shadow:none}
+  .newsroom-index .article-card {border-radius:0;background:transparent;border:0;border-bottom:1px solid var(--pf-border);box-shadow:none}
+  .newsroom-empty{min-height:360px;display:grid;place-content:center;padding:30px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
   .newsroom-empty h2{margin:0 0 8px;font-size:2rem}
   .newsroom-empty p{margin:0;color:var(--muted)}
   .newsroom-pagination{display:flex;justify-content:space-between;padding-top:30px;font-size:.72rem}
   @media(max-width:650px){
-    .newsroom-index{width:100%;padding:0 0 64px}
-    .newsroom-head{padding:24px 16px 16px}
-    .newsroom-head h1{margin:6px 0 8px;font-size:2.45rem;line-height:.98;letter-spacing:-.055em}
+    .newsroom-index{width:100%;padding:0 0 84px}
+    .newsroom-head{padding:22px 18px 16px}
+    .newsroom-head h1{margin:6px 0 8px;letter-spacing:-.055em;font-size:2.7rem;line-height:.94}
     .newsroom-head>p:not(.eyebrow){font-size:.82rem;line-height:1.45}
-    .newsroom-tabs{margin:0;padding:0 8px 9px;border:0;border-bottom:1px solid #18212b;border-radius:0;background:transparent;gap:1px}
-    .newsroom-tabs a{padding:8px 10px}
+    .newsroom-tabs{border-bottom:1px solid var(--pf-border);border-radius:0;margin:0 0 12px;padding:0 12px 2px;border:0;background:transparent;gap:7px}
+    .newsroom-tabs a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
     .newsroom-pagination{padding:20px 16px 0}
-    .newsroom-empty{margin:0 16px;border-radius:12px}
+    .newsroom-empty{margin:0 16px;border-radius:var(--pf-radius-md)}
+  .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
+  .newsroom-index .article-card{border:1px solid var(--pf-border)!important;border-radius:var(--pf-radius-md)!important;background:var(--pf-surface)!important;overflow:hidden}
   }
 </style>
 
 
-<style>
-@media(max-width:650px){
-  .newsroom-index{padding:0 0 84px}
-  .newsroom-head{padding:22px 18px 16px}
-  .newsroom-head h1{font-size:2.7rem;line-height:.94}
-  .newsroom-tabs{margin:0 0 12px;padding:0 12px 2px;border:0;background:transparent;gap:7px}
-  .newsroom-tabs a{min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border:1px solid #202b37;border-radius:999px;background:#0b1118}
-  .newsroom-index .article-grid{padding:0 12px 18px!important;gap:10px!important}
-  .newsroom-index .article-card{border:1px solid #202b37!important;border-radius:22px!important;background:#0b1118!important;overflow:hidden}
-  .newsroom-pagination{padding:20px 16px 0}
+
+
+<style is:global>
+/* Newsroom mobile: full-width editorial cards, never a compressed desktop row. */
+@media (max-width:760px) {
+  body:not(.product-mode) #main .newsroom-index {
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    padding:0 0 24px!important;
+    overflow-x:clip;
+  }
+  body:not(.product-mode) #main .newsroom-index .newsroom-head {
+    padding:24px 18px 18px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .newsroom-head h1 {
+    font-size:clamp(2.6rem,10vw,3.6rem)!important;
+    line-height:1.02!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-grid,
+  body:not(.product-mode) #main .newsroom-index .article-grid[data-count] {
+    box-sizing:border-box;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%;
+    max-width:100%;
+    gap:18px!important;
+    padding:0 16px 24px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image {
+    box-sizing:border-box;
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+    width:100%!important;
+    max-width:100%;
+    min-height:0!important;
+    height:auto!important;
+    margin:0!important;
+    gap:0!important;
+    border:0!important;
+    border-bottom:1px solid var(--pf-border)!important;
+    border-radius:0!important;
+    background:var(--pf-bg)!important;
+    overflow:hidden;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-image,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-image {
+    display:block!important;
+    flex:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    aspect-ratio:16/9!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-image img {
+    display:block;
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-content,
+  body:not(.product-mode) #main .newsroom-index .article-card.has-card-image .card-content,
+  body:not(.product-mode) #main .newsroom-index .article-card.lead-card.has-card-image .card-content {
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:18px 18px 20px!important;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card h3 {
+    font-size:clamp(1.25rem,5.4vw,1.55rem)!important;
+    line-height:1.25!important;
+    overflow-wrap:break-word;
+    margin:8px 0 10px;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card p {
+    font-size:.9rem!important;
+    line-height:1.55!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden!important;
+    margin-bottom:14px;
+  }
+  body:not(.product-mode) #main .newsroom-index .article-card .card-meta {
+    font-size:.75rem!important;
+    flex-wrap:wrap;
+    gap:8px;
+  }
 }
 </style>

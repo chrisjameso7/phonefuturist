@@ -133,18 +133,18 @@ const activeCount = members.filter((member) => member.active).length;
 </Page>
 
 <style>
-  .early-count{padding:7px 10px;border:1px solid #273646;border-radius:999px;color:#70c7ff;font-size:.65rem}
-  .early-access-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;margin:18px 0 24px;padding:18px;border:1px solid #202c39;border-radius:14px;background:#0b121a}
-  .early-access-form label span{display:block;margin-bottom:6px;color:#9ba9b8;font-size:.68rem}
-  .early-access-form input{width:100%;min-height:46px;background:#080d13;border-color:#293746}
+  .early-count{padding:7px 10px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);color:var(--pf-brand);font-size:.65rem}
+  .early-access-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;margin:18px 0 24px;padding:18px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface)}
+  .early-access-form label span{display:block;margin-bottom:6px;color:var(--pf-secondary);font-size:.68rem}
+  .early-access-form input{width:100%;min-height:46px;background:var(--pf-bg);border-color:var(--pf-border)}
   .early-access-form button{min-height:46px}
   .early-access-list{display:grid}
-  .early-access-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 2px;border-top:1px solid #1d2834}
+  .early-access-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 2px;border-top:1px solid var(--pf-border)}
   .early-access-row.is-revoked{opacity:.58}
   .early-access-row strong{display:block;font-size:.78rem}
-  .early-access-row small{display:block;margin-top:3px;color:#718092;font-size:.61rem}
+  .early-access-row small{display:block;margin-top:3px;color:var(--pf-muted);font-size:.61rem}
   .early-access-actions{display:flex;align-items:center;gap:10px}
-  .early-access-actions time{color:#657486;font-size:.59rem}
+  .early-access-actions time{color:var(--pf-muted);font-size:.59rem}
   .early-access-actions form{margin:0}
   @media(max-width:700px){.early-access-form{grid-template-columns:1fr}.early-access-row{align-items:flex-start;flex-direction:column}.early-access-actions{width:100%;justify-content:space-between}}
 </style>

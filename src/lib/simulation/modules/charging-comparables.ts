@@ -10,7 +10,7 @@ export interface ChargingComparableQuery {
   batteryChemistry?: string;
   wiredChargingWatts: number;
   wirelessChargingWatts?: number;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   manufacturer?: string;
   socVendor?: string;
   region?: string;

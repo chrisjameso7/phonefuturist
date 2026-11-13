@@ -1,4 +1,3 @@
-import { installNavigationOptics } from './navigation-optics';
 
 export function compactNavigationState(top:number,bottom:number,previous:boolean):boolean {
   return bottom<=0?true:top>=0?false:previous;
@@ -6,6 +5,7 @@ export function compactNavigationState(top:number,bottom:number,previous:boolean
 
 /** Progressive enhancement: native details navigation works without JavaScript. */
 export function enhanceNavigation() {
+  const header=document.querySelector<HTMLElement>('.site-header');
   const appbar=document.querySelector<HTMLElement>('.mobile-appbar');
   const tabbar=document.querySelector<HTMLElement>('.mobile-tabbar');
   let lastY=window.scrollY;
@@ -14,6 +14,7 @@ export function enhanceNavigation() {
   const syncMobileChrome=()=>{
     const y=window.scrollY;
     const compact=y>52;
+    header?.setAttribute('data-scroll-blur',String(y>8));
     const direction=y>lastY?'down':'up';
     appbar?.setAttribute('data-compact',String(compact));
     appbar?.setAttribute('data-direction',direction);
@@ -32,7 +33,7 @@ export function enhanceNavigation() {
   syncMobileChrome();
   window.addEventListener('scroll',onScroll,{passive:true});
 
-  const header=document.querySelector<HTMLElement>('.site-header');
+
   const sentinel=document.querySelector<HTMLElement>('.header-scroll-sentinel');
   const menu=header?.querySelector<HTMLDetailsElement>('.mobile-nav');
   const toggle=menu?.querySelector<HTMLElement>('summary');
@@ -43,7 +44,8 @@ export function enhanceNavigation() {
   const hiddenControls=[...header.querySelectorAll<HTMLElement>('.header-brand-row,.header-actions')];
   let scrolled=false;
   const update=()=>{
-    const compact=desktop.matches&&scrolled;
+    // Full-width PhoneFuturist headers stay intact while scrolling. Capsule mode is opt-in.
+    const compact=desktop.matches&&scrolled&&header.dataset.compactNavigation==='true';
     if(compact&&hiddenControls.some(control=>control.contains(document.activeElement))) {
       rail?.querySelector<HTMLElement>('a[aria-current],a')?.focus({preventScroll:true});
     }
@@ -54,7 +56,6 @@ export function enhanceNavigation() {
     new ResizeObserver(()=>{
       header.style.setProperty('--capsule-width',`${rail.offsetWidth}px`);
     }).observe(rail);
-    installNavigationOptics(header,rail,desktop);
   }
   // A 40px hysteresis band prevents repeated transitions around one threshold.
   if(sentinel&&'IntersectionObserver' in window){

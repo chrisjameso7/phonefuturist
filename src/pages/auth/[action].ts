@@ -3,7 +3,7 @@ import { boundedForm, validPassword } from '../../lib/security';
 import { settings } from '../../lib/supabase';
 
 export const POST: APIRoute = async ({ request, locals, params, redirect }) => {
-  const client = locals.supabase; const config = settings();
+  const client = locals.supabase; const config = settings(request);
   if (!client || !config) return new Response('Account services unavailable.', { status: 503 });
   const action = params.action;
   try {

@@ -1,10 +1,15 @@
 ---
+import SiteFooter from '../components/SiteFooter.astro';
+import {ADSENSE_CLIENT,canShowAds} from '../lib/advertising';
 import '../styles/global.css';
 import '../styles/observatory.css';
-import '../styles/navigation-glass.css';
-import '../styles/optical-pointer.css';
+import '../styles/navigation.css';
 import '../styles/brand-theme.css';
 import '../styles/mobile-editorial.css';
+import '../styles/phonefuturist-ui.css';
+import '../styles/editorial-fonts.css';
+import '../styles/editorial-tokens.css';
+import '../styles/editorial-polish.css';
 import { navigationFor, activeNavigation } from '../lib/navigation';
 
 interface Props {
@@ -13,6 +18,7 @@ interface Props {
   privatePage?: boolean;
   home?: boolean;
   productMode?: boolean;
+  newsletterInContent?: boolean;
 }
 
 const {
@@ -21,6 +27,7 @@ const {
   privatePage = false,
   home = false,
   productMode = false,
+  newsletterInContent = false,
 } = Astro.props;
 
 const links = [
@@ -36,6 +43,15 @@ const { signedIn, showStudio } = navigationFor(
 );
 
 const active = activeNavigation(Astro.url);
+const showAds=canShowAds(Astro.url.pathname,privatePage,Astro.locals.adAudience);
+const adsNonce=showAds?crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''):undefined;
+if(showAds&&Astro.csp){
+ Astro.csp.insertScriptResource(`'nonce-${adsNonce}'`);
+ for(const host of ['https://*.googlesyndication.com','https://*.doubleclick.net','https://*.google.com','https://*.googleadservices.com','https://*.googletagservices.com'])Astro.csp.insertScriptResource(host);
+ Astro.csp.insertDirective("connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://*.googletagservices.com");
+ Astro.csp.insertDirective("frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com");
+ Astro.csp.insertStyleResource({resource:"'unsafe-inline'",kind:'attribute'});
+}
 ---
 
 <!doctype html>
@@ -43,7 +59,7 @@ const active = activeNavigation(Astro.url);
   <head>
     <meta charset="utf-8" />
 
-    <script is:inline src="/theme-init.js"></script>
+    <script is:inline nonce={adsNonce} src="/theme-init.js"></script>
 
     <meta
       name="viewport"
@@ -57,7 +73,8 @@ const active = activeNavigation(Astro.url);
       content={privatePage ? 'noindex, nofollow' : 'noindex'}
     />
 
-    <title>{title} · PhoneFuturist</title>
+    <title>{title.replace(/(?:\s*·\s*PhoneFuturist)+$/i, '')} · PhoneFuturist</title>
+    {showAds&&<><meta name="google-adsense-account" content={ADSENSE_CLIENT}/><script is:inline nonce={adsNonce} async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script></>}
   </head>
 
   <body class:list={{ 'product-mode': productMode }}>
@@ -73,11 +90,12 @@ const active = activeNavigation(Astro.url);
               <summary aria-label="Browse PhoneFuturist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary>
               <div class="mobile-app-menu-panel">
                 <p>Explore PhoneFuturist</p>
+                <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
                 <nav aria-label="Browse all pages">
                   <a href="/">Home</a><a href="/articles">Newsroom</a>
                   <a href="/articles?section=news">News</a><a href="/articles?section=leaks">Leaks</a>
                   <a href="/articles?section=analysis">Analysis</a><a href="/articles?section=reports">Reports</a>
-                  <a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore">Community builds</a>
+                  <a href="/labs">Labs</a><a href="/interactive-leaks">Interactive Leaks</a><a href="/interactive-leaks/explore" aria-current={active === 'community' ? 'page' : undefined}>Community builds</a>
                   {showStudio && <a href="/studio">The Studio</a>}
                   {signedIn ? <><a href="/account">My account</a><a href="/account/security">Account security</a></> : <><a href="/login">Sign in</a><a href="/join">Create account</a></>}
                 </nav>
@@ -85,17 +103,17 @@ const active = activeNavigation(Astro.url);
               </div>
             </details>
             <a class="mobile-app-brand" href="/" aria-label="PhoneFuturist home">
-              <span class="mobile-app-logo"><img src="/assets/phonefuturist-official-logo.png" alt="" width="1024" height="1024" /></span>
+              <span class="mobile-app-logo"><img src="/assets/phonefuturist-mark.svg" alt="" width="160" height="72" /></span>
               <span>PhoneFuturist</span>
             </a>
-            <a class="mobile-app-icon" href={signedIn?'/account':'/login'} aria-label={signedIn?'My account':'Sign in'}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></a>
+            <span class="mobile-app-icon mobile-app-icon-spacer" aria-hidden="true"></span>
 
           </div>
 
           <header class="site-header">
             <div class="header-brand-row">
               <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
-                <img class="brand-mark" src="/assets/phonefuturist-official-logo.png" alt="" width="58" height="26" />
+                <img class="brand-mark" src="/assets/phonefuturist-mark.svg" alt="" width="58" height="26" />
                 <span class="brand-word">PhoneFuturist</span>
               </a>
 
@@ -133,15 +151,17 @@ const active = activeNavigation(Astro.url);
                         </a>
                       ))
                     }
+                    <a href="/articles?section=reports"><span>Reports</span><span aria-hidden="true">↗</span></a>
+                    <a href="/interactive-leaks"><span>Interactive Leaks</span><span aria-hidden="true">↗</span></a>
                     <a
-                      href="/interactive-leaks"
+                      href="/labs"
                       aria-current={active === 'lab' ? 'page' : undefined}
                     >
-                      <span>Interactive Leaks</span>
+                      <span>Labs</span>
                       <span aria-hidden="true">↗</span>
                     </a>
 
-                    <a href="/interactive-leaks/explore">
+                    <a href="/interactive-leaks/explore" aria-current={active === 'community' ? 'page' : undefined}>
                       <span>Community</span>
                       <span aria-hidden="true">↗</span>
                     </a>
@@ -160,6 +180,8 @@ const active = activeNavigation(Astro.url);
                   </nav>
 
                   <div class="mobile-account">
+                    <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
+                    {signedIn && <a href="/account/security">Account security</a>}
 
                     <span class="mobile-account-label">Account</span>
 
@@ -220,13 +242,13 @@ const active = activeNavigation(Astro.url);
                 Newsroom
               </a>
               <a
-                href="/interactive-leaks"
+                href="/labs"
                 aria-current={active === 'lab' ? 'page' : undefined}
               >
-                Interactive Leaks
+                Labs
               </a>
 
-              <a href="/interactive-leaks/explore">Community</a>
+              <a href="/interactive-leaks/explore" aria-current={active === 'community' ? 'page' : undefined}>Community</a>
 
               {
                 showStudio && (
@@ -241,6 +263,7 @@ const active = activeNavigation(Astro.url);
             </nav>
 
             <div class="header-actions">
+              <label class="appearance-choice">Appearance<select data-appearance aria-label="Appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label>
               {
                 signedIn ? (
                   <>
@@ -283,18 +306,16 @@ const active = activeNavigation(Astro.url);
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 11.5h8M8 15h5"/></svg>
             <span>Newsroom</span>
           </a>
-          <a class="mobile-tabbar-lab" href="/interactive-leaks" aria-current={active === 'lab' ? 'page' : undefined}>
+          <a class="mobile-tabbar-lab" href="/labs" aria-current={active === 'lab' ? 'page' : undefined}>
             <span class="mobile-lab-orb" aria-hidden="true">
               <img src="/assets/phonefuturist-mark.svg" alt="" width="30" height="14" />
             </span>
-            <span>Leaks</span>
+            <span>Labs</span>
           </a>
-          {showStudio && (
-            <a href="/studio" aria-current={active === 'studio' ? 'page' : undefined}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v12H4zM8 4v5M16 4v5M8 13h8M8 16h5"/></svg>
-              <span>Studio</span>
-            </a>
-          )}
+          <a href="/interactive-leaks/explore" aria-current={active === 'community' ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
+            <span>Community</span>
+          </a>
           <a href={signedIn ? '/account' : '/login'} aria-current={Astro.url.pathname.startsWith('/account') || ['/login','/join'].includes(Astro.url.pathname) ? 'page' : undefined}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></svg>
             <span>{signedIn ? 'Account' : 'Sign in'}</span>
@@ -315,22 +336,7 @@ const active = activeNavigation(Astro.url);
 
     {
       !productMode && (
-        <footer>
-
-          <a class="brand brand-lockup" href="/" aria-label="PhoneFuturist home">
-            <img class="brand-mark" src="/assets/phonefuturist-official-logo.png" alt="" width="58" height="26" />
-            <span class="brand-word">PhoneFuturist</span>
-          </a>
-
-          <span>
-            Independent thinking. Informed perspective.<br />
-            Technology, examined.
-          </span>
-
-          <a href="/#about">
-            About the publication ↗
-          </a>
-        </footer>
+        <SiteFooter showNewsletter={!privatePage && !newsletterInContent} />
       )
     }
   </body>
@@ -338,10 +344,10 @@ const active = activeNavigation(Astro.url);
 
 <script>
   import { enhanceNavigation } from '../lib/navigation-client';
-  import { enhanceOpticalPointer } from '../lib/optical-pointer-client';
 
   enhanceNavigation();
-  enhanceOpticalPointer();
+  import { enhanceInstruments } from '../lib/instrument-client';
+  enhanceInstruments();
   const mobileMenu=document.querySelector<HTMLDetailsElement>('.mobile-app-menu');
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&mobileMenu?.open){mobileMenu.open=false;mobileMenu.querySelector('summary')?.focus();}});
   document.addEventListener('click',event=>{if(mobileMenu?.open&&event.target instanceof Node&&!mobileMenu.contains(event.target))mobileMenu.open=false;});

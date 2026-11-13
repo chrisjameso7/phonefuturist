@@ -1,0 +1,5 @@
+export type Person={id:string;handle:string;name:string;avatar:string|null;role:'admin'|'writer'|'pro'|'user';followers:number;following:number;followed:boolean};
+export type Post={id:string;author_id:string;caption:string;created_at:string;build:{id:string;name:string;device:string;processor:string|null;state:Record<string,unknown>;results:Record<string,unknown>|null};likes:number;liked:boolean;replies:number;forks:number};
+export type Reply={id:string;author_id:string;body:string;created_at:string};
+export async function communityRequest(query:string,signal?:AbortSignal){const response=await fetch('/api/community'+query,{signal});const body=await response.json();if(!response.ok)throw new Error(body.error??'Community is unavailable. Please retry.');return body;}
+export async function communityAction(body:Record<string,unknown>){const response=await fetch('/api/community',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw new Error(result.error??'Please retry.');}

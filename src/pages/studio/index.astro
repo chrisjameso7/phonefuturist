@@ -10,13 +10,14 @@ if(error){Astro.response.status=503;console.error('studio_list_failed',{code:err
 ---
 <Page title="Studio" privatePage>
   <div class="studio-shell">
-    <aside class="studio-nav">
+    <aside class="studio-nav"><a href="/studio/labs">Labs polls ↗</a>
       <a class="studio-brand" href="/">
         <img src="/assets/phonefuturist-mark.svg" alt="" width="54" height="24" />
         <span>Studio</span>
       </a>
 
       <nav aria-label="Studio">
+        {Astro.locals.access?.roles.includes('admin') && <><a href="/studio/team">Our team</a><a href="/studio/newsletter">Newsletter</a></>}
         <a class="is-active" href="/studio">Articles</a>
         {canWrite&&<a href="/studio/new">New article</a>}
         {Astro.locals.access?.can_manage_mfa_exceptions&&<a href="/studio/access">Studio access</a>}
@@ -53,7 +54,7 @@ if(error){Astro.response.status=503;console.error('studio_list_failed',{code:err
                   <small>{item.section} · revision {item.current_revision}</small>
                 </div>
                 <div class="studio-row-meta">
-                  <span>{item.state.replaceAll('_',' ')}</span>
+                  {!(item.state==='published'&&item.public_revision&&!item.withdrawn)&&<span>{item.state.replaceAll('_',' ')}</span>}
                   <b>{item.withdrawn?'Withdrawn':item.public_revision?'Published':'Private'}</b>
                 </div>
               </a>)}

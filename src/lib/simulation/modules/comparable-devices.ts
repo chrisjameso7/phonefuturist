@@ -13,7 +13,7 @@ export interface ComparableDeviceQuery {
   refreshRateHz?: number;
   wiredChargingWatts?: number;
   wirelessChargingWatts?: number;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   thicknessMm?: number;
   weightG?: number;
   bodyVolumeMm3?: number;

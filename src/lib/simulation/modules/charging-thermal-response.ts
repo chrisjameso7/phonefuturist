@@ -11,7 +11,7 @@ export interface ChargingThermalResponseQuery {
   referenceAmbientTemperatureC?: number;
   manufacturer?: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
 }
 
 export interface ChargingThermalResponseEvidence {
@@ -25,7 +25,7 @@ export interface ChargingThermalResponseEvidence {
   logMinutesPerC: number;
   manufacturer: string;
   batteryChemistry?: string;
-  cellArchitecture?: 'single-cell' | 'dual-cell' | 'unknown';
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
   measurementIds: [string, string];
 }
 

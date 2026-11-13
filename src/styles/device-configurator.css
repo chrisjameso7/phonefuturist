@@ -1,0 +1,36 @@
+.device-configurator{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.4fr);gap:24px;align-items:start}
+.device-design-controls{display:grid;gap:22px}
+.device-design-controls label{display:grid;gap:10px;color:var(--pf-secondary);font-size:.85rem;min-width:0}
+.device-design-controls input[type=text]{width:100%;min-width:0;background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);border-radius:var(--pf-radius-sm);padding:12px}
+.device-control-label{display:flex;justify-content:space-between;gap:12px}
+.device-control-label output{font-variant-numeric:tabular-nums;color:var(--pf-primary)}
+.device-presets{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--pf-secondary)}
+.device-presets>span{margin-right:auto}
+.device-presets button,.device-view-tools button{background:transparent;color:var(--pf-primary);border-color:var(--pf-border);min-height:44px}
+.device-color-label{grid-template-columns:minmax(0,1fr) 64px;align-items:center}
+.labs .device-design-controls input[type=color]{width:64px;height:44px;padding:4px;background:var(--pf-surface);border:1px solid var(--pf-border);border-radius:var(--pf-radius-sm);cursor:pointer}
+.device-studio{position:sticky;top:110px;padding:16px;overflow:hidden;background:var(--pf-surface)}
+.device-preview{position:relative;min-width:0}
+.device-viewport{width:100%;height:clamp(220px,calc(100dvh - 360px),600px);min-width:0;overflow:hidden}
+.device-viewport canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.device-preview-status{position:absolute;inset:0 0 100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:18px;text-align:center;color:var(--pf-secondary);font-size:.85rem}
+.device-preview-status p{max-width:340px;line-height:1.5}
+.device-fallback{height:180px;max-width:100%;border:2px solid #8193a0;border-radius:18px;box-shadow:14px 10px 30px #0006;transform:rotate(-8deg);position:relative}
+.device-fallback span{position:absolute;left:8px;top:10px;width:26px;height:45px;background:radial-gradient(circle at 50% 24%,#365767 0 5px,#080d13 6px 9px,transparent 10px),radial-gradient(circle at 50% 75%,#365767 0 5px,#080d13 6px 9px,transparent 10px);border-radius:8px}
+.device-view-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.device-view-tools button{padding:10px 12px;font-size:.78rem}
+.device-view-tools button[aria-pressed=true]{background:var(--pf-brand);color:var(--pf-action-ink)}
+.device-preview-caption{text-align:center;color:var(--pf-secondary);font-size:.75rem;line-height:1.5;min-height:2.25em}
+.device-design-summary{border-top:1px solid color-mix(in srgb,var(--pf-border) 10%,transparent);padding:18px 8px 4px;overflow-wrap:anywhere}
+.device-design-summary h2{font-size:1.2rem;font-weight:500;margin:0 0 8px}.device-design-summary p{color:var(--pf-secondary);font-size:.8rem;margin:6px 0}
+@media(max-width:850px){.device-configurator{grid-template-columns:minmax(0,1fr)}.device-studio{position:static;grid-row:1}.device-viewport{height:390px}.device-design-controls{padding:22px}.device-view-tools{gap:6px}}
+@media(prefers-reduced-motion:reduce){.device-fallback{transform:none}}
+
+.device-family-picker,.device-display-controls{border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);min-width:0;padding:16px;display:grid;gap:16px}
+.device-family-picker legend,.device-display-controls legend{color:var(--pf-secondary);font-size:.85rem;padding:0 5px}
+.device-family-picker>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.device-family-picker button{display:grid;place-items:center;gap:5px;background:transparent;color:var(--pf-secondary);min-width:0;padding:9px;font-size:.72rem}
+.device-family-picker button[aria-pressed=true]{border-color:var(--pf-brand);background:color-mix(in srgb,var(--pf-brand) 7%,transparent)}
+.device-family-picker svg{width:44px;height:58px;fill:none;stroke:currentColor;stroke-width:1.5}
+.device-design-controls label:has(input[type=checkbox]){display:flex;align-items:center;gap:10px;min-height:44px}
+.device-design-controls input[type=checkbox]{width:20px;height:20px;min-height:20px;flex:0 0 20px;accent-color:var(--pf-brand)}

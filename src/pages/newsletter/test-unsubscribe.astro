@@ -1,0 +1,33 @@
+---
+import Page from '../../layouts/Page.astro';
+import { newsletterSettings } from '../../lib/newsletter-settings';
+import { resend, verifyNewsletterToken } from '../../lib/newsletter';
+import { NEWSLETTER_TEST_ADDRESS } from '../../lib/newsletter-template';
+import { boundedForm } from '../../lib/security';
+const config = newsletterSettings();
+let token = Astro.url.searchParams.get('token') ?? '';
+let valid = false, done = false, message = '';
+try {
+ if (Astro.request.method === 'POST') token = (await boundedForm(Astro.request)).get('token') ?? '';
+ const email = config ? await verifyNewsletterToken(token,config.apiKey+':newsletter-test-unsubscribe-v1') : null;
+ valid = !!config?.topicId && email === NEWSLETTER_TEST_ADDRESS;
+ if (!valid) { Astro.response.status=400; message='This test preference link is invalid or expired. Contact contact@phonefuturist.com for help.'; }
+ else if (Astro.request.method === 'POST' && config) {
+  const path='/contacts/'+encodeURIComponent(NEWSLETTER_TEST_ADDRESS)+'/topics';
+  const response=await resend(config,path,'PATCH',[{id:config.topicId,subscription:'opt_out'}]);
+  if (!response.ok) throw new Error('Preference update failed.');
+  const check=await resend(config,path,'GET');
+  const result=check.ok ? await check.json() as {data?:{id:string;subscription:string}[]} : null;
+  if (!result?.data?.some(topic=>topic.id===config.topicId && topic.subscription==='opt_out')) throw new Error('Preference verification failed.');
+  done=true; message='Your newsletter topic subscription is now turned off.';
+ }
+} catch { Astro.response.status=503; message='Your preference could not be updated. Please retry.'; }
+---
+<Page title="Test newsletter preferences" privatePage>
+ <section class="newsletter-preferences"><h1>Newsletter preferences</h1>
+ <p>This link belongs to the single-address newsletter preview. It changes only the approved test contact’s Newsletter topic preference. Opening the link does not unsubscribe you automatically.</p>
+ {message && <p role="status">{message}</p>}
+ {valid && !done && <form method="post" action="/newsletter/test-unsubscribe"><input type="hidden" name="token" value={token}/><button type="submit">Unsubscribe from the newsletter topic</button></form>}
+ <p><a href="/newsletter">Subscribe again</a></p></section>
+</Page>
+<style>.newsletter-preferences{max-width:760px;margin:auto;padding:40px 20px}.newsletter-preferences p{line-height:1.7}</style>

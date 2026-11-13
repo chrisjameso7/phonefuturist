@@ -1,0 +1,27 @@
+---
+import Page from '../../layouts/Page.astro';
+import TeamEditor from '../../components/studio/TeamEditor';
+import type { TeamMember } from '../../lib/team';
+import '../../styles/team.css';
+
+if (!Astro.locals.access?.roles.includes('admin')) {
+  return new Response('Admin access required.', { status: 403 });
+}
+const client = Astro.locals.supabase!;
+const [teamResult, creatorResult] = await Promise.all([
+  client.from('team_members').select('*').order('sort_order').order('name'),
+  client.from('creator_profiles').select('user_id,handle,display_name').order('display_name').limit(1000),
+]);
+const unavailable = !!teamResult.error || !!creatorResult.error;
+if (unavailable) Astro.response.status = 503;
+---
+<Page title="Manage our team" privatePage>
+  <section class="team-profile" style="max-width:1200px">
+    <a href="/studio">← Studio</a>
+    <h1>Our team</h1>
+    <p>Manage the profiles published on About PhoneFuturist.</p>
+    {unavailable
+      ? <p role="alert">Team management is temporarily unavailable. Please retry.</p>
+      : <TeamEditor initial={(teamResult.data ?? []) as TeamMember[]} creators={creatorResult.data ?? []} client:load />}
+  </section>
+</Page>

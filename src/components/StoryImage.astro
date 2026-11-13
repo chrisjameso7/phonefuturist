@@ -1,0 +1,14 @@
+---
+import type { PublishedArticle } from '../lib/editorial';
+import { storyImage } from '../lib/story-image';
+interface Props { article: PublishedArticle; linked?: boolean; eager?: boolean }
+const { article, linked = true, eager = false } = Astro.props;
+const image = storyImage(article);
+---
+{image && <figure class="story-picture">
+ {linked ? <a href={article.canonical_path} aria-label={article.title}><img src={image.url} alt={image.alt} loading={eager?'eager':'lazy'} fetchpriority={eager?'high':'auto'} decoding="async" /></a> : <img src={image.url} alt={image.alt} loading={eager?'eager':'lazy'} fetchpriority={eager?'high':'auto'} decoding="async" />}
+ {(image.caption || image.credit || image.sourceName) && <figcaption>{image.caption && <span>{image.caption}</span>}{image.credit ? <span>Credit: {image.credit}</span> : image.sourceName && <span>Source: {image.sourceName}</span>}</figcaption>}
+</figure>}
+<style>
+.story-picture{margin:0 0 16px;min-width:0;max-width:100%;background:transparent}.story-picture a{display:block}.story-picture img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border:0;border-radius:0;background:var(--pf-raised)}figcaption{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;color:var(--pf-secondary);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+</style>

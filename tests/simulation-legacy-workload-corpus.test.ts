@@ -13,6 +13,17 @@ describe('legacy workload corpus migration', () => {
     expect(issues).toEqual([]);
   });
 
+  it('does not label gaming or video rows with the first workload on a shared source URL', () => {
+    const corpus = buildLegacyWorkloadCorpus();
+    const sources = new Map(corpus.sources.map(source => [source.id, source]));
+    expect(corpus.measurements.length).toBeGreaterThan(150);
+    for (const measurement of corpus.measurements) {
+      const source = sources.get(measurement.sourceId);
+      expect(source).toBeDefined();
+      expect(source?.protocol).toBe(`legacy-${measurement.workload}-method-unspecified`);
+    }
+  });
+
   it('preserves uncertainty instead of inventing regional variant data', () => {
     const corpus = buildLegacyWorkloadCorpus();
     const device = corpus.devices[0];

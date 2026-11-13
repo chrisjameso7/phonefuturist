@@ -3,9 +3,9 @@
   <div class="lab-portal-message"><span>PF / LAB</span><p>Welcome to<br /><strong>Interactive Leaks</strong></p><small>by PhoneFuturist</small></div>
 </div>
 <style>
-.lab-portal { position:fixed;inset:0;z-index:500;display:grid;place-items:center;pointer-events:none;background:var(--paper);overflow:hidden;animation:portal-reveal 1200ms ease both; }
-.lab-portal-ring { position:absolute;width:min(65vw,580px);aspect-ratio:1;border-radius:50%;border:1px solid var(--accent);box-shadow:0 0 55px color-mix(in srgb,var(--accent) 16%,transparent),inset 0 0 55px color-mix(in srgb,var(--violet) 15%,transparent);background:radial-gradient(circle,transparent 55%,color-mix(in srgb,var(--violet) 18%,transparent));animation:portal-expand 1200ms cubic-bezier(.2,.65,.2,1) both; }
-.lab-portal-message { position:relative;text-align:center;color:var(--ink);animation:portal-message 1200ms ease both;padding:24px; }
+.lab-portal { position:fixed;inset:0;z-index:500;display:grid;place-items:center;pointer-events:none;background:var(--paper);overflow:hidden;animation:none; }
+.lab-portal-ring { position:absolute;width:min(65vw,580px);aspect-ratio:1;border-radius:var(--pf-radius-md);border:1px solid var(--accent);box-shadow:none;background:var(--pf-surface);animation:none; }
+.lab-portal-message { position:relative;text-align:center;color:var(--ink);animation:none;padding:24px; }
 .lab-portal-message span { font-size:.7rem;letter-spacing:.25em;color:var(--accent); }
 .lab-portal-message p { font-size:clamp(1.6rem,4vw,3rem);line-height:1.15;margin:18px 0 12px; }
 .lab-portal-message small { color:var(--muted); }

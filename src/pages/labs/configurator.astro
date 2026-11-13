@@ -1,0 +1,8 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import DeviceConfigurator from '../../components/labs/DeviceConfigurator';
+import '../../styles/labs.css';
+import '../../styles/device-configurator.css';
+---
+<Page title="3D device studio"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>3D device studio</h1><p>Configure materials, cameras and dimensions.</p></header><DeviceConfigurator client:visible/></div></Page>

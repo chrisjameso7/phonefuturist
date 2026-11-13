@@ -1,0 +1,24 @@
+---
+import Page from '../../layouts/Page.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { newsletterSettings } from '../../lib/newsletter-settings';
+import { signupNewsletter, type NewsletterLimiter } from '../../lib/newsletter-signup';
+import { boundedForm } from '../../lib/security';
+import { env } from 'cloudflare:workers';
+let message = '';
+if (Astro.request.method === 'POST') {
+  try {
+    const result = await signupNewsletter(await boundedForm(Astro.request), newsletterSettings(), env.NEWSLETTER_LIMITER as NewsletterLimiter | undefined,
+      Astro.request.headers.get('cf-connecting-ip') ?? Astro.clientAddress);
+    message = result.message; Astro.response.status = result.status;
+    if (result.status === 429) Astro.response.headers.set('Retry-After','60');
+  } catch { Astro.response.status = 400; message = 'Invalid signup. Please try again.'; }
+}
+---
+<Page title="Newsletter" privatePage>
+  <div class="newsletter-page">
+    {message && <p role="status">{message}</p>}
+    <NewsletterSignup />
+  </div>
+</Page>
+<style>.newsletter-page{max-width:760px;margin:auto;padding:32px 20px}</style>

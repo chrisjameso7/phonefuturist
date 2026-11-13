@@ -1,4 +1,6 @@
 ---
+import RoleBadge from '../../../components/RoleBadge.astro';
+import {publicCreatorRoles,type CreatorRole} from '../../../lib/creator-identity';
 import Page from '../../../layouts/Page.astro';
 import { serverClient, settings } from '../../../lib/supabase';
 import '../../../styles/lab-simulator.css';
@@ -7,6 +9,7 @@ const id = Astro.params.id ?? '';
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 let profile: any = null;
 let creator: any = null;
+let role:CreatorRole|null=null;
 let parent: any = null;
 let visibleForks = 0;
 
@@ -19,7 +22,7 @@ if (uuid.test(id)) {
     if (profile) {
       const creatorPromise = client
         .from('creator_profiles')
-        .select('handle,display_name,avatar_url')
+        .select('user_id,handle,display_name,avatar_url')
         .eq('user_id', profile.owner_id)
         .maybeSingle();
 
@@ -43,6 +46,7 @@ if (uuid.test(id)) {
       ]);
 
       creator = creatorData;
+      if(creator)role=(await publicCreatorRoles(client,[creator.user_id])).get(creator.user_id)??null;
       visibleForks = (forkRows ?? []).length;
       parent = parentData;
     }
@@ -75,7 +79,7 @@ if (uuid.test(id)) {
             {creator && (
               <a class="il-creator-line" href={`/creator/${creator.handle}`}>
                 {creator.avatar_url ? <img src={creator.avatar_url} alt="" loading="lazy" /> : <span>{creator.display_name.slice(0,1).toUpperCase()}</span>}
-                <b>{creator.display_name}</b>
+                <b>{creator.display_name} <RoleBadge role={role}/></b>
                 <small>@{creator.handle}</small>
               </a>
             )}
@@ -112,14 +116,14 @@ if (uuid.test(id)) {
 
 <style>
 .social-share-page{width:min(100%,860px)!important;margin:0 auto;padding:24px 18px 80px!important}
-.social-post-shell{margin-top:14px;border:1px solid #202c39;border-radius:18px;background:#0b121a;overflow:hidden}
-.social-post-topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #202c39;color:#718092;font-size:.6rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}
-.social-post-topbar a{color:#62cfff;text-decoration:none;font-size:.58rem}
-.social-share-hero{padding:24px!important;border-bottom:1px solid #202c39}
+.social-post-shell{margin-top:14px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-md);background:var(--pf-surface);overflow:hidden}
+.social-post-topbar{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--pf-border);color:var(--pf-muted);font-size:.6rem;font-weight:760;letter-spacing:.08em;text-transform:uppercase}
+.social-post-topbar a{color:var(--pf-brand);text-decoration:none;font-size:.58rem}
+.social-share-hero{padding:24px!important;border-bottom:1px solid var(--pf-border)}
 .social-share-hero h1{font-size:clamp(2.5rem,6vw,5.5rem)!important;letter-spacing:-.065em!important;font-weight:620!important}
-.social-share-page .il-share-grid{margin:0!important;padding:16px 24px!important;grid-template-columns:repeat(4,1fr)!important;border-bottom:1px solid #202c39}
-.social-share-page .il-share-grid article{border:0!important;border-right:1px solid #202c39!important;border-radius:0!important;background:transparent!important}
+.social-share-page .il-share-grid{margin:0!important;padding:16px 24px!important;grid-template-columns:repeat(4,1fr)!important;border-bottom:1px solid var(--pf-border)}
+.social-share-page .il-share-grid article{border:0!important;border-right:1px solid var(--pf-border)!important;border-radius:0!important;background:transparent!important}
 .social-share-page .il-share-grid article:last-child{border-right:0!important}
-.social-share-page .il-share-note{margin:0!important;padding:18px 24px!important;color:#718092!important;font-size:.68rem!important}
+.social-share-page .il-share-note{margin:0!important;padding:18px 24px!important;color:var(--pf-muted)!important;font-size:.68rem!important}
 @media(max-width:650px){.social-share-page .il-share-grid{grid-template-columns:1fr 1fr!important}.social-share-page .il-share-grid article:nth-child(2){border-right:0!important}.social-share-hero{padding:20px!important}}
 </style>

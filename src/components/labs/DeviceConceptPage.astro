@@ -1,0 +1,12 @@
+---
+import LabNavigation from './LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import DeviceConceptLab from './DeviceConceptLab';
+import type {ConceptFamily} from '../../lib/labs/device-concepts';
+import '../../styles/labs.css';
+import '../../styles/device-configurator.css';
+interface Props {family:ConceptFamily;}
+const {family}=Astro.props;
+const labels={foldables:'Foldables',tablets:'Tablets',laptops:'Laptops'};
+---
+<Page title={labels[family]+' · Interactive Leaks'}><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Device concepts</h1><p>Configure dimensions, displays and power scenarios.</p></header><DeviceConceptLab family={family} client:load/></div></Page>

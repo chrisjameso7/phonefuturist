@@ -1,0 +1,9 @@
+---
+import Page from '../layouts/Page.astro';
+import EditorialHomepage from '../components/EditorialHomepage.astro';
+import { publishedArticles } from '../lib/publication';
+const { articles } = await publishedArticles();
+---
+<Page title="Editorial homepage preview" privatePage>
+  <EditorialHomepage articles={articles} />
+</Page>
