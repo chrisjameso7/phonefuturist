@@ -36,6 +36,7 @@ it('bounds creator search and escapes underscore wildcards without touching navi
 });
 it('shows ads to free readers, including signed-in members, and excludes Pro and private/application pages',()=>{
  expect(canShowAds('/',false,'free')).toBe(true);expect(canShowAds('/articles/story',false,'free')).toBe(true);
- for(const path of ['/account','/login','/join','/studio','/interactive-leaks','/labs/configurator'])expect(canShowAds(path,false,'free')).toBe(false);
+ for(const path of ['/account','/login','/join','/studio','/auth/check-email','/forgot-password'])expect(canShowAds(path,false,'free')).toBe(false);
+ for(const path of ['/news/example','/analysis/example','/labs/configurator','/interactive-leaks','/about'])expect(canShowAds(path,false,'free')).toBe(true);
  expect(canShowAds('/',false,'pro')).toBe(false);expect(canShowAds('/',false,'unknown')).toBe(false);expect(canShowAds('/',true,'free')).toBe(false);
 });
