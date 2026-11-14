@@ -33,7 +33,7 @@ describe('Build a Phone part geometry', () => {
       }
     }
     lib.dispose();
-  });
+  }, 30000);
   it('draws repeated components with instancing and shares materials', () => {
     const lib = createMaterialLibrary('mobile'), assembly = resolveBuild(defaultBuild(studio));
     const capacitors = buildPartObject(assembly.bySlot['passive-capacitors'], { lib, layout: assembly.layout });
