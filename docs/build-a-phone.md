@@ -129,6 +129,17 @@ The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a s
 
 The thermal budget is a planning heuristic: about 170 W per square metre of skin, scaled by the best heat spreader installed. Planning values were tuned so the default build passes every check: single-cell fast-charge limits of about 2.3C (lithium-ion) and 2.6C (silicon-carbon), 4.2C for dual-cell packs, a 45 W charger by default, and 5.5 W / 4.0 W sustained heat for the flagship and upper-mid processor classes. Every one remains labelled an estimate.
 
+## Interactive Leaks hand-off, saved builds and comparison (phase 6)
+
+`build/handoff.ts` has no runtime imports, so the simulator can use it without loading the catalogue.
+
+- **Run in Interactive Leaks** maps the build onto the simulator's own form vocabulary: name, dimensions, estimated weight, display diagonal, aspect and bezels, panel technology, battery capacity, voltage, chemistry, cell arrangement and size, wired and wireless charging with standards, cooling class, and every camera (type, sensor format, resolution class, 35 mm-equivalent focal length implied by the module class, module size). Each field carries its provenance. The processor, display resolution and refresh rate, and camera apertures are deliberately left for the visitor, because the build only has generic classes for them.
+- The studio stores the hand-off in `sessionStorage` and opens `/interactive-leaks?from=build-a-phone`. The simulator reads it once, deletes it, removes the query from the address, validates it against a whitelist of fields and value formats (`readHandoff`), switches to Advanced mode and shows a notice: which values are your settings, which are representative estimates, and what is still to set. A missing or tampered hand-off shows a short error and changes nothing. No data leaves the browser.
+- **Saved builds** are kept in this browser's `localStorage` (up to 20, newest first), as approved: no account storage or database changes. Each can be loaded, compared or deleted. Storage failures are reported, never fatal.
+- **Comparison** shows the current build against a saved one: thickness, estimated mass, battery energy, wired charging, processor, main camera, rear camera count, cooling, thermal headroom and check counts, with confidence labels and the better value marked.
+
+The only change to the simulator is this entry point and its notice; its calculations, Simple mode and existing flows are untouched.
+
 ## Tests
 
 | File | Covers |
@@ -138,4 +149,5 @@ The thermal budget is a planning heuristic: about 170 W per square metre of skin
 | `tests/labs-build-view.test.ts` | View modes, subsystem options, captions, selection rules, the representative notice, and that the lazily loaded module excludes the renderer |
 | `tests/labs-build-inspect.test.ts` | Inspector completeness for every part, confidence never upgraded, two-way connections, alternatives, multiples, acronym-safe wording, removal with dependants, mount order, strip and step-by-step build-up, which positions may be empty |
 | `tests/labs-build-compatibility.test.ts` | Clean default builds, basis and sources on every finding, physics, geometry, interface and electrical rules, missing parts, thermal budget scaling, ordering |
+| `tests/labs-build-handoff.test.ts` | Mapping to the simulator vocabulary with provenance, cooling/chemistry/periscope/fast-charge mappings, JSON round trip, rejection of tampered hand-offs, defensive saved-build parsing and capping, comparison rows |
 | `tests/labs-build-model.test.ts` | Geometry for every part, instancing and shared materials, exact board cut-outs, distinct exteriors per design family, partial rebuilds, exploded order and reassembly, X-ray ghosting, picking, install/remove animation, quality tiers |

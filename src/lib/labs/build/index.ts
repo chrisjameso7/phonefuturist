@@ -11,3 +11,4 @@ export * from './assembly';
 export * from './view-options';
 export * from './inspect';
 export * from './compatibility';
+export * from './handoff';

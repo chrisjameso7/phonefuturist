@@ -3,6 +3,7 @@ import type { Assembly } from '../../lib/labs/build/assembly';
 import type { BuildView } from '../../lib/labs/build/view-types';
 import type { Confidence, PhoneBuild, Subsystem } from '../../lib/labs/build/schema';
 import type { DeviceDesign } from '../../lib/labs/device-design';
+import type { SavedBuild } from '../../lib/labs/build/handoff';
 
 /** The lazily loaded Build a Phone library (src/lib/labs/build/index.ts). */
 export type BuildLib = typeof import('../../lib/labs/build');
@@ -14,13 +15,14 @@ type Props = {
   view: BuildView; onView: (change: Partial<BuildView>) => void;
   onSelect: (slot: string | null) => void;
   onDesign: (change: Partial<DeviceDesign>) => void;
+  onLoad: (build: SavedBuild['build']) => void;
 };
 
 function Confidence({ lib, value }: { lib: BuildLib; value: Confidence }) {
   return <span className="build-confidence" data-confidence={value}>{lib.CONFIDENCE_LABELS[value]}</span>;
 }
 
-export default function BuildWorkbench({ lib, assembly, state, onState, view, onView, onSelect, onDesign }: Props) {
+export default function BuildWorkbench({ lib, assembly, state, onState, view, onView, onSelect, onDesign, onLoad }: Props) {
   const { ARCHITECTURES, SUBSYSTEMS, CONFIDENCE_LABELS, LAYOUT_NOTICE, COMPONENTS, SLOT_BY_ID } = lib;
   const [message, setMessage] = useState('');
   const [openStep, setOpenStep] = useState<number | null>(null);
@@ -28,6 +30,22 @@ export default function BuildWorkbench({ lib, assembly, state, onState, view, on
   const steps = lib.stepSummaries(assembly);
   const report = useMemo(() => lib.checkBuild(assembly), [lib, assembly]);
   const problems = report.findings.filter(f => f.level !== 'pass'), passes = report.findings.filter(f => f.level === 'pass');
+  // Saved builds live in this browser only (approved scope: no account storage).
+  const [saved, setSaved] = useState<SavedBuild[]>([]), [compareId, setCompareId] = useState<string | null>(null);
+  useEffect(() => { try { setSaved(lib.parseSaved(window.localStorage.getItem(lib.SAVED_KEY))); } catch { setSaved([]); } }, [lib]);
+  const persist = (list: SavedBuild[]) => { setSaved(list); try { window.localStorage.setItem(lib.SAVED_KEY, JSON.stringify(list)); return true; } catch { setMessage('This browser is not allowing saved builds. Your build is still open here.'); return false; } };
+  const compareEntry = saved.find(s => s.id === compareId) ?? null;
+  const comparison = useMemo(() => compareEntry ? lib.compareBuilds(assembly, lib.resolveBuild({ version: lib.BUILD_SCHEMA_VERSION, name: compareEntry.name, ...compareEntry.build }), lib.checkBuild) : null, [lib, assembly, compareEntry]);
+  const saveCurrent = () => {
+    const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : String(Date.now());
+    const name = (assembly.build.design.name || 'Untitled build').slice(0, 80);
+    if (persist(lib.addSaved(saved, { id, name, savedAt: new Date().toISOString(), build: { design: assembly.build.design, architecture: state.architecture, selections: state.selections, uninstalled: state.uninstalled } }))) setMessage(`Saved “${name}” in this browser.`);
+  };
+  const runInSimulator = () => {
+    try { window.sessionStorage.setItem(lib.HANDOFF_KEY, JSON.stringify(lib.toSimulatorHandoff(assembly))); }
+    catch { setMessage('This browser is not allowing the hand-off. Copy the figures from the inspector instead.'); return; }
+    window.location.assign('/interactive-leaks?' + lib.HANDOFF_PARAM);
+  };
   const selected = view.selected ? lib.inspectPart(assembly, view.selected) : null;
   // Selecting a part from the 3D view opens its step and brings the inspector into view.
   useEffect(() => {
@@ -118,6 +136,28 @@ export default function BuildWorkbench({ lib, assembly, state, onState, view, on
         <ul className="build-findings">{passes.map(f => <li key={f.id} data-level="pass"><span className="build-finding-mark" aria-hidden="true">✓</span><div><p className="build-finding-title">{f.title}</p><p className="build-finding-detail">{f.detail}</p><p className="build-finding-basis" data-basis={f.basis}>{lib.BASIS_LABELS[f.basis]}</p></div></li>)}</ul>
       </details>}
       <p className="build-meta">Sustained heat about {report.thermal.sustainedW} W against a passive budget of about {report.thermal.budgetW} W <Confidence lib={lib} value="estimated"/></p>
+    </section>
+
+    <section className="build-use" aria-labelledby="build-use-title">
+      <h3 id="build-use-title">Use this build</h3>
+      <div className="build-assembly-actions">
+        <button type="button" className="build-primary" onClick={runInSimulator}>Run in Interactive Leaks</button>
+        <button type="button" onClick={saveCurrent}>Save in this browser</button>
+      </div>
+      <p className="build-meta">Interactive Leaks opens with the dimensions, display, battery, charging, cooling and cameras filled in, each marked as your setting or an estimate. Choose a real processor there; this build uses a generic class.{report.counts.blocker ? ` This build has ${report.counts.blocker} ${report.counts.blocker === 1 ? 'problem' : 'problems'} that would stop a real phone working; the simulator will still estimate it.` : ''}</p>
+      {saved.length > 0 && <ul className="build-saved">{saved.map(entry => <li key={entry.id}>
+        <span><strong>{entry.name}</strong><small>{new Date(entry.savedAt).toLocaleString()}</small></span>
+        <span className="build-part-actions">
+          <button type="button" onClick={() => { onLoad(entry.build); setCompareId(null); setMessage(`Loaded “${entry.name}”.`); }}>Load</button>
+          <button type="button" aria-pressed={compareId === entry.id} onClick={() => setCompareId(compareId === entry.id ? null : entry.id)}>Compare</button>
+          <button type="button" aria-label={`Delete ${entry.name}`} onClick={() => { persist(saved.filter(s => s.id !== entry.id)); if (compareId === entry.id) setCompareId(null); }}>Delete</button>
+        </span>
+      </li>)}</ul>}
+      {comparison && compareEntry && <div className="build-compare-wrap"><table className="build-figures build-compare">
+        <caption>This build compared with “{compareEntry.name}”</caption>
+        <thead><tr><th scope="col">Figure</th><th scope="col">This build</th><th scope="col">{compareEntry.name}</th><th scope="col">Confidence</th></tr></thead>
+        <tbody>{comparison.map(row => <tr key={row.label}><th scope="row">{row.label}</th><td data-better={row.better === 'a'}>{row.a}</td><td data-better={row.better === 'b'}>{row.b}</td><td><Confidence lib={lib} value={row.confidence}/></td></tr>)}</tbody>
+      </table></div>}
     </section>
 
     <section className="build-assembly" aria-labelledby="build-assembly-title">

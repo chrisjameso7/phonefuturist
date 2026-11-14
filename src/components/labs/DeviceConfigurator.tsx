@@ -82,7 +82,7 @@ export default function DeviceConfigurator() {
         <button type="button" aria-pressed={inside} onClick={()=>setInside(true)}>Inside · Build a Phone</button>
       </div>
 
-      {inside&&<div className="build-pane">{libError?<p role="alert">Build a Phone could not load. Check your connection and reload the page.</p>:lib&&assembly?<Suspense fallback={<p role="status">Opening the workbench…</p>}><BuildWorkbench lib={lib} assembly={assembly} state={buildState} onState={setBuildState} view={view} onView={changeView} onSelect={selectPart} onDesign={change=>setDesign(c=>normalizeDesign({...c,...change}))}/></Suspense>:<p role="status">Opening the workbench…</p>}</div>}
+      {inside&&<div className="build-pane">{libError?<p role="alert">Build a Phone could not load. Check your connection and reload the page.</p>:lib&&assembly?<Suspense fallback={<p role="status">Opening the workbench…</p>}><BuildWorkbench lib={lib} assembly={assembly} state={buildState} onState={setBuildState} view={view} onView={changeView} onSelect={selectPart} onDesign={change=>setDesign(c=>normalizeDesign({...c,...change}))} onLoad={saved=>{setDesign(normalizeDesign(saved.design));setBuildState({architecture:saved.architecture,selections:saved.selections,uninstalled:saved.uninstalled});setView(v=>({...v,selected:null}));}}/></Suspense>:<p role="status">Opening the workbench…</p>}</div>}
 
       <div hidden={inside} className="device-exterior-controls">
 

@@ -1,4 +1,5 @@
 import {useInstrumentReady} from '../../lib/use-instrument-ready';
+import { HANDOFF_KEY, HANDOFF_PARAM, readHandoff, type SimulatorHandoff } from '../../lib/labs/build/handoff';
 import FormSection from '../labs/FormSection';
 import ResultPanel from '../labs/ResultPanel';
 import type { SimpleBatteryResult } from '../../lib/valuation/simple-battery';
@@ -1661,6 +1662,23 @@ export default function InteractiveLeaksSimulator() {
     setHasSimulated(false);
   }
 
+  // Build a Phone hand-off: pre-fills the Advanced form once from a validated, whitelisted session entry.
+  const [handoffNotice, setHandoffNotice] = useState<{ handoff: SimulatorHandoff | null } | null>(null);
+  useEffect(() => {
+    if (!window.location.search.includes(HANDOFF_PARAM)) return;
+    let raw: string | null = null;
+    try { raw = window.sessionStorage.getItem(HANDOFF_KEY); window.sessionStorage.removeItem(HANDOFF_KEY); } catch { raw = null; }
+    let handoff: SimulatorHandoff | null = null;
+    try { handoff = raw ? readHandoff(JSON.parse(raw)) : null; } catch { handoff = null; }
+    window.history.replaceState(window.history.state, '', window.location.pathname + window.location.hash);
+    setHandoffNotice({ handoff });
+    if (!handoff) return;
+    setWorkspaceMode('advanced');
+    setForm({ ...initialForm, ...handoff.form } as FormState);
+    setCameras(handoff.cameras.map((camera, index) => ({ id: index + 1, type: camera.type, sensorFormatDenominator: camera.sensorFormatDenominator, resolutionMp: camera.resolutionMp, equivalentFocalLengthMm: camera.equivalentFocalLengthMm, physicalFocalLengthMm: '', apertureFNumber: '', variableAperture: false, variableApertureWide: '', variableApertureNarrow: '', focusDistanceM: '', moduleWidthMm: camera.moduleWidthMm, moduleHeightMm: camera.moduleHeightMm, moduleDepthMm: camera.moduleDepthMm })));
+    setSimulationResult(null); setSimulationInput(null); setHasSimulated(false);
+  }, []);
+
   const display = result?.displays.primary;
 
   const displayExperience =
@@ -3189,6 +3207,13 @@ export default function InteractiveLeaksSimulator() {
 
   return (
     <div className="il-app" data-mode={workspaceMode}>
+      {handoffNotice && <div className="il-handoff-notice" role="status" style={{ margin: '0 0 16px', padding: '14px 16px', border: '1px solid var(--pf-border)', borderRadius: 'var(--pf-radius-md, 12px)', background: 'var(--pf-surface)', color: 'var(--pf-primary)', fontSize: '.86rem', lineHeight: 1.55 }}>
+        {handoffNotice.handoff ? <>
+          <strong>Loaded from Build a Phone: {handoffNotice.handoff.name}.</strong>{' '}
+          Dimensions and display come from your settings. Weight, battery, charging, cooling and cameras are estimates from representative part classes, not a real device. Still to set: {handoffNotice.handoff.notSet.join('; ').toLowerCase()}.
+        </> : <>The build from Build a Phone could not be loaded. Return to the 3D device studio and choose Run in Interactive Leaks again.</>}
+        <button type="button" onClick={() => setHandoffNotice(null)} style={{ marginLeft: 12, minHeight: 36 }}>Dismiss</button>
+      </div>}
       <div className="il-toolbar" aria-label="Simulation workspace">
         <div>
           <span className="il-status">

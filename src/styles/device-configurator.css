@@ -145,3 +145,12 @@ li[data-level=pass] .build-finding-mark{color:var(--pf-brand);border-radius:50%}
 .build-finding-basis[data-basis=estimate]{color:var(--pf-violet,#ba9bff)}
 .build-findings button{min-height:44px;padding:0 12px;background:transparent;color:var(--pf-primary);border-color:var(--pf-border);font-size:.76rem}
 .build-passes summary{cursor:pointer;min-height:36px;display:flex;align-items:center;font-size:.8rem;color:var(--pf-primary)}
+.build-use{display:grid;gap:10px}.build-use h3{margin:0;font-size:.92rem;font-weight:600}
+.build-saved{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.build-saved li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--pf-border);border-radius:var(--pf-radius-sm)}
+.build-saved li>span:first-child{display:grid;gap:2px;font-size:.8rem;min-width:0}.build-saved small{font-size:.68rem;color:var(--pf-secondary)}
+.build-saved button[aria-pressed=true]{border-color:var(--pf-brand)!important;color:var(--pf-brand)!important}
+.build-compare-wrap{overflow-x:auto}
+.build-compare caption{text-align:left;font-size:.78rem;font-weight:600;color:var(--pf-primary);padding:4px 0 8px}
+.build-compare td[data-better=true]{color:var(--pf-brand);font-weight:600}
+.build-compare td[data-better=true]::after{content:" ▲";font-size:.6rem}
