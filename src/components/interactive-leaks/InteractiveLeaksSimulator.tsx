@@ -1,17 +1,36 @@
-import { useState, useReducer } from 'react';
-import {INITIAL_EXPERIENCE,experienceReducer,deriveUsage,simpleProfile,simpleEndurance,simpleEnduranceHeadline,INSUFFICIENT_EVIDENCE_MESSAGE,USAGE_PRESETS,ACTIVE_WORKLOADS,USAGE_VERSION,POWER_EVIDENCE_VERSION,freezeRun,type AlphaRun,type UsagePreset} from '../../lib/simulation/alpha-workspace';
-import {evidenceDeviceFrom,resolvePowerEvidence,simpleEvidenceConfidence,workloadEvidence} from '../../lib/simulation/power-evidence';
-import {receiptSections,headlineText,headlineLabel} from '../../lib/simulation/result-export';
-import ShareResult from './ShareResult';
-import {numeric, captureValue, captureNumericValue, INVALID_NUMBER, numericIssues, buildProfile, runWorkspace, WORKLOAD_LABEL, COMPONENT_WORKLOADS, type ProfileMode} from '../../lib/simulation/beta-workspace';
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
+import { HANDOFF_KEY, HANDOFF_PARAM, readHandoff, type SimulatorHandoff } from '../../lib/labs/build/handoff';
+import FormSection from '../labs/FormSection';
+import ResultPanel from '../labs/ResultPanel';
+import type { SimpleBatteryResult } from '../../lib/valuation/simple-battery';
+import PublishBuild from '../community/PublishBuild';
+import {communitySimulation,type CommunitySimulation,type SharedSimulationConfiguration} from '../../lib/community/simulation';
+import DownloadSectionReceipt from './DownloadSectionReceipt';
+import ThermalPerformanceCharts from './ThermalPerformanceCharts';
+import './simulation-results-layout.css';
+import { projectedSustainedGpuRetention } from '../../lib/simulation/modules/sustained-gpu-scenario';
+import { projectedSustainedCpuScore } from '../../lib/simulation/modules/sustained-cpu-scenario';
+import { projectTaperedChargingMinutes } from '../../lib/simulation/modules/charging-scenario';
+import { SOC_MODELS, isSelectableSoc } from '../../lib/simulation/soc-model-catalog';
+import BrandSelect from './BrandSelect';
+import { SIMPLE_USAGE_SCENARIOS } from '../../lib/simulation/simple-usage-scenarios';
+import { CAMERA_SENSOR_FORMATS, CAMERA_APERTURES, cameraApertureRangeValid } from '../../lib/simulation/camera-option-catalog';
+import { suggestLiveDeviceComparisons, suggestLiveCompetingDevices } from '../../lib/simulation/modules/live-device-comparison-suggestions';
+import { shortChipName, shortDeviceName } from '../../lib/simulation/modules/device-comparison-suggestions';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import BetaFeedbackPanel from './BetaFeedbackPanel';
+import SimpleModePanel, { type SimplePresetRequest } from './SimpleModePanel';
+
+import {
+  expandSimpleMode,
+  type SimpleModeInput,
+} from '../../lib/simulation/simple-mode';
 
 import {
   SIMULATION_ENGINE_VERSION,
+  simulateDevice,
 } from '../../lib/simulation/engine';
-
-import {
-  BATTERY_EXPERIENCE_VERSION,
-} from '../../lib/simulation/modules/battery-experience';
 
 import type {
   DeviceFormFactor,
@@ -23,9 +42,144 @@ import type {
   CameraModuleType,
 } from '../../lib/simulation/modules/camera';
 
-import type {
-  BatteryExperienceWorkload,
-} from '../../lib/simulation/modules/battery-experience';
+import {
+  simulateLiveBatteryExperience,
+} from '../../lib/simulation/live-battery-experience';
+
+import {
+  simulateLiveThermalExperience,
+} from '../../lib/simulation/live-thermal-experience';
+
+import {
+  simulateLiveCameraExperience,
+} from '../../lib/simulation/live-camera-experience';
+
+import {
+  resolveCameraZoomHandoff,
+} from '../../lib/simulation/modules/camera-zoom-handoff';
+
+import {
+  simulateLiveDisplayExperience,
+} from '../../lib/simulation/live-display-experience';
+
+import {
+  resolveLiveDisplayRuntimeSensitivity,
+} from '../../lib/simulation/modules/display-runtime-sensitivity';
+
+import {
+  estimateLiveSustainedPerformance,
+} from '../../lib/simulation/modules/sustained-performance-estimator';
+
+import {
+  estimateLivePeakPerformance,
+  type PeakBenchmarkDomain,
+} from '../../lib/simulation/modules/peak-performance-estimator';
+
+import {
+  simulateTwoNodeThermals,
+} from '../../lib/simulation/modules/two-node-thermal';
+
+import {
+  calculateSocArchitecture,
+} from '../../lib/simulation/modules/soc-architecture';
+
+import {
+  buildPerformanceContext,
+} from '../../lib/simulation/modules/performance-context';
+
+import {
+  calculateGpuArchitecture,
+} from '../../lib/simulation/modules/gpu-architecture';
+
+import {
+  calculateGpuPowerEnvelope,
+} from '../../lib/simulation/modules/gpu-power-envelope';
+
+import {
+  calculateGpuWorkloadDemand,
+} from '../../lib/simulation/modules/gpu-workload-demand';
+
+import {
+  interpretGpuWorkloadResponse,
+} from '../../lib/simulation/modules/gpu-workload-response';
+
+import {
+  calculateGamingDisplayEnvelope,
+} from '../../lib/simulation/modules/gaming-display-envelope';
+
+import {
+  calculateSustainedBenchmarkEnvelope,
+} from '../../lib/simulation/modules/sustained-benchmark-envelope';
+
+import {
+  calculateGamingSessionEnvelope,
+} from '../../lib/simulation/modules/gaming-session-envelope';
+
+import {
+  calculateBatteryAgingEnvelope,
+} from '../../lib/simulation/modules/battery-aging-envelope';
+
+import {
+  calculateBatteryAgingRuntime,
+} from '../../lib/simulation/modules/battery-aging-runtime';
+
+import {
+  calculateBatteryCycleExposure,
+} from '../../lib/simulation/modules/battery-cycle-exposure';
+
+import {
+  forecastBatteryHealthThreshold,
+} from '../../lib/simulation/modules/battery-health-forecast';
+
+import {
+  calculateCameraVideoWorkload,
+} from '../../lib/simulation/modules/camera-video-workload';
+
+import {
+  calculateCameraVideoThermal,
+} from '../../lib/simulation/modules/camera-video-thermal';
+
+import {
+  calculateConnectivityWorkload,
+  type ConnectivityMode,
+} from '../../lib/simulation/modules/connectivity-workload';
+
+import {
+  calculateDisplayRefreshProfile,
+} from '../../lib/simulation/modules/display-refresh-profile';
+
+import {
+  calculateCameraSensorNoise,
+} from '../../lib/simulation/modules/camera-sensor-noise';
+
+import {
+  estimateLiveGeekerwanChargingContext,
+} from '../../lib/simulation/modules/geekerwan-charging-context';
+
+import {
+  findGeekerwanBatteryResult,
+  summarizeGeekerwanSocCurve,
+} from '../../lib/simulation/modules/geekerwan-socpk-evidence';
+
+import {
+  findPhoneArenaChargingResult,
+} from '../../lib/simulation/modules/phonearena-battery-evidence';
+
+import {
+  buildCrossLabBatteryContext,
+} from '../../lib/simulation/modules/cross-lab-battery-context';
+
+import {
+  estimateLiveObservedChargingInputPower,
+} from '../../lib/simulation/modules/charging-input-power-estimator';
+
+import {
+  estimateChargerLabPeakInputContext,
+} from '../../lib/simulation/modules/chargerlab-peak-input-context';
+
+import {
+  buildPredictionSnapshot,
+} from '../../lib/simulation/modules/prediction-snapshot-builder';
 
 type NumericFieldProps = {
   label: string;
@@ -40,19 +194,53 @@ type CameraDraft = {
   id: number;
   type: CameraModuleType;
   sensorFormatDenominator: string;
+  sensorWidthMm?: string;
+  sensorHeightMm?: string;
   resolutionMp: string;
   equivalentFocalLengthMm: string;
   physicalFocalLengthMm: string;
   apertureFNumber: string;
+  variableAperture: boolean;
+  variableApertureWide: string;
+  variableApertureNarrow: string;
+  exposureTimeSeconds?: string;
+  sensorReadoutTimeSeconds?: string;
+  videoFrameRateFps?: string;
+  videoWidthPx?: string;
+  videoHeightPx?: string;
+  videoBitDepth?: string;
+  videoChromaSubsampling?:
+    | ''
+    | '4:2:0'
+    | '4:2:2'
+    | '4:4:4';
+  videoEncodedBitrateMbps?: string;
+  videoRecordingDurationMinutes?: string;
+  videoPipelinePowerW?: string;
+  videoThermalResistanceCPerW?: string;
+  videoThermalMassJPerC?: string;
+  videoThermalLimitTemperatureC?: string;
+  fullWellElectrons?: string;
+  readNoiseElectrons?: string;
+  darkCurrentElectronsPerSecond?: string;
+  signalElectrons?: string;
+  subjectAngularSpeedDegPerSecond?: string;
+  cameraAngularShakeDegPerSecond?: string;
+  oisAngularCompensationFraction?: string;
+  lensTransmissionFraction?: string;
+  quantumEfficiencyFraction?: string;
+  binningLinearFactor?: string;
+  cropZoomRatio?: string;
+  targetOutputResolutionMp?: string;
+  focusDistanceM: string;
   moduleWidthMm: string;
   moduleHeightMm: string;
   moduleDepthMm: string;
 };
 
-/* ---------------- Device layer ---------------- */
-
 type FormState = {
   name: string;
+  manufacturer: string;
   formFactor: DeviceFormFactor;
 
   widthMm: string;
@@ -65,6 +253,15 @@ type FormState = {
   resolutionHeightPx: string;
   aspectWidth: string;
   aspectHeight: string;
+  refreshRateHz: string;
+  operatingRefreshRateHz: string;
+  brightnessNits: string;
+  averagePictureLevelPercent: string;
+  panelTechnology: string;
+  displayRefreshState1Hz: string;
+  displayRefreshState1DutyPercent: string;
+  displayRefreshState2Hz: string;
+  displayRefreshState2DutyPercent: string;
 
   bezelTopMm: string;
   bezelRightMm: string;
@@ -73,6 +270,95 @@ type FormState = {
 
   batteryCapacityMah: string;
   batteryVoltageV: string;
+  webHours: string;
+  videoHours: string;
+  gamingHours: string;
+  cameraHours: string;
+  zoomTargetEquivalentFocalLengthMm: string;
+  zoomMinimumOutputResolutionMp: string;
+  wiredChargeW: string;
+  wirelessChargeW: string;
+  batteryChemistry: string;
+  cellArchitecture: 'unknown' | 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell';
+  chargingStandard: string;
+  wirelessChargingStandard: string;
+  batteryAgeYears: string;
+  batteryEquivalentFullCycles: string;
+  batteryAnnualCalendarFadePercent: string;
+  batteryCycleFadePercentPer100Cycles: string;
+  batteryHealthThresholdPercent: string;
+
+  connectivityMode: ConnectivityMode;
+  connectivityDownloadMbps: string;
+  connectivityUploadMbps: string;
+  connectivityLinkCapacityMbps: string;
+  connectivitySessionMinutes: string;
+  connectivityRadioPowerW: string;
+  connectivityActiveDutyPercent: string;
+  connectivitySignalMetricLabel: string;
+  connectivitySignalMetricValue: string;
+
+  socVendor: string;
+  socName: string;
+  socFabricationNodeNm: string;
+  socMemoryBandwidthGbps: string;
+  socCluster1Cores: string;
+  socCluster1ClockGhz: string;
+  socCluster1RelativeIpc: string;
+  socCluster2Cores: string;
+  socCluster2ClockGhz: string;
+  socCluster2RelativeIpc: string;
+  socCluster3Cores: string;
+  socCluster3ClockGhz: string;
+  socCluster3RelativeIpc: string;
+  socCluster4Cores: string;
+  socCluster4ClockGhz: string;
+  socCluster4RelativeIpc: string;
+  gpuShaderCores: string;
+  gpuExecutionUnits: string;
+  gpuPeakClockGhz: string;
+  gpuPeakPowerW: string;
+  gpuNonGpuPackagePowerW: string;
+  gpuMemoryBandwidthGbps: string;
+  gpuTextureUnits: string;
+  gpuRenderOutputUnits: string;
+  gpuRayTracingUnits: string;
+  gpuRelativeArchitectureEfficiency: string;
+  gpuRenderWidthPx: string;
+  gpuRenderHeightPx: string;
+  gpuTargetFps: string;
+  gpuRenderScalePercent: string;
+  gpuRelativeWorkloadComplexity: string;
+  gpuRaysPerPixel: string;
+  gpuEstimatedMemoryTrafficBytesPerPixel: string;
+  gamingSessionMinutes: string;
+  coolingClass:
+    | 'unknown'
+    | 'passive-graphite'
+    | 'vapor-chamber'
+    | 'large-vapor-chamber'
+    | 'active-fan'
+    | 'other';
+  thermalDomain:
+    | 'cpu_sustained'
+    | 'gpu_sustained'
+    | 'gaming_sustained'
+    | 'ray_tracing';
+  peakBenchmarkDomain: PeakBenchmarkDomain;
+  assumedGenerationUpliftPercent: string;
+  targetSocPowerW: string;
+  ambientTemperatureC: string;
+  thermalResistanceCPerW: string;
+  thermalMassJPerC: string;
+  throttleTemperatureC: string;
+  thermalDurationSeconds: string;
+
+  socToChassisResistanceCPerW: string;
+  chassisToAmbientResistanceCPerW: string;
+  socThermalMassJPerC: string;
+  chassisThermalMassJPerC: string;
+  surfaceComfortTemperatureC: string;
+  socPackageThrottleTemperatureC: string;
 
   batteryWidthMm: string;
   batteryHeightMm: string;
@@ -88,6 +374,7 @@ type FormState = {
 
 const initialForm: FormState = {
   name: '',
+  manufacturer: '',
   formFactor: 'phone',
 
   widthMm: '',
@@ -100,6 +387,15 @@ const initialForm: FormState = {
   resolutionHeightPx: '',
   aspectWidth: '',
   aspectHeight: '',
+  refreshRateHz: '',
+  operatingRefreshRateHz: '',
+  brightnessNits: '',
+  averagePictureLevelPercent: '',
+  panelTechnology: '',
+  displayRefreshState1Hz: '',
+  displayRefreshState1DutyPercent: '',
+  displayRefreshState2Hz: '',
+  displayRefreshState2DutyPercent: '',
 
   bezelTopMm: '',
   bezelRightMm: '',
@@ -108,6 +404,85 @@ const initialForm: FormState = {
 
   batteryCapacityMah: '',
   batteryVoltageV: '',
+  webHours: '',
+  videoHours: '',
+  gamingHours: '',
+  cameraHours: '',
+  zoomTargetEquivalentFocalLengthMm: '',
+  zoomMinimumOutputResolutionMp: '',
+  wiredChargeW: '',
+  wirelessChargeW: '',
+  batteryChemistry: '',
+  cellArchitecture: 'unknown',
+  chargingStandard: '',
+  wirelessChargingStandard: '',
+  batteryAgeYears: '',
+  batteryEquivalentFullCycles: '',
+  batteryAnnualCalendarFadePercent: '',
+  batteryCycleFadePercentPer100Cycles: '',
+  batteryHealthThresholdPercent: '',
+
+  connectivityMode: 'wifi',
+  connectivityDownloadMbps: '',
+  connectivityUploadMbps: '',
+  connectivityLinkCapacityMbps: '',
+  connectivitySessionMinutes: '',
+  connectivityRadioPowerW: '',
+  connectivityActiveDutyPercent: '',
+  connectivitySignalMetricLabel: '',
+  connectivitySignalMetricValue: '',
+
+  socVendor: '',
+  socName: '',
+  socFabricationNodeNm: '',
+  socMemoryBandwidthGbps: '',
+  socCluster1Cores: '',
+  socCluster1ClockGhz: '',
+  socCluster1RelativeIpc: '',
+  socCluster2Cores: '',
+  socCluster2ClockGhz: '',
+  socCluster2RelativeIpc: '',
+  socCluster3Cores: '',
+  socCluster3ClockGhz: '',
+  socCluster3RelativeIpc: '',
+  socCluster4Cores: '',
+  socCluster4ClockGhz: '',
+  socCluster4RelativeIpc: '',
+  gpuShaderCores: '',
+  gpuExecutionUnits: '',
+  gpuPeakClockGhz: '',
+  gpuPeakPowerW: '',
+  gpuNonGpuPackagePowerW: '',
+  gpuMemoryBandwidthGbps: '',
+  gpuTextureUnits: '',
+  gpuRenderOutputUnits: '',
+  gpuRayTracingUnits: '',
+  gpuRelativeArchitectureEfficiency: '',
+  gpuRenderWidthPx: '',
+  gpuRenderHeightPx: '',
+  gpuTargetFps: '',
+  gpuRenderScalePercent: '',
+  gpuRelativeWorkloadComplexity: '',
+  gpuRaysPerPixel: '',
+  gpuEstimatedMemoryTrafficBytesPerPixel: '',
+  gamingSessionMinutes: '',
+  coolingClass: 'unknown',
+  thermalDomain: 'gpu_sustained',
+  peakBenchmarkDomain: 'geekbench6_multi',
+  assumedGenerationUpliftPercent: '',
+  targetSocPowerW: '',
+  ambientTemperatureC: '',
+  thermalResistanceCPerW: '',
+  thermalMassJPerC: '',
+  throttleTemperatureC: '',
+  thermalDurationSeconds: '',
+
+  socToChassisResistanceCPerW: '',
+  chassisToAmbientResistanceCPerW: '',
+  socThermalMassJPerC: '',
+  chassisThermalMassJPerC: '',
+  surfaceComfortTemperatureC: '',
+  socPackageThrottleTemperatureC: '',
 
   batteryWidthMm: '',
   batteryHeightMm: '',
@@ -123,6 +498,7 @@ const initialForm: FormState = {
 
 const flagshipExample: FormState = {
   name: 'Flagship reference',
+  manufacturer: 'Samsung',
   formFactor: 'phone',
 
   widthMm: '75',
@@ -135,6 +511,15 @@ const flagshipExample: FormState = {
   resolutionHeightPx: '3200',
   aspectWidth: '9',
   aspectHeight: '20',
+  refreshRateHz: '120',
+  operatingRefreshRateHz: '120',
+  brightnessNits: '1000',
+  averagePictureLevelPercent: '50',
+  panelTechnology: 'LTPO OLED',
+  displayRefreshState1Hz: '',
+  displayRefreshState1DutyPercent: '',
+  displayRefreshState2Hz: '',
+  displayRefreshState2DutyPercent: '',
 
   bezelTopMm: '1.5',
   bezelRightMm: '1.5',
@@ -143,6 +528,85 @@ const flagshipExample: FormState = {
 
   batteryCapacityMah: '5000',
   batteryVoltageV: '3.85',
+  webHours: '2',
+  videoHours: '2',
+  gamingHours: '1',
+  cameraHours: '0',
+  zoomTargetEquivalentFocalLengthMm: '120',
+  zoomMinimumOutputResolutionMp: '12',
+  wiredChargeW: '60',
+  wirelessChargeW: '25',
+  batteryChemistry: 'silicon-carbon',
+  cellArchitecture: 'single-cell',
+  chargingStandard: 'USB PD/PPS',
+  wirelessChargingStandard: 'Qi2',
+  batteryAgeYears: '',
+  batteryEquivalentFullCycles: '',
+  batteryAnnualCalendarFadePercent: '',
+  batteryCycleFadePercentPer100Cycles: '',
+  batteryHealthThresholdPercent: '',
+
+  connectivityMode: 'wifi',
+  connectivityDownloadMbps: '',
+  connectivityUploadMbps: '',
+  connectivityLinkCapacityMbps: '',
+  connectivitySessionMinutes: '',
+  connectivityRadioPowerW: '',
+  connectivityActiveDutyPercent: '',
+  connectivitySignalMetricLabel: '',
+  connectivitySignalMetricValue: '',
+
+  socVendor: 'Qualcomm',
+  socName: 'Snapdragon 8 Elite Gen 5',
+  socFabricationNodeNm: '',
+  socMemoryBandwidthGbps: '',
+  socCluster1Cores: '',
+  socCluster1ClockGhz: '',
+  socCluster1RelativeIpc: '',
+  socCluster2Cores: '',
+  socCluster2ClockGhz: '',
+  socCluster2RelativeIpc: '',
+  socCluster3Cores: '',
+  socCluster3ClockGhz: '',
+  socCluster3RelativeIpc: '',
+  socCluster4Cores: '',
+  socCluster4ClockGhz: '',
+  socCluster4RelativeIpc: '',
+  gpuShaderCores: '',
+  gpuExecutionUnits: '',
+  gpuPeakClockGhz: '',
+  gpuPeakPowerW: '',
+  gpuNonGpuPackagePowerW: '',
+  gpuMemoryBandwidthGbps: '',
+  gpuTextureUnits: '',
+  gpuRenderOutputUnits: '',
+  gpuRayTracingUnits: '',
+  gpuRelativeArchitectureEfficiency: '',
+  gpuRenderWidthPx: '',
+  gpuRenderHeightPx: '',
+  gpuTargetFps: '',
+  gpuRenderScalePercent: '',
+  gpuRelativeWorkloadComplexity: '',
+  gpuRaysPerPixel: '',
+  gpuEstimatedMemoryTrafficBytesPerPixel: '',
+  gamingSessionMinutes: '',
+  coolingClass: 'large-vapor-chamber',
+  thermalDomain: 'gpu_sustained',
+  peakBenchmarkDomain: 'geekbench6_multi',
+  assumedGenerationUpliftPercent: '',
+  targetSocPowerW: '10',
+  ambientTemperatureC: '25',
+  thermalResistanceCPerW: '3',
+  thermalMassJPerC: '45',
+  throttleTemperatureC: '42',
+  thermalDurationSeconds: '600',
+
+  socToChassisResistanceCPerW: '',
+  chassisToAmbientResistanceCPerW: '',
+  socThermalMassJPerC: '',
+  chassisThermalMassJPerC: '',
+  surfaceComfortTemperatureC: '',
+  socPackageThrottleTemperatureC: '',
 
   batteryWidthMm: '60',
   batteryHeightMm: '80',
@@ -161,10 +625,16 @@ const flagshipCameras: CameraDraft[] = [
     id: 1,
     type: 'wide',
     sensorFormatDenominator: '1.3',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '50',
     equivalentFocalLengthMm: '24',
     physicalFocalLengthMm: '6.5',
     apertureFNumber: '1.6',
+    variableAperture: false,
+    variableApertureWide: '',
+    variableApertureNarrow: '',
+    focusDistanceM: '',
     moduleWidthMm: '20',
     moduleHeightMm: '20',
     moduleDepthMm: '6',
@@ -173,102 +643,114 @@ const flagshipCameras: CameraDraft[] = [
     id: 2,
     type: 'periscope',
     sensorFormatDenominator: '2.5',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '50',
     equivalentFocalLengthMm: '120',
     physicalFocalLengthMm: '20',
     apertureFNumber: '2.8',
+    variableAperture: false,
+    variableApertureWide: '',
+    variableApertureNarrow: '',
+    focusDistanceM: '',
     moduleWidthMm: '20',
     moduleHeightMm: '15',
     moduleDepthMm: '6',
   },
 ];
 
-const initialWorkloadInputs: Record<BatteryExperienceWorkload, string> = {
-  mixed_use: '',
-  web_browsing: '',
-  video_playback: '',
-  gaming: '',
-  camera_use: '',
-  standby: '',
-};
+function numeric(value: string): number | undefined {
+  if (value.trim() === '') return undefined;
 
-/* ---------------- Formatting helpers ---------------- */
+  const parsed = Number(value);
 
-function format(value: number | undefined, digits = 1): string {
-  if (value === undefined || !Number.isFinite(value)) return 'Unknown';
+  return Number.isFinite(parsed)
+    ? parsed
+    : undefined;
+}
+
+function format(
+  value: number | undefined,
+  digits = 1,
+): string {
+  if (value === undefined) return 'Unknown';
 
   return value.toLocaleString(undefined, {
     maximumFractionDigits: digits,
   });
 }
 
-function hoursLabel(
-  runtime: { min?: number; max?: number } | undefined,
+function formatDurationMinutes(
+  minutes: number | undefined,
 ): string {
-  if (!runtime) return 'Unknown';
-
-  const { min, max } = runtime;
-
-  if (min !== undefined && max !== undefined) {
-    if (Math.abs(max - min) < 1e-9) {
-      return `${format(min, 1)} h`;
-    }
-
-    return `${format(min, 1)}–${format(max, 1)} h`;
+  if (minutes === undefined || !Number.isFinite(minutes)) {
+    return 'Unknown';
   }
 
-  if (min !== undefined) return `${format(min, 1)}+ h`;
-  if (max !== undefined) return `up to ${format(max, 1)} h`;
+  const rounded = Math.max(0, Math.round(minutes));
 
-  return 'Unknown';
-}
-
-function wattsLabel(
-  power: { min?: number; max?: number } | undefined,
-): string {
-  if (!power) return 'Unknown';
-
-  const { min, max } = power;
-
-  if (min !== undefined && max !== undefined) {
-    if (Math.abs(max - min) < 1e-9) {
-      return `${format(min, 2)} W`;
-    }
-
-    return `${format(min, 2)}–${format(max, 2)} W`;
+  if (rounded < 120) {
+    return `${rounded} min`;
   }
 
-  if (min !== undefined) return `${format(min, 2)}+ W`;
-  if (max !== undefined) return `up to ${format(max, 2)} W`;
+  const hours = Math.floor(rounded / 60);
+  const remainingMinutes = rounded % 60;
 
-  return 'Unknown';
+  return remainingMinutes > 0
+    ? `${hours} h ${remainingMinutes} min`
+    : `${hours} h`;
 }
 
-/* A day-scale reference bar: position of a runtime within 0–30 h. */
-function runtimeBarPercent(
-  runtime: { min?: number; max?: number } | undefined,
-): number | undefined {
-  if (!runtime || runtime.min === undefined) return undefined;
+function formatDurationSeconds(
+  seconds: number | undefined,
+): string {
+  if (seconds === undefined || !Number.isFinite(seconds)) {
+    return 'Unknown';
+  }
 
-  const REFERENCE_HOURS = 30;
+  const rounded = Math.max(0, Math.round(seconds));
 
-  return Math.min(100, (runtime.min / REFERENCE_HOURS) * 100);
+  if (rounded < 60) {
+    return `${rounded} s`;
+  }
+
+  const minutes = Math.floor(rounded / 60);
+  const remainingSeconds = rounded % 60;
+
+  if (minutes < 60) {
+    return remainingSeconds > 0
+      ? `${minutes} min ${remainingSeconds} s`
+      : `${minutes} min`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  return remainingMinutes > 0
+    ? `${hours} h ${remainingMinutes} min`
+    : `${hours} h`;
 }
 
-const CONFIDENCE_LABEL: Record<string, string> = {
-  deterministic: 'Deterministic inputs',
-  high: 'High confidence',
-  moderate: 'Moderate confidence',
-  low: 'Low confidence',
-};
-
-const EVIDENCE_CONFIDENCE_LABEL: Record<string, string> = {
-  high: 'High evidence confidence',
-  moderate: 'Moderate evidence confidence',
-  low: 'Low evidence confidence',
-};
-
-/* ---------------- Primitives ---------------- */
+function cameraOutcomeLabel(domain: string) {
+  switch (domain) {
+    case 'sharpness_timing':
+      return 'Photo sharpness & timing';
+    case 'video_stabilization':
+      return 'Video stabilization';
+    case 'photo_texture':
+      return 'Photo texture / detail';
+    case 'stabilization_crop':
+      return 'Stabilization crop';
+    case 'video_thermal_limit':
+      return 'Video thermal limit';
+    case 'low_light_exposure':
+      return 'Low-light exposure';
+    case 'resolved_detail':
+      return 'Resolved detail';
+    default:
+      return domain.replaceAll('_', ' ');
+  }
+}
 
 function NumericField({
   label,
@@ -285,44 +767,20 @@ function NumericField({
         {suffix ? <small>{suffix}</small> : null}
       </span>
 
+      <span className="instrument-unit">
       <input
         type="number"
         inputMode="decimal"
         step={step}
-        value={value===INVALID_NUMBER?'':value}
-        aria-invalid={value===INVALID_NUMBER || (numeric(value)??0)<0}
+        value={value}
         placeholder={placeholder}
-        onChange={captureNumericValue(onChange)}
+        onChange={(event) =>
+          onChange(event.currentTarget.value)
+        }
       />
-      <small className="il-input-state">{value===INVALID_NUMBER?'Incomplete number':value.trim()?'User supplied · unverified':'Unknown'}</small>
+      {suffix ? <span aria-hidden="true">{suffix}</span> : null}
+      </span>
     </label>
-  );
-}
-
-function SectionHeading({
-  index,
-  title,
-  hint,
-  action,
-}: {
-  index: string;
-  title: string;
-  hint: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="il-section-heading">
-      <span className="il-index">{index}</span>
-
-      <div className="il-heading-copy">
-        <div>
-          <h2>{title}</h2>
-          <p>{hint}</p>
-        </div>
-      </div>
-
-      {action}
-    </div>
   );
 }
 
@@ -331,89 +789,537 @@ function emptyCamera(id: number): CameraDraft {
     id,
     type: 'wide',
     sensorFormatDenominator: '',
+    sensorWidthMm: '',
+    sensorHeightMm: '',
     resolutionMp: '',
     equivalentFocalLengthMm: '',
     physicalFocalLengthMm: '',
     apertureFNumber: '',
+    variableAperture: false,
+    variableApertureWide: '',
+    variableApertureNarrow: '',
+    exposureTimeSeconds: '',
+    sensorReadoutTimeSeconds: '',
+    videoFrameRateFps: '',
+    videoWidthPx: '',
+    videoHeightPx: '',
+    videoBitDepth: '',
+    videoChromaSubsampling: '',
+    videoEncodedBitrateMbps: '',
+    videoRecordingDurationMinutes: '',
+    videoPipelinePowerW: '',
+    videoThermalResistanceCPerW: '',
+    videoThermalMassJPerC: '',
+    videoThermalLimitTemperatureC: '',
+    fullWellElectrons: '',
+    readNoiseElectrons: '',
+    darkCurrentElectronsPerSecond: '',
+    signalElectrons: '',
+    subjectAngularSpeedDegPerSecond: '',
+    cameraAngularShakeDegPerSecond: '',
+    oisAngularCompensationFraction: '',
+    lensTransmissionFraction: '',
+    quantumEfficiencyFraction: '',
+    binningLinearFactor: '',
+    cropZoomRatio: '',
+    targetOutputResolutionMp: '',
+    focusDistanceM: '',
     moduleWidthMm: '',
     moduleHeightMm: '',
     moduleDepthMm: '',
   };
 }
 
-function cameraInput(camera: CameraDraft): CameraInput {
+function cameraInput(
+  camera: CameraDraft,
+): CameraInput {
   return {
     type: camera.type,
-    sensorFormatDenominator: numeric(camera.sensorFormatDenominator),
+
+    sensorFormatDenominator: numeric(
+      camera.sensorFormatDenominator,
+    ),
+
+    sensorWidthMm: numeric(
+      camera.sensorWidthMm ?? '',
+    ),
+
+    sensorHeightMm: numeric(
+      camera.sensorHeightMm ?? '',
+    ),
+
     resolutionMp: numeric(camera.resolutionMp),
-    equivalentFocalLengthMm: numeric(camera.equivalentFocalLengthMm),
-    physicalFocalLengthMm: numeric(camera.physicalFocalLengthMm),
-    apertureFNumber: numeric(camera.apertureFNumber),
+
+    equivalentFocalLengthMm: numeric(
+      camera.equivalentFocalLengthMm,
+    ),
+
+    physicalFocalLengthMm: numeric(
+      camera.physicalFocalLengthMm,
+    ),
+
+    apertureFNumber: numeric(
+      camera.apertureFNumber,
+    ),
+
+    exposureTimeSeconds: numeric(
+      camera.exposureTimeSeconds ?? '',
+    ),
+
+    sensorReadoutTimeSeconds: numeric(
+      camera.sensorReadoutTimeSeconds ?? '',
+    ),
+
+    videoFrameRateFps: numeric(
+      camera.videoFrameRateFps ?? '',
+    ),
+
+    subjectAngularSpeedDegPerSecond: numeric(
+      camera.subjectAngularSpeedDegPerSecond ?? '',
+    ),
+
+    cameraAngularShakeDegPerSecond: numeric(
+      camera.cameraAngularShakeDegPerSecond ?? '',
+    ),
+
+    oisAngularCompensationFraction: numeric(
+      camera.oisAngularCompensationFraction ?? '',
+    ),
+
+    lensTransmissionFraction: numeric(
+      camera.lensTransmissionFraction ?? '',
+    ),
+
+    quantumEfficiencyFraction: numeric(
+      camera.quantumEfficiencyFraction ?? '',
+    ),
+
+    binningLinearFactor: numeric(
+      camera.binningLinearFactor ?? '',
+    ),
+
+    cropZoomRatio: numeric(
+      camera.cropZoomRatio ?? '',
+    ),
+
+    targetOutputResolutionMp: numeric(
+      camera.targetOutputResolutionMp ?? '',
+    ),
+
+    focusDistanceM: numeric(
+      camera.focusDistanceM,
+    ),
+
     moduleWidthMm: numeric(camera.moduleWidthMm),
     moduleHeightMm: numeric(camera.moduleHeightMm),
     moduleDepthMm: numeric(camera.moduleDepthMm),
   };
 }
 
-/* ---------------- Component ---------------- */
+type DeterministicResult = ReturnType<typeof simulateDevice>;
 
-export default function InteractiveLeaksSimulator() {
-  const [form, setForm] = useState<FormState>(initialForm);
+function DeterministicShareCard({
+  input,
+  result,
+  mode,
+  usage,
+  activeUseHours,
+  chargeMinutes,
+  singleScore,
+  multiScore,
+  sustainedSingleScore,
+  sustainedMultiScore,
+  experimentalScores = false,
+  powerScenario = 'neutral',
+  socName,
+  wiredWatts,
+  chargingStandard,
+  cellArchitecture,
+}: {
+  input: SimulationInput;
+  result: DeterministicResult;
+  mode: 'simple' | 'advanced';
+  usage: 'Light' | 'Typical' | 'Heavy';
+  activeUseHours?: number;
+  chargeMinutes?: number;
+  singleScore?: number;
+  multiScore?: number;
+  sustainedSingleScore?: number;
+  sustainedMultiScore?: number;
+  experimentalScores?: boolean;
+  powerScenario?: 'neutral' | 'efficiency' | 'performance';
+  socName?: string;
+  wiredWatts?: number;
+  chargingStandard?: string;
+  cellArchitecture?: 'single-cell' | 'dual-cell' | 'tri-cell' | 'quad-cell' | 'unknown';
+}) {
+  const [shareMessage, setShareMessage] = useState('');
+  const display = result.displays.primary;
+  const battery = result.battery;
+  const packaging = result.packaging;
+  const deviceName = input.name || 'Untitled concept';
+  // A 0–100% estimate is only defensible as a coarse scenario if no curve exists.
+  // Do not pretend that advertised peak wattage is sustained charging power.
+  const assumedEnergyWh = battery?.totalEnergyWh ??
+    (mode === 'simple' && battery?.totalCapacityMah !== undefined
+      ? battery.totalCapacityMah * 3.85 / 1000
+      : undefined);
+  const chargingScenarioMinutes = chargeMinutes === undefined &&
+    assumedEnergyWh !== undefined && wiredWatts !== undefined
+      ? projectTaperedChargingMinutes({ energyWh: assumedEnergyWh, ratedWatts: wiredWatts, chargingStandard, cellArchitecture })
+      : undefined;
+  const shownChargeMinutes = chargeMinutes ?? chargingScenarioMinutes;
+  const chargingIsScenario = chargeMinutes === undefined && chargingScenarioMinutes !== undefined;
+  const scoreLabel = experimentalScores ? 'PROJECTED' : 'ESTIMATED';
 
-  const [cameras, setCameras] = useState<CameraDraft[]>([]);
+  async function downloadCard() {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Image export is unavailable in this browser.');
 
-  /* Environment layer: one average-power field per workload (W). */
-  const [workloadPower, setWorkloadPower] =
-    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
+      const simple = mode === 'simple';
+      const accent = simple ? '#83e4ec' : '#b6acff';
+      const ink = '#f6f8fc';
+      const dim = '#a9b7c8';
+      ctx.fillStyle = '#080d15';
+      ctx.fillRect(0, 0, 1080, 1350);
+      ctx.fillStyle = simple ? '#10232d' : '#17192f';
+      ctx.fillRect(0, 0, 1080, 290);
+      ctx.fillStyle = accent;
+      ctx.fillRect(72, 65, 55, 7);
+      // Use the exact SVG asset rendered by the site's header and mobile navigation.
+      // Reject export if it cannot be loaded rather than producing a card with incorrect branding.
+      const brandLogo = new Image();
+      await new Promise<void>((resolve, reject) => {
+        brandLogo.onload = () => resolve();
+        brandLogo.onerror = () => reject(new Error('PhoneFuturist logo could not be loaded for export.'));
+        brandLogo.src = '/assets/phonefuturist-mark.svg';
+      });
+      ctx.drawImage(brandLogo, 72, 74, 91, 41);
+      ctx.font = '700 31px Arial';
+      ctx.fillStyle = ink;
+      ctx.fillText('PhoneFuturist', 177, 108);
+      ctx.font = '700 19px Arial';
+      ctx.fillStyle = accent;
+      ctx.fillText(simple ? 'INTERACTIVE LEAKS  /  SIMPLE' : 'INTERACTIVE LEAKS  /  ADVANCED', 72, 175);
 
-  /* Environment layer: usable-pack derating (%). */
-  const [usablePercent, setUsablePercent] = useState<string>('');
+      // Wrap safely for PNG, truncate with an ellipsis if the reserved area is exceeded.
+      function wrapTitle(title: string, fontSize: number, top: number, maxLines: number) {
+        const drawingContext = ctx!;
+        drawingContext.font = '700 ' + fontSize + 'px Arial';
+        const maxWidth = 920;
+        const words = title.trim().split(/\s+/).filter(Boolean);
+        const lines: string[] = [];
+        let current = '';
+        for (const word of words) {
+          const candidate = current ? current + ' ' + word : word;
+          if (drawingContext.measureText(candidate).width <= maxWidth) {
+            current = candidate;
+          } else {
+            if (current) lines.push(current);
+            current = word;
+          }
+        }
+        if (current) lines.push(current);
+        if (!lines.length) lines.push('Untitled concept');
 
-  /* Weights are an advanced control: relative share inside the mixture. */
-  const [workloadWeights, setWorkloadWeights] =
-    useState<Record<BatteryExperienceWorkload, string>>(initialWorkloadInputs);
+        // A single oversized word must never overflow its card.
+        const fit = (value: string, ellipsis: boolean) => {
+          const suffix = ellipsis ? '…' : '';
+          let output = value;
+          while (output.length > 0 && drawingContext.measureText(output + suffix).width > maxWidth) {
+            output = output.slice(0, -1);
+          }
+          return output + suffix;
+        };
+        lines.slice(0, maxLines).forEach((line, index) => {
+          const isLast = index === maxLines - 1;
+          const remaining = lines.length > maxLines;
+          drawingContext.fillText(
+            fit(line, isLast && remaining),
+            72,
+            top + index * fontSize * 1.16,
+            maxWidth,
+          );
+        });
+      }
 
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+      ctx.fillStyle = ink;
+      wrapTitle(deviceName, 55, 255, 2);
+      const metrics: Array<[string, string]> = [
+        ['GB6 SINGLE · ' + scoreLabel, singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'No estimate'],
+        ['GB6 MULTI · ' + scoreLabel, multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'No estimate'],
+        ['15-MIN SINGLE · SIM', sustainedSingleScore !== undefined ? Math.round(sustainedSingleScore).toLocaleString('en-US') : 'No estimate'],
+        ['15-MIN MULTI · SIM', sustainedMultiScore !== undefined ? Math.round(sustainedMultiScore).toLocaleString('en-US') : 'No estimate'],
+        [powerScenario === 'neutral' ? 'BATTERY LIFE · EST.' : 'BATTERY · WHAT-IF', activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h' : 'No estimate'],
+        ['CHARGING 0–100%', shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min' : 'Not modeled'],
+        ['BATTERY', battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah).toLocaleString('en-US') + ' mAh' : 'Unknown'],
+        ['WIRED CHARGING', wiredWatts !== undefined ? Math.round(wiredWatts) + ' W' : 'Unknown'],
+        ['DISPLAY', input.displays.primary.diagonalInches !== undefined ? input.displays.primary.diagonalInches.toFixed(2) + ' in' : 'Unknown'],
+        ['REFRESH RATE', input.displays.primary.refreshRateHz !== undefined ? Math.round(input.displays.primary.refreshRateHz) + ' Hz' : 'Unknown'],
+      ];
+      if (simple) {
+        ctx.fillStyle = dim;
+        ctx.font = '700 19px Arial';
+        ctx.fillText(socName ? 'SOC  /  ' + socName.slice(0, 48) : 'YOUR CONCEPT, AT A GLANCE', 72, 430, 930);
+      } else {
+        ctx.fillStyle = dim;
+        ctx.font = '700 18px Arial';
+        ctx.fillText(socName ? 'SOC  /  ' + socName.slice(0, 48) : 'SIMULATION SUMMARY', 72, 430, 930);
+      }
+      const baseY = 452;
+      const cellHeight = 132;
+      for (let i = 0; i < metrics.length; i++) {
+        const x = 72 + (i % 2) * 474;
+        const y = baseY + Math.floor(i / 2) * (cellHeight + 9);
+        ctx.fillStyle = '#15202e';
+        ctx.beginPath();
+        ctx.roundRect(x, y, 456, cellHeight, 20);
+        ctx.fill();
+        ctx.fillStyle = dim;
+        ctx.font = '700 18px Arial';
+        ctx.fillText(metrics[i][0], x + 22, y + 32);
+        ctx.fillStyle = ink;
+        const value = metrics[i][1];
+        ctx.font = '700 ' + (value.length > 18 ? 30 : value.length > 11 ? 40 : 53) + 'px Arial';
+        ctx.fillText(value, x + 22, y + 92, 407);
+      }
+      ctx.fillStyle = dim;
+      ctx.font = '20px Arial';
+      ctx.font = '18px Arial';
+      ctx.fillText(experimentalScores ? 'INTERACTIVE LEAKS · SOC PROJECTIONS' : 'INTERACTIVE LEAKS · SIMULATION RESULTS', 72, 1195, 935);
+      ctx.fillStyle = accent;
+      ctx.fillRect(72, 1250, 936, 2);
+      ctx.fillStyle = ink;
+      ctx.font = '700 21px Arial';
+      ctx.fillText('SIMULATED ESTIMATE', 72, 1294);
+      ctx.fillStyle = dim;
+      ctx.font = '20px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText('phonefuturist', 1006, 1294);
+      ctx.textAlign = 'left';
 
-  const [hasSimulated, setHasSimulated] = useState(false);
-
-  const [run, setRun] = useState<AlphaRun|null>(null);
-  const [profileMode,setProfileMode] = useState<ProfileMode>('equal');
-  const [dirty,setDirty] = useState(false);
-  const [exampleLoaded,setExampleLoaded] = useState(false);
-  const [experience,dispatchExperience]=useReducer(experienceReducer,INITIAL_EXPERIENCE);
-  const simple=experience.mode==='simple';
-  const usage=experience.preset==='Custom'?experience.custom:USAGE_PRESETS[experience.preset];
-  const usageBreakdown=deriveUsage(usage);
-  /* Simple Mode derives whole-device power from calibration evidence; the usage profile supplies the mixture. */
-  const evidenceDevice=evidenceDeviceFrom(buildInput());
-  const evidence=simple&&!experience.useEnteredPower?resolvePowerEvidence(evidenceDevice):undefined;
-  const profile=simple?simpleProfile(experience,workloadPower,evidenceDevice):buildProfile(workloadPower,workloadWeights,profileMode);
-  const endurancePreview=simple&&!experience.useEnteredPower?simpleEndurance(experience,evidenceDevice.energyWh,evidenceDevice):undefined;
-  const enduranceHeadline=simpleEnduranceHeadline(run?.endurance);
-  /* Simple Mode grades on evidence quality; Advanced keeps the battery model's own grading. */
-  const evidenceConfidence=run?.endurance&&run.evidence?simpleEvidenceConfidence(run.evidence,run.endurance).level:undefined;
-  function changeExperience(action:Parameters<typeof experienceReducer>[1]){dispatchExperience(action);setDirty(true);}
-  const simulationInput=run?.input;
-  const result=run?.device;
-  const battery=run?.battery;
-
-  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setDirty(true);
-    setForm((current) => ({ ...current, [key]: value }));
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((value) => value ? resolve(value) : reject(new Error('PNG could not be generated.')), 'image/png'),
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const slug = deviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled-concept';
+      link.download = 'phonefuturist-' + slug + '-simulation.png';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      setShareMessage('Share card downloaded.');
+    } catch (error) {
+      setShareMessage(error instanceof Error ? error.message : 'Could not generate the share card.');
+    }
   }
 
-  function updateCamera(id: number, patch: Partial<CameraDraft>) {
-    setDirty(true);
+  async function shareSummary() {
+    const text = [
+      deviceName,
+      battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : null,
+      socName ? 'SoC: ' + socName : null,
+      singleScore !== undefined ? 'GB6 single: ' + Math.round(singleScore).toLocaleString('en-US') : null,
+      multiScore !== undefined ? 'GB6 multi: ' + Math.round(multiScore).toLocaleString('en-US') : null,
+      sustainedSingleScore !== undefined ? '15-min simulated single: ' + Math.round(sustainedSingleScore).toLocaleString('en-US') : null,
+      sustainedMultiScore !== undefined ? '15-min simulated multi: ' + Math.round(sustainedMultiScore).toLocaleString('en-US') : null,
+      wiredWatts !== undefined ? 'Wired: ' + Math.round(wiredWatts) + ' W' : null,
+      experimentalScores ? 'Concept benchmark projections' : 'Simulation estimates',
+      powerScenario !== 'neutral' ? 'Assumed processor power: ' + powerScenario : null,
+      ...(mode === 'simple'
+        ? [usage + ' usage scenario', activeUseHours !== undefined ? 'Active-use estimate: ' + activeUseHours.toFixed(1) + ' h' : null, shownChargeMinutes !== undefined ? (chargingIsScenario ? 'Charging scenario: ~' : 'Full-charge estimate: ') + Math.round(shownChargeMinutes) + ' min' : null, 'Active-use projection']
+        : [display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : null,
+           packaging?.fitsAvailableVolume === undefined ? null : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded']),
+      'Interactive Leaks · PhoneFuturist · Simulated estimate',
+    ].filter(Boolean).join(' · ');
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: deviceName + ' · Interactive Leaks', text });
+        setShareMessage('Shared.');
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        setShareMessage('Result summary copied.');
+      } else {
+        // Clipboard APIs can be unavailable in embedded or non-secure contexts.
+        // The read-only prompt keeps the text accessible rather than losing the result.
+        window.prompt('Copy your simulation summary:', text);
+        setShareMessage('Summary ready to copy.');
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return;
+      setShareMessage('Sharing is unavailable. Download the card instead.');
+    }
+  }
+
+  return (
+    <section className={`il-share-card il-share-card--${mode}`} aria-label="Share simulation result">
+      <div className="il-share-card-brand">
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/assets/phonefuturist-mark.svg" alt="" width="48" height="24" style={{ objectFit: 'contain' }} />
+          PhoneFuturist
+        </span>
+        <small>{mode === 'simple' ? 'Simple overview' : 'Advanced lab report'}</small>
+      </div>
+      <strong>{deviceName}</strong>
+      {socName && <small>{socName}</small>}
+      {experimentalScores && <small>Concept benchmark range</small>}
+      {chargingIsScenario && <small>Estimated charging time. Actual results may vary.</small>}
+      <div className="il-share-card-metrics">
+        <span>GB6 single: {singleScore !== undefined ? Math.round(singleScore).toLocaleString('en-US') : 'Unresolved'}</span>
+        <span>GB6 multi: {multiScore !== undefined ? Math.round(multiScore).toLocaleString('en-US') : 'Unresolved'}</span>
+        <span>{battery?.totalCapacityMah !== undefined ? Math.round(battery.totalCapacityMah) + ' mAh' : 'Battery unknown'}</span>
+        {wiredWatts !== undefined && <span>{Math.round(wiredWatts)} W wired</span>}
+        {mode === 'simple' ? <>
+          <span>{usage} usage scenario</span>
+          <span>{activeUseHours !== undefined ? activeUseHours.toFixed(1) + ' h estimated active use' : 'Active use unresolved'}</span>
+          <span>{shownChargeMinutes !== undefined ? '~' + Math.round(shownChargeMinutes) + ' min ' + (chargingIsScenario ? 'charging scenario' : 'charging estimate') : 'Charging not modeled'}</span>
+        </> : <>
+          <span>{display?.ppi !== undefined ? Math.round(display.ppi) + ' PPI' : 'PPI unknown'}</span>
+          <span>{packaging?.fitsAvailableVolume === undefined ? 'Packaging unresolved' : packaging.fitsAvailableVolume ? 'Volume budget passes' : 'Volume budget exceeded'}</span>
+        </>}
+      </div>
+      <div className="il-share-card-actions">
+        <button type="button" onClick={downloadCard}>Download share card</button>
+        <button type="button" onClick={shareSummary}>Share result</button>
+      </div>
+      {shareMessage && <small role="status">{shareMessage}</small>}
+    </section>
+  );
+}
+
+export default function InteractiveLeaksSimulator() {
+ useInstrumentReady('InteractiveLeaksSimulator');
+  const [communityRun,setCommunityRun]=useState<CommunitySimulation|null>(null);
+  const [simulationPending, setSimulationPending] = useState(false);
+  const [simulationError, setSimulationError] = useState('');
+  const [simulationResult, setSimulationResult] = useState<ReturnType<typeof simulateDevice> | null>(null);
+  const activeWorker = useRef<Worker | null>(null);
+  const jobNumber = useRef(0);
+  const simpleBatteryAbort = useRef<AbortController | null>(null);
+  const [simpleBattery, setSimpleBattery] = useState<SimpleBatteryResult | null>(null);
+  const [simpleBatteryPending, setSimpleBatteryPending] = useState(false);
+  const [form, setForm] =
+    useState<FormState>(initialForm);
+
+  const [cameras, setCameras] = useState<
+    CameraDraft[]
+  >([]);
+
+  const [hasSimulated, setHasSimulated] =
+    useState(false);
+  const [resultRevision, setResultRevision] = useState(0);
+
+  const [simulationInput, setSimulationInput] =
+    useState<SimulationInput | null>(null);
+
+  const [workspaceMode, setWorkspaceMode] =
+    useState<'simple' | 'advanced'>('simple');
+  const [usagePreset, setUsagePreset] = useState<'Light' | 'Typical' | 'Heavy'>('Typical');
+  const [simpleSocPowerScenario, setSimpleSocPowerScenario] = useState<'neutral' | 'efficiency' | 'performance'>('neutral');
+
+  const [predictionSaveState, setPredictionSaveState] =
+    useState<
+      | { status: 'idle' }
+      | { status: 'saving'; message: string }
+      | { status: 'saved'; message: string }
+      | { status: 'error'; message: string }
+    >({ status: 'idle' });
+
+  const result = simulationResult;
+  const publishRun = useMemo(() => communityRun && workspaceMode === 'simple' && simpleBattery ? {...communityRun, endurance:simpleBattery} : communityRun, [communityRun, workspaceMode, simpleBattery]);
+
+  useEffect(() => () => {
+    jobNumber.current++;
+    simpleBatteryAbort.current?.abort();
+    activeWorker.current?.terminate();
+  }, []);
+
+  function calculateInWorker(input: SimulationInput, shared?:SharedSimulationConfiguration) {
+    const configuration:SharedSimulationConfiguration=shared??{mode:'advanced',socName:form.socName,socVendor:form.socVendor,coolingClass:form.coolingClass,wiredWatts:form.wiredChargeW,wirelessWatts:form.wirelessChargeW,parameters:Object.fromEntries(Object.entries(form).filter((entry):entry is [string,string]=>typeof entry[1]==='string'))};
+    simpleBatteryAbort.current?.abort();
+    setSimpleBattery(null);
+    setSimpleBatteryPending(false);
+    setCommunityRun(null);
+    const job = ++jobNumber.current;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(true);
+    setSimulationError('');
+    setSimulationResult(null);
+    setSimulationInput(null);
+
+    const finish = (nextResult: ReturnType<typeof simulateDevice>) => {
+      if (job !== jobNumber.current) return;
+      setSimulationInput(input);
+      setCommunityRun(communitySimulation(input,nextResult,configuration));
+      setSimulationResult(nextResult);
+      setHasSimulated(true);
+      setSimulationPending(false);
+    };
+
+    try {
+      if (typeof Worker === 'undefined') throw new Error('Web Workers unavailable');
+      const worker = new Worker(new URL('./simulation.worker.ts', import.meta.url), { type: 'module' });
+      activeWorker.current = worker;
+      worker.onmessage = (event: MessageEvent<{ id: number; result?: ReturnType<typeof simulateDevice>; error?: string }>) => {
+        if (job !== jobNumber.current || event.data.id !== job) return;
+        worker.terminate();
+        activeWorker.current = null;
+        if (event.data.result) finish(event.data.result);
+        else {
+          setSimulationPending(false);
+          setSimulationError(event.data.error || 'Simulation could not be completed.');
+        }
+      };
+      worker.onerror = () => {
+        if (job !== jobNumber.current) return;
+        worker.terminate();
+        activeWorker.current = null;
+        setSimulationPending(false);
+        setSimulationError('Simulation worker failed. Try running it again.');
+      };
+      worker.postMessage({ id: job, input });
+    } catch {
+      // Compatibility fallback is synchronous but preserves the deterministic engine.
+      try { finish(simulateDevice(input)); }
+      catch (error) {
+        setSimulationPending(false);
+        setSimulationError(error instanceof Error ? error.message : 'Simulation failed.');
+      }
+    }
+  }
+
+  function update<K extends keyof FormState>(
+    key: K,
+    value: FormState[K],
+  ) {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function updateCamera(
+    id: number,
+    patch: Partial<CameraDraft>,
+  ) {
     setCameras((current) =>
       current.map((camera) =>
-        camera.id === id ? { ...camera, ...patch } : camera,
+        camera.id === id
+          ? { ...camera, ...patch }
+          : camera,
       ),
     );
   }
 
   function addCamera() {
-    setDirty(true);
     setCameras((current) => [
       ...current,
       emptyCamera(
@@ -425,7 +1331,6 @@ export default function InteractiveLeaksSimulator() {
   }
 
   function removeCamera(id: number) {
-    setDirty(true);
     setCameras((current) =>
       current.filter((camera) => camera.id !== id),
     );
@@ -441,10 +1346,16 @@ export default function InteractiveLeaksSimulator() {
 
     const primaryDisplay = {
       diagonalInches: numeric(form.diagonalInches),
-      resolutionWidthPx: numeric(form.resolutionWidthPx),
-      resolutionHeightPx: numeric(form.resolutionHeightPx),
+      resolutionWidthPx: numeric(
+        form.resolutionWidthPx,
+      ),
+      resolutionHeightPx: numeric(
+        form.resolutionHeightPx,
+      ),
+      refreshRateHz: numeric(form.refreshRateHz),
       aspectWidth: numeric(form.aspectWidth),
       aspectHeight: numeric(form.aspectHeight),
+
       bezelTopMm: numeric(form.bezelTopMm),
       bezelRightMm: numeric(form.bezelRightMm),
       bezelBottomMm: numeric(form.bezelBottomMm),
@@ -468,154 +1379,1968 @@ export default function InteractiveLeaksSimulator() {
       otherMm3: numeric(form.otherMm3),
     };
 
-    const hasComponentVolume = Object.values(componentVolumes).some(
-      (value) => value !== undefined,
-    );
+    const hasComponentVolume = Object.values(
+      componentVolumes,
+    ).some((value) => value !== undefined);
 
     const hasPackaging =
-      form.reservedVolumePercent.trim() !== '' || hasComponentVolume;
+      form.reservedVolumePercent.trim() !== '' ||
+      hasComponentVolume;
 
     return {
       formFactor: form.formFactor,
-      ...(form.name.trim() ? { name: form.name.trim() } : {}),
+
+      ...(form.name.trim()
+        ? { name: form.name.trim() }
+        : {}),
+
       dimensions,
-      displays: { primary: primaryDisplay },
+
+      displays: {
+        primary: primaryDisplay,
+      },
+
       ...(hasBattery
         ? {
             battery: {
               cells: [
                 {
-                  capacityMah: numeric(form.batteryCapacityMah),
-                  nominalVoltageV: numeric(form.batteryVoltageV),
-                  widthMm: numeric(form.batteryWidthMm),
-                  heightMm: numeric(form.batteryHeightMm),
-                  thicknessMm: numeric(form.batteryThicknessMm),
-                  weightG: numeric(form.batteryWeightG),
+                  capacityMah: numeric(
+                    form.batteryCapacityMah,
+                  ),
+
+                  nominalVoltageV: numeric(
+                    form.batteryVoltageV,
+                  ),
+
+                  widthMm: numeric(
+                    form.batteryWidthMm,
+                  ),
+
+                  heightMm: numeric(
+                    form.batteryHeightMm,
+                  ),
+
+                  thicknessMm: numeric(
+                    form.batteryThicknessMm,
+                  ),
+
+                  weightG: numeric(
+                    form.batteryWeightG,
+                  ),
                 },
               ],
             },
           }
         : {}),
+
       ...(cameras.length > 0
-        ? { cameras: cameras.map(cameraInput) }
+        ? {
+            cameras: cameras.map(cameraInput),
+          }
         : {}),
+
       ...(hasPackaging
         ? {
             packaging: {
-              reservedVolumePercent: numeric(form.reservedVolumePercent),
-              ...(hasComponentVolume ? { componentVolumes } : {}),
+              reservedVolumePercent: numeric(
+                form.reservedVolumePercent,
+              ),
+
+              ...(hasComponentVolume
+                ? { componentVolumes }
+                : {}),
             },
           }
         : {}),
     };
   }
 
-  function simulate() {
-    const {name,formFactor,...fields}=form;
-    const issues=numericIssues(fields);
-    cameras.forEach(({id,type,...fields},index)=>issues.push(...numericIssues(fields,`Camera ${index+1} — `)));
-    const built=buildInput();
-    const workspace=runWorkspace(built,simple?'':usablePercent,profile,issues);
-    /* Endurance is resolved from the same frozen run, so the receipt and the card can never disagree with the screen. */
-    const resolvedEndurance=simple&&!experience.useEnteredPower?simpleEndurance(experience,workspace.device?.battery?.totalEnergyWh,evidenceDeviceFrom(built)):undefined;
-    setRun(freezeRun(workspace,{
-      mode:experience.mode,usageProfile:simple?experience.preset:'Advanced',usageVersion:USAGE_VERSION,
-      ...(simple?{usage:{...usage}}:{}),powerSource:simple&&!experience.useEnteredPower?(evidence?`Derived from ${evidence.referenceCount} measured reference runtimes (${evidence.basis==='matched-reference'&&evidence.reference?evidence.reference.model:'calibration spread'}) — calibrated, not measured on this device`:'Unknown — no reference data'):'User supplied in Advanced; unverified',
-      usablePercent:simple?'':usablePercent,calibrationVersion:simple&&!experience.useEnteredPower&&evidence?POWER_EVIDENCE_VERSION:'None applied — seed observations are not fitted power coefficients',
-    },resolvedEndurance?{endurance:resolvedEndurance,evidence:resolvePowerEvidence(evidenceDeviceFrom(built))}:undefined));
-    setHasSimulated(true);
-    setDirty(false);
+  function runSimpleMode(
+    input: SimpleModeInput,
+    usage: 'Light' | 'Typical' | 'Heavy',
+    powerScenario: 'neutral' | 'efficiency' | 'performance',
+  ) {
+    setResultRevision(current => current + 1);
+    setUsagePreset(usage);
+    setSimpleSocPowerScenario(powerScenario);
+    const expansion = expandSimpleMode(input);
+    const primary =
+      expansion.simulationInput.displays.primary;
+    const mainCamera = input.mainCamera;
+
+    setForm((current) => ({
+      ...current,
+      name: input.name ?? '',
+      manufacturer:
+        input.manufacturer ?? '',
+      formFactor: 'phone',
+      diagonalInches:
+        String(
+          primary.diagonalInches ??
+            input.displayDiagonalInches,
+        ),
+      resolutionWidthPx:
+        String(primary.resolutionWidthPx ?? ''),
+      resolutionHeightPx:
+        String(primary.resolutionHeightPx ?? ''),
+      aspectWidth:
+        String(primary.aspectWidth ?? 9),
+      aspectHeight:
+        String(primary.aspectHeight ?? 20),
+      refreshRateHz:
+        String(
+          primary.refreshRateHz ??
+            input.refreshRateHz,
+        ),
+      brightnessNits: expansion.advanced.brightnessNits !== undefined
+        ? String(expansion.advanced.brightnessNits) : '',
+      // Scenario hours are configurable assumptions, not demographic averages.
+      // Keep them distinct from screen-on measurements and preserve Advanced inputs.
+      webHours: SIMPLE_USAGE_SCENARIOS[usage].webHours,
+      videoHours: SIMPLE_USAGE_SCENARIOS[usage].videoHours,
+      gamingHours: SIMPLE_USAGE_SCENARIOS[usage].gamingHours,
+      batteryCapacityMah:
+        String(input.batteryMah),
+      zoomTargetEquivalentFocalLengthMm: '',
+      zoomMinimumOutputResolutionMp: '',
+      wiredChargeW:
+        input.wiredChargingWatts !== undefined
+          ? String(input.wiredChargingWatts)
+          : '',
+      wirelessChargeW:
+        input.wirelessChargingWatts !== undefined
+          ? String(input.wirelessChargingWatts)
+          : '',
+      batteryChemistry:
+        input.batteryChemistry ?? '',
+      chargingStandard:
+        input.chargingStandard ?? '',
+      wirelessChargingStandard:
+        input.wirelessChargingStandard ?? '',
+      socVendor: input.socVendor ?? '',
+      socName: input.socName ?? '',
+      coolingClass:
+        expansion.advanced.coolingClass,
+      targetSocPowerW: '',
+      ambientTemperatureC: '',
+      thermalResistanceCPerW: '',
+      thermalMassJPerC: '',
+      throttleTemperatureC: '',
+      thermalDurationSeconds: '',
+      socToChassisResistanceCPerW: '',
+      chassisToAmbientResistanceCPerW: '',
+      socThermalMassJPerC: '',
+      chassisThermalMassJPerC: '',
+      surfaceComfortTemperatureC: '',
+      socPackageThrottleTemperatureC: '',
+    }));
+
+    setCameras(
+      mainCamera
+        ? [
+            {
+              id: 1,
+              type: 'wide',
+              sensorFormatDenominator:
+                mainCamera.sensorFormatDenominator !==
+                undefined
+                  ? String(
+                      mainCamera
+                        .sensorFormatDenominator,
+                    )
+                  : '',
+              sensorWidthMm: '',
+              sensorHeightMm: '',
+              resolutionMp:
+                mainCamera.resolutionMp !== undefined
+                  ? String(
+                      mainCamera.resolutionMp,
+                    )
+                  : '',
+              equivalentFocalLengthMm:
+                mainCamera
+                  .equivalentFocalLengthMm !==
+                undefined
+                  ? String(
+                      mainCamera
+                        .equivalentFocalLengthMm,
+                    )
+                  : '',
+              physicalFocalLengthMm: '',
+              apertureFNumber:
+                mainCamera.apertureFNumber !==
+                undefined
+                  ? String(
+                      mainCamera.apertureFNumber,
+                    )
+                  : '',
+              variableAperture: false,
+              variableApertureWide: '',
+              variableApertureNarrow: '',
+              exposureTimeSeconds: '',
+              sensorReadoutTimeSeconds: '',
+              videoFrameRateFps: '',
+              subjectAngularSpeedDegPerSecond: '',
+              cameraAngularShakeDegPerSecond: '',
+              oisAngularCompensationFraction: '',
+              lensTransmissionFraction: '',
+              quantumEfficiencyFraction: '',
+              binningLinearFactor: '',
+              cropZoomRatio: '',
+              targetOutputResolutionMp: '',
+              focusDistanceM: '',
+              moduleWidthMm: '',
+              moduleHeightMm: '',
+              moduleDepthMm: '',
+            },
+          ]
+        : [],
+    );
+
+    calculateInWorker(expansion.simulationInput,{mode:'simple',socName:input.socName??'',socVendor:input.socVendor??'',coolingClass:expansion.advanced.coolingClass,wiredWatts:String(input.wiredChargingWatts??''),wirelessWatts:String(input.wirelessChargingWatts??''),parameters:{softwareTuning:input.softwareTuning??'standard',batteryVoltageV:String(input.batteryVoltageV??3.85),usagePreset:usage,brightnessNits:String(input.brightnessNits??''),socPowerScenario:powerScenario}});
+    const batteryJob = jobNumber.current;
+    const controller = new AbortController();
+    simpleBatteryAbort.current = controller;
+    setSimpleBatteryPending(true);
+    const timeout = window.setTimeout(() => {
+      if (batteryJob === jobNumber.current) setSimpleBatteryPending(false);
+      controller.abort();
+    }, 25000);
+    const display = expansion.simulationInput.displays.primary;
+    const missingCpu = (['geekbench6_single','geekbench6_multi'] as const).filter(domain => estimateLivePeakPerformance({domain,manufacturer:input.manufacturer,socName:input.socName,socVendor:input.socVendor,batteryMah:input.batteryMah,displayDiagonalInches:input.displayDiagonalInches,refreshRateHz:input.refreshRateHz,coolingClass:expansion.advanced.coolingClass}).status !== 'resolved');
+    void fetch('/api/hardware-analysis', {
+      method:'POST', headers:{'content-type':'application/json'}, signal:controller.signal,
+      body:JSON.stringify({kind:'simple-battery', analyze:true, parameters:{input:{...input, customResolutionWidthPx:display.resolutionWidthPx, customResolutionHeightPx:display.resolutionHeightPx}, usage, powerScenario, missingCpu, software:input.softwareTuning ?? 'standard'}}),
+    }).then(async response => {
+      if (!response.ok) throw new Error('Battery analysis unavailable');
+      const analysis = await response.json() as SimpleBatteryResult;
+      if (controller.signal.aborted || batteryJob !== jobNumber.current) return;
+      if (!['scenario','unresolved'].includes(analysis.status) || (analysis.status === 'scenario' && (!Number.isFinite(analysis.runtimeHours) || analysis.runtimeHours! <= 0))) throw new Error('Invalid battery response');
+      setSimpleBattery(analysis);
+    }).catch(() => { /* Existing battery reference remains available on network failure. */ })
+      .finally(() => { window.clearTimeout(timeout); if (!controller.signal.aborted && batteryJob === jobNumber.current) setSimpleBatteryPending(false); });
+
   }
 
+  function simulate() {
+    setResultRevision(current => current + 1);
+    setPredictionSaveState({ status: 'idle' });
+    const nextInput = buildInput();
+    calculateInWorker(nextInput);
+  }
+
+  const [simplePreset, setSimplePreset] = useState<SimplePresetRequest>();
+
   function loadExample() {
-    dispatchExperience({type:'mode',value:'advanced'});
-    setExampleLoaded(true);
+    setSimplePreset(current => ({ revision: (current?.revision ?? 0) + 1, kind: 'example' }));
+    jobNumber.current++;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(false);
+    setSimulationError('');
+    setSimulationResult(null);
+    setPredictionSaveState({ status: 'idle' });
     setForm(flagshipExample);
     setCameras(flagshipCameras);
-    setWorkloadPower({ ...initialWorkloadInputs, gaming: '6' });
-    setWorkloadWeights(initialWorkloadInputs);
-    setUsablePercent('');
-    setRun(null);
-    setProfileMode('equal');
-    setDirty(false);
+    setSimulationInput(null);
     setHasSimulated(false);
   }
 
   function clearSimulation() {
-    dispatchExperience({type:'reset'});
-    setExampleLoaded(false);
+    setSimplePreset(current => ({ revision: (current?.revision ?? 0) + 1, kind: 'clear' }));
+    jobNumber.current++;
+    activeWorker.current?.terminate();
+    activeWorker.current = null;
+    setSimulationPending(false);
+    setSimulationError('');
+    setSimulationResult(null);
+    setPredictionSaveState({ status: 'idle' });
     setForm(initialForm);
     setCameras([]);
-    setWorkloadPower(initialWorkloadInputs);
-    setWorkloadWeights(initialWorkloadInputs);
-    setUsablePercent('');
-    setRun(null);
-    setProfileMode('equal');
-    setDirty(false);
+    setSimulationInput(null);
     setHasSimulated(false);
   }
 
+  // Build a Phone hand-off: pre-fills the Advanced form once from a validated, whitelisted session entry.
+  const [handoffNotice, setHandoffNotice] = useState<{ handoff: SimulatorHandoff | null } | null>(null);
+  useEffect(() => {
+    if (!window.location.search.includes(HANDOFF_PARAM)) return;
+    let raw: string | null = null;
+    try { raw = window.sessionStorage.getItem(HANDOFF_KEY); window.sessionStorage.removeItem(HANDOFF_KEY); } catch { raw = null; }
+    let handoff: SimulatorHandoff | null = null;
+    try { handoff = raw ? readHandoff(JSON.parse(raw)) : null; } catch { handoff = null; }
+    window.history.replaceState(window.history.state, '', window.location.pathname + window.location.hash);
+    setHandoffNotice({ handoff });
+    if (!handoff) return;
+    setWorkspaceMode('advanced');
+    setForm({ ...initialForm, ...handoff.form } as FormState);
+    setCameras(handoff.cameras.map((camera, index) => ({ id: index + 1, type: camera.type, sensorFormatDenominator: camera.sensorFormatDenominator, resolutionMp: camera.resolutionMp, equivalentFocalLengthMm: camera.equivalentFocalLengthMm, physicalFocalLengthMm: '', apertureFNumber: '', variableAperture: false, variableApertureWide: '', variableApertureNarrow: '', focusDistanceM: '', moduleWidthMm: camera.moduleWidthMm, moduleHeightMm: camera.moduleHeightMm, moduleDepthMm: camera.moduleDepthMm })));
+    setSimulationResult(null); setSimulationInput(null); setHasSimulated(false);
+  }, []);
+
   const display = result?.displays.primary;
-  const pack = result?.battery;
+
+  const displayExperience =
+    simulationInput && result
+      ? simulateLiveDisplayExperience({
+          diagonalInches:
+            simulationInput.displays.primary.diagonalInches,
+          resolutionWidthPx:
+            simulationInput.displays.primary.resolutionWidthPx,
+          resolutionHeightPx:
+            simulationInput.displays.primary.resolutionHeightPx,
+          aspectWidth:
+            simulationInput.displays.primary.aspectWidth,
+          aspectHeight:
+            simulationInput.displays.primary.aspectHeight,
+          refreshRateHz: numeric(form.refreshRateHz),
+          operatingRefreshRateHz:
+            numeric(form.operatingRefreshRateHz),
+          brightnessNits: numeric(form.brightnessNits),
+          averagePictureLevelPercent:
+            numeric(form.averagePictureLevelPercent),
+          panelTechnology:
+            form.panelTechnology.trim() || undefined,
+        })
+      : undefined;
+
+  const displayRefreshProfileInputsPresent = [
+    form.displayRefreshState1Hz,
+    form.displayRefreshState1DutyPercent,
+    form.displayRefreshState2Hz,
+    form.displayRefreshState2DutyPercent,
+  ].some((value) => value.trim() !== '');
+
+  const displayRefreshProfile =
+    displayRefreshProfileInputsPresent
+      ? calculateDisplayRefreshProfile({
+          resolutionWidthPx: numeric(
+            form.resolutionWidthPx,
+          ),
+          resolutionHeightPx: numeric(
+            form.resolutionHeightPx,
+          ),
+          states: [
+            {
+              label: 'State 1',
+              refreshRateHz:
+                numeric(
+                  form.displayRefreshState1Hz,
+                ) ?? Number.NaN,
+              dutyFraction:
+                (
+                  numeric(
+                    form.displayRefreshState1DutyPercent,
+                  ) ?? Number.NaN
+                ) / 100,
+            },
+            {
+              label: 'State 2',
+              refreshRateHz:
+                numeric(
+                  form.displayRefreshState2Hz,
+                ) ?? Number.NaN,
+              dutyFraction:
+                (
+                  numeric(
+                    form.displayRefreshState2DutyPercent,
+                  ) ?? Number.NaN
+                ) / 100,
+            },
+          ],
+        })
+      : undefined;
+
+  const displayRuntimeSensitivity =
+    simulationInput && result
+      ? resolveLiveDisplayRuntimeSensitivity(
+          simulationInput,
+          {
+            manufacturer:
+              form.manufacturer.trim() || undefined,
+            socVendor:
+              form.socVendor.trim() || undefined,
+            socName:
+              form.socName.trim() || undefined,
+            batteryChemistry:
+              form.batteryChemistry.trim() || undefined,
+            coolingClass:
+              form.coolingClass === 'unknown'
+                ? undefined
+                : form.coolingClass,
+          },
+        )
+      : undefined;
+
+  const battery = result?.battery;
   const packaging = result?.packaging;
 
-  const knownCameraVolumeMm3 = result?.cameras
-    ?.map((camera) => camera.moduleVolumeMm3)
-    .filter((volume): volume is number => volume !== undefined)
-    .reduce((total, volume) => total + volume, 0);
+  const chargingWatts = numeric(form.wiredChargeW);
+  const wirelessChargingWatts = numeric(form.wirelessChargeW);
 
-  const estimate = battery?.result.status === 'resolved'
-    ? battery.result.estimate
-    : undefined;
+  const batteryExperience =
+    simulationInput && result
+      ? simulateLiveBatteryExperience({
+          simulation: simulationInput,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
+          batteryChemistry:
+            form.batteryChemistry.trim() || undefined,
+          cellArchitecture:
+            form.cellArchitecture === 'unknown'
+              ? undefined
+              : form.cellArchitecture,
+          wiredWatts: chargingWatts,
+          wirelessWatts: wirelessChargingWatts,
+          wiredChargingStandard:
+            form.chargingStandard.trim() || undefined,
+          wirelessChargingStandard:
+            form.wirelessChargingStandard.trim() || undefined,
+          dailyUseHours: {
+            web_browsing: numeric(form.webHours) ?? 0,
+            video_playback: numeric(form.videoHours) ?? 0,
+            gaming: numeric(form.gamingHours) ?? 0,
+          },
+          usageIntensity: workspaceMode === 'simple' ? usagePreset : undefined,
+          socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : undefined,
+          brightnessNits: numeric(form.brightnessNits),
+          targetSocPowerW: numeric(form.targetSocPowerW),
+          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
+        })
+      : undefined;
+
+  const batteryAgingInputsPresent = [
+    form.batteryAgeYears,
+    form.batteryEquivalentFullCycles,
+    form.batteryAnnualCalendarFadePercent,
+    form.batteryCycleFadePercentPer100Cycles,
+  ].some((value) => value.trim() !== '');
+
+  const batteryCycleExposure =
+    numeric(form.batteryAgeYears) !==
+      undefined &&
+    batteryExperience?.mixedUse &&
+    result
+      ? calculateBatteryCycleExposure({
+          ageYears: numeric(
+            form.batteryAgeYears,
+          ),
+          ...(batteryExperience.mixedUse
+            .energyBasis === 'wh'
+            ? {
+                dailyDrainWh:
+                  batteryExperience.mixedUse
+                    .expectedDrainWhPerDay,
+                batteryEnergyWh:
+                  result.battery?.totalEnergyWh,
+              }
+            : {
+                dailyDrainMah:
+                  batteryExperience.mixedUse
+                    .expectedDrainMahPerDay,
+                batteryCapacityMah:
+                  result.battery
+                    ?.totalCapacityMah,
+              }),
+        })
+      : undefined;
+
+  const explicitEquivalentFullCycles =
+    numeric(
+      form.batteryEquivalentFullCycles,
+    );
+
+  const agingEquivalentFullCycles =
+    explicitEquivalentFullCycles ??
+    (batteryCycleExposure?.status ===
+      'resolved'
+      ? batteryCycleExposure
+          .equivalentFullCycles
+      : undefined);
+
+  const batteryAging =
+    batteryAgingInputsPresent && result
+      ? calculateBatteryAgingEnvelope({
+          initialCapacityMah:
+            result.battery?.totalCapacityMah,
+          initialEnergyWh:
+            result.battery?.totalEnergyWh,
+          ageYears: numeric(
+            form.batteryAgeYears,
+          ),
+          equivalentFullCycles:
+            agingEquivalentFullCycles,
+          annualCalendarFadePercent: numeric(
+            form.batteryAnnualCalendarFadePercent,
+          ),
+          cycleFadePercentPer100Cycles:
+            numeric(
+              form.batteryCycleFadePercentPer100Cycles,
+            ),
+        })
+      : undefined;
+
+  const batteryHealthForecast =
+    numeric(
+      form.batteryHealthThresholdPercent,
+    ) !== undefined
+      ? forecastBatteryHealthThreshold({
+          targetRetentionPercent:
+            numeric(
+              form.batteryHealthThresholdPercent,
+            )!,
+          currentAgeYears: numeric(
+            form.batteryAgeYears,
+          ),
+          annualCalendarFadePercent:
+            numeric(
+              form.batteryAnnualCalendarFadePercent,
+            ),
+          cycleFadePercentPer100Cycles:
+            numeric(
+              form.batteryCycleFadePercentPer100Cycles,
+            ),
+          equivalentFullCyclesPerYear:
+            batteryCycleExposure?.status ===
+            'resolved'
+              ? batteryCycleExposure
+                  .equivalentFullCyclesPerYear
+              : undefined,
+        })
+      : undefined;
+
+  const agedRuntimeRows =
+    batteryAging?.combinedRetentionFraction !==
+      undefined
+      ? (batteryExperience?.runtimes ?? [])
+          .filter(
+            (runtime) =>
+              runtime.status === 'resolved' &&
+              runtime.expectedHours !==
+                undefined,
+          )
+          .map((runtime) => ({
+            workload: runtime.workload,
+            result:
+              calculateBatteryAgingRuntime({
+                baselineRuntimeHours:
+                  runtime.expectedHours,
+                retainedEnergyFraction:
+                  batteryAging.combinedRetentionFraction,
+              }),
+          }))
+          .filter(
+            (row) =>
+              row.result.status ===
+              'resolved',
+          )
+      : [];
+
+  const connectivityInputsPresent = [
+    form.connectivityDownloadMbps,
+    form.connectivityUploadMbps,
+    form.connectivityLinkCapacityMbps,
+    form.connectivitySessionMinutes,
+    form.connectivityRadioPowerW,
+    form.connectivityActiveDutyPercent,
+    form.connectivitySignalMetricLabel,
+    form.connectivitySignalMetricValue,
+  ].some((value) => value.trim() !== '');
+
+  const connectivityWorkload =
+    connectivityInputsPresent
+      ? calculateConnectivityWorkload({
+          mode: form.connectivityMode,
+          downloadMbps: numeric(
+            form.connectivityDownloadMbps,
+          ),
+          uploadMbps: numeric(
+            form.connectivityUploadMbps,
+          ),
+          linkCapacityMbps: numeric(
+            form.connectivityLinkCapacityMbps,
+          ),
+          sessionDurationMinutes: numeric(
+            form.connectivitySessionMinutes,
+          ),
+          radioPowerW: numeric(
+            form.connectivityRadioPowerW,
+          ),
+          ...(numeric(
+            form.connectivityActiveDutyPercent,
+          ) !== undefined
+            ? {
+                activeDutyFraction:
+                  numeric(
+                    form.connectivityActiveDutyPercent,
+                  )! / 100,
+              }
+            : {}),
+          signalMetricLabel:
+            form.connectivitySignalMetricLabel.trim() ||
+            undefined,
+          signalMetricValue: numeric(
+            form.connectivitySignalMetricValue,
+          ),
+        })
+      : undefined;
+
+  const connectivityBatteryPercent =
+    connectivityWorkload?.radioEnergyWh !==
+      undefined &&
+    result?.battery?.totalEnergyWh !==
+      undefined &&
+    result.battery.totalEnergyWh > 0
+      ? connectivityWorkload.radioEnergyWh /
+        result.battery.totalEnergyWh *
+        100
+      : undefined;
+
+  const chargingResult = batteryExperience?.charging;
+  const projectedChargingEnergyWh = result?.battery?.totalEnergyWh ??
+    (result?.battery?.totalCapacityMah !== undefined
+      ? result.battery.totalCapacityMah * 3.85 / 1000
+      : undefined);
+  const chargingScenarioMinutes = chargingResult?.status === 'resolved'
+    ? undefined
+    : projectedChargingEnergyWh !== undefined && chargingWatts !== undefined
+      ? projectTaperedChargingMinutes({
+          energyWh: projectedChargingEnergyWh,
+          ratedWatts: chargingWatts,
+          chargingStandard: form.chargingStandard,
+          cellArchitecture: form.cellArchitecture,
+        })
+      : undefined;
+  const predictedChargeMinutes = chargingResult?.status === 'resolved'
+    ? chargingResult.estimate?.timeTo100Minutes?.expected
+    : chargingScenarioMinutes;
+
+  const observedChargingInput =
+    chargingWatts !== undefined
+      ? estimateLiveObservedChargingInputPower({
+          advertisedWatts:
+            chargingWatts,
+          manufacturer:
+            form.manufacturer.trim() ||
+            undefined,
+          chargingStandard:
+            form.chargingStandard.trim() ||
+            undefined,
+        })
+      : undefined;
+
+  const wirelessChargingResult =
+    batteryExperience?.wirelessCharging;
+
+  const geekerwanChargingContext =
+    result?.battery?.totalEnergyWh !==
+      undefined &&
+    numeric(form.wiredChargeW) !==
+      undefined
+      ? estimateLiveGeekerwanChargingContext({
+          batteryEnergyWh:
+            result.battery.totalEnergyWh,
+          chargerWatts:
+            numeric(form.wiredChargeW),
+          manufacturer:
+            form.manufacturer.trim() ||
+            undefined,
+        })
+      : undefined;
+
+  const chargerLabPeakInputContext =
+    form.manufacturer.trim() &&
+    numeric(form.wiredChargeW) !== undefined
+      ? estimateChargerLabPeakInputContext(
+          form.manufacturer.trim(),
+          numeric(form.wiredChargeW)!,
+        )
+      : undefined;
+
+  const targetSocPowerW = numeric(form.targetSocPowerW);
+  const ambientTemperatureC = numeric(form.ambientTemperatureC);
+  const thermalResistanceCPerW = numeric(
+    form.thermalResistanceCPerW,
+  );
+  const thermalMassJPerC = numeric(form.thermalMassJPerC);
+  const throttleTemperatureC = numeric(
+    form.throttleTemperatureC,
+  );
+
+  const socToChassisResistanceCPerW =
+    numeric(
+      form.socToChassisResistanceCPerW,
+    );
+  const chassisToAmbientResistanceCPerW =
+    numeric(
+      form.chassisToAmbientResistanceCPerW,
+    );
+  const socThermalMassJPerC = numeric(
+    form.socThermalMassJPerC,
+  );
+  const chassisThermalMassJPerC = numeric(
+    form.chassisThermalMassJPerC,
+  );
+  const surfaceComfortTemperatureC =
+    numeric(
+      form.surfaceComfortTemperatureC,
+    );
+
+  const socPackageThrottleTemperatureC =
+    numeric(
+      form.socPackageThrottleTemperatureC,
+    );
+
+  const twoNodeRawFields = [
+    form.socToChassisResistanceCPerW,
+    form.chassisToAmbientResistanceCPerW,
+    form.socThermalMassJPerC,
+    form.chassisThermalMassJPerC,
+  ];
+
+  const hasAnyTwoNodeInput =
+    twoNodeRawFields.some(
+      (value) => value.trim() !== '',
+    );
+
+  const hasCompleteTwoNodeInput =
+    socToChassisResistanceCPerW !== undefined &&
+    chassisToAmbientResistanceCPerW !== undefined &&
+    socThermalMassJPerC !== undefined &&
+    chassisThermalMassJPerC !== undefined;
+
+  const incompleteTwoNodeInput =
+    (
+      hasAnyTwoNodeInput ||
+      form.socPackageThrottleTemperatureC.trim() !== ''
+    ) &&
+    (
+      !hasCompleteTwoNodeInput ||
+      socPackageThrottleTemperatureC === undefined
+    );
+
+  const thermalResult =
+    simulationInput &&
+    result &&
+    targetSocPowerW !== undefined &&
+    ambientTemperatureC !== undefined &&
+    thermalResistanceCPerW !== undefined &&
+    thermalMassJPerC !== undefined &&
+    throttleTemperatureC !== undefined
+      ? simulateLiveThermalExperience({
+          domain: form.thermalDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          batteryMah: result.battery?.totalCapacityMah,
+          socVendor: form.socVendor.trim() || undefined,
+          socName: form.socName.trim() || undefined,
+          displayDiagonalInches:
+            simulationInput.displays.primary.diagonalInches,
+          thicknessMm: simulationInput.dimensions?.thicknessMm,
+          weightG: simulationInput.dimensions?.weightG,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+          targetPowerW: targetSocPowerW,
+          ambientTemperatureC,
+          thermalResistanceCPerW,
+          thermalMassJPerC,
+          throttleTemperatureC,
+          durationSeconds:
+            numeric(form.thermalDurationSeconds) ?? 600,
+
+        })
+      : undefined;
+
+  const twoNodeThermalResult =
+    simulationInput &&
+    result &&
+    targetSocPowerW !== undefined &&
+    ambientTemperatureC !== undefined &&
+    hasCompleteTwoNodeInput &&
+    socPackageThrottleTemperatureC !== undefined
+      ? simulateTwoNodeThermals({
+          targetPowerW: targetSocPowerW,
+          ambientTemperatureC,
+          socToChassisResistanceCPerW,
+          chassisToAmbientResistanceCPerW,
+          socThermalMassJPerC,
+          chassisThermalMassJPerC,
+          socThrottleTemperatureC:
+            socPackageThrottleTemperatureC,
+          ...(surfaceComfortTemperatureC !==
+          undefined
+            ? {
+                surfaceComfortTemperatureC,
+              }
+            : {}),
+          durationSeconds:
+            numeric(
+              form.thermalDurationSeconds,
+            ) ?? 600,
+        })
+      : undefined;
+
+  const performanceDomain =
+    workspaceMode === 'simple'
+      ? 'gpu_sustained'
+      : form.thermalDomain;
+
+  const bodyVolumeMm3 =
+    simulationInput?.dimensions?.widthMm !== undefined &&
+    simulationInput.dimensions.heightMm !== undefined &&
+    simulationInput.dimensions.thicknessMm !== undefined
+      ? simulationInput.dimensions.widthMm *
+        simulationInput.dimensions.heightMm *
+        simulationInput.dimensions.thicknessMm
+      : undefined;
+
+  const sustainedPerformanceEstimate =
+    simulationInput && result
+      ? estimateLiveSustainedPerformance({
+          domain: performanceDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          batteryMah:
+            result.battery?.totalCapacityMah,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
+          displayDiagonalInches:
+            simulationInput.displays.primary
+              .diagonalInches,
+          refreshRateHz:
+            simulationInput.displays.primary
+              .refreshRateHz,
+          thicknessMm:
+            simulationInput.dimensions
+              ?.thicknessMm,
+          weightG:
+            simulationInput.dimensions?.weightG,
+          bodyVolumeMm3,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+        })
+      : undefined;
+
+  const suggestedComparisons = simulationInput && result && form.name.trim()
+    ? suggestLiveDeviceComparisons(form.name.trim())
+    : [];
+
+  const competingDevices = simulationInput && result && workspaceMode === 'simple'
+    ? suggestLiveCompetingDevices({
+        manufacturer: form.manufacturer.trim() || undefined,
+        batteryMah: result.battery?.totalCapacityMah,
+        displayInches: simulationInput.displays.primary.diagonalInches,
+        socName: form.socName.trim() || undefined,
+        limit: 3,
+      })
+    : [];
+
+  const simpleCpuScores = simulationInput && result
+    ? (['geekbench6_single', 'geekbench6_multi'] as const).map(domain => ({
+        domain,
+        estimate: estimateLivePeakPerformance({
+          domain,
+          manufacturer: form.manufacturer.trim() || undefined,
+          socVendor: form.socVendor.trim() || undefined,
+          socName: form.socName.trim() || undefined,
+          batteryMah: result.battery?.totalCapacityMah,
+          displayDiagonalInches: simulationInput.displays.primary.diagonalInches,
+          refreshRateHz: simulationInput.displays.primary.refreshRateHz,
+          coolingClass: form.coolingClass === 'unknown' ? undefined : form.coolingClass,
+        }),
+      }))
+    : [];
+  const simpleDisplayCpuScores = simpleCpuScores.map(row => {
+    const fallback = row.domain === 'geekbench6_single' ? simpleBattery?.singleCore : simpleBattery?.multiCore;
+    return workspaceMode === 'simple' && row.estimate.status !== 'resolved' && fallback !== undefined
+      ? {...row, aiFallback:true, estimate:{...row.estimate,status:'resolved' as const,adjustedExpected:fallback,assumptionApplied:true}}
+      : {...row,aiFallback:false};
+  });
+
+  const peakPerformanceEstimate =
+    simulationInput && result
+      ? estimateLivePeakPerformance({
+          domain: form.peakBenchmarkDomain,
+          manufacturer:
+            form.manufacturer.trim() || undefined,
+          socVendor:
+            form.socVendor.trim() || undefined,
+          socName:
+            form.socName.trim() || undefined,
+          batteryMah:
+            result.battery?.totalCapacityMah,
+          displayDiagonalInches:
+            simulationInput.displays.primary
+              .diagonalInches,
+          refreshRateHz:
+            simulationInput.displays.primary
+              .refreshRateHz,
+          thicknessMm:
+            simulationInput.dimensions
+              ?.thicknessMm,
+          weightG:
+            simulationInput.dimensions?.weightG,
+          bodyVolumeMm3,
+          coolingClass:
+            form.coolingClass === 'unknown'
+              ? undefined
+              : form.coolingClass,
+          ...(numeric(
+            form.assumedGenerationUpliftPercent,
+          ) !== undefined
+            ? {
+                assumedGenerationUpliftPercent:
+                  numeric(
+                    form.assumedGenerationUpliftPercent,
+                  ),
+              }
+            : {}),
+        })
+      : undefined;
+
+  const socArchitectureClusters = [
+    {
+      cores: numeric(form.socCluster1Cores),
+      maxClockGhz: numeric(
+        form.socCluster1ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster1RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster2Cores),
+      maxClockGhz: numeric(
+        form.socCluster2ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster2RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster3Cores),
+      maxClockGhz: numeric(
+        form.socCluster3ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster3RelativeIpc,
+      ),
+    },
+    {
+      cores: numeric(form.socCluster4Cores),
+      maxClockGhz: numeric(
+        form.socCluster4ClockGhz,
+      ),
+      relativeIpc: numeric(
+        form.socCluster4RelativeIpc,
+      ),
+    },
+  ].flatMap((cluster, index) =>
+    cluster.cores !== undefined &&
+    cluster.maxClockGhz !== undefined
+      ? [{
+          label: `cluster-${index + 1}`,
+          cores: cluster.cores,
+          maxClockGhz:
+            cluster.maxClockGhz,
+          ...(cluster.relativeIpc !==
+          undefined
+            ? {
+                relativeIpc:
+                  cluster.relativeIpc,
+              }
+            : {}),
+        }]
+      : [],
+  );
+
+  const socArchitecture =
+    socArchitectureClusters.length
+      ? calculateSocArchitecture({
+          cpuClusters:
+            socArchitectureClusters,
+          ...(targetSocPowerW !== undefined
+            ? {
+                peakSocPowerW:
+                  targetSocPowerW,
+              }
+            : {}),
+          ...(numeric(
+            form.socMemoryBandwidthGbps,
+          ) !== undefined
+            ? {
+                memoryBandwidthGbps:
+                  numeric(
+                    form.socMemoryBandwidthGbps,
+                  ),
+              }
+            : {}),
+          ...(numeric(
+            form.socFabricationNodeNm,
+          ) !== undefined
+            ? {
+                fabricationNodeNm:
+                  numeric(
+                    form.socFabricationNodeNm,
+                  ),
+              }
+            : {}),
+        })
+      : undefined;
+
+  const gpuArchitectureInputsPresent = [
+    form.gpuShaderCores,
+    form.gpuExecutionUnits,
+    form.gpuPeakClockGhz,
+    form.gpuPeakPowerW,
+    form.gpuMemoryBandwidthGbps,
+    form.gpuTextureUnits,
+    form.gpuRenderOutputUnits,
+    form.gpuRayTracingUnits,
+    form.gpuRelativeArchitectureEfficiency,
+  ].some((value) => value.trim() !== '');
+
+  const gpuArchitecture =
+    gpuArchitectureInputsPresent
+      ? calculateGpuArchitecture({
+          shaderCores: numeric(
+            form.gpuShaderCores,
+          ),
+          executionUnits: numeric(
+            form.gpuExecutionUnits,
+          ),
+          peakClockGhz: numeric(
+            form.gpuPeakClockGhz,
+          ),
+          peakGpuPowerW: numeric(
+            form.gpuPeakPowerW,
+          ),
+          memoryBandwidthGbps: numeric(
+            form.gpuMemoryBandwidthGbps,
+          ),
+          textureUnits: numeric(
+            form.gpuTextureUnits,
+          ),
+          renderOutputUnits: numeric(
+            form.gpuRenderOutputUnits,
+          ),
+          rayTracingUnits: numeric(
+            form.gpuRayTracingUnits,
+          ),
+          relativeArchitectureEfficiency:
+            numeric(
+              form.gpuRelativeArchitectureEfficiency,
+            ),
+          fabricationNodeNm: numeric(
+            form.socFabricationNodeNm,
+          ),
+        })
+      : undefined;
+
+  const gpuPowerEnvelope =
+    gpuArchitecture &&
+    form.thermalDomain !== 'cpu_sustained'
+      ? calculateGpuPowerEnvelope({
+          workload:
+            form.thermalDomain,
+          peakGpuPowerW:
+            gpuArchitecture.peakGpuPowerW,
+          sustainableSocPowerW:
+            thermalResult?.status === 'resolved'
+              ? thermalResult.sustainedPowerW
+              : undefined,
+          nonGpuPackagePowerW: numeric(
+            form.gpuNonGpuPackagePowerW,
+          ),
+        })
+      : undefined;
+
+  const gpuWorkloadInputsPresent = [
+    form.gpuRenderWidthPx,
+    form.gpuRenderHeightPx,
+    form.gpuTargetFps,
+    form.gpuRenderScalePercent,
+    form.gpuRelativeWorkloadComplexity,
+    form.gpuRaysPerPixel,
+    form.gpuEstimatedMemoryTrafficBytesPerPixel,
+  ].some((value) => value.trim() !== '');
+
+  const gpuWorkloadDemand =
+    gpuWorkloadInputsPresent
+      ? calculateGpuWorkloadDemand({
+          workload:
+            form.thermalDomain ===
+            'ray_tracing'
+              ? 'ray-tracing'
+              : form.thermalDomain ===
+                  'gaming_sustained'
+                ? 'gaming'
+                : 'raster',
+          renderWidthPx: numeric(
+            form.gpuRenderWidthPx,
+          ),
+          renderHeightPx: numeric(
+            form.gpuRenderHeightPx,
+          ),
+          targetFps: numeric(
+            form.gpuTargetFps,
+          ),
+          ...(numeric(
+            form.gpuRenderScalePercent,
+          ) !== undefined
+            ? {
+                renderScaleFraction:
+                  numeric(
+                    form.gpuRenderScalePercent,
+                  )! / 100,
+              }
+            : {}),
+          relativeComplexity: numeric(
+            form.gpuRelativeWorkloadComplexity,
+          ),
+          raysPerPixel: numeric(
+            form.gpuRaysPerPixel,
+          ),
+          estimatedMemoryTrafficBytesPerPixel:
+            numeric(
+              form.gpuEstimatedMemoryTrafficBytesPerPixel,
+            ),
+        })
+      : undefined;
+
+  const gpuWorkloadResponse =
+    gpuArchitecture ||
+    gpuPowerEnvelope ||
+    gpuWorkloadDemand
+      ? interpretGpuWorkloadResponse({
+          ...(gpuArchitecture
+            ? { architecture: gpuArchitecture }
+            : {}),
+          ...(gpuPowerEnvelope
+            ? { powerEnvelope: gpuPowerEnvelope }
+            : {}),
+          ...(gpuWorkloadDemand
+            ? { demand: gpuWorkloadDemand }
+            : {}),
+        })
+      : undefined;
+
+  const gamingDisplayEnvelope =
+    numeric(form.gpuTargetFps) !== undefined ||
+    numeric(form.operatingRefreshRateHz) !==
+      undefined ||
+    numeric(form.refreshRateHz) !== undefined
+      ? calculateGamingDisplayEnvelope({
+          targetFps: numeric(
+            form.gpuTargetFps,
+          ),
+          operatingRefreshRateHz:
+            numeric(
+              form.operatingRefreshRateHz,
+            ),
+          maxRefreshRateHz: numeric(
+            form.refreshRateHz,
+          ),
+        })
+      : undefined;
+
+  const sustainedBenchmarkEnvelope =
+    peakPerformanceEstimate &&
+    sustainedPerformanceEstimate
+      ? calculateSustainedBenchmarkEnvelope({
+          peak: peakPerformanceEstimate,
+          sustained:
+            sustainedPerformanceEstimate,
+          ...(thermalResult?.status ===
+            'resolved' &&
+          thermalResult.evidenceScope ===
+            'same-soc-family' &&
+          thermalResult.sustainedPerformancePercent !==
+            undefined
+            ? {
+                finalSustainedPerformancePercent:
+                  thermalResult.sustainedPerformancePercent,
+              }
+            : {}),
+        })
+      : undefined;
+
+  const gamingSessionEnvelope =
+    numeric(form.gamingSessionMinutes) !==
+      undefined ||
+    thermalResult?.throttleStartSecond !==
+      undefined ||
+    thermalResult?.sustainedPerformancePercent !==
+      undefined
+      ? calculateGamingSessionEnvelope({
+          sessionDurationMinutes: numeric(
+            form.gamingSessionMinutes,
+          ),
+          throttleStartSecond:
+            thermalResult?.throttleStartSecond,
+          sustainedPerformancePercent:
+            thermalResult
+              ?.sustainedPerformancePercent,
+        })
+      : undefined;
+
+  const performanceContext =
+    peakPerformanceEstimate
+      ? buildPerformanceContext({
+          peak: peakPerformanceEstimate,
+          ...(socArchitecture
+            ? { architecture: socArchitecture }
+            : {}),
+          ...(gpuArchitecture
+            ? { gpuArchitecture }
+            : {}),
+        })
+      : undefined;
+
+  const geekerwanCpuContext =
+    form.socName.trim()
+      ? summarizeGeekerwanSocCurve(
+          form.socName.trim(),
+          'geekbench6_multi',
+          numeric(form.targetSocPowerW),
+        )
+      : undefined;
+
+  const geekerwanGpuContext =
+    form.socName.trim()
+      ? summarizeGeekerwanSocCurve(
+          form.socName.trim(),
+          '3dmark_steel_nomad_light',
+          numeric(form.gpuPeakPowerW) ??
+            numeric(form.targetSocPowerW),
+        )
+      : undefined;
+
+  const geekerwanBatteryResult =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? findGeekerwanBatteryResult(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
+  const phoneArenaChargingResult =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? findPhoneArenaChargingResult(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
+  const crossLabBatteryContext =
+    form.manufacturer.trim() &&
+    form.name.trim()
+      ? buildCrossLabBatteryContext(
+          form.manufacturer.trim(),
+          form.name.trim(),
+        )
+      : undefined;
+
+  const knownCameraVolumeMm3 =
+    result?.cameras
+      ?.map((camera) => camera.moduleVolumeMm3)
+      .filter(
+        (volume): volume is number =>
+          volume !== undefined,
+      )
+      .reduce((total, volume) => total + volume, 0);
+
+  const cameraExperiences =
+    simulationInput && result
+      ? cameras.map((camera) =>
+          simulateLiveCameraExperience({
+            ...cameraInput(camera),
+            manufacturer:
+              form.manufacturer.trim() || undefined,
+          }),
+        )
+      : [];
+
+  const cameraVideoWorkloads =
+    cameras.map((camera) => {
+      const hasVideoWorkloadInput = [
+        camera.videoWidthPx ?? '',
+        camera.videoHeightPx ?? '',
+        camera.videoFrameRateFps ?? '',
+        camera.videoBitDepth ?? '',
+        camera.videoEncodedBitrateMbps ?? '',
+        camera.videoRecordingDurationMinutes ?? '',
+        camera.videoPipelinePowerW ?? '',
+      ].some((value) => value.trim() !== '') ||
+        Boolean(
+          camera.videoChromaSubsampling,
+        );
+
+      return hasVideoWorkloadInput
+        ? calculateCameraVideoWorkload({
+            widthPx: numeric(
+              camera.videoWidthPx ?? '',
+            ),
+            heightPx: numeric(
+              camera.videoHeightPx ?? '',
+            ),
+            frameRateFps: numeric(
+              camera.videoFrameRateFps ?? '',
+            ),
+            bitDepth: numeric(
+              camera.videoBitDepth ?? '',
+            ),
+            chromaSubsampling:
+              camera.videoChromaSubsampling ||
+              undefined,
+            encodedBitrateMbps: numeric(
+              camera.videoEncodedBitrateMbps ??
+                '',
+            ),
+            recordingDurationMinutes:
+              numeric(
+                camera.videoRecordingDurationMinutes ??
+                  '',
+              ),
+            cameraPipelinePowerW: numeric(
+              camera.videoPipelinePowerW ??
+                '',
+            ),
+          })
+        : undefined;
+    });
+
+  const cameraVideoThermals =
+    cameras.map((camera, index) => {
+      const workload =
+        cameraVideoWorkloads[index];
+
+      const hasThermalInput = [
+        camera.videoThermalResistanceCPerW ??
+          '',
+        camera.videoThermalMassJPerC ?? '',
+        camera.videoThermalLimitTemperatureC ??
+          '',
+      ].some((value) => value.trim() !== '');
+
+      if (
+        !workload &&
+        !hasThermalInput
+      ) {
+        return undefined;
+      }
+
+      return calculateCameraVideoThermal({
+        cameraPipelinePowerW:
+          workload?.cameraPipelinePowerW,
+        ambientTemperatureC: numeric(
+          form.ambientTemperatureC,
+        ),
+        thermalResistanceCPerW: numeric(
+          camera.videoThermalResistanceCPerW ??
+            '',
+        ),
+        thermalMassJPerC: numeric(
+          camera.videoThermalMassJPerC ??
+            '',
+        ),
+        thermalLimitTemperatureC: numeric(
+          camera.videoThermalLimitTemperatureC ??
+            '',
+        ),
+        recordingDurationMinutes:
+          workload?.recordingDurationMinutes,
+      });
+    });
+
+  const cameraSensorNoise =
+    cameras.map((camera) => {
+      const hasNoiseInput = [
+        camera.fullWellElectrons ?? '',
+        camera.readNoiseElectrons ?? '',
+        camera.darkCurrentElectronsPerSecond ??
+          '',
+        camera.signalElectrons ?? '',
+      ].some((value) => value.trim() !== '');
+
+      return hasNoiseInput
+        ? calculateCameraSensorNoise({
+            fullWellElectrons: numeric(
+              camera.fullWellElectrons ?? '',
+            ),
+            readNoiseElectrons: numeric(
+              camera.readNoiseElectrons ?? '',
+            ),
+            darkCurrentElectronsPerSecond:
+              numeric(
+                camera.darkCurrentElectronsPerSecond ??
+                  '',
+              ),
+            exposureTimeSeconds: numeric(
+              camera.exposureTimeSeconds ??
+                '',
+            ),
+            signalElectrons: numeric(
+              camera.signalElectrons ?? '',
+            ),
+          })
+        : undefined;
+    });
+
+  const zoomTargetEquivalentFocalLengthMm =
+    numeric(
+      form.zoomTargetEquivalentFocalLengthMm,
+    );
+  const zoomMinimumOutputResolutionMp =
+    numeric(
+      form.zoomMinimumOutputResolutionMp,
+    );
+
+  const cameraZoomHandoff =
+    simulationInput &&
+    result &&
+    zoomTargetEquivalentFocalLengthMm !== undefined &&
+    cameras.length > 0
+      ? resolveCameraZoomHandoff({
+          targetEquivalentFocalLengthMm:
+            zoomTargetEquivalentFocalLengthMm,
+          ...(zoomMinimumOutputResolutionMp !==
+          undefined
+            ? {
+                minimumOutputResolutionMp:
+                  zoomMinimumOutputResolutionMp,
+              }
+            : {}),
+          cameras: cameras.map((camera) => ({
+            id: String(camera.id),
+            type: camera.type,
+            resolutionMp: numeric(
+              camera.resolutionMp,
+            ),
+            equivalentFocalLengthMm: numeric(
+              camera.equivalentFocalLengthMm,
+            ),
+            binningLinearFactor: numeric(
+              camera.binningLinearFactor ?? '',
+            ),
+          })),
+        })
+      : undefined;
+
+  const feedbackSnapshot = {
+    mode: workspaceMode,
+    socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : 'neutral',
+    form,
+    cameras,
+    simulationInput,
+    deterministic: result,
+    display: displayExperience,
+    displayRefreshProfile,
+    battery: batteryExperience,
+    observedChargingInput,
+    geekerwanChargingContext,
+    chargerLabPeakInputContext,
+    geekerwanCpuContext,
+    geekerwanGpuContext,
+    geekerwanBatteryResult,
+    phoneArenaChargingResult,
+    crossLabBatteryContext,
+    batteryAging,
+    batteryCycleExposure,
+    batteryHealthForecast,
+    agedRuntimeRows,
+    connectivityWorkload,
+    connectivityBatteryPercent,
+    thermal: thermalResult
+      ? {
+          status: thermalResult.status,
+          evidenceMode:
+            thermalResult.evidenceMode,
+          peakTemperatureC:
+            thermalResult.peakTemperatureC,
+          endTemperatureC:
+            thermalResult.endTemperatureC,
+          sustainedPerformancePercent:
+            thermalResult
+              .sustainedPerformancePercent,
+          sustainedPowerW:
+            thermalResult.sustainedPowerW,
+          throttleStartSecond:
+            thermalResult.throttleStartSecond,
+          referenceCount:
+            thermalResult.referenceCount,
+          confidence:
+            thermalResult.confidence,
+          evidenceScope:
+            thermalResult.evidenceScope,
+          sameSocFamilyReferences:
+            thermalResult
+              .sameSocFamilyReferences,
+          sameSocVendorReferences:
+            thermalResult
+              .sameSocVendorReferences,
+          sourceRecordCount:
+            thermalResult.sourceRecordCount,
+          publisherCount:
+            thermalResult.publisherCount,
+          protocolKey:
+            thermalResult.protocolKey,
+          warnings:
+            thermalResult.warnings,
+        }
+      : null,
+    twoNodeThermal: twoNodeThermalResult
+      ? {
+          modelVersion:
+            twoNodeThermalResult.modelVersion,
+          peakSocPackageTemperatureC:
+            twoNodeThermalResult
+              .peakSocPackageTemperatureC,
+          peakChassisSurfaceTemperatureC:
+            twoNodeThermalResult
+              .peakChassisSurfaceTemperatureC,
+          endSocPackageTemperatureC:
+            twoNodeThermalResult
+              .endSocPackageTemperatureC,
+          endChassisSurfaceTemperatureC:
+            twoNodeThermalResult
+              .endChassisSurfaceTemperatureC,
+          throttleStartSecond:
+            twoNodeThermalResult
+              .throttleStartSecond,
+          surfaceComfortCrossSecond:
+            twoNodeThermalResult
+              .surfaceComfortCrossSecond,
+          sustainedPerformancePercent:
+            twoNodeThermalResult
+              .sustainedPerformancePercent,
+          sustainedPowerW:
+            twoNodeThermalResult
+              .sustainedPowerW,
+        }
+      : null,
+    sustainedPerformance:
+      sustainedPerformanceEstimate,
+    peakPerformance:
+      peakPerformanceEstimate,
+    performanceContext,
+    socArchitecture,
+    gpuArchitecture,
+    gpuPowerEnvelope,
+    gpuWorkloadDemand,
+    gpuWorkloadResponse,
+    gamingDisplayEnvelope,
+    sustainedBenchmarkEnvelope,
+    gamingSessionEnvelope,
+    camera: cameraExperiences.map(
+      (experience) => ({
+        physics: experience.physics,
+        outcomes: experience.outcomes,
+        warnings: experience.warnings,
+      }),
+    ),
+    cameraVideoWorkloads,
+    cameraVideoThermals,
+    cameraSensorNoise,
+    cameraZoomHandoff,
+  };
+
+  async function savePrediction() {
+    if (
+      !result ||
+      !simulationInput ||
+      predictionSaveState.status === 'saving'
+    ) {
+      return;
+    }
+
+    const runtime = (
+      workload:
+        | 'web_browsing'
+        | 'video_playback'
+        | 'gaming',
+    ) =>
+      batteryExperience?.runtimes.find(
+        (row) =>
+          row.workload === workload &&
+          row.status === 'resolved',
+      )?.expectedHours;
+
+    const fullChargeMinutes = predictedChargeMinutes;
+
+    const peakScore =
+      peakPerformanceEstimate?.status === 'resolved'
+        ? peakPerformanceEstimate.adjustedExpected
+        : undefined;
+
+    const snapshot =
+      buildPredictionSnapshot({
+        deviceName:
+          simulationInput.name?.trim() ||
+          form.name.trim() ||
+          'Untitled concept',
+        simulation: result,
+        corpusVersion:
+          batteryExperience?.corpusVersion,
+        simulatorVersion:
+          'interactive-leaks-beta',
+        experiences: {
+          ...(fullChargeMinutes !== undefined
+            ? {
+                wiredFullChargeMinutes:
+                  fullChargeMinutes,
+              }
+            : {}),
+          ...(runtime('web_browsing') !== undefined
+            ? {
+                webRuntimeHours:
+                  runtime('web_browsing'),
+              }
+            : {}),
+          ...(runtime('video_playback') !== undefined
+            ? {
+                videoRuntimeHours:
+                  runtime('video_playback'),
+              }
+            : {}),
+          ...(runtime('gaming') !== undefined
+            ? {
+                gamingRuntimeHours:
+                  runtime('gaming'),
+              }
+            : {}),
+          ...(thermalResult?.status === 'resolved' &&
+          thermalResult.sustainedPerformancePercent !==
+            undefined
+            ? {
+                sustainedPerformancePercent:
+                  thermalResult.sustainedPerformancePercent,
+              }
+            : {}),
+          ...(peakScore !== undefined
+            ? {
+                peakBenchmarkScore:
+                  peakScore,
+                peakBenchmarkLabel:
+                  form.peakBenchmarkDomain.replaceAll(
+                    '_',
+                    ' ',
+                  ),
+                peakBenchmarkProvenance:
+                  peakPerformanceEstimate?.assumptionApplied
+                    ? ('assumption-adjusted' as const)
+                    : ('measured-calibrated' as const),
+              }
+            : {}),
+          ...(displayExperience?.expectedPanelPowerW !==
+            undefined
+            ? {
+                displayPanelPowerW:
+                  displayExperience.expectedPanelPowerW,
+                displayPanelPowerProvenance:
+                  displayExperience.electricalPowerMode ===
+                  'direct-calibration'
+                    ? ('measured-calibrated' as const)
+                    : ('derived' as const),
+              }
+            : {}),
+        },
+        assumptions: {
+          workspaceMode,
+          socPowerWhatIf: workspaceMode === 'simple' ? simpleSocPowerScenario : 'neutral',
+          manufacturer:
+            form.manufacturer.trim() || null,
+          socVendor:
+            form.socVendor.trim() || null,
+          socName:
+            form.socName.trim() || null,
+          peakBenchmarkDomain:
+            form.peakBenchmarkDomain,
+          assumedGenerationUpliftPercent:
+            numeric(
+              form.assumedGenerationUpliftPercent,
+            ) ?? null,
+          thermalDomain:
+            form.thermalDomain,
+          batteryChemistry:
+            form.batteryChemistry.trim() || null,
+          chargingStandard:
+            form.chargingStandard.trim() || null,
+          form,
+          cameras,
+        },
+      });
+
+    setPredictionSaveState({
+      status: 'saving',
+      message: 'Saving frozen prediction…',
+    });
+
+    try {
+      const response = await fetch(
+        '/api/simulation-predictions',
+        {
+          method: 'POST',
+          headers: {
+            'content-type':
+              'application/json',
+          },
+          body: JSON.stringify({
+            snapshot,
+          }),
+        },
+      );
+
+      const payload =
+        await response.json().catch(
+          () => ({}),
+        ) as {
+          ok?: boolean;
+          id?: string;
+          error?: string;
+        };
+
+      if (
+        !response.ok ||
+        !payload.ok
+      ) {
+        throw new Error(
+          payload.error ||
+            'Prediction could not be saved.',
+        );
+      }
+
+      setPredictionSaveState({
+        status: 'saved',
+        message:
+          'Prediction frozen and saved. Future reality measurements will be compared against this exact snapshot.',
+      });
+    } catch (error) {
+      setPredictionSaveState({
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Prediction could not be saved.',
+      });
+    }
+  }
+
+  const twoNodeThermalSummary =
+    twoNodeThermalResult ? (
+      <div className="il-thermal-two-node">
+        <span className="il-result-label">
+          Processor / surface temperature
+        </span>
+        <div className="il-metrics">
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .peakSocPackageTemperatureC,
+                1,
+              )} °C
+            </strong>
+            <span>Peak SoC/package</span>
+          </div>
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .peakChassisSurfaceTemperatureC,
+                1,
+              )} °C
+            </strong>
+            <span>Peak chassis/surface</span>
+          </div>
+          <div>
+            <strong>
+              {twoNodeThermalResult
+                .throttleStartSecond !== undefined
+                ? formatDurationSeconds(
+                    twoNodeThermalResult
+                      .throttleStartSecond,
+                  )
+                : 'No package throttle'}
+            </strong>
+            <span>Package throttle onset</span>
+          </div>
+          <div>
+            <strong>
+              {twoNodeThermalResult
+                .surfaceComfortCrossSecond !== undefined
+                ? formatDurationSeconds(
+                    twoNodeThermalResult
+                      .surfaceComfortCrossSecond,
+                  )
+                : 'Not crossed'}
+            </strong>
+            <span>Surface comfort threshold</span>
+          </div>
+          <div>
+            <strong>
+              {format(
+                twoNodeThermalResult
+                  .sustainedPerformancePercent,
+                1,
+              )}%
+            </strong>
+            <span>Sustained performance</span>
+          </div>
+        </div>
+
+      </div>
+    ) : null;
 
   return (
-    <div className="il-app">
-      <div className="il-toolbar">
+    <div className="il-app" data-mode={workspaceMode}>
+      {handoffNotice && <div className="il-handoff-notice" role="status" style={{ margin: '0 0 16px', padding: '14px 16px', border: '1px solid var(--pf-border)', borderRadius: 'var(--pf-radius-md, 12px)', background: 'var(--pf-surface)', color: 'var(--pf-primary)', fontSize: '.86rem', lineHeight: 1.55 }}>
+        {handoffNotice.handoff ? <>
+          <strong>Loaded from Build a Phone: {handoffNotice.handoff.name}.</strong>{' '}
+          Dimensions and display come from your settings. Weight, battery, charging, cooling and cameras are estimates from representative part classes, not a real device. Still to set: {handoffNotice.handoff.notSet.join('; ').toLowerCase()}.
+        </> : <>The build from Build a Phone could not be loaded. Return to the 3D device studio and choose Run in Interactive Leaks again.</>}
+        <button type="button" onClick={() => setHandoffNotice(null)} style={{ marginLeft: 12, minHeight: 36 }}>Dismiss</button>
+      </div>}
+      <div className="il-toolbar" aria-label="Simulation workspace">
         <div>
-          <span className="il-status">Instrument · Public Beta</span>
-
-          <span className="il-engine">
-            Engine v{SIMULATION_ENGINE_VERSION} · Battery model{' '}
-            {BATTERY_EXPERIENCE_VERSION}
+          <span className="il-status">
+            Interactive Leaks
           </span>
+
+          <span className="il-engine">Beta · Simulated</span>
         </div>
 
         <div className="il-toolbar-actions">
-          <button type="button" className="il-chip" onClick={loadExample}>
-            Load illustrative example
+          <div className="il-mode-switch" aria-label="Simulator mode">
+            <button
+              type="button"
+              className={workspaceMode === 'simple' ? 'active' : ''}
+              aria-pressed={workspaceMode === 'simple'}
+              onClick={() => { setWorkspaceMode('simple'); setHasSimulated(false); }}
+            >
+              Simple
+            </button>
+            <button
+              type="button"
+              className={workspaceMode === 'advanced' ? 'active' : ''}
+              aria-pressed={workspaceMode === 'advanced'}
+              onClick={() => { simpleBatteryAbort.current?.abort(); setSimpleBatteryPending(false); setWorkspaceMode('advanced'); setHasSimulated(false); }}
+            >
+              Advanced
+            </button>
+          </div>
+
+          <BetaFeedbackPanel
+            simulatorMode={workspaceMode}
+            versions={{
+              simulatorVersion: 'interactive-leaks-beta',
+              engineVersion: SIMULATION_ENGINE_VERSION,
+              corpusVersion:
+                batteryExperience?.corpusVersion,
+            }}
+            snapshot={feedbackSnapshot}
+          />
+
+          <button
+            type="button"
+            className="secondary"
+            disabled={
+              !result ||
+              predictionSaveState.status === 'saving'
+            }
+            onClick={savePrediction}
+          >
+            {predictionSaveState.status === 'saving'
+              ? 'Saving…'
+              : 'Save prediction'}
           </button>
 
-          <button type="button" className="il-chip" onClick={clearSimulation}>
+          <button
+            type="button"
+            className="secondary"
+            onClick={loadExample}
+          >
+            Load example
+          </button>
+
+          <button
+            type="button"
+            className="secondary"
+            onClick={clearSimulation}
+          >
             Clear
           </button>
         </div>
       </div>
 
-      <fieldset className="il-mode"><legend>Simulation mode</legend>{(['simple','advanced'] as const).map(mode=><label key={mode}><input type="radio" name="simulation-mode" checked={experience.mode===mode} onChange={()=>changeExperience({type:'mode',value:mode})}/>{mode==='simple'?'Simple':'Advanced'}</label>)}</fieldset>
-      {exampleLoaded&&<p className="il-input-note">Illustrative example — not a real device, leak or measured benchmark. All example values are assumptions; edits remain unverified user inputs.</p>}
-      <div className="il-workspace">
-        {/* ---------------- Builder column ---------------- */}
-        <section className="il-builder" aria-label="Simulation inputs">
-          {/* 01 · DEVICE */}
-          <div className="il-section">
-            <SectionHeading
-              index="01"
-              title="Device"
-              hint="Enter only values you have. Blank means unknown; typed values are user-supplied, not independently verified."
-            />
+      {predictionSaveState.status !== 'idle' ? (
+        <div
+          className="il-help"
+          role={
+            predictionSaveState.status === 'error'
+              ? 'alert'
+              : 'status'
+          }
+        >
+          {predictionSaveState.message}
+        </div>
+      ) : null}
 
-            <p className="il-help">Use rated battery capacity where known. Advertised/typical capacity is not a substitute; leave rated capacity unknown if unavailable.</p>
+
+
+      <div
+        className={`il-workspace ${workspaceMode === 'simple' ? 'il-workspace-simple' : ''}`}
+      >
+        <div className="il-simple-builder" hidden={workspaceMode !== 'simple'}><SimpleModePanel onRun={runSimpleMode} busy={simulationPending} preset={simplePreset} /></div>
+        <section
+          className={`il-builder ${workspaceMode === 'simple' ? 'il-builder-hidden' : ''}`}
+          aria-label="Simulation inputs"
+        >
+          <FormSection title="Device" summary={form.name || 'Untitled concept'}><div className="il-section">
+            <div className="il-section-heading">
+              <span>01</span>
+              <div>
+                <h2>Device</h2>
+                <p>
+                  Start with the physical envelope.
+                </p>
+              </div>
+            </div>
+
             <div className="il-grid">
               <label className="il-field il-wide">
                 <span>Device name</span>
 
                 <input
                   type="text"
-                  maxLength={160}
                   value={form.name}
                   placeholder="Untitled concept"
-                  onChange={(event) => update('name', event.currentTarget.value)}
+                  onChange={(event) =>
+                    update(
+                      'name',
+                      event.currentTarget.value,
+                    )
+                  }
                 />
+              </label>
+
+              <label className="il-field">
+                <span>Manufacturer</span>
+
+                <BrandSelect value={form.manufacturer} onChange={(value) => update('manufacturer', value)} />
               </label>
 
               <label className="il-field">
@@ -626,16 +3351,27 @@ export default function InteractiveLeaksSimulator() {
                   onChange={(event) =>
                     update(
                       'formFactor',
-                      event.currentTarget.value as DeviceFormFactor,
+                      event.currentTarget
+                        .value as DeviceFormFactor,
                     )
                   }
                 >
                   <option value="phone">Phone</option>
-                  <option value="book_foldable">Book foldable</option>
-                  <option value="flip_foldable">Flip foldable</option>
-                  <option value="tablet">Tablet</option>
-                  <option value="laptop">Laptop</option>
-                  <option value="wearable">Wearable</option>
+                  <option value="book_foldable">
+                    Book foldable
+                  </option>
+                  <option value="flip_foldable">
+                    Flip foldable
+                  </option>
+                  <option value="tablet">
+                    Tablet
+                  </option>
+                  <option value="laptop">
+                    Laptop
+                  </option>
+                  <option value="wearable">
+                    Wearable
+                  </option>
                 </select>
               </label>
 
@@ -644,7 +3380,9 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.widthMm}
                 placeholder="75"
-                onChange={(value) => update('widthMm', value)}
+                onChange={(value) =>
+                  update('widthMm', value)
+                }
               />
 
               <NumericField
@@ -652,7 +3390,9 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.heightMm}
                 placeholder="160"
-                onChange={(value) => update('heightMm', value)}
+                onChange={(value) =>
+                  update('heightMm', value)
+                }
               />
 
               <NumericField
@@ -660,39 +3400,44 @@ export default function InteractiveLeaksSimulator() {
                 suffix="mm"
                 value={form.thicknessMm}
                 placeholder="8"
-                onChange={(value) => update('thicknessMm', value)}
+                onChange={(value) =>
+                  update('thicknessMm', value)
+                }
               />
 
               <NumericField
-                label="Device mass"
+                label="Weight"
                 suffix="g"
                 value={form.weightG}
                 placeholder="195"
-                onChange={(value) => update('weightG', value)}
+                onChange={(value) =>
+                  update('weightG', value)
+                }
               />
+            </div>
+          </div></FormSection>
 
-              <NumericField
-                label="Rated battery capacity"
-                suffix="mAh"
-                value={form.batteryCapacityMah}
-                placeholder="5000"
-                onChange={(value) => update('batteryCapacityMah', value)}
-              />
+          <FormSection title="Display" summary={`${form.diagonalInches}″ · ${form.refreshRateHz} Hz`}><div className="il-section">
+            <div className="il-section-heading">
+              <span>02</span>
+              <div>
+                <h2>Display</h2>
+                <p>
+                  Define the primary panel and its
+                  geometry.
+                </p>
+              </div>
+            </div>
 
+            <div className="il-grid">
               <NumericField
-                label="Nominal voltage"
-                suffix="V"
-                value={form.batteryVoltageV}
-                placeholder="3.85"
-                onChange={(value) => update('batteryVoltageV', value)}
-              />
-
-              <NumericField
-                label="Display diagonal"
+                label="Diagonal"
                 suffix="in"
                 value={form.diagonalInches}
                 placeholder="6.7"
-                onChange={(value) => update('diagonalInches', value)}
+                onChange={(value) =>
+                  update('diagonalInches', value)
+                }
               />
 
               <NumericField
@@ -701,182 +3446,1583 @@ export default function InteractiveLeaksSimulator() {
                 value={form.resolutionWidthPx}
                 placeholder="1440"
                 step="1"
-                onChange={(value) => update('resolutionWidthPx', value)}
+                onChange={(value) =>
+                  update('resolutionWidthPx', value)
+                }
               />
+
+              <NumericField
+                label="Resolution height"
+                suffix="px"
+                value={form.resolutionHeightPx}
+                placeholder="3200"
+                step="1"
+                onChange={(value) =>
+                  update('resolutionHeightPx', value)
+                }
+              />
+
+              <label className="il-field">
+                <span>Display aspect ratio · portrait</span>
+                <select
+                  value={(() => {
+                    const w = Number(form.aspectWidth), h = Number(form.aspectHeight);
+                    if (!w || !h) return 'custom';
+                    const ratio = w / h;
+                    const options = ['9:21','9:20.5','9:20','9:19.5','9:19','9:18.5','9:18','9:17','10:19','10:18','9.5:16','10:16','3:4','1:1'];
+                    return options.find(value => {
+                      const [width,height] = value.split(':').map(Number);
+                      return Math.abs(width/height-ratio)<0.00001;
+                    }) ?? 'custom';
+                  })()}
+                  onChange={event => {
+                    if (event.currentTarget.value === 'custom') return;
+                    const [width,height] = event.currentTarget.value.split(':');
+                    update('aspectWidth', width);
+                    update('aspectHeight', height);
+                  }}
+                >
+                  <optgroup label="Portrait phone">
+                    <option value="9:21">21:9 · tall</option>
+                    <option value="9:20.5">20.5:9</option>
+                    <option value="9:20">20:9</option>
+                    <option value="9:19.5">19.5:9</option>
+                    <option value="9:19">19:9</option>
+                    <option value="9:18.5">18.5:9</option>
+                    <option value="9:18">18:9</option>
+                    <option value="9:17">17:9</option>
+                    <option value="10:19">19:10</option>
+                    <option value="10:18">18:10</option>
+                  </optgroup>
+                  <optgroup label="Wide portrait and foldables">
+                    <option value="9.5:16">16:9.5 · Huawei Pura X View</option>
+                    <option value="10:16">16:10 · Huawei Pura X</option>
+                    <option value="3:4">4:3</option>
+                    <option value="1:1">1:1 · square</option>
+                  </optgroup>
+                  <option value="custom">Custom ratio</option>
+                </select>
+              </label>
+              <label className="il-field"><span>Portrait width</span><input type="number" min="0.1" step="0.1" value={form.aspectWidth} onChange={event=>update('aspectWidth',event.currentTarget.value)} /></label>
+              <label className="il-field"><span>Portrait height</span><input type="number" min="0.1" step="0.1" value={form.aspectHeight} onChange={event=>update('aspectHeight',event.currentTarget.value)} /></label>
             </div>
 
-            <div className="il-grid">                  <NumericField
-                    label="Resolution height"
-                    suffix="px"
-                    value={form.resolutionHeightPx}
-                    placeholder="3200"
-                    step="1"
-                    onChange={(value) => update('resolutionHeightPx', value)}
-                  /></div>
-            <details className="il-advanced" open={advancedOpen}>
-              <summary
-                onClick={(event) => {
-                  event.preventDefault();
-                  setAdvancedOpen((open) => !open);
-                }}
-              >
-                Advanced · panel, cell & envelope detail
-              </summary>
+            <div className="il-grid">
+              <NumericField
+                label="Refresh rate"
+                suffix="Hz"
+                value={form.refreshRateHz}
+                placeholder="120"
+                onChange={(value) =>
+                  update('refreshRateHz', value)
+                }
+              />
 
-              <div className="il-advanced-body">
-                <p className="il-group-label">Display geometry</p>
+              <NumericField
+                label="Brightness"
+                suffix="nits"
+                value={form.brightnessNits}
+                placeholder="1000"
+                onChange={(value) =>
+                  update('brightnessNits', value)
+                }
+              />
 
-                <div className="il-grid">
+              <label className="il-field">
+                <span>Panel technology</span>
+                <select
+                  value={form.panelTechnology}
+                  onChange={(event) => update('panelTechnology', event.currentTarget.value)}
+                >
+                  <option value="">Select display panel</option>
+                  <optgroup label="OLED">
+                    <option value="LTPO OLED">LTPO OLED</option>
+                    <option value="LTPS OLED">LTPS OLED</option>
+                    <option value="AMOLED">AMOLED</option>
+                    <option value="Super AMOLED">Super AMOLED</option>
+                    <option value="Dynamic AMOLED 2X">Dynamic AMOLED 2X</option>
+                    <option value="Tandem OLED">Tandem OLED</option>
+                    <option value="Micro-lens Array OLED">MLA OLED</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option value="IPS LCD">IPS LCD</option>
+                    <option value="TFT LCD">TFT LCD</option>
+                    <option value="microLED">microLED</option>
+                  </optgroup>
+                  {form.panelTechnology && !['LTPO OLED','LTPS OLED','AMOLED','Super AMOLED','Dynamic AMOLED 2X','Tandem OLED','Micro-lens Array OLED','IPS LCD','TFT LCD','microLED'].includes(form.panelTechnology) && <option value={form.panelTechnology}>{form.panelTechnology} (saved selection)</option>}
+                </select>
+              </label>
+            </div>
 
+            <details className="il-advanced">
+              <summary>Display workload conditions</summary>
 
-                  <NumericField
-                    label="Aspect width"
-                    value={form.aspectWidth}
-                    placeholder="9"
-                    onChange={(value) => update('aspectWidth', value)}
-                  />
+              <p className="il-help">
+                These describe the current content/workload, not the panel's
+                maximum specification. APL is the average picture level:
+                0% is black, 100% is full-white-equivalent content.
+              </p>
 
-                  <NumericField
-                    label="Aspect height"
-                    value={form.aspectHeight}
-                    placeholder="20"
-                    onChange={(value) => update('aspectHeight', value)}
-                  />
+              <div className="il-grid">
+                <NumericField
+                  label="Operating refresh"
+                  suffix="Hz"
+                  value={form.operatingRefreshRateHz}
+                  placeholder="60"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'operatingRefreshRateHz',
+                      value,
+                    )
+                  }
+                />
 
-                  <div aria-hidden="true" />
-                </div>
+                <NumericField
+                  label="Average picture level"
+                  suffix="%"
+                  value={
+                    form.averagePictureLevelPercent
+                  }
+                  placeholder="50"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'averagePictureLevelPercent',
+                      value,
+                    )
+                  }
+                />
 
-                <p className="il-group-label">Bezels</p>
+                <NumericField
+                  label="Adaptive state 1"
+                  suffix="Hz"
+                  value={form.displayRefreshState1Hz}
+                  placeholder="10"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState1Hz',
+                      value,
+                    )
+                  }
+                />
 
-                <div className="il-grid">
-                  <NumericField
-                    label="Top bezel"
-                    suffix="mm"
-                    value={form.bezelTopMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelTopMm', value)}
-                  />
+                <NumericField
+                  label="State 1 duty"
+                  suffix="%"
+                  value={
+                    form.displayRefreshState1DutyPercent
+                  }
+                  placeholder="70"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState1DutyPercent',
+                      value,
+                    )
+                  }
+                />
 
-                  <NumericField
-                    label="Right bezel"
-                    suffix="mm"
-                    value={form.bezelRightMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelRightMm', value)}
-                  />
+                <NumericField
+                  label="Adaptive state 2"
+                  suffix="Hz"
+                  value={form.displayRefreshState2Hz}
+                  placeholder="120"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState2Hz',
+                      value,
+                    )
+                  }
+                />
 
-                  <NumericField
-                    label="Bottom bezel"
-                    suffix="mm"
-                    value={form.bezelBottomMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelBottomMm', value)}
-                  />
-
-                  <NumericField
-                    label="Left bezel"
-                    suffix="mm"
-                    value={form.bezelLeftMm}
-                    placeholder="1.5"
-                    onChange={(value) => update('bezelLeftMm', value)}
-                  />
-                </div>
-
-                <p className="il-group-label">Cell geometry & weight</p>
-
-                <div className="il-grid">
-                  <NumericField
-                    label="Cell width"
-                    suffix="mm"
-                    value={form.batteryWidthMm}
-                    placeholder="60"
-                    onChange={(value) => update('batteryWidthMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell height"
-                    suffix="mm"
-                    value={form.batteryHeightMm}
-                    placeholder="80"
-                    onChange={(value) => update('batteryHeightMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell thickness"
-                    suffix="mm"
-                    value={form.batteryThicknessMm}
-                    placeholder="5"
-                    onChange={(value) => update('batteryThicknessMm', value)}
-                  />
-
-                  <NumericField
-                    label="Cell weight"
-                    suffix="g"
-                    value={form.batteryWeightG}
-                    placeholder="70"
-                    onChange={(value) => update('batteryWeightG', value)}
-                  />
-                </div>
-
-                <p className="il-group-label">Internal volume budget</p>
-
-                <div className="il-grid">
-                  <NumericField
-                    label="Reserved volume"
-                    suffix="%"
-                    value={form.reservedVolumePercent}
-                    placeholder="20"
-                    onChange={(value) => update('reservedVolumePercent', value)}
-                  />
-
-                  <NumericField
-                    label="Thermal"
-                    suffix="mm³"
-                    value={form.thermalMm3}
-                    onChange={(value) => update('thermalMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Logic board"
-                    suffix="mm³"
-                    value={form.boardMm3}
-                    onChange={(value) => update('boardMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Speakers"
-                    suffix="mm³"
-                    value={form.speakersMm3}
-                    onChange={(value) => update('speakersMm3', value)}
-                  />
-
-                  <NumericField
-                    label="Other known components"
-                    suffix="mm³"
-                    value={form.otherMm3}
-                    onChange={(value) => update('otherMm3', value)}
-                  />
-                </div>
-
-                <p className="il-help">
-                  Camera modules (type, sensor, optics, module geometry) can be
-                  added below. Module volume is derived from what you supply —
-                  nothing is estimated.
-                </p>
+                <NumericField
+                  label="State 2 duty"
+                  suffix="%"
+                  value={
+                    form.displayRefreshState2DutyPercent
+                  }
+                  placeholder="30"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'displayRefreshState2DutyPercent',
+                      value,
+                    )
+                  }
+                />
               </div>
             </details>
 
-            {cameras.length > 0 && (
+            <details className="il-advanced">
+              <summary>Advanced bezel geometry</summary>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Top bezel"
+                  suffix="mm"
+                  value={form.bezelTopMm}
+                  placeholder="1.5"
+                  onChange={(value) =>
+                    update('bezelTopMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Right bezel"
+                  suffix="mm"
+                  value={form.bezelRightMm}
+                  placeholder="1.5"
+                  onChange={(value) =>
+                    update('bezelRightMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Bottom bezel"
+                  suffix="mm"
+                  value={form.bezelBottomMm}
+                  placeholder="1.5"
+                  onChange={(value) =>
+                    update('bezelBottomMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Left bezel"
+                  suffix="mm"
+                  value={form.bezelLeftMm}
+                  placeholder="1.5"
+                  onChange={(value) =>
+                    update('bezelLeftMm', value)
+                  }
+                />
+              </div>
+            </details>
+          </div></FormSection>
+
+          <FormSection title="Battery" summary={`${form.batteryCapacityMah} mAh`}><div className="il-section">
+            <div className="il-section-heading">
+              <span>03</span>
+              <div>
+                <h2>Battery</h2>
+                <p>
+                  Capacity, runtime and optional physical
+                  battery analysis.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <NumericField
+                label="Capacity"
+                suffix="mAh"
+                value={form.batteryCapacityMah}
+                placeholder="5000"
+                onChange={(value) =>
+                  update(
+                    'batteryCapacityMah',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Nominal voltage"
+                suffix="V"
+                value={form.batteryVoltageV}
+                placeholder="3.85"
+                onChange={(value) =>
+                  update('batteryVoltageV', value)
+                }
+              />
+
+              <NumericField
+                label="Web browsing"
+                suffix="h/day"
+                value={form.webHours}
+                placeholder="2"
+                onChange={(value) =>
+                  update('webHours', value)
+                }
+              />
+
+              <NumericField
+                label="Video streaming"
+                suffix="h/day"
+                value={form.videoHours}
+                placeholder="2"
+                onChange={(value) =>
+                  update('videoHours', value)
+                }
+              />
+
+              <NumericField
+                label="Gaming"
+                suffix="h/day"
+                value={form.gamingHours}
+                placeholder="1"
+                onChange={(value) =>
+                  update('gamingHours', value)
+                }
+              />
+
+              <NumericField
+                label="Camera use"
+                suffix="h/day"
+                value={form.cameraHours}
+                placeholder="0"
+                onChange={(value) =>
+                  update('cameraHours', value)
+                }
+              />
+            </div>
+
+            <p className="il-help">
+              Enter your expected active-use hours. Interactive Leaks converts
+              those hours into workload shares and applies calibrated reference
+              power internally. You never need to enter watts.
+            </p>
+
+            <details className="il-advanced">
+              <summary>Advanced physical battery data</summary>
+
+              <p className="il-help">
+                Optional. Cell dimensions and weight are used only for packaging
+                and energy-density calculations, not to calculate battery life.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Cell width"
+                  suffix="mm"
+                  value={form.batteryWidthMm}
+                  placeholder="60"
+                  onChange={(value) =>
+                    update('batteryWidthMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Cell height"
+                  suffix="mm"
+                  value={form.batteryHeightMm}
+                  placeholder="80"
+                  onChange={(value) =>
+                    update('batteryHeightMm', value)
+                  }
+                />
+
+                <NumericField
+                  label="Cell thickness"
+                  suffix="mm"
+                  value={form.batteryThicknessMm}
+                  placeholder="5"
+                  onChange={(value) =>
+                    update(
+                      'batteryThicknessMm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cell weight"
+                  suffix="g"
+                  value={form.batteryWeightG}
+                  placeholder="70"
+                  onChange={(value) =>
+                    update('batteryWeightG', value)
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>Battery aging assumptions</summary>
+
+              <p className="il-help">
+                Optional aging scenario. Enter only rates you have evidence
+                for or explicitly want to test. PhoneFuturist does not assign
+                a default degradation rate from battery chemistry.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Battery age"
+                  suffix="years"
+                  value={form.batteryAgeYears}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'batteryAgeYears',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Equivalent full cycles"
+                  value={
+                    form.batteryEquivalentFullCycles
+                  }
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'batteryEquivalentFullCycles',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Calendar fade"
+                  suffix="% / year"
+                  value={
+                    form.batteryAnnualCalendarFadePercent
+                  }
+                  placeholder="Evidence / assumption"
+                  onChange={(value) =>
+                    update(
+                      'batteryAnnualCalendarFadePercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cycle fade"
+                  suffix="% / 100 cycles"
+                  value={
+                    form.batteryCycleFadePercentPer100Cycles
+                  }
+                  placeholder="Evidence / assumption"
+                  onChange={(value) =>
+                    update(
+                      'batteryCycleFadePercentPer100Cycles',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Health threshold"
+                  suffix="% retained"
+                  value={
+                    form.batteryHealthThresholdPercent
+                  }
+                  placeholder="80"
+                  onChange={(value) =>
+                    update(
+                      'batteryHealthThresholdPercent',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
+          </div></FormSection>
+
+          <FormSection title="Charging" summary={`${form.wiredChargeW} W`}><div className="il-section">
+            <div className="il-section-heading">
+              <span>04</span>
+              <div>
+                <h2>Charging</h2>
+                <p>
+                  Estimate wired charging from real released-phone curves.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <NumericField
+                label="Wired charging"
+                suffix="W"
+                value={form.wiredChargeW}
+                placeholder="60"
+                onChange={(value) =>
+                  update('wiredChargeW', value)
+                }
+              />
+
+              <NumericField
+                label="Wireless charging"
+                suffix="W"
+                value={form.wirelessChargeW}
+                placeholder="25"
+                onChange={(value) =>
+                  update('wirelessChargeW', value)
+                }
+              />
+
+              <label className="il-field">
+                <span>Battery chemistry</span>
+                <select value={form.batteryChemistry} onChange={(event) => update('batteryChemistry', event.currentTarget.value)}>
+                  <option value="">Select battery chemistry</option>
+                  <option value="Lithium-ion">Lithium-ion</option>
+                  <option value="Lithium-polymer">Lithium-polymer</option>
+                  <option value="silicon-carbon">silicon-carbon</option>
+                  <option value="solid-state (experimental)">solid-state (experimental)</option>
+                  {form.batteryChemistry && !["Lithium-ion","Lithium-polymer","silicon-carbon","solid-state (experimental)"].includes(form.batteryChemistry) && <option value={form.batteryChemistry}>{form.batteryChemistry} (saved)</option>}
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Cell architecture</span>
+                <select
+                  value={form.cellArchitecture}
+                  onChange={(event) =>
+                    update(
+                      'cellArchitecture',
+                      event.currentTarget.value as
+                        | 'unknown'
+                        | 'single-cell'
+                        | 'dual-cell'
+                        | 'tri-cell'
+                        | 'quad-cell',
+                    )
+                  }
+                >
+                  <option value="unknown">Unknown</option>
+                  <option value="single-cell">
+                    Single cell
+                  </option>
+                  <option value="dual-cell">
+                    Dual cell
+                  </option>
+                  <option value="tri-cell">Tri-cell (3 cells)</option>
+                  <option value="quad-cell">Quad-cell (4 cells)</option>
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Charging standard</span>
+                <select value={form.chargingStandard} onChange={(event) => update('chargingStandard', event.currentTarget.value)}>
+                  <option value="">Select charging standard</option>
+                  <option value="USB PD">USB PD</option>
+                  <option value="USB PD/PPS">USB PD/PPS</option>
+                  <option value="USB PD 3.1 EPR">USB PD 3.1 EPR</option>
+                  <option value="Qualcomm Quick Charge">Qualcomm Quick Charge</option>
+                  <option value="Samsung Super Fast Charging">Samsung Super Fast Charging</option>
+                  <option value="OPPO SUPERVOOC">OPPO SUPERVOOC</option>
+                  <option value="OnePlus SUPERVOOC">OnePlus SUPERVOOC</option>
+                  <option value="vivo FlashCharge">vivo FlashCharge</option>
+                  <option value="Xiaomi HyperCharge">Xiaomi HyperCharge</option>
+                  <option value="Huawei SuperCharge">Huawei SuperCharge</option>
+                  <option value="Motorola TurboPower">Motorola TurboPower</option>
+                  <option value="Apple USB-C PD">Apple USB-C PD</option>
+                  <option value="Proprietary / other">Proprietary / other</option>
+                  {form.chargingStandard && !["USB PD","USB PD/PPS","USB PD 3.1 EPR","Qualcomm Quick Charge","Samsung Super Fast Charging","OPPO SUPERVOOC","OnePlus SUPERVOOC","vivo FlashCharge","Xiaomi HyperCharge","Huawei SuperCharge","Motorola TurboPower","Apple USB-C PD","Proprietary / other"].includes(form.chargingStandard) && <option value={form.chargingStandard}>{form.chargingStandard} (saved)</option>}
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Wireless standard</span>
+                <select value={form.wirelessChargingStandard} onChange={(event) => update('wirelessChargingStandard', event.currentTarget.value)}>
+                  <option value="">Select wireless standard</option>
+                  <option value="Qi">Qi</option>
+                  <option value="Qi2">Qi2</option>
+                  <option value="Qi2 Magnetic Power Profile">Qi2 Magnetic Power Profile</option>
+                  <option value="MagSafe">MagSafe</option>
+                  <option value="Samsung Fast Wireless Charging">Samsung Fast Wireless Charging</option>
+                  <option value="AirVOOC">AirVOOC</option>
+                  <option value="Huawei Wireless SuperCharge">Huawei Wireless SuperCharge</option>
+                  <option value="Proprietary / other">Proprietary / other</option>
+                  {form.wirelessChargingStandard && !["Qi","Qi2","Qi2 Magnetic Power Profile","MagSafe","Samsung Fast Wireless Charging","AirVOOC","Huawei Wireless SuperCharge","Proprietary / other"].includes(form.wirelessChargingStandard) && <option value={form.wirelessChargingStandard}>{form.wirelessChargingStandard} (saved)</option>}
+                </select>
+              </label>
+            </div>
+
+            <p className="il-help">
+              Charging is capacity-aware and uses measured released-phone
+              curves. Wired and wireless evidence stay separate, while battery
+              chemistry, cell architecture and charging standard refine
+              comparable-device selection when known.
+            </p>
+          </div></FormSection>
+
+          <FormSection title="Connectivity" summary={form.connectivityMode}><div className="il-section">
+            <div className="il-section-heading">
+              <span>05</span>
+              <div>
+                <h2>Connectivity</h2>
+                <p>
+                  Model one explicit radio/network workload.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <label className="il-field">
+                <span>Network mode</span>
+                <select
+                  value={form.connectivityMode}
+                  onChange={(event) =>
+                    update(
+                      'connectivityMode',
+                      event.currentTarget
+                        .value as ConnectivityMode,
+                    )
+                  }
+                >
+                  <option value="wifi">Wi-Fi</option>
+                  <option value="lte">LTE</option>
+                  <option value="5g-sub6">5G sub-6</option>
+                  <option value="5g-mmwave">5G mmWave</option>
+                  <option value="hotspot">Hotspot</option>
+                  <option value="gnss">GNSS</option>
+                  <option value="bluetooth">Bluetooth</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Download traffic"
+                suffix="Mbps"
+                value={form.connectivityDownloadMbps}
+                placeholder="100"
+                onChange={(value) =>
+                  update(
+                    'connectivityDownloadMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Upload traffic"
+                suffix="Mbps"
+                value={form.connectivityUploadMbps}
+                placeholder="20"
+                onChange={(value) =>
+                  update(
+                    'connectivityUploadMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Link capacity"
+                suffix="Mbps"
+                value={
+                  form.connectivityLinkCapacityMbps
+                }
+                placeholder="300"
+                onChange={(value) =>
+                  update(
+                    'connectivityLinkCapacityMbps',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Session duration"
+                suffix="min"
+                value={form.connectivitySessionMinutes}
+                placeholder="30"
+                onChange={(value) =>
+                  update(
+                    'connectivitySessionMinutes',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Radio power"
+                suffix="W"
+                value={form.connectivityRadioPowerW}
+                placeholder="Evidence / assumption"
+                onChange={(value) =>
+                  update(
+                    'connectivityRadioPowerW',
+                    value,
+                  )
+                }
+              />
+
+              <NumericField
+                label="Radio active duty"
+                suffix="%"
+                value={
+                  form.connectivityActiveDutyPercent
+                }
+                placeholder="100"
+                onChange={(value) =>
+                  update(
+                    'connectivityActiveDutyPercent',
+                    value,
+                  )
+                }
+              />
+
+              <label className="il-field">
+                <span>Signal metric label</span>
+                <input
+                  type="text"
+                  value={
+                    form.connectivitySignalMetricLabel
+                  }
+                  placeholder="RSRP dBm"
+                  onChange={(event) =>
+                    update(
+                      'connectivitySignalMetricLabel',
+                      event.currentTarget.value,
+                    )
+                  }
+                />
+              </label>
+
+              <NumericField
+                label="Signal metric value"
+                value={
+                  form.connectivitySignalMetricValue
+                }
+                placeholder="-105"
+                onChange={(value) =>
+                  update(
+                    'connectivitySignalMetricValue',
+                    value,
+                  )
+                }
+              />
+            </div>
+
+            <p className="il-help">
+              Network type and signal labels do not secretly change power.
+              Enter measured or explicit radio power when you want an energy
+              estimate.
+            </p>
+          </div></FormSection>
+
+          <FormSection title="Thermal & performance" summary={form.coolingClass}><div className="il-section">
+            <div className="il-section-heading">
+              <span>06</span>
+              <div>
+                <h2>Thermal & performance</h2>
+                <p>
+                  Model sustained SoC power, heat and throttling.
+                </p>
+              </div>
+            </div>
+
+            <div className="il-grid">
+              <label className="il-field">
+                <span>Thermal workload</span>
+                <select
+                  value={form.thermalDomain}
+                  onChange={(event) =>
+                    update(
+                      'thermalDomain',
+                      event.currentTarget.value as
+                        | 'cpu_sustained'
+                        | 'gpu_sustained'
+                        | 'gaming_sustained'
+                        | 'ray_tracing',
+                    )
+                  }
+                >
+                  <option value="cpu_sustained">CPU sustained</option>
+                  <option value="gpu_sustained">GPU sustained</option>
+                  <option value="gaming_sustained">Gaming sustained</option>
+                  <option value="ray_tracing">Ray tracing</option>
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Peak benchmark</span>
+                <select
+                  value={form.peakBenchmarkDomain}
+                  onChange={(event) =>
+                    update(
+                      'peakBenchmarkDomain',
+                      event.currentTarget
+                        .value as PeakBenchmarkDomain,
+                    )
+                  }
+                >
+                  <option value="geekbench6_single">
+                    Geekbench 6 single-core
+                  </option>
+                  <option value="geekbench6_multi">
+                    Geekbench 6 multi-core
+                  </option>
+                  <option value="3dmark_wle">
+                    3DMark Wild Life Extreme
+                  </option>
+                  <option value="3dmark_solar_bay">
+                    3DMark Solar Bay
+                  </option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Assumed generation uplift"
+                suffix="%"
+                value={
+                  form.assumedGenerationUpliftPercent
+                }
+                placeholder="Optional"
+                onChange={(value) =>
+                  update(
+                    'assumedGenerationUpliftPercent',
+                    value,
+                  )
+                }
+              />
+
+              <label className="il-field">
+                <span>SoC vendor</span>
+                <select
+                  value={form.socVendor}
+                  onChange={(event) => {
+                    const vendor = event.currentTarget.value;
+                    setForm(current => ({ ...current, socVendor: vendor, socName: '' }));
+                  }}
+                >
+                  <option value="">Select SoC vendor</option>
+                  {['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].map(vendor => <option key={vendor} value={vendor}>{vendor}</option>)}
+                  {form.socVendor && !['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].includes(form.socVendor) && <option value={form.socVendor}>{form.socVendor}</option>}
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>SoC model</span>
+                <select
+                  value={isSelectableSoc(form.socVendor, form.socName) ? form.socName : ''}
+                  onChange={(event) => update('socName', event.currentTarget.value)}
+                >
+                  <option value="">Select processor</option>
+                  {(SOC_MODELS[form.socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)}
+                  {(SOC_MODELS[form.socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}
+                </select>
+              </label>
+
+              <label className="il-field">
+                <span>Cooling class</span>
+                <select
+                  value={form.coolingClass}
+                  onChange={(event) =>
+                    update(
+                      'coolingClass',
+                      event.currentTarget.value as FormState['coolingClass'],
+                    )
+                  }
+                >
+                  <option value="unknown">Unknown</option>
+                  <option value="passive-graphite">Passive graphite</option>
+                  <option value="vapor-chamber">Vapor chamber</option>
+                  <option value="large-vapor-chamber">Large vapor chamber</option>
+                  <option value="active-fan">Active fan</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+
+              <NumericField
+                label="Target SoC power"
+                suffix="W"
+                value={form.targetSocPowerW}
+                placeholder="10"
+                onChange={(value) =>
+                  update('targetSocPowerW', value)
+                }
+              />
+
+              <NumericField
+                label="Ambient temperature"
+                suffix="°C"
+                value={form.ambientTemperatureC}
+                placeholder="25"
+                onChange={(value) =>
+                  update('ambientTemperatureC', value)
+                }
+              />
+
+              <NumericField
+                label="Lumped-model thermal ceiling"
+                suffix="°C"
+                value={form.throttleTemperatureC}
+                placeholder="42"
+                onChange={(value) =>
+                  update('throttleTemperatureC', value)
+                }
+              />
+            </div>
+
+            <details className="il-advanced">
+              <summary>SoC architecture assumptions</summary>
+
+              <p className="il-help">
+                Enter up to four CPU clusters. Relative IPC is optional and
+                normalized to your chosen reference, where 1.0 means equal IPC.
+                Node size is metadata only and never creates an automatic
+                performance uplift.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Fabrication node"
+                  suffix="nm"
+                  value={form.socFabricationNodeNm}
+                  placeholder="2"
+                  onChange={(value) =>
+                    update(
+                      'socFabricationNodeNm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Memory bandwidth"
+                  suffix="GB/s"
+                  value={form.socMemoryBandwidthGbps}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socMemoryBandwidthGbps',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 cores"
+                  value={form.socCluster1Cores}
+                  placeholder="1"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 max clock"
+                  suffix="GHz"
+                  value={form.socCluster1ClockGhz}
+                  placeholder="3.8"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 1 relative IPC"
+                  value={form.socCluster1RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster1RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 cores"
+                  value={form.socCluster2Cores}
+                  placeholder="3"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 max clock"
+                  suffix="GHz"
+                  value={form.socCluster2ClockGhz}
+                  placeholder="3.3"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 2 relative IPC"
+                  value={form.socCluster2RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster2RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 cores"
+                  value={form.socCluster3Cores}
+                  placeholder="6"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 max clock"
+                  suffix="GHz"
+                  value={form.socCluster3ClockGhz}
+                  placeholder="2.8"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 3 relative IPC"
+                  value={form.socCluster3RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster3RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 cores"
+                  value={form.socCluster4Cores}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4Cores',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 max clock"
+                  suffix="GHz"
+                  value={form.socCluster4ClockGhz}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4ClockGhz',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Cluster 4 relative IPC"
+                  value={form.socCluster4RelativeIpc}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'socCluster4RelativeIpc',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>GPU architecture assumptions</summary>
+
+              <p className="il-help">
+                Optional GPU structure for raster, gaming and ray-tracing
+                context. Shader cores and execution units are not assumed to
+                be equivalent across vendors. Relative architecture efficiency
+                is only used when you explicitly supply it. Nothing here is
+                automatically converted into a 3DMark score.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="GPU shader cores"
+                  value={form.gpuShaderCores}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuShaderCores', value)
+                  }
+                />
+
+                <NumericField
+                  label="GPU execution units"
+                  value={form.gpuExecutionUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuExecutionUnits', value)
+                  }
+                />
+
+                <NumericField
+                  label="GPU peak clock"
+                  suffix="GHz"
+                  value={form.gpuPeakClockGhz}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update('gpuPeakClockGhz', value)
+                  }
+                />
+
+                <NumericField
+                  label="Peak GPU power"
+                  suffix="W"
+                  value={form.gpuPeakPowerW}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update('gpuPeakPowerW', value)
+                  }
+                />
+
+                <NumericField
+                  label="Non-GPU package power"
+                  suffix="W"
+                  value={form.gpuNonGpuPackagePowerW}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuNonGpuPackagePowerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="GPU memory bandwidth"
+                  suffix="GB/s"
+                  value={form.gpuMemoryBandwidthGbps}
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuMemoryBandwidthGbps',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Texture units"
+                  value={form.gpuTextureUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuTextureUnits', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render output units"
+                  value={form.gpuRenderOutputUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'gpuRenderOutputUnits',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Ray-tracing units"
+                  value={form.gpuRayTracingUnits}
+                  placeholder="Optional"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'gpuRayTracingUnits',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Relative GPU architecture efficiency"
+                  value={
+                    form.gpuRelativeArchitectureEfficiency
+                  }
+                  placeholder="1.0 = reference"
+                  onChange={(value) =>
+                    update(
+                      'gpuRelativeArchitectureEfficiency',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>GPU workload target</summary>
+
+              <p className="il-help">
+                Optional demand-side inputs. These calculate frame budget,
+                pixel throughput and RT ray demand. They describe what the
+                workload asks from the GPU, not what FPS the phone will
+                achieve.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Render width"
+                  suffix="px"
+                  value={form.gpuRenderWidthPx}
+                  placeholder="1920"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuRenderWidthPx', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render height"
+                  suffix="px"
+                  value={form.gpuRenderHeightPx}
+                  placeholder="1080"
+                  step="1"
+                  onChange={(value) =>
+                    update('gpuRenderHeightPx', value)
+                  }
+                />
+
+                <NumericField
+                  label="Target FPS"
+                  value={form.gpuTargetFps}
+                  placeholder="60"
+                  onChange={(value) =>
+                    update('gpuTargetFps', value)
+                  }
+                />
+
+                <NumericField
+                  label="Render scale"
+                  suffix="%"
+                  value={form.gpuRenderScalePercent}
+                  placeholder="100"
+                  onChange={(value) =>
+                    update(
+                      'gpuRenderScalePercent',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Relative workload complexity"
+                  value={
+                    form.gpuRelativeWorkloadComplexity
+                  }
+                  placeholder="1.0 = reference"
+                  onChange={(value) =>
+                    update(
+                      'gpuRelativeWorkloadComplexity',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Estimated memory traffic"
+                  suffix="B/rendered px"
+                  value={
+                    form.gpuEstimatedMemoryTrafficBytesPerPixel
+                  }
+                  placeholder="Optional"
+                  onChange={(value) =>
+                    update(
+                      'gpuEstimatedMemoryTrafficBytesPerPixel',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Gaming session"
+                  suffix="min"
+                  value={form.gamingSessionMinutes}
+                  placeholder="30"
+                  onChange={(value) =>
+                    update(
+                      'gamingSessionMinutes',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Rays per pixel"
+                  value={form.gpuRaysPerPixel}
+                  placeholder="RT only"
+                  onChange={(value) =>
+                    update('gpuRaysPerPixel', value)
+                  }
+                />
+              </div>
+            </details>
+
+            <details className="il-advanced">
+              <summary>Advanced thermal model</summary>
+
+              <p className="il-help">
+                The lumped resistance/mass fields drive the legacy thermal trace.
+                The optional two-node fields separately model the SoC/package and
+                chassis/surface. Supply all four two-node physical parameters or
+                leave them blank. Do not guess them.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Thermal resistance"
+                  suffix="°C/W"
+                  value={form.thermalResistanceCPerW}
+                  placeholder="3"
+                  onChange={(value) =>
+                    update('thermalResistanceCPerW', value)
+                  }
+                />
+
+                <NumericField
+                  label="Thermal mass"
+                  suffix="J/°C"
+                  value={form.thermalMassJPerC}
+                  placeholder="45"
+                  onChange={(value) =>
+                    update('thermalMassJPerC', value)
+                  }
+                />
+
+                <NumericField
+                  label="SoC → chassis resistance"
+                  suffix="°C/W"
+                  value={
+                    form.socToChassisResistanceCPerW
+                  }
+                  placeholder="2.5"
+                  onChange={(value) =>
+                    update(
+                      'socToChassisResistanceCPerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Chassis → ambient resistance"
+                  suffix="°C/W"
+                  value={
+                    form.chassisToAmbientResistanceCPerW
+                  }
+                  placeholder="3.5"
+                  onChange={(value) =>
+                    update(
+                      'chassisToAmbientResistanceCPerW',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="SoC/package thermal mass"
+                  suffix="J/°C"
+                  value={form.socThermalMassJPerC}
+                  placeholder="12"
+                  onChange={(value) =>
+                    update(
+                      'socThermalMassJPerC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Chassis thermal mass"
+                  suffix="J/°C"
+                  value={
+                    form.chassisThermalMassJPerC
+                  }
+                  placeholder="55"
+                  onChange={(value) =>
+                    update(
+                      'chassisThermalMassJPerC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="SoC/package throttle ceiling"
+                  suffix="°C"
+                  value={
+                    form.socPackageThrottleTemperatureC
+                  }
+                  placeholder="85"
+                  onChange={(value) =>
+                    update(
+                      'socPackageThrottleTemperatureC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Surface comfort threshold"
+                  suffix="°C"
+                  value={
+                    form.surfaceComfortTemperatureC
+                  }
+                  placeholder="42"
+                  onChange={(value) =>
+                    update(
+                      'surfaceComfortTemperatureC',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Test duration"
+                  suffix="s"
+                  value={form.thermalDurationSeconds}
+                  placeholder="600"
+                  onChange={(value) =>
+                    update('thermalDurationSeconds', value)
+                  }
+                />
+              </div>
+
+              {incompleteTwoNodeInput ? (
+                <p className="il-simple-error" role="alert">
+                  Two-node thermal physics needs all four physical parameters:
+                  SoC-to-chassis resistance, chassis-to-ambient resistance,
+                  SoC/package thermal mass, chassis thermal mass and an
+                  SoC/package throttle ceiling. The two-node trace is disabled
+                  until all five required values are supplied.
+                </p>
+              ) : null}
+            </details>
+
+            <p className="il-help">
+              Peak benchmark evidence and sustained-performance evidence are
+              intentionally separate. Peak scores use protocol-compatible
+              measured benchmarks. Any future-generation uplift is an explicit
+              assumption. Sustained performance remains evidence-calibrated
+              thermal behavior.
+            </p>
+          </div></FormSection>
+
+          <FormSection title="Cameras" summary={`${cameras.length} cameras`}><div className="il-section">
+            <div className="il-section-heading il-section-heading-action">
+              <div className="il-heading-copy">
+                <span>07</span>
+                <div>
+                  <h2>Cameras</h2>
+                  <p>
+                    Add only what is actually known.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="secondary"
+                onClick={addCamera}
+              >
+                + Add camera
+              </button>
+            </div>
+
+            <details className="il-advanced">
+              <summary>
+                Multi-camera zoom handoff
+              </summary>
+
+              <p className="il-help">
+                Optional. Ask the simulator which supplied camera can reach a
+                target equivalent focal length while retaining a requested
+                native output resolution. Computational fusion and AI
+                reconstruction are not assumed.
+              </p>
+
+              <div className="il-grid">
+                <NumericField
+                  label="Zoom target"
+                  suffix="mm eq."
+                  value={
+                    form.zoomTargetEquivalentFocalLengthMm
+                  }
+                  placeholder="120"
+                  step="1"
+                  onChange={(value) =>
+                    update(
+                      'zoomTargetEquivalentFocalLengthMm',
+                      value,
+                    )
+                  }
+                />
+
+                <NumericField
+                  label="Minimum native output"
+                  suffix="MP"
+                  value={
+                    form.zoomMinimumOutputResolutionMp
+                  }
+                  placeholder="12"
+                  step="0.1"
+                  onChange={(value) =>
+                    update(
+                      'zoomMinimumOutputResolutionMp',
+                      value,
+                    )
+                  }
+                />
+              </div>
+            </details>
+
+            {cameras.length === 0 ? (
+              <div className="il-empty">
+                No camera modules added. Camera
+                calculations will remain unknown.
+              </div>
+            ) : (
               <div className="il-camera-list">
                 {cameras.map((camera, index) => (
-                  <article className="il-camera" key={camera.id}>
+                  <article
+                    className="il-camera"
+                    key={camera.id}
+                  >
                     <div className="il-camera-title">
-                      <strong>{({wide:'Main',ultrawide:'Ultrawide',telephoto:'Telephoto',periscope:'Periscope telephoto',front:'Front',other:'Other'})[camera.type]} · Camera {index + 1}</strong>
+                      <strong>
+                        Camera {index + 1}
+                      </strong>
 
                       <button
                         type="button"
                         className="il-remove"
-                        onClick={() => removeCamera(camera.id)}
+                        onClick={() =>
+                          removeCamera(camera.id)
+                        }
                       >
                         Remove
                       </button>
@@ -895,22 +5041,66 @@ export default function InteractiveLeaksSimulator() {
                             })
                           }
                         >
-                          <option value="wide">Main</option>
-                          <option value="ultrawide">Ultrawide</option>
-                          <option value="telephoto">Telephoto</option>
-                          <option value="periscope">Periscope telephoto</option>
-                          <option value="front">Front</option>
-                          <option value="other">Other</option>
+                          <option value="wide">
+                            Wide
+                          </option>
+                          <option value="ultrawide">
+                            Ultrawide
+                          </option>
+                          <option value="telephoto">
+                            Telephoto
+                          </option>
+                          <option value="periscope">
+                            Periscope
+                          </option>
+                          <option value="front">
+                            Front
+                          </option>
+                          <option value="other">
+                            Other
+                          </option>
                         </select>
                       </label>
 
+                      <label className="il-field">
+                        <span>Sensor format (optical type)</span>
+                        <select value={camera.sensorFormatDenominator}
+                          onChange={(event) => updateCamera(camera.id, { sensorFormatDenominator: event.currentTarget.value })}>
+                          <option value="">Select sensor format</option>
+                          {CAMERA_SENSOR_FORMATS.map(value => (
+                            <option value={String(value)} key={value}>1/{value}″ type</option>
+                          ))}
+                          {camera.sensorFormatDenominator && !CAMERA_SENSOR_FORMATS.some(value => String(value) === camera.sensorFormatDenominator) &&
+                            <option value={camera.sensorFormatDenominator}>1/{camera.sensorFormatDenominator}″ (saved)</option>}
+                        </select>
+                        <small>Optical format designation, not literal sensor width. Exact dimensions remain available below.</small>
+                      </label>
+
                       <NumericField
-                        label="Sensor format"
-                        suffix="1/x″"
-                        value={camera.sensorFormatDenominator}
-                        placeholder="1.3"
+                        label="Exact sensor width"
+                        suffix="mm"
+                        value={
+                          camera.sensorWidthMm ?? ''
+                        }
+                        placeholder="Optional"
                         onChange={(value) =>
-                          updateCamera(camera.id, { sensorFormatDenominator: value })
+                          updateCamera(camera.id, {
+                            sensorWidthMm: value,
+                          })
+                        }
+                      />
+
+                      <NumericField
+                        label="Exact sensor height"
+                        suffix="mm"
+                        value={
+                          camera.sensorHeightMm ?? ''
+                        }
+                        placeholder="Optional"
+                        onChange={(value) =>
+                          updateCamera(camera.id, {
+                            sensorHeightMm: value,
+                          })
                         }
                       />
 
@@ -920,253 +5110,802 @@ export default function InteractiveLeaksSimulator() {
                         value={camera.resolutionMp}
                         placeholder="50"
                         onChange={(value) =>
-                          updateCamera(camera.id, { resolutionMp: value })
+                          updateCamera(camera.id, {
+                            resolutionMp: value,
+                          })
                         }
                       />
 
                       <NumericField
                         label="Equivalent focal length"
                         suffix="mm"
-                        value={camera.equivalentFocalLengthMm}
+                        value={
+                          camera.equivalentFocalLengthMm
+                        }
                         placeholder="24"
                         onChange={(value) =>
                           updateCamera(camera.id, {
-                            equivalentFocalLengthMm: value,
+                            equivalentFocalLengthMm:
+                              value,
                           })
                         }
                       />
 
-                      <NumericField
-                        label="Aperture"
-                        suffix="f/"
-                        value={camera.apertureFNumber}
-                        placeholder="1.6"
-                        onChange={(value) =>
-                          updateCamera(camera.id, { apertureFNumber: value })
-                        }
-                      />
+                      <label className="il-field">
+                        <span>Aperture mechanism</span>
+                        <select value={camera.variableAperture ? 'variable' : 'fixed'} onChange={(event) =>
+                          updateCamera(camera.id, { variableAperture: event.currentTarget.value === 'variable' })}>
+                          <option value="fixed">Fixed aperture</option>
+                          <option value="variable">Variable aperture</option>
+                        </select>
+                      </label>
+                      {camera.variableAperture && (
+                        <>
+                          <label className="il-field">
+                            <span>Widest aperture</span>
+                            <select value={camera.variableApertureWide}
+                              onChange={(event) => {
+                                const wide = event.currentTarget.value;
+                                updateCamera(camera.id, { variableApertureWide: wide,
+                                  apertureFNumber: wide });
+                              }}>
+                              <option value="">Select widest aperture</option>
+                              {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                            </select>
+                          </label>
+                          <label className="il-field">
+                            <span>Narrowest aperture</span>
+                            <select value={camera.variableApertureNarrow}
+                              onChange={(event) => updateCamera(camera.id, { variableApertureNarrow: event.currentTarget.value })}>
+                              <option value="">Select narrowest aperture</option>
+                              {CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                            </select>
+                          </label>
+                        </>
+                      )}
+                      <label className="il-field">
+                        <span>{camera.variableAperture ? 'Active aperture for simulation' : 'Fixed aperture'}</span>
+                        <select value={camera.apertureFNumber}
+                          onChange={(event) => updateCamera(camera.id, { apertureFNumber: event.currentTarget.value })}>
+                          <option value="">Select f-number</option>
+                          {CAMERA_APERTURES.filter(value => !camera.variableAperture ||
+                            (cameraApertureRangeValid(camera.variableApertureWide, camera.variableApertureNarrow) &&
+                            value >= Number(camera.variableApertureWide) &&
+                            value <= Number(camera.variableApertureNarrow)))
+                            .map(value => <option key={value} value={String(value)}>f/{value}</option>)}
+                          {camera.apertureFNumber && !CAMERA_APERTURES.some(value => String(value) === camera.apertureFNumber) &&
+                            <option value={camera.apertureFNumber}>f/{camera.apertureFNumber} (saved)</option>}
+                        </select>
+                        {camera.variableAperture && <small>{cameraApertureRangeValid(camera.variableApertureWide, camera.variableApertureNarrow)
+                          ? 'Results use the selected active aperture, not an assumed automatic exposure curve.'
+                          : 'Choose a valid widest/narrowest range (the narrowest f-number must be larger).'}</small>}
+                      </label>
                     </div>
-                    <details className="il-advanced"><summary>Advanced · camera optics and module dimensions</summary><div className="il-grid">
-                      {([['physicalFocalLengthMm','Physical focal length'],['moduleWidthMm','Module width'],['moduleHeightMm','Module height'],['moduleDepthMm','Module depth']] as const).map(([key,label])=><NumericField key={key} label={label} suffix="mm" value={camera[key]} onChange={value=>updateCamera(camera.id,{[key]:value})}/>)}
-                    </div></details>
-                    <p className="il-help">For 1/1.3″ sensor format, enter 1.3. Optical format is an approximation, not a physical sensor diagonal.</p>
+
+                    <details className="il-advanced">
+                      <summary>
+                        Advanced optical & module data
+                      </summary>
+
+                      <div className="il-grid">
+                        <NumericField
+                          label="Physical focal length"
+                          suffix="mm"
+                          value={
+                            camera.physicalFocalLengthMm
+                          }
+                          placeholder="6.5"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              physicalFocalLengthMm:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Focus distance"
+                          suffix="m"
+                          value={
+                            camera.focusDistanceM
+                          }
+                          placeholder="2"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              focusDistanceM: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Exposure time"
+                          suffix="s"
+                          value={
+                            camera.exposureTimeSeconds ?? ''
+                          }
+                          placeholder="0.0333"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              exposureTimeSeconds: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Sensor readout"
+                          suffix="s"
+                          value={
+                            camera.sensorReadoutTimeSeconds ?? ''
+                          }
+                          placeholder="0.0167"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              sensorReadoutTimeSeconds: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video frame rate"
+                          suffix="fps"
+                          value={
+                            camera.videoFrameRateFps ?? ''
+                          }
+                          placeholder="60"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoFrameRateFps: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video width"
+                          suffix="px"
+                          value={
+                            camera.videoWidthPx ?? ''
+                          }
+                          placeholder="3840"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoWidthPx: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video height"
+                          suffix="px"
+                          value={
+                            camera.videoHeightPx ?? ''
+                          }
+                          placeholder="2160"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoHeightPx: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video bit depth"
+                          suffix="bit"
+                          value={
+                            camera.videoBitDepth ?? ''
+                          }
+                          placeholder="10"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoBitDepth: value,
+                            })
+                          }
+                        />
+
+                        <label className="il-field">
+                          <span>Video chroma</span>
+                          <select
+                            value={
+                              camera.videoChromaSubsampling ??
+                              ''
+                            }
+                            onChange={(event) =>
+                              updateCamera(camera.id, {
+                                videoChromaSubsampling:
+                                  event.currentTarget
+                                    .value as CameraDraft['videoChromaSubsampling'],
+                              })
+                            }
+                          >
+                            <option value="">
+                              Unknown
+                            </option>
+                            <option value="4:2:0">
+                              4:2:0
+                            </option>
+                            <option value="4:2:2">
+                              4:2:2
+                            </option>
+                            <option value="4:4:4">
+                              4:4:4
+                            </option>
+                          </select>
+                        </label>
+
+                        <NumericField
+                          label="Encoded bitrate"
+                          suffix="Mbps"
+                          value={
+                            camera.videoEncodedBitrateMbps ??
+                            ''
+                          }
+                          placeholder="200"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoEncodedBitrateMbps:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Recording duration"
+                          suffix="min"
+                          value={
+                            camera.videoRecordingDurationMinutes ??
+                            ''
+                          }
+                          placeholder="10"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoRecordingDurationMinutes:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Camera pipeline power"
+                          suffix="W"
+                          value={
+                            camera.videoPipelinePowerW ??
+                            ''
+                          }
+                          placeholder="Evidence / assumption"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoPipelinePowerW:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal resistance"
+                          suffix="°C/W"
+                          value={
+                            camera.videoThermalResistanceCPerW ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalResistanceCPerW:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal mass"
+                          suffix="J/°C"
+                          value={
+                            camera.videoThermalMassJPerC ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalMassJPerC:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Video thermal ceiling"
+                          suffix="°C"
+                          value={
+                            camera.videoThermalLimitTemperatureC ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              videoThermalLimitTemperatureC:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Subject angular speed"
+                          suffix="°/s"
+                          value={
+                            camera.subjectAngularSpeedDegPerSecond ?? ''
+                          }
+                          placeholder="2"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              subjectAngularSpeedDegPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Camera angular shake"
+                          suffix="°/s"
+                          value={
+                            camera.cameraAngularShakeDegPerSecond ?? ''
+                          }
+                          placeholder="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              cameraAngularShakeDegPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="OIS shake compensation"
+                          suffix="0–1"
+                          value={
+                            camera.oisAngularCompensationFraction ?? ''
+                          }
+                          placeholder="0.75"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              oisAngularCompensationFraction:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Lens transmission"
+                          suffix="0–1"
+                          value={
+                            camera.lensTransmissionFraction ?? ''
+                          }
+                          placeholder="0.8"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              lensTransmissionFraction: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Quantum efficiency"
+                          suffix="0–1"
+                          value={
+                            camera.quantumEfficiencyFraction ?? ''
+                          }
+                          placeholder="0.65"
+                          step="0.01"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              quantumEfficiencyFraction: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Full-well capacity"
+                          suffix="e⁻"
+                          value={
+                            camera.fullWellElectrons ?? ''
+                          }
+                          placeholder="Evidence only"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              fullWellElectrons: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Read noise"
+                          suffix="e⁻ RMS"
+                          value={
+                            camera.readNoiseElectrons ?? ''
+                          }
+                          placeholder="Evidence only"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              readNoiseElectrons: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Dark current"
+                          suffix="e⁻/s"
+                          value={
+                            camera.darkCurrentElectronsPerSecond ??
+                            ''
+                          }
+                          placeholder="Optional"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              darkCurrentElectronsPerSecond:
+                                value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Signal electrons"
+                          suffix="e⁻"
+                          value={
+                            camera.signalElectrons ?? ''
+                          }
+                          placeholder="Optional SNR probe"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              signalElectrons: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Pixel binning"
+                          suffix="linear"
+                          value={
+                            camera.binningLinearFactor ?? ''
+                          }
+                          placeholder="2"
+                          step="1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              binningLinearFactor: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Crop zoom"
+                          suffix="×"
+                          value={
+                            camera.cropZoomRatio ?? ''
+                          }
+                          placeholder="2"
+                          step="0.1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              cropZoomRatio: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Target output"
+                          suffix="MP"
+                          value={
+                            camera.targetOutputResolutionMp ?? ''
+                          }
+                          placeholder="12"
+                          step="0.1"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              targetOutputResolutionMp: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Module width"
+                          suffix="mm"
+                          value={camera.moduleWidthMm}
+                          placeholder="20"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              moduleWidthMm: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Module height"
+                          suffix="mm"
+                          value={camera.moduleHeightMm}
+                          placeholder="20"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              moduleHeightMm: value,
+                            })
+                          }
+                        />
+
+                        <NumericField
+                          label="Module depth"
+                          suffix="mm"
+                          value={camera.moduleDepthMm}
+                          placeholder="6"
+                          onChange={(value) =>
+                            updateCamera(camera.id, {
+                              moduleDepthMm: value,
+                            })
+                          }
+                        />
+                      </div>
+                    </details>
                   </article>
                 ))}
               </div>
             )}
+          </div></FormSection>
 
-            <button type="button" className="il-chip il-add" onClick={addCamera}>
-              + Add camera module
-            </button>
-          </div>
-
-          {/* 02 · ENVIRONMENT */}
-          <div className="il-section">
-            <SectionHeading
-              index="02"
-              title="Environment"
-              hint={simple?'Your daily usage pattern, including idle time.':'How the device is used during the simulated session: per-workload power and pack derating.'}
-            />
-
-            {simple?<div className="il-simple-usage">
-              <h3>How do you use this phone?</h3>
-              <p>Tell us how you typically use your phone. Interactive Leaks combines your usage with the device model to estimate battery life.</p>
-              <fieldset className="il-mode"><legend>Daily usage profile</legend>{(['Light','Typical','Heavy','Custom'] as UsagePreset[]).map(preset=><label key={preset}><input type="radio" name="usage-profile" checked={experience.preset===preset} onChange={()=>changeExperience({type:'preset',value:preset})}/>{preset}</label>)}</fieldset>
-              <p className="il-help">Usage presets describe a daily pattern, not scientific measurements or continuous screen-on time. Remaining time is idle; active durations may total less than 24 hours.</p>
-              {experience.preset==='Custom'?<div className="il-grid">{ACTIVE_WORKLOADS.map(key=><label className="il-field" key={key}><span>{key==='web_browsing'?'Web browsing / social':WORKLOAD_LABEL[key]} <small>minutes per day</small></span><input type="number" min="0" max="1440" step="any" inputMode="decimal" value={usage[key]===INVALID_NUMBER?'':usage[key]} aria-invalid={numeric(usage[key])===undefined||(numeric(usage[key])??0)<0||(numeric(usage[key])??0)>1440} onChange={captureNumericValue(value=>changeExperience({type:'duration',key,value}))}/></label>)}</div>:<p className="il-help">{ACTIVE_WORKLOADS.map(key=>WORKLOAD_LABEL[key]+': '+usage[key]+' min').join(' · ')}</p>}
-              <p className="il-help">Idle time: {usageBreakdown.issues.length?'Unknown':format(usageBreakdown.idleMinutes/60,1)} h/day. This contributes to the daily usage mix, not screen-on time.</p>
-              <label className="il-power-choice"><input type="checkbox" checked={experience.useEnteredPower} onChange={event=>changeExperience({type:'power',value:event.currentTarget.checked})}/>Use power values I entered in Advanced (unverified)</label>
-              <p className="il-help">You never need to know wattage. Power comes from measured runtimes of released reference phones in the PhoneFuturist calibration set and is reported as calibrated — never as a measurement of your device.</p>
-              {evidence?<><details className="il-advanced"><summary>View assumptions</summary>
-                <p className="il-help">{evidence.notes.map(note=><span key={note}>{note} </span>)}</p>
-                <p className="il-help">{evidence.assumptions.map(note=><span key={note}>{note} </span>)}</p>
-                <h3>Evidence per workload</h3>
-                <ul className="il-evidence-list">{Object.values(workloadEvidence(evidence)).map(entry=><li key={entry.workload}><strong>{WORKLOAD_LABEL[entry.workload]}</strong>: {entry.powerW?`${format(entry.powerW.min,2)}–${format(entry.powerW.max,2)} W`:'no power value'} · {entry.provenance?.kind??entry.status}<small> {entry.note}</small></li>)}</ul>
-                <p className="il-help">Evidence model {evidence.version} · {evidence.referenceCount} reference devices.</p>
-              </details>
-              {endurancePreview&&<p className="il-help">Profile: {format(endurancePreview.activeHours,1)} h active/day; {format(endurancePreview.unevidencedHours,1)} h of the full day lacks power evidence. Reference-only continuous Wi-Fi web {format(evidence.screenOnBudgetHours.min,1)}–{format(evidence.screenOnBudgetHours.max,1)} h.</p>}</>
-              :<><p className="il-help">{INSUFFICIENT_EVIDENCE_MESSAGE}</p><p className="il-help">You can <button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>open Advanced Mode</button> to supply your own measured power values instead.</p></>}
-            </div>:<>
-            <label className="il-field"><span>Mixed-use profile</span><select value={profileMode} onChange={captureValue(value=>{setProfileMode(value as ProfileMode);setDirty(true);})}>
-              <option value="equal">Equal shares of supplied workloads</option><option value="percent">Custom percentage shares</option><option value="manual">I already know mixed-use average power</option>
-            </select></label>
-            <p className="il-help">Average device power (W) means the whole device's average draw during that workload. It is not charger wattage or a chip's rated power.</p>
-            <div className="il-workload-grid">
-              {(profileMode==='manual'?['mixed_use' as const]:COMPONENT_WORKLOADS).map(workload=><label className={workloadPower[workload].trim()?'il-workload active':'il-workload'} key={workload}>
-                <span className="il-workload-name">{WORKLOAD_LABEL[workload]}</span><span className="il-workload-unit">Average device power (W)</span>
-                <input type="number" inputMode="decimal" step="any" value={workloadPower[workload]===INVALID_NUMBER?'':workloadPower[workload]} aria-invalid={workloadPower[workload]===INVALID_NUMBER || (numeric(workloadPower[workload])??1)<=0} placeholder="Unknown" aria-label={WORKLOAD_LABEL[workload]+' average device power (W)'} onChange={captureNumericValue(value=>{setDirty(true);setWorkloadPower(current=>({...current,[workload]:value}));})}/>
-              </label>)}
+          <FormSection title="Packaging" summary={`${form.widthMm} × ${form.heightMm} × ${form.thicknessMm} mm`}><div className="il-section">
+            <div className="il-section-heading">
+              <span>08</span>
+              <div>
+                <h2>Packaging</h2>
+                <p>
+                  Model the known internal volume
+                  budget.
+                </p>
+              </div>
             </div>
-            <p className="il-help">{profileMode==='equal'?'Equal shares: only workloads with supplied power participate. Each receives the same share of mixed-use time.':profileMode==='manual'?'The supplied mixed-use power is the entire profile. Individual workloads are not added to it.':'How much each workload contributes to the mixed-use profile. Shares describe percentages of time, not hours or power.'}</p>
-            {profileMode==='percent'&&<details className="il-advanced" open><summary>Advanced · share of mixed use (%)</summary>
-              <p className="il-help">Total must be 100%. Enter 0% to exclude a workload. A positive share always needs a power value.</p>
-              <div className="il-grid">{COMPONENT_WORKLOADS.map(workload=><NumericField key={workload} label={WORKLOAD_LABEL[workload]+' share of mixed use'} suffix="%" value={workloadWeights[workload]} placeholder="Not assigned" onChange={value=>{setDirty(true);setWorkloadWeights(current=>({...current,[workload]:value}));}}/>)}</div>
-              <p className="il-profile-total" role="status">Current total: {format(profile.totalPercent,2)}% {profile.issues.length===0?'— valid profile':'— incomplete or invalid'}</p>
-            </details>}
 
-            <div className="il-grid il-derate"><NumericField label="Usable pack energy" suffix="%" value={usablePercent} placeholder="Full rated pack" onChange={value=>{setUsablePercent(value);setDirty(true);}}/>
-              <p className="il-help">Percentage of rated/nominal battery energy available after protection reserves and voltage cutoff. Empty preserves full rated pack energy (100%) under this model; that can make runtime optimistic. This is not the battery's current charge level.</p>
+            <div className="il-grid">
+              <NumericField
+                label="Reserved volume"
+                suffix="%"
+                value={form.reservedVolumePercent}
+                placeholder="20"
+                onChange={(value) =>
+                  update(
+                    'reservedVolumePercent',
+                    value,
+                  )
+                }
+              />
             </div>
-            </>}
-            {profile.issues.length>0&&<ul className="il-profile-issues">{profile.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
-          </div>
 
-          {/* 03 · MODEL */}
-          <div className="il-section il-section-last">
-            <SectionHeading
-              index="03"
-              title="Model"
-              hint="What PhoneFuturist currently knows — the versioned engine and battery model that will evaluate this configuration."
-            />
+            <details className="il-advanced">
+              <summary>
+                Known component volumes
+              </summary>
 
-            <ul className="il-model-list">
-              <li>
-                <strong>Deterministic core</strong>
-                <span>
-                  Engine v{SIMULATION_ENGINE_VERSION} · display PPI, screen-to-body,
-                  pack energy, energy density, internal volume budget
-                </span>
-              </li>
+              <p className="il-help">
+                Battery and camera volume are calculated
+                automatically when enough geometry is
+                supplied.
+              </p>
 
-              <li>
-                <strong>Battery runtime model</strong>
-                <span>
-                  {BATTERY_EXPERIENCE_VERSION} · workload power mixture,
-                  interval arithmetic, provenance-aware confidence
-                </span>
-              </li>
+              <div className="il-grid">
+                <NumericField
+                  label="Thermal"
+                  suffix="mm³"
+                  value={form.thermalMm3}
+                  onChange={(value) =>
+                    update('thermalMm3', value)
+                  }
+                />
 
-              <li>
-                <strong>Evidence discipline</strong>
-                <span>
-                  Unknown inputs stay unknown; the result explains every
-                  assumption it made
-                </span>
-              </li>
-            </ul>
-          </div>
+                <NumericField
+                  label="Logic board"
+                  suffix="mm³"
+                  value={form.boardMm3}
+                  onChange={(value) =>
+                    update('boardMm3', value)
+                  }
+                />
+
+                <NumericField
+                  label="Speakers"
+                  suffix="mm³"
+                  value={form.speakersMm3}
+                  onChange={(value) =>
+                    update('speakersMm3', value)
+                  }
+                />
+
+                <NumericField
+                  label="Other known components"
+                  suffix="mm³"
+                  value={form.otherMm3}
+                  onChange={(value) =>
+                    update('otherMm3', value)
+                  }
+                />
+              </div>
+            </details>
+          </div></FormSection>
 
           <div className="il-run">
+            {simulationPending && <p role="status" aria-live="polite">Simulating device performance in the background…</p>}
+            {simulationError && <p role="alert">{simulationError}</p>}
             <button
               type="button"
               className="il-simulate"
               onClick={simulate}
+              disabled={simulationPending}
+              aria-busy={simulationPending}
             >
-              Run simulation →
+              {simulationPending ? 'Simulating…' : 'Run simulation →'}
             </button>
-            {hasSimulated&&<a className="il-chip" href="#simulation-results">View results ↓</a>}
+
             <p>
-              Device + Environment + Model. Nothing invented between the
-              three.
+              Unknown inputs stay unknown. The engine
+              does not silently invent missing data.
             </p>
           </div>
         </section>
 
-        {/* ---------------- Result column ---------------- */}
-        <aside id="simulation-results" className="il-results" aria-live="polite" aria-label="Simulation results">
-          <div className="il-results-top">
-            <span className="eyebrow">Simulation result</span>
-
-            <span>v{SIMULATION_ENGINE_VERSION}</span>
-          </div>
-
-          {hasSimulated&&dirty&&<p className="il-input-note">Inputs changed. Run again to update these results.</p>}
-          {!hasSimulated ? (
+        <ResultPanel label="Simulation result" revealKey={!simulationPending && simulationResult ? resultRevision : 0} summary={simulationPending ? 'Simulating…' : simpleBattery?.runtimeHours ? `${simpleBattery.runtimeHours.toFixed(1)} h · Estimated` : 'Estimated'}>
+        <aside
+          key={resultRevision}
+          className="il-results"
+          aria-live="polite"
+          aria-label="Simulation results"
+        >
+          {!hasSimulated || !result ? (
             <div className="il-result-empty">
               <div className="il-orbit" aria-hidden="true">
                 <span />
               </div>
 
-              <h2>Nothing simulated yet.</h2>
+              <h2>Ready to simulate</h2>
 
-              <p>
-                Configure a device, add environment power if you have it, then
-                run the model. Load the example to see a complete
-                configuration.
-              </p>
             </div>
-          ) : !result ? <div className="il-result-empty"><h2>Cannot estimate yet.</h2><ul>{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul><p>Your inputs are still available. Correct the highlighted values and run again.</p>{simple?<p>If the evidence itself is missing, Advanced mode lets you supply your own measured whole-device power instead.</p>:null}</div> : (
+          ) : (
             <>
+              {communityRun&&!(workspaceMode === 'simple' && simpleBatteryPending)&&<PublishBuild run={publishRun!}/>}
               <div className="il-result-identity">
                 <span>
-                  {simulationInput?.formFactor.replaceAll('_', ' ').toUpperCase()}
+                  {simulationInput?.formFactor
+                    .replaceAll('_', ' ')
+                    .toUpperCase()}
                 </span>
 
-                <h2>{simulationInput?.name || 'Untitled concept'}</h2>
+                <h2>
+                  {simulationInput?.name ||
+                    'Untitled concept'}
+                </h2>
               </div>
 
-              {/* Hero runtime card (only when the environment layer ran) */}
-              {(
-                <div className="il-runtime-card">
-                  <span className="il-runtime-eyebrow">
-                    {run ? headlineLabel(run) : "Simulation result"}
-                  </span>
-
-                  {battery?.result.status === 'resolved' ? (
-                    <>
-                      <p className={`il-runtime-value${run?.context.mode==='simple'?' il-runtime-unknown':''}`}>
-                        {run ? headlineText(run) : hoursLabel(estimate?.runtimeHours)}
-                      </p>
-
-                      <p className="il-help">{run?.context.usageProfile} usage · simulated estimate, not measured battery life.</p>
-
-                      {run?.endurance&&<p className="il-help">{enduranceHeadline?.detail}</p>}
-                      {run?.endurance?.verdict==='insufficient-evidence'&&<button type="button" className="il-link" onClick={()=>changeExperience({type:'mode',value:'advanced'})}>Open Advanced Mode</button>}
-                      {run&&<ShareResult key={JSON.stringify(run)} run={run}/>}
-                      <details className="il-evidence"><summary>View assumptions</summary>
-                      {run&&receiptSections(run,'Not exported').filter(section=>['ENVIRONMENT','MODEL','ASSUMPTIONS / PROVENANCE','WARNINGS / MISSING INFORMATION'].includes(section.title)).map(section=><section key={section.title}><h3>{section.title}</h3><ul>{section.lines.map((line,index)=><li key={index}>{line}</li>)}</ul></section>)}
-                      <p className="il-help">{format(estimate?.usableEnergyWh?.min,2)} Wh usable energy ÷ {wattsLabel(battery.result.comparisonReady?.averagePowerW)} mixed-use average power.</p>
-                      <p className="il-help">{run?.profile.mode==='manual'?'Uses your supplied mixed-use power.':run?.profile.terms.map(term=>WORKLOAD_LABEL[term.workload]+' '+format(term.power,2)+' W × '+format(term.share*100,2)+'%').join(' + ')}</p>
-                      <p className="il-help">A calculation from your supplied values, not a measured battery-life test. Ranges appear only when the model receives bounded energy or power inputs; this workspace currently accepts point values.</p>
-                      {estimate?.assumptions.map((a,index)=><p className="il-help" key={index}>{a.message}</p>)}
-                      </details>
-                      {run?.context.mode==='advanced'&&<><div className="il-runtime-bar" aria-hidden="true">
-                        <span
-                          style={{
-                            width: `${runtimeBarPercent(estimate?.runtimeHours) ?? 0}%`,
-                          }}
-                        />
+              {workspaceMode === 'simple' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">CPU performance</span>
+                  <div className="il-metrics" aria-label="CPU benchmark scores">
+                    {simpleDisplayCpuScores.map(({domain, estimate, aiFallback}) => (
+                      <div key={domain}>
+                        <strong>{estimate.status === 'resolved' && estimate.adjustedExpected !== undefined
+                            ? format(estimate.adjustedExpected, 0) : simpleBatteryPending ? 'Calculating…' : 'Insufficient data'}</strong>
+                        <span>{domain === 'geekbench6_single' ? 'Single-core' : 'Multi-core'}</span>
+                        <small>{estimate.status === 'resolved' ? (aiFallback ? 'AI simulated · Geekbench 6' : estimate.assumptionApplied ? 'Projected Geekbench 6 · scenario' : 'Geekbench 6 · estimated') : 'Insufficient benchmark data'}</small>
                       </div>
+                    ))}
+                  </div>
+                  <div className="il-metrics" aria-label="GPU thermal scenario">
+                    <div>
+                      <strong>{projectedSustainedGpuRetention({
+                        coolingClass: form.coolingClass,
+                        socPowerW: numeric(form.targetSocPowerW),
+                        durationMinutes: 15,
+                      })}%</strong>
+                      <span>GPU stability · 15 min</span>
+                      <small>Stability score</small>
+                    </div>
+                  </div>
+                  <div className="il-metrics" aria-label="15-minute sustained CPU scenario">
+                    {simpleDisplayCpuScores.map(({domain, estimate, aiFallback}) => {
+                      const peak = estimate.adjustedExpected;
+                      const sustained = peak !== undefined
+                        ? projectedSustainedCpuScore({
+                            peakScore: peak,
+                            coolingClass: form.coolingClass,
+                            socPowerW: numeric(form.targetSocPowerW),
+                            durationMinutes: 15,
+                          })
+                        : undefined;
+                      return (
+                        <div key={domain}>
+                          <strong>{sustained !== undefined ? format(sustained, 0) : simpleBatteryPending ? 'Calculating…' : 'Unavailable'}</strong>
+                          <span>{domain === 'geekbench6_single' ? 'Sustained single-core · 15 min' : 'Sustained multi-core · 15 min'}</span>
+                          <small>{aiFallback ? 'AI simulated · sustained performance' : 'Sustained performance'}</small>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {suggestedComparisons.some(item=>item.status==='found') && (
+                    <div className="il-sensitivity-card">
+                      <strong>Compare generations</strong>
+                      <div className="il-metrics">
+                        {suggestedComparisons.filter(item=>item.status==='found').map(item=>(
+                          <div key={item.query} style={{minWidth:0,overflowWrap:'anywhere'}}>
+                            <strong>{item.label}</strong>
+                            <span style={{display:'block',marginTop:'0.35rem'}}>{item.role === 'predecessor' ? 'Predecessor' : item.role === 'older-generation' ? 'Earlier model' : 'Related model'}{item.released?.region ? ` · ${item.released.region}` : ''}</span>
+                            {item.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Previous battery: {format(item.released.batteryMah, 0)} mAh · Selected: {format(result.battery?.totalCapacityMah, 0)} mAh</small>}
+                            {item.released?.batteryMah !== undefined && result.battery?.totalCapacityMah !== undefined && item.released.batteryMah > 0 && (
+                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
+                                Battery delta: {result.battery.totalCapacityMah >= item.released.batteryMah ? '+' : ''}{format((result.battery.totalCapacityMah / item.released.batteryMah - 1) * 100, 1)}%
+                              </small>
+                            )}
+                            {item.released?.wiredWatts !== undefined && numeric(form.wiredChargeW) !== undefined && item.released.wiredWatts > 0 && (
+                              <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>
+                                Rated charging delta: {numeric(form.wiredChargeW)! >= item.released.wiredWatts ? '+' : ''}{format((numeric(form.wiredChargeW)! / item.released.wiredWatts - 1) * 100, 1)}%
+                              </small>
+                            )}
 
-                      <span className="il-runtime-scale">
-                        0 h · 24 h day · 30 h scale
-                      </span>
-
-                      </>}
-                      {(evidenceConfidence||battery.result.confidence) && (
-                        <span
-                          className={`il-confidence il-confidence-${evidenceConfidence??battery.result.confidence}`}
-                        >
-                          {evidenceConfidence?EVIDENCE_CONFIDENCE_LABEL[evidenceConfidence]:CONFIDENCE_LABEL[battery.result.confidence!]}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <p className="il-runtime-value il-runtime-unknown">
-                        Cannot estimate yet
-                      </p>
-
-                      <ul className="il-profile-issues">{run?.issues.map((issue,index)=><li key={index}>{issue}</li>)}</ul>
-                    </>
+                            {item.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Display: {format(item.released.displayInches, 2)}″ · Selected: {format(simulationInput?.displays.primary.diagonalInches, 2)}″</small>}
+                            {item.released?.refreshRateHz !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Refresh: {format(item.released.refreshRateHz, 0)} Hz · Concept: {format(simulationInput?.displays.primary.refreshRateHz, 0)} Hz</small>}
+                            {item.released?.wiredWatts !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Wired charging: {format(item.released.wiredWatts, 0)} W · Concept: {format(numeric(form.wiredChargeW), 0)} W</small>}
+                            {item.released?.socName && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Predecessor chip: {item.released.socName}</small>}
+                            {item.released?.catalogUnverified && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>Specifications may vary by region.</small>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                </div>
-              )}
+                  {competingDevices.length > 0 && (
+                    <div className="il-sensitivity-card">
+                      <strong>Other phones to compare</strong>
+                      <div className="il-metrics">
+                        {competingDevices.map(device=>(
+                          <div key={device.deviceId} style={{minWidth:0,overflowWrap:'anywhere'}}>
+                            <strong title={device.label}>{shortDeviceName(device.label)}</strong>
+                            <span style={{display:'block',marginTop:'0.35rem'}} title={device.released?.socName}>{device.released?.socName ? shortChipName(device.released.socName) : 'Processor unspecified'}</span>
+                            {device.released?.batteryMah !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.batteryMah,0)} mAh</small>}
+                            {device.released?.displayInches !== undefined && <small style={{display:'block',marginTop:'0.35rem',lineHeight:1.5,overflowWrap:'anywhere'}}>{format(device.released.displayInches,2)}″ display</small>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="il-simple-battery-readout">
+                    <span className="il-result-label">Active-use endurance · one charge</span>
+                    <strong>{simpleBatteryPending ? 'Calculating…' : simpleBattery?.runtimeHours ? `${format(simpleBattery.runtimeHours, 1)} hours` : batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge, 1)} hours` : 'Insufficient data'}</strong>
+                    <small role="status">{simpleBatteryPending ? 'Analyzing battery configuration…' : simpleBattery?.summary ?? 'Reference estimate shown. Additional battery analysis is unavailable.'}</small>
+                    <p>Estimated total time actively using the screen across browsing, video and gaming. <b>Not continuous screen-on time under one workload, and not calendar-day battery life.</b></p>
+                    <small>Standby, background tasks and overnight drain are excluded. Actual battery life varies with apps, signal, brightness and temperature.</small>
+                  </div>
+                  <div className="il-metrics">
+                    <div><strong>{usagePreset}</strong><span>Selected usage mix</span></div>
+                    <div><strong>{batteryExperience?.mixedUse ? `${format(batteryExperience.mixedUse.activeHoursPerDay, 1)} h/day` : '—'}</strong><span>Daily active use</span></div>
+                    <div><strong>{format(result.battery?.totalCapacityMah, 0)} mAh</strong><span>Battery capacity</span></div>
+                    <div><strong>{format(simulationInput?.displays.primary.diagonalInches, 1)}″</strong><span>Screen size</span></div>
+                    <div><strong>{predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : 'No charging power'}</strong><span>Estimated charging time · 0–100%</span></div>
+                    {result.displays.primary.renderingPixelRatio !== undefined && <div><strong>{format(result.displays.primary.renderingPixelRatio * 100, 1)}%</strong><span>GPU rendered pixels relative to native panel</span><small>Rendering scale only.</small></div>}
+                  </div>
 
-              <details className="il-evidence"><summary>Supporting device and engineering metrics</summary>
-              {/* Device-layer deterministic metrics */}
+                </div>
+              ) : (
+              <>
               <div className="il-result-group">
-                <span className="il-result-label">Display</span>
+                <span className="il-result-label">
+                  Display
+                </span>
+                <DownloadSectionReceipt kind="Display" deviceName={form.name} metrics={[{label:'Diagonal',value:simulationInput?.displays.primary.diagonalInches !== undefined ? format(simulationInput.displays.primary.diagonalInches,2)+' in' : undefined},{label:'Refresh rate',value:form.refreshRateHz ? form.refreshRateHz+' Hz' : undefined},{label:'Resolution',value:`${form.resolutionWidthPx} × ${form.resolutionHeightPx}`},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Panel',value:form.panelTechnology}]} />
 
                 <div className="il-metrics">
                   <div>
                     <strong>
                       {format(
-                        simulationInput?.displays.primary.diagonalInches,
+                        simulationInput?.displays
+                          .primary.diagonalInches,
                         2,
                       )}
-                      {simulationInput?.displays.primary.diagonalInches !==
-                      undefined
+                      {simulationInput?.displays.primary
+                        .diagonalInches !== undefined
                         ? '″'
                         : ''}
                     </strong>
@@ -1174,14 +5913,22 @@ export default function InteractiveLeaksSimulator() {
                   </div>
 
                   <div>
-                    <strong>{format(display?.ppi, 0)}</strong>
+                    <strong>
+                      {format(display?.ppi, 0)}
+                    </strong>
                     <span>PPI</span>
                   </div>
 
                   <div>
                     <strong>
-                      {format(display?.screenToBodyRatio, 1)}
-                      {display?.screenToBodyRatio !== undefined ? '%' : ''}
+                      {format(
+                        display?.screenToBodyRatio,
+                        1,
+                      )}
+                      {display?.screenToBodyRatio !==
+                      undefined
+                        ? '%'
+                        : ''}
                     </strong>
                     <span>Screen to body</span>
                   </div>
@@ -1189,108 +5936,2386 @@ export default function InteractiveLeaksSimulator() {
               </div>
 
               <div className="il-result-group">
-                <span className="il-result-label">Battery pack</span>
+                <span className="il-result-label">
+                  Display load
+
+                </span>
+
+                {displayExperience &&
+                displayExperience.status !== 'unresolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {displayExperience.megapixelsPerFrame !==
+                          undefined
+                            ? `${format(
+                                displayExperience.megapixelsPerFrame,
+                                2,
+                              )} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Pixels per frame</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.pixelThroughputMpxPerSecond !==
+                          undefined
+                            ? `${format(
+                                displayExperience
+                                  .pixelThroughputMpxPerSecond,
+                                1,
+                              )} MP/s`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Pixel throughput</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.refreshMultiplierVs60 !==
+                          undefined
+                            ? `${format(
+                                displayExperience
+                                  .refreshMultiplierVs60,
+                                2,
+                              )}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Refresh load vs 60 Hz</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.rasterLoadIndex !==
+                          undefined
+                            ? `${format(
+                                displayExperience.rasterLoadIndex,
+                                2,
+                              )}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Raster load vs 1080×2400@60</span>
+                      </div>
+
+
+
+                      <div>
+                        <strong>
+                          {displayExperience.panelTechnology ??
+                            'Unknown'}
+                        </strong>
+                        <span>Panel technology</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.operatingRefreshRateHz !==
+                          undefined
+                            ? `${format(
+                                displayExperience.load
+                                  .operatingRefreshRateHz,
+                                0,
+                              )} Hz`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Operating refresh</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {displayExperience.load.aplFraction !== undefined
+                            ? `${format(
+                                displayExperience.load.aplFraction *
+                                  100,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Average picture level</span>
+                      </div>
+
+
+
+
+                      <div>
+                        <strong>
+                          {displayExperience.expectedPanelPowerW !==
+                          undefined
+                            ? `${format(
+                                displayExperience.expectedPanelPowerW,
+                                2,
+                              )} W`
+                            : 'Unresolved'}
+                        </strong>
+                        <span>Estimated panel power</span>
+                      </div>
+
+                    </div>
+
+                    {displayRefreshProfile ? (
+                      displayRefreshProfile.status ===
+                      'resolved' ? (
+                        <div className="il-display-sensitivity">
+                          <span className="il-result-label">
+                            Adaptive refresh
+                          </span>
+
+                          <div className="il-metrics">
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.weightedAverageRefreshRateHz !==
+                                undefined
+                                  ? `${format(
+                                      displayRefreshProfile.weightedAverageRefreshRateHz,
+                                      1,
+                                    )} Hz`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Time-weighted refresh</span>
+                            </div>
+
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.highRefreshDutyPercent !==
+                                undefined
+                                  ? `${format(
+                                      displayRefreshProfile.highRefreshDutyPercent,
+                                      1,
+                                    )}%`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Time above 60 Hz</span>
+                            </div>
+
+
+
+                            <div>
+                              <strong>
+                                {displayRefreshProfile.minimumRefreshRateHz !==
+                                  undefined &&
+                                displayRefreshProfile.maximumRefreshRateHz !==
+                                  undefined
+                                  ? `${format(
+                                      displayRefreshProfile.minimumRefreshRateHz,
+                                      0,
+                                    )}–${format(
+                                      displayRefreshProfile.maximumRefreshRateHz,
+                                      0,
+                                    )} Hz`
+                                  : 'Unknown'}
+                              </strong>
+                              <span>Refresh range in profile</span>
+                            </div>
+                          </div>
+
+                        </div>
+                      ) : (
+                        null
+                      )
+                    ) : null}
+
+                    {displayExperience.load.scenarios.length ? (
+                      <div className="il-display-sensitivity">
+                        <span className="il-result-label">
+                          Content-aware display load
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {displayExperience.load.scenarios.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+
+                                {scenario.deltaEmissionLoadPercent !==
+                                undefined ? (
+                                  <span>
+                                    Δ emissive load{' '}
+                                    {scenario.deltaEmissionLoadPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaEmissionLoadPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPixelScanPercent !==
+                                undefined ? (
+                                  <span>
+                                    Δ pixel scan{' '}
+                                    {scenario.deltaPixelScanPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPixelScanPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                      </div>
+                    ) : null}
+
+                    {displayRuntimeSensitivity &&
+                    displayRuntimeSensitivity.status !==
+                      'unresolved' ? (
+                      <div className="il-display-runtime-impact">
+                        <span className="il-result-label">
+                          Estimated runtime impact
+                        </span>
+
+                        <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.75rem' }}>
+                          {displayRuntimeSensitivity.scenarios.map((scenario) => (
+                            <div
+                              key={`${scenario.workload}-${scenario.scenario}`}
+                              style={{
+                                display: 'grid',
+                                gap: '0.65rem',
+                                padding: '1rem',
+                                borderRadius: '1rem',
+                                background: 'rgba(148,163,184,0.07)',
+                                minWidth: 0,
+                              }}
+                            >
+                              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', columnGap: '0.75rem', rowGap: '0.25rem' }}>
+                                <strong style={{ textTransform: 'capitalize', fontSize: '0.95rem' }}>
+                                  {scenario.workload.replaceAll('_', ' ')}
+                                </strong>
+                                <span style={{ overflowWrap: 'anywhere', opacity: 0.85 }}>
+                                  {scenario.label}
+                                </span>
+                              </div>
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>
+                                <div style={{ minWidth: 0 }}>
+                                  <small style={{ display: 'block', opacity: 0.7 }}>Battery runtime</small>
+                                  <strong style={{ fontSize: '1.1rem', fontVariantNumeric: 'tabular-nums' }}>
+                                    {scenario.deltaRuntimePercent > 0 ? '+' : ''}
+                                    {format(scenario.deltaRuntimePercent, 1)}%
+                                  </strong>
+                                </div>
+                                <div style={{ minWidth: 0 }}>
+                                  <small style={{ display: 'block', opacity: 0.7 }}>Power drain</small>
+                                  <strong style={{ fontSize: '1.1rem', fontVariantNumeric: 'tabular-nums' }}>
+                                    {scenario.deltaDrainPercent > 0 ? '+' : ''}
+                                    {format(scenario.deltaDrainPercent, 1)}%
+                                  </strong>
+                                </div>
+                              </div>
+
+                            </div>
+                          ))}
+                        </div>
+
+                      </div>
+                    ) : displayRuntimeSensitivity?.status ===
+                      'unresolved' &&
+                    simulationInput?.battery ? (
+                      null
+                    ) : null}
+
+                    {displayExperience.scenarios.length ? (
+                      <div className="il-display-sensitivity">
+                        <span className="il-result-label">
+                          Display what-if sensitivity
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {displayExperience.scenarios.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>
+                                  {scenario.label}
+                                </strong>
+                                <span>
+                                  {format(
+                                    scenario
+                                      .pixelThroughputMpxPerSecond,
+                                    1,
+                                  )} MP/s
+                                </span>
+                                <span>
+                                  Δ throughput{' '}
+                                  {scenario
+                                    .deltaPixelThroughputPercent >= 0
+                                    ? '+'
+                                    : ''}
+                                  {format(
+                                    scenario
+                                      .deltaPixelThroughputPercent,
+                                    1,
+                                  )}%
+                                </span>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Add resolution, refresh rate and optional brightness
+                    to calculate display workload.
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Battery
+                </span>
+                <DownloadSectionReceipt kind="Battery" deviceName={form.name} metrics={[{label:'Capacity',value:result.battery?.totalCapacityMah !== undefined ? format(result.battery.totalCapacityMah,0)+' mAh' : undefined},{label:'Chemistry',value:form.batteryChemistry},{label:'Active-use endurance',value:batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge !== undefined ? format(batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,1)+' h' : undefined},{label:'Brightness',value:form.brightnessNits ? form.brightnessNits+' nits' : undefined},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
-                    <strong>{format(pack?.totalCapacityMah, 0)}</strong>
+                    <strong>
+                      {format(
+                        battery?.totalCapacityMah,
+                        0,
+                      )}
+                    </strong>
                     <span>mAh</span>
                   </div>
 
                   <div>
-                    <strong>{format(pack?.totalEnergyWh, 2)}</strong>
+                    <strong>
+                      {format(
+                        battery?.totalEnergyWh,
+                        2,
+                      )}
+                    </strong>
                     <span>Wh</span>
                   </div>
 
                   <div>
-                    <strong>{format(pack?.totalVolumeCm3, 2)}</strong>
+                    <strong>
+                      {format(
+                        battery?.totalVolumeCm3,
+                        2,
+                      )}
+                    </strong>
                     <span>cm³</span>
                   </div>
                 </div>
               </div>
 
-              {estimate && estimate.workloads.length > 0 && (
+              {batteryAging ? (
                 <div className="il-result-group">
-                  <span className="il-result-label">Workload mixture</span>
+                  <span className="il-result-label">
+                    Battery aging
 
-                  <div className="il-workload-results">
-                    {estimate.workloads.map((entry) => (
-                      <div className="il-workload-result" key={entry.workload}>
-                        <div>
-                          <strong>{WORKLOAD_LABEL[entry.workload]}</strong>
+                  </span>
 
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {batteryAging.combinedRetentionPercent !==
+                        undefined
+                          ? `${format(
+                              batteryAging.combinedRetentionPercent,
+                              1,
+                            )}%`
+                          : 'Unresolved'}
+                      </strong>
+                      <span>Retained energy / capacity</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.estimatedCapacityMah !==
+                        undefined
+                          ? `${format(
+                              batteryAging.estimatedCapacityMah,
+                              0,
+                            )} mAh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aged capacity scenario</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.estimatedEnergyWh !==
+                        undefined
+                          ? `${format(
+                              batteryAging.estimatedEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aged energy scenario</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.calendarRetentionFraction !==
+                        undefined
+                          ? `${format(
+                              batteryAging.calendarRetentionFraction *
+                                100,
+                              1,
+                            )}%`
+                          : 'Not supplied'}
+                      </strong>
+                      <span>Calendar retention</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {batteryAging.cycleRetentionFraction !==
+                        undefined
+                          ? `${format(
+                              batteryAging.cycleRetentionFraction *
+                                100,
+                              1,
+                            )}%`
+                          : 'Not supplied'}
+                      </strong>
+                      <span>Cycle retention</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {agingEquivalentFullCycles !==
+                        undefined
+                          ? format(
+                              agingEquivalentFullCycles,
+                              0,
+                            )
+                          : 'Unknown'}
+                      </strong>
+                      <span>
+                        Equivalent full cycles ·{' '}
+                        {explicitEquivalentFullCycles !==
+                        undefined
+                          ? 'explicit'
+                          : batteryCycleExposure?.status ===
+                              'resolved'
+                            ? 'active-use estimate'
+                            : 'unresolved'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {agedRuntimeRows.length ? (
+                    <div className="il-sensitivity-grid">
+                      {agedRuntimeRows.map((row) => (
+                        <div
+                          className="il-sensitivity-card"
+                          key={row.workload}
+                        >
+                          <strong>
+                            {row.workload.replaceAll(
+                              '_',
+                              ' ',
+                            )}
+                          </strong>
                           <span>
-                            {wattsLabel(entry.averagePowerW)} ·{' '}
-                            {Math.round(entry.weightShare * 100)}% of profile
+                            {row.result.baselineRuntimeHours !==
+                            undefined
+                              ? `${format(
+                                  row.result.baselineRuntimeHours,
+                                  1,
+                                )} h new`
+                              : 'Baseline unknown'}
                           </span>
+                          <span>
+                            {row.result.agedRuntimeHours !==
+                            undefined
+                              ? `${format(
+                                  row.result.agedRuntimeHours,
+                                  1,
+                                )} h aged`
+                              : 'Aged runtime unknown'}
+                          </span>
+
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {batteryHealthForecast ? (
+                    batteryHealthForecast.status ===
+                    'resolved' ? (
+                      <>
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.yearsFromNewToThreshold !==
+                              undefined
+                                ? `${format(
+                                    batteryHealthForecast.yearsFromNewToThreshold,
+                                    1,
+                                  )} years`
+                                : 'Unknown'}
+                            </strong>
+                            <span>
+                              Time from new to{' '}
+                              {batteryHealthForecast.targetRetentionPercent}%
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.remainingYearsFromCurrentAge !==
+                              undefined
+                                ? `${format(
+                                    batteryHealthForecast.remainingYearsFromCurrentAge,
+                                    1,
+                                  )} years`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Remaining from entered age</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {batteryHealthForecast.equivalentFullCyclesToThreshold !==
+                              undefined
+                                ? format(
+                                    batteryHealthForecast.equivalentFullCyclesToThreshold,
+                                    0,
+                                  )
+                                : 'Unknown'}
+                            </strong>
+                            <span>Projected EFC at threshold</span>
+                          </div>
                         </div>
 
-                        <b>{wattsLabel(entry.weightedPowerW)}</b>
-                      </div>
-                    ))}
-                  </div>
+                      </>
+                    ) : (
+                      null
+                    )
+                  ) : null}
+
                 </div>
-              )}
+              ) : null}
 
               <div className="il-result-group">
-                <span className="il-result-label">Camera system</span>
+                <span className="il-result-label">
+                  Battery life
+
+                </span>
+
+                {batteryExperience?.mixedUse ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.mixedUse.minActiveUseHoursPerCharge,
+                            1,
+                          )}
+                          –
+                          {format(
+                            batteryExperience.mixedUse.maxActiveUseHoursPerCharge,
+                            1,
+                          )} h
+                        </strong>
+                        <span>Active-use-only range per charge</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.mixedUse.expectedActiveUseHoursPerCharge,
+                            1,
+                          )} h
+                        </strong>
+                        <span>Expected active-use-only hours</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            batteryExperience.mixedUse.activeHoursPerDay,
+                            1,
+                          )}
+                        </strong>
+                        <span>Entered active h/day</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {batteryExperience.mixedUse.energyBasis === 'wh'
+                            ? `${format(
+                                batteryExperience.mixedUse.expectedDrainWhPerDay,
+                                2,
+                              )} Wh/day`
+                            : `${format(
+                                batteryExperience.mixedUse.expectedDrainMahPerDay,
+                                0,
+                              )} mAh/day`}
+                        </strong>
+                        <span>
+                          Expected active drain ·{' '}
+                          {batteryExperience.mixedUse.energyBasis === 'wh'
+                            ? 'energy-normalized'
+                            : 'capacity-normalized'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="il-battery-workloads">
+                      {batteryExperience.mixedUse.workloads.map(
+                        (workload) => (
+                          <div key={workload.workload}>
+                            <strong>
+                              {workload.workload.replaceAll('_', ' ')}
+                            </strong>
+                            <span>
+                              {format(workload.hoursPerDay, 1)} h/day ·{' '}
+                              {workload.energyBasis === 'wh'
+                                ? `${format(
+                                    workload.expectedDrainWhPerHour,
+                                    2,
+                                  )} Wh/h`
+                                : `${format(
+                                    workload.expectedDrainMahPerHour,
+                                    0,
+                                  )} mAh/h`}
+                            </span>
+                          </div>
+                        ),
+                      )}
+                    </div>
+
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Add battery capacity and daily web, video or gaming use to
+                    estimate battery life.
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Wired charging
+
+                </span>
+                <DownloadSectionReceipt kind="Charging" deviceName={form.name} metrics={[{label:'Wired power',value:form.wiredChargeW ? form.wiredChargeW+' W' : undefined},{label:'Wireless power',value:form.wirelessChargeW ? form.wirelessChargeW+' W' : undefined},{label:'Charging standard',value:form.chargingStandard},{label:'Cell architecture',value:form.cellArchitecture},{label:'Projected 0–100%',value:predictedChargeMinutes !== undefined ? formatDurationMinutes(predictedChargeMinutes) : undefined}]} />
+
+                {chargingScenarioMinutes !== undefined && (
+                  <div className="il-metrics">
+                    <div>
+                      <strong>{formatDurationMinutes(chargingScenarioMinutes)}</strong>
+                      <span>Projected 0–100% · experimental taper</span>
+                    </div>
+                    <div>
+                      <strong>{form.chargingStandard || 'Generic charging'}</strong>
+                      <span>Selected charging standard</span>
+                    </div>
+                    <div>
+                      <strong>{form.cellArchitecture === 'unknown' ? 'Unspecified' : form.cellArchitecture}</strong>
+                      <span>Battery cell configuration</span>
+                    </div>
+                  </div>
+                )}
+
+                {chargingResult?.status === 'resolved' &&
+                chargingResult.estimate ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {chargingResult.estimate.charge30mPercent
+                            ? `${format(
+                                chargingResult.estimate.charge30mPercent.expected,
+                                0,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Expected after 30 min</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo50Minutes?.expected,
+                          )}
+                        </strong>
+                        <span>0–50%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo80Minutes?.expected,
+                          )}
+                        </strong>
+                        <span>0–80%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {formatDurationMinutes(
+                            chargingResult.estimate.timeTo100Minutes?.expected,
+                          )}
+                        </strong>
+                        <span>0–100%</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {chargingWatts !== undefined
+                            ? `${format(
+                                chargingWatts,
+                                0,
+                              )} W`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Advertised / supported class</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {observedChargingInput?.status ===
+                            'resolved' &&
+                          observedChargingInput
+                            .expectedObservedPeakWatts !==
+                            undefined
+                            ? `${format(
+                                observedChargingInput
+                                  .expectedObservedPeakWatts,
+                                1,
+                              )} W`
+                            : 'Unresolved'}
+                        </strong>
+                        <span>Estimated observed peak input</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {observedChargingInput?.status ===
+                            'resolved' &&
+                          observedChargingInput
+                            .expectedUtilizationPercent !==
+                            undefined
+                            ? `${format(
+                                observedChargingInput
+                                  .expectedUtilizationPercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Observed / advertised utilization</span>
+                      </div>
+
+
+                    </div>
+
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Estimate unavailable for this configuration.
+                  </div>
+                )}
+              </div>
+
+              {geekerwanChargingContext?.status ===
+              'resolved' ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Charging energy analysis
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {formatDurationMinutes(
+                          geekerwanChargingContext
+                            .expectedFullChargeMinutes,
+                        )}
+                      </strong>
+                      <span>Independent full-charge context</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedWallInputEnergyWh !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedWallInputEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Expected wall-input energy</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedWallToCellOverheadPercent !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedWallToCellOverheadPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Wall-to-cell energy overhead</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext
+                          .expectedAverageChargerUtilizationPercent !==
+                        undefined
+                          ? `${format(
+                              geekerwanChargingContext
+                                .expectedAverageChargerUtilizationPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Average charger utilization</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {geekerwanChargingContext.targetPosition
+                          ?.replaceAll('-', ' ') ??
+                          'Unknown'}
+                      </strong>
+                      <span>Charging power</span>
+                    </div>
+                  </div>
+
+                </div>
+              ) : null}
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Wireless charging
+
+                </span>
+
+                {wirelessChargingResult?.status === 'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {wirelessChargingResult.expectedFullChargeMinutes !==
+                          undefined
+                            ? formatDurationMinutes(
+                                wirelessChargingResult.expectedFullChargeMinutes,
+                              )
+                            : 'Unknown'}
+                        </strong>
+                        <span>Expected 0–100%</span>
+                      </div>
+
+                    </div>
+
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Estimate unavailable for this configuration.
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Benchmark
+                </span>
+                <DownloadSectionReceipt kind="Benchmark" deviceName={form.name} metrics={[{label:'Processor',value:form.socName},{label:'Benchmark domain',value:form.peakBenchmarkDomain},{label:'Result type',value:peakPerformanceEstimate?.status === 'resolved' ? (peakPerformanceEstimate.assumptionApplied ? 'Projected what-if' : 'Estimated') : undefined},{label:'Estimated peak',value:peakPerformanceEstimate?.adjustedExpected !== undefined ? format(peakPerformanceEstimate.adjustedExpected,0) : undefined},{label:'Cooling',value:form.coolingClass},]} />
+
+                {peakPerformanceEstimate?.status === 'resolved' ? (
+                  <div className="il-metrics">
+                    <div>
+                      <strong>{format(peakPerformanceEstimate.adjustedExpected, 0)}</strong>
+                      <small>{peakPerformanceEstimate.assumptionApplied ? 'Projected benchmark · what-if' : 'Estimated benchmark'}</small>
+                      <span>{form.peakBenchmarkDomain === 'geekbench6_single'
+                        ? 'Geekbench 6 · single-core'
+                        : form.peakBenchmarkDomain === 'geekbench6_multi'
+                        ? 'Geekbench 6 · multi-core'
+                        : form.peakBenchmarkDomain === '3dmark_wle'
+                        ? '3DMark Wild Life Extreme'
+                        : '3DMark Solar Bay'}</span>
+
+                    </div>
+                  </div>
+                ) : (
+                  <div className="il-empty">
+                    <p>
+                      'Benchmark unavailable for this configuration.'
+                    </p>
+
+                  </div>
+                )}
+              </div>
+
+              {gpuWorkloadResponse ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    GPU workload response
+
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.state.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Workload state</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.frameBudgetMs !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.frameBudgetMs,
+                              2,
+                            )} ms`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Frame-time budget</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.megapixelsPerSecond !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.megapixelsPerSecond,
+                              1,
+                            )} MP/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Pixel throughput demand</span>
+                    </div>
+
+
+
+
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.estimatedRequiredMemoryBandwidthGbps !==
+                        undefined
+                          ? `${format(
+                              gpuWorkloadResponse.estimatedRequiredMemoryBandwidthGbps,
+                              1,
+                            )} GB/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Estimated memory bandwidth demand</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.memoryBandwidthHeadroomGbps !==
+                        undefined
+                          ? `${format(
+                              gpuWorkloadResponse.memoryBandwidthHeadroomGbps,
+                              1,
+                            )} GB/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Memory bandwidth headroom</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.memoryBandwidthPressure}
+                      </strong>
+                      <span>Memory bandwidth pressure</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.powerPressure}
+                      </strong>
+                      <span>Power pressure</span>
+                    </div>
+
+
+
+                    <div>
+                      <strong>
+                        {gpuWorkloadResponse.megaRaysPerSecondDemand !== undefined
+                          ? `${format(
+                              gpuWorkloadResponse.megaRaysPerSecondDemand,
+                              1,
+                            )} Mray/s`
+                          : 'Unknown'}
+                      </strong>
+                      <span>RT ray demand</span>
+                    </div>
+                  </div>
+
+                  {gamingDisplayEnvelope ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.visibleFrameRateCeilingFps !==
+                            undefined
+                              ? `${format(
+                                  gamingDisplayEnvelope.visibleFrameRateCeilingFps,
+                                  0,
+                                )} FPS`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Visible frame-rate ceiling</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.refreshHeadroomFps !==
+                            undefined
+                              ? `${format(
+                                  gamingDisplayEnvelope.refreshHeadroomFps,
+                                  0,
+                                )} FPS`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Display refresh headroom</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingDisplayEnvelope.targetExceedsPanelMaximum ===
+                            undefined
+                              ? 'Unknown'
+                              : gamingDisplayEnvelope.targetExceedsPanelMaximum
+                                ? 'Above panel max'
+                                : 'Within panel max'}
+                          </strong>
+                          <span>Target vs display</span>
+                        </div>
+                      </div>
+
+                    </>
+                  ) : null}
+
+                  {gamingSessionEnvelope ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.thermalState.replaceAll(
+                              '-',
+                              ' ',
+                            )}
+                          </strong>
+                          <span>Gaming-session thermal state</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.minutesBeforeThrottle !==
+                            undefined
+                              ? `${format(
+                                  gamingSessionEnvelope.minutesBeforeThrottle,
+                                  1,
+                                )} min`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Time before throttle</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {gamingSessionEnvelope.percentOfSessionBeforeThrottle !==
+                            undefined
+                              ? `${format(
+                                  gamingSessionEnvelope.percentOfSessionBeforeThrottle,
+                                  1,
+                                )}%`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Session before throttle</span>
+                        </div>
+                      </div>
+
+                    </>
+                  ) : null}
+
+                </div>
+              ) : null}
+
+              {sustainedBenchmarkEnvelope ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Sustained benchmark envelope
+                  </span>
+
+                  {sustainedBenchmarkEnvelope.status ===
+                  'resolved' ? (
+                    <>
+                      <div className="il-metrics">
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.peakScore !==
+                            undefined
+                              ? format(
+                                  sustainedBenchmarkEnvelope.peakScore,
+                                  0,
+                                )
+                              : 'Unknown'}
+                          </strong>
+                          <span>Exact-family measured peak</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.sustainedRetentionPercent !==
+                            undefined
+                              ? `${format(
+                                  sustainedBenchmarkEnvelope.sustainedRetentionPercent,
+                                  1,
+                                )}%`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Sustained retention</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.derivedSustainedScore !==
+                            undefined
+                              ? format(
+                                  sustainedBenchmarkEnvelope.derivedSustainedScore,
+                                  0,
+                                )
+                              : 'Unknown'}
+                          </strong>
+                          <span>Derived sustained WLE-family score</span>
+                        </div>
+
+                        <div>
+                          <strong>
+                            {sustainedBenchmarkEnvelope.derivedMinScore !==
+                              undefined &&
+                            sustainedBenchmarkEnvelope.derivedMaxScore !==
+                              undefined
+                              ? `${format(
+                                  sustainedBenchmarkEnvelope.derivedMinScore,
+                                  0,
+                                )}–${format(
+                                  sustainedBenchmarkEnvelope.derivedMaxScore,
+                                  0,
+                                )}`
+                              : 'Unknown'}
+                          </strong>
+                          <span>Estimated peak performance</span>
+                        </div>
+                      </div>
+
+                    </>
+                  ) : (
+                    <div className="il-empty">
+                      <p>
+                        Estimate unavailable for this configuration.
+                      </p>
+
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {connectivityWorkload ? (
+                <div className="il-result-group">
+                  <span className="il-result-label">
+                    Connectivity
+
+                  </span>
+
+                  <div className="il-metrics">
+                    <div>
+                      <strong>
+                        {connectivityWorkload.mode.replaceAll(
+                          '-',
+                          ' ',
+                        )}
+                      </strong>
+                      <span>Network mode</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.aggregateTrafficMbps !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.aggregateTrafficMbps,
+                              1,
+                            )} Mbps`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Aggregate traffic</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.throughputUtilizationPercent !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.throughputUtilizationPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Link utilization</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.totalTransferredDataGb !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.totalTransferredDataGb,
+                              2,
+                            )} GB`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Transferred data</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.effectiveRadioPowerW !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.effectiveRadioPowerW,
+                              2,
+                            )} W`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Effective radio power</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.radioEnergyWh !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.radioEnergyWh,
+                              2,
+                            )} Wh`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Radio session energy</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityBatteryPercent !==
+                        undefined
+                          ? `${format(
+                              connectivityBatteryPercent,
+                              1,
+                            )}%`
+                          : 'Unknown'}
+                      </strong>
+                      <span>Known battery-energy share</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {connectivityWorkload.signalMetricValue !==
+                        undefined
+                          ? `${format(
+                              connectivityWorkload.signalMetricValue,
+                              1,
+                            )}`
+                          : 'Unknown'}
+                      </strong>
+                      <span>
+                        {connectivityWorkload.signalMetricLabel ??
+                          'Signal metadata'}
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+              ) : null}
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Thermal & performance
+
+                </span>
+                <DownloadSectionReceipt kind="Thermal" deviceName={form.name} metrics={[{label:'Cooling',value:form.coolingClass},{label:'Peak temperature',value:thermalResult?.peakTemperatureC !== undefined ? format(thermalResult.peakTemperatureC,1)+' °C' : undefined},{label:'Sustained performance',value:thermalResult?.sustainedPerformancePercent !== undefined ? format(thermalResult.sustainedPerformancePercent,1)+'%' : undefined},{label:'Ambient',value:form.ambientTemperatureC ? form.ambientTemperatureC+' °C' : undefined},{label:'SoC power',value:form.targetSocPowerW ? form.targetSocPowerW+' W' : undefined}]} thermalPoints={thermalResult?.points} />
+
+                {thermalResult?.status === 'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {thermalResult.peakTemperatureC !== undefined
+                            ? `${format(
+                                thermalResult.peakTemperatureC,
+                                1,
+                              )} °C`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Peak temperature</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.endTemperatureC !== undefined
+                            ? `${format(
+                                thermalResult.endTemperatureC,
+                                1,
+                              )} °C`
+                            : 'Unknown'}
+                        </strong>
+                        <span>End temperature</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.sustainedPerformancePercent !== undefined
+                            ? `${format(
+                                thermalResult.sustainedPerformancePercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Final sustained performance</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.sustainedPowerW !== undefined
+                            ? `${format(
+                                thermalResult.sustainedPowerW,
+                                2,
+                              )} W`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Sustained SoC power</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {thermalResult.throttleStartSecond !== undefined
+                            ? formatDurationSeconds(
+                                thermalResult.throttleStartSecond,
+                              )
+                            : 'No throttle detected'}
+                        </strong>
+                        <span>Throttle onset</span>
+                      </div>
+
+                    </div>
+
+                    {twoNodeThermalSummary}
+
+                    {thermalResult.points &&
+                    thermalResult.points.length > 1 ? (
+                      <div className="il-thermal-timeline">
+                        <div className="il-result-label">
+                          Thermal timeline
+                        </div>
+
+                        <ThermalPerformanceCharts points={thermalResult.points} />
+                        <div className="il-thermal-table">
+                          {thermalResult.points
+                            .filter(
+                              (_, index, points) =>
+                                index === 0 ||
+                                index === points.length - 1 ||
+                                index %
+                                  Math.max(
+                                    1,
+                                    Math.floor(points.length / 6),
+                                  ) ===
+                                  0,
+                            )
+                            .map((point) => (
+                              <div
+                                className="il-thermal-row"
+                                key={point.second}
+                              >
+                                <strong>
+                                  {formatDurationSeconds(
+                                    point.second,
+                                  )}
+                                </strong>
+                                <span>
+                                  {format(
+                                    point.temperatureC,
+                                    1,
+                                  )} °C
+                                </span>
+                                <span>
+                                  {format(
+                                    point.performancePercent,
+                                    0,
+                                  )}% perf
+                                </span>
+                                <span>
+                                  {format(
+                                    point.powerW,
+                                    2,
+                                  )} W
+                                </span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {thermalResult.sensitivity?.length ? (
+                      <div className="il-thermal-sensitivity">
+                        <div className="il-result-label">
+                          What-if sensitivity
+                        </div>
+
+                        <div className="il-sensitivity-grid">
+                          {thermalResult.sensitivity.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+                                <span>
+                                  {format(
+                                    scenario.peakTemperatureC,
+                                    1,
+                                  )} °C peak
+                                </span>
+                                <span>
+                                  {format(
+                                    scenario.sustainedPerformancePercent,
+                                    1,
+                                  )}% sustained
+                                </span>
+                                <span>
+                                  {format(
+                                    scenario.sustainedPowerW,
+                                    2,
+                                  )} W sustained
+                                </span>
+                                <span>
+                                  Δ temp {scenario.deltaPeakTemperatureC >= 0 ? '+' : ''}
+                                  {format(
+                                    scenario.deltaPeakTemperatureC,
+                                    1,
+                                  )} °C
+                                </span>
+                                <span>
+                                  Δ perf {scenario.deltaSustainedPerformancePercent >= 0 ? '+' : ''}
+                                  {format(
+                                    scenario.deltaSustainedPerformancePercent,
+                                    1,
+                                  )}%
+                                </span>
+                                <small>
+                                  {scenario.throttleStartSecond !== undefined
+                                    ? `Throttle ${formatDurationSeconds(
+                                        scenario.throttleStartSecond,
+                                      )}`
+                                    : 'No throttle detected'}
+                                </small>
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                      </div>
+                    ) : null}
+
+                  </>
+                ) : sustainedPerformanceEstimate?.status ===
+                  'resolved' ? (
+                  <>
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {sustainedPerformanceEstimate.expectedPercent !==
+                          undefined
+                            ? `${format(
+                                sustainedPerformanceEstimate.expectedPercent,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Estimated sustained GPU performance</span>
+                      </div>
+
+                    </div>
+
+                    {twoNodeThermalSummary}
+
+                  </>
+                ) : twoNodeThermalResult ? (
+                  <>
+                    {twoNodeThermalSummary}
+                    <div className="il-empty">
+                      Estimate unavailable for this configuration.
+                    </div>
+                  </>
+                ) : (
+                  <div className="il-empty">
+                    Estimate unavailable for this configuration.
+                  </div>
+                )}
+              </div>
+
+              <div className="il-result-group">
+                <span className="il-result-label">
+                  Camera system
+
+                </span>
+                <DownloadSectionReceipt kind="Camera" deviceName={form.name} metrics={[{label:'Camera modules',value:result.cameras?.length},{label:'Processor',value:form.socName}]} />
 
                 <div className="il-metrics">
                   <div>
-                    <strong>{result.cameras?.length ?? 'Unknown'}</strong>
+                    <strong>
+                      {result.cameras?.length ??
+                        'Unknown'}
+                    </strong>
                     <span>Modules</span>
                   </div>
 
                   <div>
                     <strong>
-                      {knownCameraVolumeMm3 !== undefined
-                        ? format(knownCameraVolumeMm3 / 1000, 2)
+                      {knownCameraVolumeMm3 !==
+                      undefined
+                        ? format(
+                            knownCameraVolumeMm3 /
+                              1000,
+                            2,
+                          )
                         : 'Unknown'}
                     </strong>
                     <span>Known volume cm³</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="il-result-group">
-                <span className="il-result-label">Internal volume</span>
+                {cameraZoomHandoff ? (
+                  <div className="il-camera-evidence">
+                    <span className="il-result-label">
+                      Zoom handoff
 
-                <div className="il-volume-number">
-                  <strong>
-                    {format(packaging?.knownComponentVolumeCm3, 2)}
-                  </strong>
+                    </span>
 
-                  <span>/</span>
+                    {cameraZoomHandoff.status === 'resolved' &&
+                    cameraZoomHandoff.selected ? (
+                      <>
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              Camera {cameraZoomHandoff.selectedCameraId}
+                            </strong>
+                            <span>Selected module</span>
+                          </div>
 
-                  <strong>
-                    {format(packaging?.availableInternalVolumeCm3, 2)}
-                  </strong>
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .baseEquivalentFocalLengthMm,
+                                1,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .baseEquivalentFocalLengthMm !==
+                              undefined
+                                ? ' mm'
+                                : ''}
+                            </strong>
+                            <span>Native focal length</span>
+                          </div>
 
-                  <small>cm³ known / available</small>
-                </div>
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .requiredCropZoom,
+                                2,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .requiredCropZoom !==
+                              undefined
+                                ? '×'
+                                : ''}
+                            </strong>
+                            <span>Required crop</span>
+                          </div>
 
-                <div className="il-metrics">
-                  <div>
-                    <strong>{format(packaging?.remainingVolumeCm3, 2)}</strong>
-                    <span>cm³ remaining</span>
+                          <div>
+                            <strong>
+                              {format(
+                                cameraZoomHandoff.selected
+                                  .retainedResolutionMp,
+                                1,
+                              )}
+                              {cameraZoomHandoff.selected
+                                .retainedResolutionMp !==
+                              undefined
+                                ? ' MP'
+                                : ''}
+                            </strong>
+                            <span>Retained native resolution</span>
+                          </div>
+                        </div>
+
+                      </>
+                    ) : (
+                      <div className="il-empty">
+                        Estimate unavailable for this configuration.
+                      </div>
+                    )}
                   </div>
+                ) : null}
 
-                  <div>
+                {result.cameras?.map((camera, index) => (
+                  <div
+                    className="il-camera-result"
+                    key={`${camera.type}-${index}`}
+                  >
                     <strong>
-                      {format(packaging?.usedInternalVolumePercent, 1)}
-                      {packaging?.usedInternalVolumePercent !== undefined
-                        ? '%'
-                        : ''}
+                      {camera.type.replaceAll('_', ' ')} · Camera {index + 1}
                     </strong>
-                    <span>Known allocation</span>
+
+                    <div className="il-metrics">
+                      <div>
+                        <strong>
+                          {format(
+                            camera.activeSensorAreaMm2 ??
+                              camera.approximateSensorAreaMm2,
+                            1,
+                          )}
+                        </strong>
+                        <span>Active sensor area mm²</span>
+                      </div>
+
+
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.approximatePixelPitchMicrons,
+                            2,
+                          )}
+                          {camera.approximatePixelPitchMicrons !== undefined
+                            ? ' µm'
+                            : ''}
+                        </strong>
+                        <span>Approx. pixel pitch</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.geometricLightCaptureIndex,
+                            2,
+                          )}
+                        </strong>
+                        <span>Relative light capture</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.perPixelLightCaptureIndex,
+                            3,
+                          )}
+                        </strong>
+                        <span>Relative light per pixel</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.exposureLightCaptureIndex,
+                            4,
+                          )}
+                        </strong>
+                        <span>Exposure-aware total light</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.photoelectronCaptureIndex,
+                            4,
+                          )}
+                        </strong>
+                        <span>Sensor light capture</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.effectiveBinnedResolutionMp !== undefined
+                            ? `${format(camera.effectiveBinnedResolutionMp, 1)} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Binned output resolution</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.effectiveBinnedPixelPitchMicrons !== undefined
+                            ? `${format(camera.effectiveBinnedPixelPitchMicrons, 2)} µm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Effective binned pixel pitch</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.croppedEquivalentFocalLengthMm !== undefined
+                            ? `${format(camera.croppedEquivalentFocalLengthMm, 1)} mm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Crop-equivalent focal length</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.croppedResolutionMp !== undefined
+                            ? `${format(camera.croppedResolutionMp, 1)} MP`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Resolution after crop</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.maxNativeCropZoomForTargetResolution !== undefined
+                            ? `${format(camera.maxNativeCropZoomForTargetResolution, 2)}×`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Max native crop zoom at target MP</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.cropTotalLightLossStops !== undefined
+                            ? `${format(camera.cropTotalLightLossStops, 2)} stops`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Total retained-light loss from crop</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.subjectMotionBlurPixels !== undefined
+                            ? `${format(
+                                camera.subjectMotionBlurPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Subject motion blur</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.cameraShakeBlurPixelsAfterOis !== undefined
+                            ? `${format(
+                                camera.cameraShakeBlurPixelsAfterOis,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Camera shake after OIS</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.rollingShutterCameraSkewPixels !== undefined
+                            ? `${format(
+                                camera.rollingShutterCameraSkewPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Rolling-shutter camera skew</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.rollingShutterSubjectSkewPixels !== undefined
+                            ? `${format(
+                                camera.rollingShutterSubjectSkewPixels,
+                                2,
+                              )} px`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Rolling-shutter subject skew</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.readoutFractionOfFrame !== undefined
+                            ? `${format(
+                                camera.readoutFractionOfFrame *
+                                  100,
+                                1,
+                              )}%`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Readout fraction of video frame</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.equivalentApertureFNumber !== undefined
+                            ? `f/${format(
+                                camera.equivalentApertureFNumber,
+                                1,
+                              )}`
+                            : 'Unknown'}
+                        </strong>
+                        <span>35 mm equivalent aperture</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.diagonalFieldOfViewDeg,
+                            1,
+                          )}
+                          {camera.diagonalFieldOfViewDeg !== undefined
+                            ? '°'
+                            : ''}
+                        </strong>
+                        <span>Approx. diagonal field of view</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.entrancePupilDiameterMm,
+                            2,
+                          )}
+                          {camera.entrancePupilDiameterMm !== undefined
+                            ? ' mm'
+                            : ''}
+                        </strong>
+                        <span>Entrance pupil</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {format(
+                            camera.airyDiskToPixelPitchRatio,
+                            2,
+                          )}
+                        </strong>
+                        <span>Diffraction / pixel pitch ratio</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.diffractionTwoPixelFNumber !== undefined
+                            ? `f/${format(
+                                camera.diffractionTwoPixelFNumber,
+                                1,
+                              )}`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Diffraction threshold</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.hyperfocalDistanceM !== undefined
+                            ? `${format(
+                                camera.hyperfocalDistanceM,
+                                2,
+                              )} m`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Approx. hyperfocal distance</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.focusNearLimitM !== undefined
+                            ? `${format(
+                                camera.focusNearLimitM,
+                                2,
+                              )} m`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Focus near limit</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.focusFarLimitM === 'infinity'
+                            ? '∞'
+                            : camera.focusFarLimitM !== undefined
+                              ? `${format(
+                                  camera.focusFarLimitM,
+                                  2,
+                                )} m`
+                              : 'Unknown'}
+                        </strong>
+                        <span>Focus far limit</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.totalDepthOfFieldM === 'infinity'
+                            ? '∞'
+                            : camera.totalDepthOfFieldM !== undefined
+                              ? `${format(
+                                  camera.totalDepthOfFieldM,
+                                  2,
+                                )} m`
+                              : 'Unknown'}
+                        </strong>
+                        <span>Total depth of field</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.minimumOpticalFootprintWidthMm !== undefined &&
+                          camera.minimumOpticalFootprintHeightMm !== undefined
+                            ? `${format(
+                                camera.minimumOpticalFootprintWidthMm,
+                                1,
+                              )} × ${format(
+                                camera.minimumOpticalFootprintHeightMm,
+                                1,
+                              )} mm`
+                            : 'Unknown'}
+                        </strong>
+                        <span>Minimum optical footprint</span>
+                      </div>
+
+                      <div>
+                        <strong>
+                          {camera.opticalFootprintFitsModule === undefined
+                            ? 'Unresolved'
+                            : camera.opticalFootprintFitsModule
+                              ? 'Fits entered footprint'
+                              : 'Does not fit'}
+                        </strong>
+                        <span>Optical footprint check</span>
+                      </div>
+                    </div>
+
+                    {cameraVideoWorkloads[index] ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Video workload
+
+                        </span>
+
+                        <div className="il-metrics">
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.megapixelsPerSecond !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.megapixelsPerSecond,
+                                    1,
+                                  )} MP/s`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Sensor/video pixel throughput</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.uncompressedDataRateGbps !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.uncompressedDataRateGbps,
+                                    2,
+                                  )} Gbps`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Uncompressed video data rate</span>
+                          </div>
+
+
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.estimatedFileSizeGb !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.estimatedFileSizeGb,
+                                    2,
+                                  )} GB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Recording file size</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraVideoWorkloads[index]
+                                ?.estimatedPipelineEnergyWh !==
+                              undefined
+                                ? `${format(
+                                    cameraVideoWorkloads[index]
+                                      ?.estimatedPipelineEnergyWh,
+                                    2,
+                                  )} Wh`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Camera pipeline energy</span>
+                          </div>
+                        </div>
+
+                        {cameraVideoThermals[index]?.status ===
+                        'resolved' ? (
+                          <>
+                            <div className="il-metrics">
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.steadyStateTemperatureC !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.steadyStateTemperatureC,
+                                        1,
+                                      )} °C`
+                                    : 'Unknown'}
+                                </strong>
+                                <span>Video thermal steady state</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.thermalLimitMinutes !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.thermalLimitMinutes,
+                                        1,
+                                      )} min`
+                                    : cameraVideoThermals[index]
+                                          ?.noThermalLimitAtConstantPower
+                                      ? 'Not reached'
+                                      : 'Unknown'}
+                                </strong>
+                                <span>Time to thermal ceiling</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.temperatureAtRequestedDurationC !==
+                                  undefined
+                                    ? `${format(
+                                        cameraVideoThermals[index]
+                                          ?.temperatureAtRequestedDurationC,
+                                        1,
+                                      )} °C`
+                                    : 'Unknown'}
+                                </strong>
+                                <span>Temperature at requested duration</span>
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {cameraVideoThermals[index]
+                                    ?.thermalLimitWithinRequestedDuration ===
+                                  undefined
+                                    ? 'Unknown'
+                                    : cameraVideoThermals[index]
+                                        ?.thermalLimitWithinRequestedDuration
+                                      ? 'Ceiling crossed'
+                                      : 'Below ceiling'}
+                                </strong>
+                                <span>Recording thermal state</span>
+                              </div>
+                            </div>
+
+                          </>
+                        ) : cameraVideoThermals[index] ? (
+                          null
+                        ) : null}
+
+                      </div>
+                    ) : null}
+
+                    {cameraSensorNoise[index] ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Sensor electronics
+
+                        </span>
+
+                        <div className="il-metrics">
+
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.dynamicRangeDb !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.dynamicRangeDb,
+                                    1,
+                                  )} dB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Dynamic range</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.effectiveNoiseFloorElectrons !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.effectiveNoiseFloorElectrons,
+                                    2,
+                                  )} e⁻`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Effective noise floor</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.signalToNoiseRatio !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.signalToNoiseRatio,
+                                    1,
+                                  )}:1`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Signal-to-noise ratio</span>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {cameraSensorNoise[index]
+                                ?.signalToNoiseDb !==
+                              undefined
+                                ? `${format(
+                                    cameraSensorNoise[index]
+                                      ?.signalToNoiseDb,
+                                    1,
+                                  )} dB`
+                                : 'Unknown'}
+                            </strong>
+                            <span>Signal-to-noise</span>
+                          </div>
+
+
+                        </div>
+
+                      </div>
+                    ) : null}
+
+                    {cameraExperiences[index]?.sensitivity.length ? (
+                      <div className="il-camera-sensitivity">
+                        <span className="il-result-label">
+                          Optical what-if sensitivity
+                        </span>
+
+                        <div className="il-sensitivity-grid">
+                          {cameraExperiences[index]?.sensitivity.map(
+                            (scenario) => (
+                              <div
+                                className="il-sensitivity-card"
+                                key={scenario.scenario}
+                              >
+                                <strong>{scenario.label}</strong>
+
+                                {scenario.deltaTotalLightPercent !== undefined ? (
+                                  <span>
+                                    Δ total light{' '}
+                                    {scenario.deltaTotalLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaTotalLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPerPixelLightPercent !== undefined ? (
+                                  <span>
+                                    Δ per-pixel light{' '}
+                                    {scenario.deltaPerPixelLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPerPixelLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaExposureLightPercent !== undefined ? (
+                                  <span>
+                                    Δ exposure light{' '}
+                                    {scenario.deltaExposureLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaExposureLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaBinnedOutputPixelLightPercent !== undefined ? (
+                                  <span>
+                                    Δ output-sample light{' '}
+                                    {scenario.deltaBinnedOutputPixelLightPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaBinnedOutputPixelLightPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaSubjectMotionBlurPercent !== undefined ? (
+                                  <span>
+                                    Δ subject blur{' '}
+                                    {scenario.deltaSubjectMotionBlurPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaSubjectMotionBlurPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaCameraShakeBlurPercent !== undefined ? (
+                                  <span>
+                                    Δ camera shake blur{' '}
+                                    {scenario.deltaCameraShakeBlurPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaCameraShakeBlurPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaPixelPitchPercent !== undefined ? (
+                                  <span>
+                                    Δ pixel pitch{' '}
+                                    {scenario.deltaPixelPitchPercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaPixelPitchPercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.deltaEquivalentAperturePercent !== undefined ? (
+                                  <span>
+                                    Δ equiv. aperture{' '}
+                                    {scenario.deltaEquivalentAperturePercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.deltaEquivalentAperturePercent,
+                                      1,
+                                    )}%
+                                  </span>
+                                ) : null}
+
+                                {scenario.sensorFootprintPressurePercent !== undefined ? (
+                                  <small>
+                                    Sensor footprint pressure{' '}
+                                    {scenario.sensorFootprintPressurePercent >= 0
+                                      ? '+'
+                                      : ''}
+                                    {format(
+                                      scenario.sensorFootprintPressurePercent,
+                                      1,
+                                    )}%
+                                  </small>
+                                ) : null}
+                              </div>
+                            ),
+                          )}
+                        </div>
+
+                      </div>
+                    ) : null}
+
+                    {cameraExperiences[index]?.outcomes.some(
+                      (outcome) => outcome.status === 'resolved',
+                    ) ? (
+                      <div className="il-camera-evidence">
+                        <span className="il-result-label">
+                          Estimated camera performance
+                        </span>
+
+                        <div className="il-metrics">
+                          {cameraExperiences[index]?.outcomes
+                            .filter(
+                              (outcome) =>
+                                outcome.status === 'resolved' &&
+                                outcome.value !== undefined,
+                            )
+                            .map((outcome) => (
+                              <div key={outcome.domain}>
+                                <strong>{format(outcome.value, 2)}{outcome.unit ? ` ${outcome.unit}` : ''}</strong>
+                                <span>{cameraOutcomeLabel(outcome.domain)}</span>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ) : (
+                      null
+                    )}
+
                   </div>
-                </div>
+                ))}
               </div>
 
-              {packaging?.fitsAvailableVolume !== undefined && (
+              {packaging?.fitsAvailableVolume !==
+                undefined && (
                 <div
                   className={`il-verdict ${
-                    packaging.fitsAvailableVolume ? 'passes' : 'fails'
+                    packaging.fitsAvailableVolume
+                      ? 'passes'
+                      : 'fails'
                   }`}
                 >
                   <strong>
@@ -1307,95 +8332,16 @@ export default function InteractiveLeaksSimulator() {
                 </div>
               )}
 
-              </details>
-              {/* Provenance, assumptions, confidence detail */}
-              {(estimate?.assumptions.length ?? 0) > 0 && (
-                <details className="il-evidence">
-                  <summary>Assumptions ({estimate?.assumptions.length})</summary>
-
-                  <ul>
-                    {estimate?.assumptions.map((assumption, index) => (
-                      <li key={`${assumption.code}-${index}`}>
-                        <strong>{assumption.code}</strong>
-
-                        <span>{assumption.message}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+              </>
+              )}
+              {simulationInput && workspaceMode === 'simple' && !simpleBatteryPending && (
+                <DeterministicShareCard input={simulationInput} result={result} mode={workspaceMode} usage={usagePreset} activeUseHours={simpleBattery?.runtimeHours ?? batteryExperience?.mixedUse?.expectedActiveUseHoursPerCharge} chargeMinutes={chargingResult?.status === 'resolved' ? chargingResult.estimate?.timeTo100Minutes?.expected : undefined} socName={form.socName} wiredWatts={numeric(form.wiredChargeW)} chargingStandard={form.chargingStandard} cellArchitecture={form.cellArchitecture} singleScore={simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected} multiScore={simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected} sustainedSingleScore={projectedSustainedCpuScore({ peakScore: simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_single')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} sustainedMultiScore={projectedSustainedCpuScore({ peakScore: simpleDisplayCpuScores.find(item => item.domain === 'geekbench6_multi')?.estimate.adjustedExpected ?? 0, coolingClass: form.coolingClass, socPowerW: numeric(form.targetSocPowerW), durationMinutes: 15 })} experimentalScores={simpleDisplayCpuScores.some(item => item.estimate.assumptionApplied)} powerScenario={simpleSocPowerScenario} />
               )}
 
-              {battery?.result.confidenceNotes &&
-                battery.result.confidenceNotes.length > 0 && (
-                  <details className="il-evidence">
-                    <summary>
-                      Confidence notes ({battery.result.confidenceNotes.length})
-                    </summary>
-
-                    <ul>
-                      {battery.result.confidenceNotes.map((note, index) => (
-                        <li key={index}>
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-
-              {(battery?.warnings.length ?? 0) > 0 && (
-                <details className="il-evidence" open>
-                  <summary>Warnings ({battery?.warnings.length})</summary>
-
-                  <ul>
-                    {battery?.warnings.map((warning, index) => (
-                      <li key={`${warning.code}-${index}`}>
-                        <strong>{warning.code}</strong>
-
-                        <span>{warning.message}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              )}
-
-              {result.warnings.length > 0 && (
-                <details className="il-warnings"><summary>Constraints and unresolved device inputs ({result.warnings.length})</summary>
-                  <span className="il-result-label">Engine notes</span>
-
-                  {result.warnings.map((warning, index) => (
-                    <div className="il-warning" key={`${warning.code}-${index}`}>
-                      <strong>{warning.code}</strong>
-
-                      <p>{warning.message}</p>
-                    </div>
-                  ))}
-                </details>
-              )}
-
-              <div className="il-method">
-                <strong>Deterministic where it can be.</strong>
-
-                <p>
-                  This result uses only the values supplied above, evaluated by
-                  PhoneFuturist Engine v{SIMULATION_ENGINE_VERSION} and battery
-                  model {BATTERY_EXPERIENCE_VERSION}. The same inputs always
-                  produce the same result.
-                </p>
-              </div>
+              <p className="il-help">Simulated estimates. Actual device performance may vary.</p>
             </>
           )}
-        </aside>
-      </div>
-
-      {/* Honest scope: what the Beta does not simulate yet */}
-      <div className="il-scope">
-        <strong>Public Beta scope</strong>
-
-        <p>
-          The deterministic device core and the battery runtime model are
-          available. This beta does not simulate benchmark scores, thermal
-          behavior or image quality. Camera results describe geometry only.
-        </p>
+        </aside></ResultPanel>
       </div>
     </div>
   );

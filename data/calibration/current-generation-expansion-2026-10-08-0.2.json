@@ -1,0 +1,272 @@
+{
+  "version": "current-generation-2026-expansion-0.2.0",
+  "cutoff": "2026-10-08",
+  "purpose": "Expand current-generation calibration with verified 2026/late-2025 devices that remain relevant to October 2026 comparisons.",
+  "sources": [
+    {
+      "id": "phonearena-battery",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/phones/benchmarks/battery",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "phonearena-vivo-x300-ultra",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/vivo-x300-ultra-review_id7930",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "phonearena-honor-magic8-pro",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/honor-magic-8-pro-review_id7814",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "phonearena-oneplus15",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/oneplus-15-review_id7768",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "phonearena-oppo-findx9pro",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/reviews/oppo-find-x9-pro-review_id7759",
+      "protocol": "PhoneArena battery benchmark"
+    },
+    {
+      "id": "tomsguide-honor-magic8pro",
+      "publisher": "Tom's Guide",
+      "url": "https://www.tomsguide.com/phones/android-phones/two-day-battery-life-is-a-game-changer-honor-magic8-pros-silicon-carbon-battery-is-a-wake-up-call-for-samsung-and-apple",
+      "protocol": "Real-world standby / review observations"
+    },
+    {
+      "id": "gsmarena-pro-camera-2026",
+      "publisher": "GSMArena",
+      "url": "https://www.gsmarena.com/honor_magic8_pro_oppo_find_x9_pro_vivo_x300_pro-review-2912.php",
+      "protocol": "Cross-device camera comparison"
+    },
+    {
+      "id": "official-oneplus15-display",
+      "publisher": "OnePlus",
+      "url": "https://www.oneplus.com/global/15/specs",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-oppo-findx9pro-display",
+      "publisher": "OPPO",
+      "url": "https://www.oppo.com/in/smartphones/series-find-x/find-x9-pro/specs/",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-vivo-x300-ultra-display",
+      "publisher": "vivo",
+      "url": "https://www.vivo.com/en/products/param/x300-ultra",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-samsung-s26-ultra-display",
+      "publisher": "Samsung",
+      "url": "https://www.samsung.com/uk/business/smartphones/galaxy-s/galaxy-s26-ultra-cobalt-violet-1tb-sm-s948bzvheub/",
+      "protocol": "official product specification"
+    },
+    {
+      "id": "official-honor-magic8-pro-display",
+      "publisher": "HONOR",
+      "url": "https://www.honor.com/ie/phones/honor-magic8-pro/spec/",
+      "protocol": "official product specification"
+    }
+  ],
+  "devices": [
+    {
+      "id": "vivo-x300-ultra-global-6600",
+      "manufacturer": "vivo",
+      "model": "X300 Ultra",
+      "releaseDate": "2026",
+      "region": "Global",
+      "batteryMah": 6600,
+      "batteryChemistry": "silicon-carbon",
+      "sourceIds": [
+        "phonearena-vivo-x300-ultra",
+        "official-vivo-x300-ultra-display"
+      ],
+      "measurements": {
+        "batteryEstimateHours": 8.467,
+        "browsingHours": 20.317,
+        "videoHours": 11.9,
+        "gamingHours": 11.5
+      },
+      "notes": [
+        "PhoneArena reports the 6600 mAh pack as global rather than region-split."
+      ],
+      "display": {
+        "diagonalInches": 6.82,
+        "resolutionWidthPx": 1440,
+        "resolutionHeightPx": 3168,
+        "refreshRateHz": 144,
+        "panelTechnology": "AMOLED"
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
+    },
+    {
+      "id": "honor-magic8-pro-eu-6270",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "releaseDate": "2026",
+      "region": "Europe",
+      "batteryMah": 6270,
+      "sourceIds": [
+        "phonearena-honor-magic8-pro",
+        "tomsguide-honor-magic8pro",
+        "official-honor-magic8-pro-display"
+      ],
+      "measurements": {
+        "batteryEstimateHours": 8,
+        "browsingHours": 18.683,
+        "videoHours": 12.117,
+        "gamingHours": 9.55
+      },
+      "display": {
+        "diagonalInches": 6.71,
+        "resolutionWidthPx": 1256,
+        "resolutionHeightPx": 2808,
+        "refreshRateHz": 120,
+        "panelTechnology": "LTPO OLED"
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
+    },
+    {
+      "id": "honor-magic8-pro-global-7100",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "releaseDate": "2026",
+      "region": "Global/Australia",
+      "batteryMah": 7100,
+      "batteryChemistry": "silicon-carbon",
+      "sourceIds": [
+        "phonearena-honor-magic8-pro",
+        "tomsguide-honor-magic8pro"
+      ],
+      "notes": [
+        "Keep separate from EU 6270 mAh and China 7200 mAh variants."
+      ]
+    },
+    {
+      "id": "honor-magic8-pro-cn-7200",
+      "manufacturer": "Honor",
+      "model": "Magic8 Pro",
+      "releaseDate": "2026",
+      "region": "China",
+      "batteryMah": 7200,
+      "sourceIds": [
+        "phonearena-honor-magic8-pro"
+      ],
+      "notes": [
+        "No EU runtime transfer allowed."
+      ]
+    },
+    {
+      "id": "oneplus-15-global-7300",
+      "manufacturer": "OnePlus",
+      "model": "15",
+      "releaseDate": "2025-11-13",
+      "region": "Global",
+      "batteryMah": 7300,
+      "batteryChemistry": "silicon-carbon",
+      "sourceIds": [
+        "phonearena-oneplus15",
+        "official-oneplus15-display"
+      ],
+      "measurements": {
+        "batteryEstimateHours": 10.733,
+        "browsingHours": 30.1,
+        "videoHours": 12.617,
+        "gamingHours": 14.267
+      },
+      "charging": {
+        "advertisedWiredWatts": 80,
+        "advertisedWirelessWatts": 50
+      },
+      "display": {
+        "diagonalInches": 6.78,
+        "resolutionWidthPx": 1272,
+        "resolutionHeightPx": 2772,
+        "refreshRateHz": 120,
+        "maximumGamingRefreshRateHz": 165,
+        "panelTechnology": "LTPO"
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5"
+    },
+    {
+      "id": "oppo-find-x9-pro-global-7500",
+      "manufacturer": "Oppo",
+      "model": "Find X9 Pro",
+      "releaseDate": "2025",
+      "region": "Global",
+      "batteryMah": 7500,
+      "batteryChemistry": "silicon-carbon",
+      "sourceIds": [
+        "phonearena-oppo-findx9pro",
+        "official-oppo-findx9pro-display"
+      ],
+      "measurements": {
+        "batteryEstimateHours": 9.833,
+        "browsingHours": 25.567,
+        "videoHours": 13.5,
+        "gamingHours": 11.283
+      },
+      "charging": {
+        "advertisedWiredWatts": 80,
+        "advertisedWirelessWatts": 50,
+        "wiredThirtyMinutePercent": 52,
+        "wiredFullChargeMinutes": 80
+      },
+      "display": {
+        "diagonalInches": 6.78,
+        "resolutionWidthPx": 1272,
+        "resolutionHeightPx": 2772,
+        "refreshRateHz": 120,
+        "panelTechnology": "AMOLED"
+      },
+      "socVendor": "MediaTek",
+      "socName": "Dimensity 9500"
+    },
+    {
+      "id": "samsung-galaxy-s26-ultra-global-5000",
+      "manufacturer": "Samsung",
+      "model": "Galaxy S26 Ultra",
+      "releaseDate": "2026",
+      "batteryMah": 5000,
+      "sourceIds": [
+        "phonearena-vivo-x300-ultra",
+        "official-samsung-s26-ultra-display"
+      ],
+      "measurements": {
+        "batteryEstimateHours": 7.883,
+        "browsingHours": 20.167,
+        "videoHours": 9.9,
+        "gamingHours": 11.817
+      },
+      "notes": [
+        "Use as a current-gen control against much larger Si/C batteries."
+      ],
+      "display": {
+        "diagonalInches": 6.9,
+        "resolutionWidthPx": 1440,
+        "resolutionHeightPx": 3120,
+        "refreshRateHz": 120,
+        "panelTechnology": "Dynamic AMOLED 2X"
+      },
+      "socVendor": "Qualcomm",
+      "socName": "Snapdragon 8 Elite Gen 5 for Galaxy"
+    }
+  ],
+  "inclusionRules": [
+    "Current relevance is based on the October 8, 2026 cutoff, not release year alone.",
+    "Late-2025 flagships remain valid current-generation controls when they are still the shipping generation through 2026.",
+    "Regional battery variants are separate records even when the marketing name is identical.",
+    "Only transfer protocol measurements to the exact tested variant when source identity is clear."
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "version": "system-efficiency-cohort-0.1.0",
+  "purpose": "Cross-brand seed cohort for workload-specific system-efficiency calibration. Raw protocol observations only. These are not final software coefficients.",
+  "rules": {
+    "no_brand_priors": true,
+    "do_not_average_across_protocols": true,
+    "coefficient_requires_hardware_normalization": true,
+    "missing_data_is_unknown_not_neutral_evidence": true
+  },
+  "sources": [
+    {
+      "id": "notebookcheck",
+      "role": "common_protocol_spine",
+      "url": "https://www.notebookcheck.net/"
+    },
+    {
+      "id": "gsmarena",
+      "role": "cross_check_active_use",
+      "url": "https://www.gsmarena.com/"
+    },
+    {
+      "id": "tomsguide",
+      "role": "cross_check_web_and_performance",
+      "url": "https://www.tomsguide.com/"
+    },
+    {
+      "id": "phonearena",
+      "role": "cross_check_browsing_video_gaming",
+      "url": "https://www.phonearena.com/"
+    },
+    {
+      "id": "dxomark",
+      "role": "display_camera_context",
+      "url": "https://www.dxomark.com/"
+    }
+  ],
+  "cohort": [
+    {
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "batteryMah": 4823,
+      "soc": "Apple A19 Pro",
+      "notebookcheck": {
+        "webHours": 28.6,
+        "derivedWebDrainMahPerHour": 168.6,
+        "gfxbenchAztec1080pW": 10.8
+      },
+      "gsmarena": {
+        "webHours": 15.55,
+        "videoHours": 25.68,
+        "gamingHours": 12.13,
+        "activeUseHours": 17.97
+      },
+      "tomsguide": {
+        "webCellularHours": 17.9
+      },
+      "phonearena": {
+        "browsingHours": 20.15,
+        "videoHours": 9.62,
+        "gamingHours": 11.57
+      },
+      "notes": [
+        "Regional battery variants exist; keep variant identity with each measurement."
+      ]
+    },
+    {
+      "brand": "Samsung",
+      "model": "Galaxy S25 Ultra",
+      "batteryMah": 5000,
+      "soc": "Snapdragon 8 Elite for Galaxy",
+      "notebookcheck": {
+        "webHours": 22.18,
+        "videoHours": 32.25,
+        "loadHours": 3.72,
+        "derivedWebDrainMahPerHour": 225.4,
+        "gfxbenchAztec1080pW": 15.9
+      },
+      "gsmarena": {
+        "webHours": 11.32,
+        "videoHours": 19.07,
+        "gamingHours": 10.1,
+        "activeUseHours": 14.82
+      },
+      "tomsguide": {
+        "webCellularHours": 14.45
+      },
+      "phonearena": {
+        "browsingHours": 20.82,
+        "videoHours": 8.9,
+        "gamingHours": 14.35
+      }
+    },
+    {
+      "brand": "Google",
+      "model": "Pixel 10 Pro XL",
+      "batteryMah": 5200,
+      "soc": "Tensor G5",
+      "notebookcheck": {
+        "webHours": 19.18,
+        "videoHours": 23.83,
+        "loadHours": 3.9,
+        "derivedWebDrainMahPerHour": 271.1
+      },
+      "gsmarena": {
+        "webHours": 13.93,
+        "videoHours": 19.72,
+        "gamingHours": 5.85,
+        "activeUseHours": 12.47
+      },
+      "tomsguide": {
+        "webCellularHours": 14.15
+      },
+      "phonearena": {
+        "browsingHours": 19.68,
+        "videoHours": 10,
+        "gamingHours": 4.58
+      }
+    },
+    {
+      "brand": "OnePlus",
+      "model": "OnePlus 13",
+      "batteryMah": 6000,
+      "soc": "Snapdragon 8 Elite",
+      "notebookcheck": {
+        "webHours": 22.48,
+        "videoHours": 38.68,
+        "loadHours": 4.02,
+        "derivedWebDrainMahPerHour": 266.9
+      },
+      "tomsguide": {
+        "webCellularHours": 19.75
+      },
+      "notes": [
+        "Tom's Guide states OnePlus 13 result used an older version of its test, so do not directly fit it against the newest cohort without protocol tagging."
+      ]
+    },
+    {
+      "brand": "Xiaomi",
+      "model": "Xiaomi 15 Ultra",
+      "batteryMah": 5410,
+      "soc": "Snapdragon 8 Elite",
+      "notebookcheck": {
+        "webHours": 21.17,
+        "videoHours": 27.5,
+        "loadHours": 3.48,
+        "derivedWebDrainMahPerHour": 255.6,
+        "gfxbenchAztec1080pW": 9.2
+      },
+      "gsmarena": {
+        "webHours": 13.27,
+        "videoHours": 19.42,
+        "gamingHours": 10.68,
+        "activeUseHours": 16.2
+      }
+    },
+    {
+      "brand": "Oppo",
+      "model": "Find X8 Pro",
+      "batteryMah": 5910,
+      "soc": "Dimensity 9400",
+      "notebookcheck": {
+        "webHours": 23.52,
+        "videoHours": 32.93,
+        "loadHours": 5.15,
+        "derivedWebDrainMahPerHour": 251.3
+      }
+    },
+    {
+      "brand": "Vivo",
+      "model": "X200 Pro",
+      "batteryMah": 6000,
+      "soc": "Dimensity 9400",
+      "notebookcheck": {
+        "webHours": 23.4,
+        "derivedWebDrainMahPerHour": 256.4,
+        "gfxbenchAztec1080pW": 11.1
+      }
+    },
+    {
+      "brand": "Honor",
+      "model": "Magic7 Pro",
+      "batteryMah": 5270,
+      "soc": "Snapdragon 8 Elite",
+      "notebookcheck": {
+        "webHours": 24.68,
+        "videoHours": 30.1,
+        "loadHours": 3.62,
+        "derivedWebDrainMahPerHour": 213.5,
+        "gfxbenchAztec1080pW": 11.4
+      },
+      "notes": [
+        "EU battery variant is 5270 mAh; other regions use a larger pack. Variant must be preserved."
+      ]
+    }
+  ]
+}

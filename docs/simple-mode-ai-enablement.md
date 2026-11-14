@@ -1,0 +1,47 @@
+# Simple Mode battery analysis and AI fallback
+
+Implemented on design/phonefuturist-system-v1. Advanced numerical engines, calibration records and coefficients are unchanged.
+
+## Behavior
+
+Simple submits a bounded hardware request to POST /api/hardware-analysis (kind simple-battery). Measured-reference calculations remain the default. Exact-generation, matched-score processor power differences can be used only with a qualifying independent whole-phone reference cohort. Missing coverage retains the reference estimate. Software tuning and nominal voltage are explicit user scenarios. Video decoding does not inherit a CPU/GPU benchmark power curve.
+
+Optional AI supplies missing processor-specific endurance and explicitly requested missing Geekbench 6 scores. Existing CPU results take priority. AI power output is bounded, converted to active-use hours using pack energy and the selected use mix, and labeled Simulated. Invalid JSON, unsupported results, provider failures and rate limits retain reference results. AI is not evidence of measured accuracy. Missing required user inputs are not invented.
+
+Requests are tied to the submitted job, canceled on another calculation or switching to Advanced, and timed out after 25 seconds. Downloads and Community use the matching returned Simple result. Sharing waits until the request finishes. No database or authentication policy changes are needed.
+
+## Verification
+
+- npm.cmd run check: 585 files, zero errors, warnings or hints.
+- Focused Vitest run: 7 files, 73 tests passed, including existing battery and sharing tests.
+- npm.cmd run build: passed; pre-existing oversized scene/data chunks remain.
+- Local built Cloudflare Worker: Simple POST returns 200. Browser test showed 10.1 hours on the standard scenario and 10.7 hours on the optimized scenario, with the same values on the share card. These are UI consistency checks, not real-device battery accuracy validation.
+- At 390px the document did not overflow horizontally. Switching to Advanced preserved 5500 mAh, 6.8 inches and 1440 x 3200 resolution. Advanced recalculated 10.1 hours, independently of the Simple-only optimized software setting. No browser console errors were reported.
+
+## Production enablement
+
+User approved enablement and deployment on November 1, 2026. The Worker configuration now enables AI_VALUATION_ENABLED and the AI_VALUATION_LIMITER binding below. Existing provider secrets were verified by name only; no secret values were read. The previous live version had no rate limiter, so namespace 1002 does not conflict with an existing Worker binding. The AI path requires all of:
+
+- AI_VALUATION_ENABLED=true.
+- Existing server-only CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_AI_API_TOKEN.
+- BOM_VALUATION_MODEL or VIRTUAL_DEVICE_MODEL.
+- AI_VALUATION_LIMITER Worker binding.
+- An active, verified signed-in account. Public reference calculations remain available anonymously.
+
+Configured Wrangler rate limiter:
+
+```json
+"ratelimits": [
+  { "name": "AI_VALUATION_LIMITER", "namespace_id": "1002", "simple": { "limit": 2, "period": 60 } }
+]
+```
+
+This bounds requests per account per Cloudflare location; it is not an account-wide spending cap. Credentials remain in Cloudflare secrets. Deployment command: npm.cmd run deploy.
+
+## November 1 production verification
+
+- Live Worker version: af2f845f-5d19-4450-9ff7-a8392fe4c1c8.
+- Cloudflare confirmed AI_VALUATION_ENABLED=true and AI_VALUATION_LIMITER=2 requests/60 seconds on that version.
+- Apex and www Interactive Leaks pages returned 200 and contained the new controls.
+- Simple battery requests on both origins returned 200 with positive Simulated endurance; malformed input returned 400 and an untrusted Origin returned 403.
+- Browser session is signed out. Actual authenticated AI-provider inference remains unverified; anonymous requests deliberately use reference calculations. No credentials or authentication policies were changed.

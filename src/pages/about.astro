@@ -1,0 +1,81 @@
+---
+import Page from '../layouts/Page.astro';
+import TeamDirectory from '../components/TeamDirectory.astro';
+const coverage = [
+  { title: 'News', description: 'Timely coverage of important developments across the technology industry.' },
+  { title: 'Reports', description: 'Deeper examinations of products, companies, technologies and industry movements.' },
+  { title: 'Leaks', description: 'Coverage of emerging information and reports about unreleased products, with appropriate distinction between confirmed information and unverified claims.' },
+  { title: 'Analysis and Predictions', description: 'Independent perspectives on where technology and the industry may be heading.' },
+  { title: 'Interactive Leaks', description: 'Experimental tools that let readers explore and interact with potential product specifications and designs based on available information. These experiences are illustrative, not official product representations or laboratory results.' },
+];
+---
+<Page title="About" description="PhoneFuturist is an independent technology publication examining consumer technology through news, reports, leaks, analysis and interactive experiences.">
+  <article class="about-publication" aria-labelledby="about-title">
+    <header class="about-header">
+      <p class="about-kicker">The publication</p>
+      <h1 id="about-title">About PhoneFuturist</h1>
+      <p class="about-tagline">Technology, examined.</p>
+      <p class="about-lead">PhoneFuturist is an independent technology publication focused on the ideas, innovations and developments shaping the future of consumer technology.</p>
+    </header>
+    <TeamDirectory />
+    <div class="about-layout">
+      <nav class="about-contents" aria-label="On this page">
+        <span>On this page</span>
+        <a href="#coverage">What we do</a>
+        <a href="#approach">Our approach</a>
+        <a href="#mission">Our mission</a>
+        <a href="mailto:contact@phonefuturist.com">Get in touch ↗</a>
+      </nav>
+      <div class="about-copy">
+        <div class="about-introduction">
+          <p>We cover the technology industry with curiosity, context and critical thinking. From smartphones and processors to software, emerging technologies and the companies building what comes next, our goal is to go beyond the headlines and examine what developments actually mean.</p>
+          <p>Our coverage spans breaking news, in-depth reports, industry analysis, leaks, predictions and interactive experiences. We aim to make complex technology easier to understand without sacrificing the detail that enthusiasts and industry observers care about.</p>
+        </div>
+        <section id="coverage" aria-labelledby="coverage-title">
+          <h2 id="coverage-title">What We Do</h2>
+          <dl class="coverage-list">
+            {coverage.map(item => <div><dt>{item.title}</dt><dd>{item.description}</dd></div>)}
+          </dl>
+        </section>
+        <section id="approach" aria-labelledby="approach-title">
+          <h2 id="approach-title">Our Approach</h2>
+          <p>We believe technology deserves more than recycled headlines and specification lists.</p>
+          <p>We value accuracy over speed, context over speculation and thoughtful analysis over unnecessary hype. We aim to identify what is known, what remains uncertain and why a development matters.</p>
+          <p>We also believe readers deserve transparency. Information should be presented with appropriate context, and mistakes should be acknowledged and corrected.</p>
+        </section>
+        <section id="mission" class="about-mission" aria-labelledby="mission-title">
+          <h2 id="mission-title">Our Mission</h2>
+          <p>To make technology more understandable, more interesting and more meaningful to the people following its evolution.</p>
+          <p class="about-signoff">PhoneFuturist. Technology, examined.</p>
+        </section>
+      </div>
+    </div>
+  </article>
+</Page>
+
+<style>
+  .about-publication { max-width: var(--pf-width-content); margin: 0 auto; padding: clamp(24px, 3vw, 40px) clamp(16px, 3vw, 40px) 48px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+  .about-header { padding-bottom: clamp(32px, 5vw, 60px); border-bottom: 1px solid var(--line); }
+  .about-kicker { margin: 0 0 20px; color: var(--muted); font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { max-width: 18ch; margin: 0; color: var(--ink); font-size: clamp(2.1rem, 4.8vw, 4rem); line-height: 1.1; letter-spacing: -.045em; overflow-wrap: anywhere; }
+  .about-tagline { margin: 24px 0 0; color: var(--ink); font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 600; }
+  .about-lead { max-width: 48ch; margin: 24px 0 0; color: var(--muted); font-size: clamp(1.1rem, 2vw, 1.4rem); line-height: 1.65; }
+  .about-layout { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr); gap: clamp(32px, 6vw, 88px); margin-top: 48px; }
+  .about-contents { position: sticky; top: 104px; align-self: start; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .about-contents span { margin-bottom: 10px; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .about-contents a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; font-size: .9rem; }
+  .about-contents a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  a:focus-visible { outline: 2px solid var(--accent, var(--pf-brand)); outline-offset: 4px; border-radius: var(--pf-radius-sm); }
+  .about-copy { min-width: 0; max-width: 680px; color: var(--pf-primary); font-family: var(--font-body); font-size: 19px; line-height: 1.7; }
+  .about-copy p { margin: 0 0 20px; }
+  section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
+  h2 { margin: 0 0 22px; color: var(--ink); font-size: clamp(1.35rem, 2.5vw, 1.8rem); line-height: 1.25; letter-spacing: -.025em; }
+  .coverage-list { margin: 0; }
+  .coverage-list div { margin: 0 0 26px; }
+  dt { color: var(--ink); font-weight: 650; line-height: 1.4; }
+  dd { margin: 8px 0 0; }
+  .about-mission > p:first-of-type { color: var(--ink); font-size: 1.2rem; line-height: 1.65; }
+  .about-copy .about-signoff { margin-top: 32px; color: var(--muted); font-size: .85rem; }
+  @media (max-width: 700px) { .about-layout { grid-template-columns: 1fr; margin-top: 28px; gap: 28px; } .about-contents { position: static; border-bottom: 1px solid var(--pf-border); padding-bottom: 16px; flex-direction: row; flex-wrap: wrap; gap: 0 20px; } .about-contents span { flex-basis: 100%; } }
+  @media print { .about-publication { max-width: none; padding: 0; } .about-contents { display: none; } .about-layout { display: block; } .about-copy { max-width: none; color: var(--pf-muted); } h1,h2,dt,.about-mission > p:first-of-type { color: var(--pf-muted); } section { break-inside: avoid; } }
+</style>

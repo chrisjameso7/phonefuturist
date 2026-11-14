@@ -1,0 +1,128 @@
+{
+  "version": "phonearena-battery-2025-2026-0.1.0",
+  "sources": [
+    {
+      "id": "phonearena-battery-lab-2026",
+      "publisher": "PhoneArena",
+      "url": "https://www.phonearena.com/phones/benchmarks/battery/",
+      "protocol": "Independent lab battery tests. 200 nits fixed brightness, Wi-Fi, 100% battery health, latest firmware; separate web browsing, video streaming and 3D gaming drain tests.",
+      "accessedDate": "2026-10-12"
+    }
+  ],
+  "devices": [
+    {
+      "id": "phonearena-xiaomi-redmi-note-17-pro-max",
+      "manufacturer": "Xiaomi",
+      "model": "Redmi Note 17 Pro Max",
+      "releaseDate": "Aug 28, 2026",
+      "batteryMah": 9210,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 13.53,
+        "browsingHours": 33.78,
+        "videoHours": 17.83,
+        "gamingHours": 19.47
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    },
+    {
+      "id": "phonearena-apple-iphone-18-pro-max",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro Max",
+      "releaseDate": "Sep 18, 2026",
+      "batteryMah": 5567,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 10.52,
+        "browsingHours": 29.63,
+        "videoHours": 12.07,
+        "gamingHours": 14.57
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    },
+    {
+      "id": "phonearena-xiaomi-poco-f9-ultra",
+      "manufacturer": "Xiaomi",
+      "model": "Poco F9 Ultra",
+      "releaseDate": "Sep 01, 2026",
+      "batteryMah": 8050,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 9.53,
+        "browsingHours": 29.92,
+        "videoHours": 8.98,
+        "gamingHours": 13.45
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    },
+    {
+      "id": "phonearena-xiaomi-redmi-note-17-pro",
+      "manufacturer": "Xiaomi",
+      "model": "Redmi Note 17 Pro",
+      "releaseDate": "Aug 27, 2026",
+      "batteryMah": 8340,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 9.33,
+        "browsingHours": 16.95,
+        "videoHours": 16.18,
+        "gamingHours": 13.17
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    },
+    {
+      "id": "phonearena-google-pixel-11-pro",
+      "manufacturer": "Google",
+      "model": "Pixel 11 Pro",
+      "releaseDate": "Aug 20, 2026",
+      "batteryMah": 4850,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 10.73,
+        "browsingHours": 12.28,
+        "videoHours": 10.03,
+        "gamingHours": 9.23
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    },
+    {
+      "id": "phonearena-apple-iphone-18-pro",
+      "manufacturer": "Apple",
+      "model": "iPhone 18 Pro",
+      "releaseDate": "Sep 18, 2026",
+      "batteryMah": 4288,
+      "sourceIds": [
+        "phonearena-battery-lab-2026"
+      ],
+      "measurements": {
+        "batteryLifeEstimateHours": 7.88,
+        "browsingHours": 22.85,
+        "videoHours": 8.23,
+        "gamingHours": 11.88
+      },
+      "notes": [
+        "PhoneArena controlled battery benchmark row; battery tests at 200 nits over Wi-Fi on new devices."
+      ]
+    }
+  ]
+}

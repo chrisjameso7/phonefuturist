@@ -13,6 +13,10 @@ import type {
   PackagingInput,
 } from './modules/packaging';
 
+import type {
+  SystemEfficiencyProfile,
+} from './modules/system-efficiency';
+
 export type DeviceFormFactor =
   | 'phone'
   | 'book_foldable'
@@ -44,6 +48,10 @@ export interface DisplayInput {
   diagonalInches?: number;
   resolutionWidthPx?: number;
   resolutionHeightPx?: number;
+  /** Logical resolution drawn by the GPU before panel scaling. */
+  renderingWidthPx?: number;
+  renderingHeightPx?: number;
+  refreshRateHz?: number;
 
   /**
    * Physical display width:height ratio in the device's
@@ -91,6 +99,12 @@ export interface SimulationInput {
   battery?: BatteryPackInput;
 
   /**
+   * Optional workload-specific software/system efficiency evidence.
+   * Missing coefficients are neutral and never inferred from brand names.
+   */
+  systemEfficiency?: SystemEfficiencyProfile;
+
+  /**
    * Any number of camera modules may be simulated.
    */
   cameras?: CameraInput[];
@@ -106,6 +120,9 @@ export interface SimulationInput {
 }
 
 export interface CalculatedDisplay {
+  renderingPixelCount?: number;
+  nativePixelCount?: number;
+  renderingPixelRatio?: number;
   widthMm?: number;
   heightMm?: number;
   areaMm2?: number;

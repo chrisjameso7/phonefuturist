@@ -1,0 +1,7 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import ThermalLab from '../../components/labs/ThermalLab';
+import '../../styles/labs.css';
+---
+<Page title="Thermal simulator"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>Thermal simulator</h1><p>Configure cooling and inspect temperature and FPS.</p></header><ThermalLab client:load /></div></Page>

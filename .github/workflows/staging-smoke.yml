@@ -1,0 +1,30 @@
+name: Staging smoke checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_url:
+        description: 'Public Cloudflare staging origin'
+        required: true
+        default: 'https://phonefuturist-dev.phonefuturist.workers.dev'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check public staging routes and security headers
+        env:
+          STAGING_URL: ${{ inputs.staging_url }}
+        run: node scripts/smoke-public-release.mjs "$STAGING_URL"

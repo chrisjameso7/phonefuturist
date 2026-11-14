@@ -1,12 +1,10 @@
 /* PhoneFuturist's device-focused editorial shell; colors come from brand-theme. */
 
-:root { font-family: Arial, Helvetica, sans-serif; }
+:root { font-family: var(--font-ui); }
 
 body {
   background:
-    radial-gradient(ellipse at 10% 5%, color-mix(in srgb,var(--surface) 50%,transparent), transparent 45%),
-    radial-gradient(ellipse at 95% 65%, color-mix(in srgb,var(--surface) 50%,transparent), transparent 50%),
-    var(--surface-raised);
+    var(--pf-surface);
   min-height: 100vh;
   padding: 24px;
 }
@@ -20,10 +18,10 @@ body {
   margin: 0 auto 12px;
   padding: 12px 20px;
   gap: 16px;
-  background: color-mix(in srgb,var(--surface) 85%,transparent);
+  background: var(--pf-surface);
   border: 1px solid var(--line);
-  border-radius: 30px;
-  box-shadow: 0 12px 45px color-mix(in srgb,var(--surface) 13%,transparent);
+  border-radius: var(--pf-radius-md);
+  box-shadow: none;
 }
 
 .brand {
@@ -41,13 +39,13 @@ body {
   gap: 4px;
   padding: 4px;
   border: 1px solid color-mix(in srgb,var(--ink) 21%,transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb,var(--ink) 3%,transparent);
+  border-radius: var(--pf-radius-md);
+  background: var(--pf-surface);
 }
 
 .desktop-nav a {
   padding: 10px 17px;
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   color: var(--ink);
 }
 
@@ -64,7 +62,7 @@ body {
 .header-actions .sign-in,
 .header-actions .button,
 .header-actions button {
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
   padding: 10px 16px;
 }
 
@@ -73,7 +71,7 @@ button,
   background: var(--accent);
   color: var(--on-accent);
   border: 1px solid var(--accent);
-  border-radius: 999px;
+  border-radius: var(--pf-radius-md);
 }
 
 .button:hover,
@@ -95,7 +93,7 @@ select {
   background: var(--surface-deep);
   border-color: var(--muted);
   color: var(--ink);
-  border-radius: 10px;
+  border-radius: var(--pf-radius-sm);
 }
 
 input:focus,
@@ -113,7 +111,7 @@ main {
   padding: 38px;
   background: color-mix(in srgb,var(--surface) 85%,transparent);
   border: 1px solid var(--line);
-  border-radius: 30px;
+  border-radius: var(--pf-radius-md);
   min-height: 65vh;
 }
 
@@ -124,7 +122,7 @@ main {
 }
 
 .panel {
-  border-radius: 22px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb,var(--surface) 79%,transparent);
 }
 
@@ -134,7 +132,7 @@ main {
 }
 
 .error {
-  background: #512d2d;
+  background: var(--pf-rumor);
 }
 
 .eyebrow {
@@ -147,28 +145,32 @@ main {
   padding: 8px;
   background: color-mix(in srgb,var(--ink) 5%,transparent);
   border: 1px solid color-mix(in srgb,var(--ink) 21%,transparent);
-  border-radius: 32px;
+  border-radius: var(--pf-radius-md);
 }
 
 .observatory .hero {
   height: auto;
   min-height: 640px;
   border: 1px solid color-mix(in srgb,var(--ink) 38%,transparent);
-  border-radius: 27px;
+  border-radius: var(--pf-radius-md);
   padding: 40px;
   align-items: flex-end;
   background: var(--surface);
 }
 
 .observatory .hero-image {
-  filter: saturate(.35) sepia(.16);
-  object-position: 58% center;
+  filter: saturate(.45) sepia(.12);
+  object-position: 60% center;
 }
 
 .observatory .hero::after {
   background:
-    linear-gradient(0deg, color-mix(in srgb,var(--surface) 96%,transparent), transparent 75%),
-    linear-gradient(90deg, color-mix(in srgb,var(--surface) 67%,transparent), transparent 90%);
+    linear-gradient(
+        0deg,
+        color-mix(in srgb,var(--surface) 96%,transparent) 0%,
+        color-mix(in srgb,var(--surface) 56%,transparent) 42%,
+        transparent 78%
+      );
 }
 
 .observatory .hero-copy {
@@ -234,7 +236,7 @@ main {
   display: block;
   margin-top: 18px;
   border: 1px solid var(--line);
-  border-radius: 30px;
+  border-radius: var(--pf-radius-md);
   background: color-mix(in srgb,var(--surface) 85%,transparent);
   padding: 30px;
 }
@@ -258,9 +260,7 @@ main {
 
 .home-section-tabs a {
   transition:
-    background .15s ease,
-    color .15s ease,
-    border-color .15s ease;
+    transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out;
 }
 
 .home-section-tabs a:hover {
@@ -269,7 +269,7 @@ main {
 }
 
 .article-card {
-  border-radius: 20px;
+  border-radius: var(--pf-radius-md);
 }
 
 .article-card::before {
@@ -277,13 +277,13 @@ main {
 }
 
 .lead-card {
-  background: linear-gradient(145deg, var(--surface), var(--surface-deep));
+  background: var(--pf-surface);
   --accent: inherit;
   --muted: inherit;
 }
 
 .empty-news {
-  background: linear-gradient(135deg, var(--surface), var(--surface));
+  background: var(--pf-surface);
   border-color: color-mix(in srgb,var(--ink) 19%,transparent);
 }
 
@@ -305,11 +305,9 @@ main {
   margin-top: 18px;
   padding: 42px;
   border: 1px solid color-mix(in srgb,var(--ink) 19%,transparent);
-  border-radius: 30px;
+  border-radius: var(--pf-radius-md);
   background:
-    radial-gradient(circle at 82% 25%, color-mix(in srgb,var(--ink) 23%,transparent), transparent 24%),
-    radial-gradient(circle at 78% 50%, color-mix(in srgb,var(--surface) 31%,transparent), transparent 42%),
-    linear-gradient(135deg, var(--surface), var(--surface-deep));
+    var(--pf-surface);
 }
 
 .home-lab::after {
@@ -321,11 +319,10 @@ main {
   width: 220px;
   height: 220px;
   border: 1px solid color-mix(in srgb,var(--accent) 30%,transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   transform: translateY(-50%);
   box-shadow:
-    0 0 0 24px color-mix(in srgb,var(--accent) 3%,transparent),
-    0 0 0 48px color-mix(in srgb,var(--accent) 2%,transparent);
+    none;
 }
 
 .home-lab-copy {
@@ -369,12 +366,11 @@ main {
   display: grid;
   place-items: center;
   border: 1px solid color-mix(in srgb,var(--accent) 42%,transparent);
-  border-radius: 50%;
+  border-radius: var(--pf-radius-md);
   color: var(--ink);
   font-size: .82rem;
   letter-spacing: -.02em;
   background: color-mix(in srgb,var(--surface) 50%,transparent);
-  backdrop-filter: blur(10px);
 }
 
 .home-lab-action .button {
@@ -427,18 +423,6 @@ main {
   color: var(--muted);
 }
 
-/* Footer */
-
-footer {
-  margin-top: 24px;
-  border-color: color-mix(in srgb,var(--ink) 19%,transparent);
-  color: var(--muted);
-}
-
-footer a:last-child {
-  color: var(--ink);
-}
-
 /* Studio */
 
 .studio-fields,
@@ -446,7 +430,7 @@ footer a:last-child {
 .studio-block {
   background: var(--surface) !important;
   border-color: color-mix(in srgb,var(--ink) 19%,transparent) !important;
-  border-radius: 20px !important;
+  border-radius: var(--pf-radius-md) !important;
 }
 
 .studio-workspace {
@@ -536,9 +520,7 @@ footer a:last-child {
   body {
     padding: 8px;
     background:
-      radial-gradient(circle at 12% 0%, color-mix(in srgb,var(--surface) 33%,transparent), transparent 34%),
-      radial-gradient(circle at 100% 48%, color-mix(in srgb,var(--surface) 27%,transparent), transparent 38%),
-      var(--surface-raised);
+      var(--pf-surface);
   }
 
   /* Compact navigation shell */
@@ -551,11 +533,9 @@ footer a:last-child {
     padding: 8px 8px 8px 14px;
     min-height: 60px;
     border: 1px solid color-mix(in srgb,var(--ink) 15%,transparent);
-    border-radius: 22px;
-    background: color-mix(in srgb,var(--surface) 93%,transparent);
-    box-shadow: 0 12px 36px color-mix(in srgb,var(--surface) 13%,transparent);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
+    border-radius: var(--pf-radius-md);
+    background: var(--pf-surface);
+    box-shadow: none;
   }
 
   .header-brand-row {
@@ -582,16 +562,15 @@ footer a:last-child {
     top: calc(100% + 7px);
     border-color: color-mix(in srgb,var(--ink) 16%,transparent);
     background:
-      radial-gradient(circle at 90% 0%, color-mix(in srgb,var(--surface) 21%,transparent), transparent 38%),
-      color-mix(in srgb,var(--surface) 97%,transparent);
-    box-shadow: 0 25px 65px color-mix(in srgb,var(--surface) 40%,transparent);
+      var(--pf-surface);
+    box-shadow: none;
   }
 
   /* Main */
 
   main {
     padding: 20px 16px;
-    border-radius: 22px;
+    border-radius: var(--pf-radius-md);
   }
 
   .home-page {
@@ -602,7 +581,7 @@ footer a:last-child {
 
   .observatory {
     padding: 5px;
-    border-radius: 24px;
+    border-radius: var(--pf-radius-md);
     background: color-mix(in srgb,var(--ink) 4%,transparent);
     border-color: color-mix(in srgb,var(--ink) 15%,transparent);
   }
@@ -612,7 +591,7 @@ footer a:last-child {
     height: auto;
     padding: 0;
     display: block;
-    border-radius: 19px;
+    border-radius: var(--pf-radius-md);
     overflow: hidden;
     background: var(--surface);
   }
@@ -701,7 +680,7 @@ footer a:last-child {
     right: 12px;
     bottom: auto;
     padding: 4px 7px;
-    border-radius: 999px;
+    border-radius: var(--pf-radius-md);
     background: color-mix(in srgb,var(--surface) 72%,transparent);
     color: var(--muted);
     font-size: .46rem;
@@ -712,7 +691,7 @@ footer a:last-child {
   .latest-section {
     margin-top: 8px;
     padding: 20px 14px;
-    border-radius: 22px;
+    border-radius: var(--pf-radius-md);
     background: color-mix(in srgb,var(--surface) 91%,transparent);
   }
 
@@ -737,14 +716,13 @@ footer a:last-child {
   }
 
   .latest-section .article-card {
-    border-radius: 14px;
+    border-radius: var(--pf-radius-md);
     background: var(--surface);
   }
 
   .latest-section .lead-card {
     background:
-      radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--surface) 21%,transparent), transparent 42%),
-      linear-gradient(145deg, var(--surface), var(--surface-deep));
+      var(--pf-surface);
   }
 
   /* Lab */
@@ -757,7 +735,7 @@ footer a:last-child {
     min-height: 0;
     margin-top: 8px;
     padding: 28px 18px 18px;
-    border-radius: 22px;
+    border-radius: var(--pf-radius-md);
   }
 
   .home-lab::after {
@@ -768,8 +746,7 @@ footer a:last-child {
     transform: none;
     opacity: .75;
     box-shadow:
-      0 0 0 18px color-mix(in srgb,var(--accent) 3%,transparent),
-      0 0 0 36px color-mix(in srgb,var(--accent) 2%,transparent);
+      none;
   }
 
   .home-lab-copy {
@@ -821,10 +798,9 @@ footer a:last-child {
     margin-top: 8px;
     padding: 34px 16px;
     border: 1px solid color-mix(in srgb,var(--ink) 8%,transparent);
-    border-radius: 22px;
+    border-radius: var(--pf-radius-md);
     background:
-      radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--surface) 15%,transparent), transparent 45%),
-      color-mix(in srgb,var(--surface) 72%,transparent);
+      var(--pf-surface);
   }
 
   .about-section h2 {
@@ -849,7 +825,7 @@ footer a:last-child {
   /* Account */
 
   .account-shell {
-    border-radius: 18px;
+    border-radius: var(--pf-radius-md);
   }
 
   .account-sidebar {
@@ -870,13 +846,6 @@ footer a:last-child {
     padding: 0;
   }
 
-  /* Footer */
-
-  footer {
-    margin-top: 8px;
-    padding: 26px 14px;
-    border-top-color: color-mix(in srgb,var(--ink) 14%,transparent);
-  }
 }
 
 /* Narrow phones */
@@ -889,7 +858,7 @@ footer a:last-child {
   .site-header {
     min-height: 58px;
     padding-left: 12px;
-    border-radius: 20px;
+    border-radius: var(--pf-radius-md);
   }
 
   .brand {
@@ -897,11 +866,11 @@ footer a:last-child {
   }
 
   .observatory {
-    border-radius: 22px;
+    border-radius: var(--pf-radius-md);
   }
 
   .observatory .hero {
-    border-radius: 17px;
+    border-radius: var(--pf-radius-md);
   }
 
   .observatory .hero-image,
@@ -952,6 +921,6 @@ footer a:last-child {
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
-    transition: none !important;
+    transition: transform var(--pf-motion-fast) ease-out, opacity var(--pf-motion-fast) ease-out !important;
   }
 }

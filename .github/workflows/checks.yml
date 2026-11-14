@@ -19,5 +19,41 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npm run verify
+      - name: Install dependencies with diagnostics
+        shell: bash
+        run: |
+          set -o pipefail
+          npm ci 2>&1 | tee install.log
+      - name: Typecheck
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee typecheck.log
+      - name: Unit tests
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee tests.log
+      - name: Calibration checks
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check:calibration 2>&1 | tee calibration.log
+      - name: Production build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+      - name: Upload verification log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-log-${{ github.run_id }}
+          path: |
+            install.log
+            typecheck.log
+            tests.log
+            calibration.log
+            build.log
+          if-no-files-found: ignore
+          retention-days: 7

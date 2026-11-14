@@ -36,6 +36,8 @@ beforeAll(async()=>{
   if(['publisher','admin'].includes(role))await db.query("insert into auth.mfa_factors values($1,$1,'verified')",[id]);
  }
  await db.exec(readFileSync(new URL('../supabase/migrations/20260924111314_public_article_card_images.sql',import.meta.url),'utf8'));
+ await db.exec(readFileSync(new URL('../supabase/migrations/20261103135403_article_confidence_label.sql',import.meta.url),'utf8'));
+ await db.exec(readFileSync(new URL('../supabase/migrations/20261106105627_public_story_image_attribution.sql',import.meta.url),'utf8'));
 },30000);
 afterAll(async()=>db.close());
 describe('current Studio publishing policy and historical integrity',()=>{
@@ -101,12 +103,12 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await command(own.id,2,'publish');
  });
  it('preserves image attribution and rich text in public projection with optional metadata',async()=>{
-  await as('writer');const p={...payload('image'),blocks:[{type:'image',url:'https://example.test/image.webp',text:'',alt:'A test device',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'}, {type:'paragraph',text:'A linked claim',inline:[{text:'A ',bold:true},{text:'linked claim',href:'https://example.test/evidence'}]}]};
+  await as('writer');const p={...payload('image'),blocks:[{type:'image',url:'https://example.test/image.webp',text:'',alt:'A test device',caption:'Device on a desk',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'}, {type:'paragraph',text:'A linked claim',inline:[{text:'A ',bold:true},{text:'linked claim',href:'https://example.test/evidence'}]}]};
   const a=await command(null,null,'create',p);await command(a.id,1,'publish');
   await as('anon');const blocks=(await publicRead('/news/image'))[0].blocks;
   const card=(await publicRead()).find(item=>item.canonical_path==='/news/image');
-  expect(card.card_image).toEqual({url:'https://example.test/image.webp',alt:'A test device'});expect(card.blocks).toEqual([]);
-  expect(blocks[0]).toMatchObject({alt:'A test device',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'});
+  expect(card.card_image).toMatchObject({url:'https://example.test/image.webp',alt:'A test device',credit:'Photographer',caption:'Device on a desk'});expect(card.blocks).toEqual([]);
+  expect(blocks[0]).toMatchObject({alt:'A test device',caption:'Device on a desk',credit:'Photographer',sourceName:'Original source',sourceUrl:'https://example.test/source',rightsNote:'Used with permission'});
   expect(blocks[1].inline).toEqual(p.blocks[1].inline);
   await as('writer');const bad=await command(null,null,'create',{...payload('bad-image'),blocks:[{type:'image',url:'https://example.test/x.png',text:'',alt:''}]});
   await command(bad.id,1,'publish');
@@ -129,4 +131,11 @@ describe('current Studio publishing policy and historical integrity',()=>{
   await as('reader');expect((await db.query('select * from storage.objects')).rows).toEqual([]);
   await as('publisher','aal1');await db.query("insert into storage.objects(bucket_id,name) values('article-media',$1)",['articles/'+ids.publisher+'/x.png']);
  });
+});
+
+it('publishes optional confidence without exposing private metadata and rejects invalid values',async()=>{
+ await as('writer','aal1');
+ const article=await command(null,null,'save_publish',{...payload('confidence-test'),section:'analysis',confidence:'rumor'});
+ await expect(command(null,null,'save_publish',{...payload('bad-confidence'),confidence:'verified'})).rejects.toThrow('Check the article fields');
+ await as('anon');const rows=await publicRead(article.path!);expect(rows[0].confidence).toBe('rumor');expect(JSON.stringify(rows)).not.toContain('CONFIDENTIAL_TEST_MARKER');
 });

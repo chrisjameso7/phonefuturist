@@ -292,6 +292,19 @@ export default function RichArticleEditor({
     }
   };
 
+  const articleImages: { position: number; source: string; credit: string }[] = [];
+  editor.state.doc.descendants((node, position) => {
+    if (node.type.name === 'image') {
+      articleImages.push({ position, source: node.attrs.src, credit: node.attrs.credit ?? '' });
+    }
+  });
+
+  function updateImageCredit(position: number, credit: string) {
+    const image = editor!.state.doc.nodeAt(position);
+    if (image?.type.name !== 'image') return;
+    editor!.view.dispatch(editor!.state.tr.setNodeMarkup(position, undefined, { ...image.attrs, credit }));
+  }
+
   return (
     <div className="rich-editor">
       <div className="rich-editor-toolbar">
@@ -488,6 +501,16 @@ export default function RichArticleEditor({
       </div>
 
       <EditorContent editor={editor} />
+      {articleImages.length > 0 && <fieldset disabled={disabled || uploadingImage} className="studio-fields">
+        <legend>Image credits</legend>
+        <p>Add a credit for each image. Credits appear beneath published images.</p>
+        {articleImages.map((image, index) => <label key={image.position}>
+          Image {index + 1} credit
+          <small>{image.source}</small>
+          <input maxLength={2000} value={image.credit}
+            onChange={event => updateImageCredit(image.position, event.target.value)} />
+        </label>)}
+      </fieldset>}
       {editor.isActive('image') && <fieldset disabled={disabled || uploadingImage} className="studio-fields">
         <legend>Selected image attribution</legend>
         {([

@@ -1,0 +1,22 @@
+/** Progressive visual feedback. No navigation, form submission or application state is intercepted. */
+export function enhanceInstruments() {
+ const root=document.documentElement;if(root.dataset.instrumentEnhanced)return;root.dataset.instrumentEnhanced='true';
+ const ready=(element:Element)=>{const island=element.closest<HTMLElement>('astro-island');return !island||island.dataset.instrumentReady==='true';};
+ const seen=new WeakSet<Element>();let toastTimer=0;
+ const toast=document.createElement('div');toast.className='instrument-toast';toast.setAttribute('aria-hidden','true');document.body.append(toast);
+ function showToast(text:string){toast.textContent=text;toast.dataset.visible='';window.clearTimeout(toastTimer);toastTimer=window.setTimeout(()=>delete toast.dataset.visible,2600);}
+ function slider(input:HTMLInputElement){const min=Number(input.min||0),max=Number(input.max||100),fill=max>min?(Number(input.value)-min)/(max-min)*100:0;input.style.setProperty('--range-fill',Math.max(0,Math.min(100,fill))+'%');const label=input.closest('label');if(!label)return;let tip=label.querySelector<HTMLElement>(':scope > .instrument-range-value');if(!tip){tip=document.createElement('span');tip.className='instrument-range-value';tip.setAttribute('aria-hidden','true');label.append(tip);}if(tip.textContent!==input.value)tip.textContent=input.value;}
+ function indicator(nav:HTMLElement){if(!ready(nav))return;const active=nav.querySelector<HTMLElement>('[aria-current="page"],[aria-pressed="true"],.active');if(!active)return;let track=nav.querySelector<HTMLElement>(':scope > .instrument-tab-indicator');if(!track){track=document.createElement('span');track.className='instrument-tab-indicator';track.setAttribute('aria-hidden','true');nav.append(track);nav.classList.add('instrument-tabs');}const a=active.getBoundingClientRect(),n=nav.getBoundingClientRect();track.style.width=a.width+'px';track.style.height=a.height+'px';track.style.transform=`translate(${a.left-n.left+nav.scrollLeft}px,${a.top-n.top+nav.scrollTop}px)`;}
+ function refresh(){
+  document.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach(input=>{if(!ready(input))return;slider(input);if(seen.has(input))return;seen.add(input);input.addEventListener('input',()=>slider(input));input.addEventListener('pointerdown',()=>{input.dataset.dragging='';});const stop=()=>delete input.dataset.dragging;input.addEventListener('pointerup',stop);input.addEventListener('pointercancel',stop);input.addEventListener('blur',stop);});
+  document.querySelectorAll<HTMLElement>('.desktop-nav,.section-tabs,.il-mode-switch,.mobile-tabbar,.device-presets').forEach(indicator);
+  document.querySelectorAll<HTMLImageElement>('.card-image img').forEach(image=>{if(!ready(image))return;if(seen.has(image))return;seen.add(image);const fail=()=>{image.hidden=true;image.closest('.card-image')?.classList.add('card-image-fallback');};image.addEventListener('error',fail);if(image.complete&&image.naturalWidth===0)fail();});
+  document.querySelectorAll<HTMLButtonElement>('button').forEach(button=>{if(!ready(button))return;const loading=button.getAttribute('aria-busy')==='true'||/^(Preparing|Simulating|Loading|Opening|Saving|Publishing|Downloading)/.test(button.textContent?.trim()??'');button.classList.toggle('instrument-loading',loading);});
+ }
+ let pending=false;
+ const observer=new MutationObserver(changes=>{for(const change of changes){const node=change.target instanceof Element?change.target:change.target.parentElement;const status=node?.closest('[role="status"]');if(status){const text=status.textContent?.trim()??'';if(/downloaded|shared\.|copied\.|published to|Simulation complete/i.test(text))showToast(text);}if(change.type==='characterData'&&node?.closest('.lab-metric-row strong,.lab-results>h2,.il-metrics strong')){node.classList.remove('instrument-number-change');requestAnimationFrame(()=>node.classList.add('instrument-number-change'));}}
+ if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;refresh();});}});
+ observer.observe(document.querySelector('main')??document.body,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['aria-pressed','aria-current','aria-busy','value','ssr']});
+ document.addEventListener('pf:instrument-ready',refresh);
+ window.addEventListener('resize',()=>document.querySelectorAll<HTMLElement>('.instrument-tabs').forEach(indicator),{passive:true});refresh();
+}

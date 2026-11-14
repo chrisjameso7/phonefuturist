@@ -1,0 +1,61 @@
+---
+interface SpotlightCampaign {
+  title: string;
+  description?: string;
+  image: string;
+  href: string;
+  cta?: string;
+  imageAlt?: string;
+}
+interface Props { campaign?: SpotlightCampaign | null }
+const { campaign = null } = Astro.props;
+const sponsored = Boolean(campaign);
+const title = campaign?.title ?? 'Tomorrow, examined.';
+const description = campaign?.description ?? '';
+const image = campaign?.image ?? '/assets/device-concept.png';
+const href = campaign?.href ?? '/interactive-leaks';
+const action = campaign?.cta ?? 'Explore Interactive Leaks';
+---
+<section class="pf-spotlight pf-ui" aria-labelledby="pf-spotlight-title" data-sponsored={sponsored ? 'true' : 'false'}>
+  <img class="pf-spotlight__image" src={image} alt={campaign?.imageAlt ?? ''} width="1672" height="941" fetchpriority="high" />
+  <div class="pf-spotlight__content">
+    <p class="pf-spotlight__label">{sponsored ? 'Sponsored Spotlight' : 'PhoneFuturist'}</p>
+    <h1 id="pf-spotlight-title">{title}</h1>
+    {description && <p class="pf-spotlight__description">{description}</p>}
+    <a class="pf-ui__button pf-spotlight__cta" href={href} rel={sponsored ? 'sponsored noopener noreferrer' : undefined}>{action} <span aria-hidden="true">↗</span></a>
+  </div>
+  {sponsored ? <span class="pf-spotlight__index">Advertisement</span> : <span class="pf-spotlight__index" aria-hidden="true">PF / 01</span>}
+</section>
+
+<style is:global>
+/* Fade the existing artwork into the active page surface, without blurring content. */
+body .pf-home-v2 .pf-spotlight {
+ border:0; border-radius:0; background:var(--pf-bg); isolation:isolate;
+}
+body .pf-home-v2 .pf-spotlight::after {
+ background:
+  linear-gradient(90deg,var(--pf-bg) 0%,color-mix(in srgb,var(--pf-bg) 90%,transparent) 22%,transparent 65%,var(--pf-bg) 100%),
+  linear-gradient(0deg,var(--pf-bg),transparent 28%,transparent 76%,var(--pf-bg));
+}
+body .pf-home-v2 .pf-spotlight::before {
+ content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) and (mask-image:radial-gradient(black,transparent)) {
+ body .pf-home-v2 .pf-spotlight::before {
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  -webkit-mask-image:radial-gradient(ellipse at 62% 44%,transparent 36%,black 85%);
+  mask-image:radial-gradient(ellipse at 62% 44%,transparent 36%,black 85%);
+ }
+}
+body .pf-home-v2 .pf-spotlight h1 {color:var(--pf-primary)!important;}
+body .pf-home-v2 .pf-spotlight__label,body .pf-home-v2 .pf-spotlight__index {color:var(--pf-secondary);}
+body .pf-home-v2 .pf-spotlight__description {color:var(--pf-primary);}
+@media(max-width:760px) {
+ body .pf-home-v2 .pf-spotlight::after {
+  background:linear-gradient(0deg,var(--pf-bg) 0%,color-mix(in srgb,var(--pf-bg) 96%,transparent) 16%,color-mix(in srgb,var(--pf-bg) 85%,transparent) 40%,transparent 74%,var(--pf-bg) 100%),linear-gradient(90deg,var(--pf-bg),transparent 20%,transparent 80%,var(--pf-bg));
+ }
+}
+@media(prefers-reduced-transparency:reduce) {
+ body .pf-home-v2 .pf-spotlight::before {-webkit-backdrop-filter:none;backdrop-filter:none;}
+}
+</style>

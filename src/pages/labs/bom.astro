@@ -1,0 +1,7 @@
+---
+import LabNavigation from '../../components/labs/LabNavigation.astro';
+import Page from '../../layouts/Page.astro';
+import BomCalculator from '../../components/labs/BomCalculator';
+import '../../styles/labs.css';
+---
+<Page title="BOM calculator"><div class="labs"><LabNavigation/><header class="lab-hero"><h1>BOM calculator</h1><p>Configure components, compare costs and export your spec card.</p></header><BomCalculator client:load /></div></Page>

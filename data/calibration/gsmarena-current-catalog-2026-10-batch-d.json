@@ -1,0 +1,2411 @@
+{
+  "version": "gsmarena-current-catalog-2026-10-batch-d-0.1.0",
+  "generatedAt": "2026-10-12",
+  "source": {
+    "id": "gsmarena-current-catalog-2026-10",
+    "publisher": "GSMArena",
+    "url": "https://www.gsmarena.com/makers.php3",
+    "protocol": "Manufacturer catalog pages ordered by time of release; identity rows only. Watches/tablets excluded where obvious.",
+    "accessedDate": "2026-10-12"
+  },
+  "devices": [
+    {
+      "id": "gsmarena-meizu-22",
+      "manufacturer": "Meizu",
+      "model": "22",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_22_5g-14150.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-22-pro",
+      "manufacturer": "Meizu",
+      "model": "Note 22 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_22_pro_5g-13884.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-22",
+      "manufacturer": "Meizu",
+      "model": "Note 22",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_22_5g-13883.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-mblu-22-pro",
+      "manufacturer": "Meizu",
+      "model": "Mblu 22 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_mblu_22_pro-13700.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-mblu-22",
+      "manufacturer": "Meizu",
+      "model": "Mblu 22",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_mblu_22-13699.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-22-4g",
+      "manufacturer": "Meizu",
+      "model": "Note 22 4G",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_22-13698.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-16",
+      "manufacturer": "Meizu",
+      "model": "Note 16",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_16_5g-13862.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-16-pro",
+      "manufacturer": "Meizu",
+      "model": "Note 16 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_16_pro_5g-13861.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-mblu-21",
+      "manufacturer": "Meizu",
+      "model": "mblu 21",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_mblu_21-13530.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-lucky-08",
+      "manufacturer": "Meizu",
+      "model": "Lucky 08",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_lucky_08-13365.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-21-pro",
+      "manufacturer": "Meizu",
+      "model": "Note 21 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_21_pro-13341.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-21",
+      "manufacturer": "Meizu",
+      "model": "Note 21",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_21-13342.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-blue-20",
+      "manufacturer": "Meizu",
+      "model": "Blue 20",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_blue_20-13212.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-21-note",
+      "manufacturer": "Meizu",
+      "model": "21 Note",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_21_note-13007.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-21-pro",
+      "manufacturer": "Meizu",
+      "model": "21 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_21_pro-12805.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-21",
+      "manufacturer": "Meizu",
+      "model": "21",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_21-12719.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-20-classic",
+      "manufacturer": "Meizu",
+      "model": "20 Classic",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_20_classic-12630.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-20-infinity",
+      "manufacturer": "Meizu",
+      "model": "20 Infinity",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_20_infinity-12207.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-20-pro",
+      "manufacturer": "Meizu",
+      "model": "20 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_20_pro-12161.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-20",
+      "manufacturer": "Meizu",
+      "model": "20",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_20-12206.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-18s-pro",
+      "manufacturer": "Meizu",
+      "model": "18s Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_18s_pro-11075.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-18s",
+      "manufacturer": "Meizu",
+      "model": "18s",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_18s-11115.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-18x",
+      "manufacturer": "Meizu",
+      "model": "18x",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_18x-11116.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-18-pro",
+      "manufacturer": "Meizu",
+      "model": "18 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_18_pro-10751.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-18",
+      "manufacturer": "Meizu",
+      "model": "18",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_18-10766.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-17-pro",
+      "manufacturer": "Meizu",
+      "model": "17 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_17_pro-10232.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-17",
+      "manufacturer": "Meizu",
+      "model": "17",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_17-10129.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16t",
+      "manufacturer": "Meizu",
+      "model": "16T",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16t-9926.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-m10",
+      "manufacturer": "Meizu",
+      "model": "M10",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_m10-9953.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16s-pro",
+      "manufacturer": "Meizu",
+      "model": "16s Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16s_pro-9792.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16xs",
+      "manufacturer": "Meizu",
+      "model": "16Xs",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16xs-9724.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16s",
+      "manufacturer": "Meizu",
+      "model": "16s",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16s-9424.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-9",
+      "manufacturer": "Meizu",
+      "model": "Note 9",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_9-9555.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-zero",
+      "manufacturer": "Meizu",
+      "model": "Zero",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_zero-9528.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-c9-pro",
+      "manufacturer": "Meizu",
+      "model": "C9 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_c9_pro-9453.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-c9",
+      "manufacturer": "Meizu",
+      "model": "C9",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_c9-9454.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-note-8",
+      "manufacturer": "Meizu",
+      "model": "Note 8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_note_8-9384.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-x8",
+      "manufacturer": "Meizu",
+      "model": "X8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_x8-9341.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-v8-pro",
+      "manufacturer": "Meizu",
+      "model": "V8 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_v8_pro-9338.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-v8",
+      "manufacturer": "Meizu",
+      "model": "V8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_v8-9339.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16x",
+      "manufacturer": "Meizu",
+      "model": "16X",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16x-9337.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16",
+      "manufacturer": "Meizu",
+      "model": "16",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16-9280.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-16-plus",
+      "manufacturer": "Meizu",
+      "model": "16 Plus",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_16_plus-9279.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-m6t",
+      "manufacturer": "Meizu",
+      "model": "M6T",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_m6t-9213.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-m8c",
+      "manufacturer": "Meizu",
+      "model": "M8c",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_m8c-9210.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-15-plus",
+      "manufacturer": "Meizu",
+      "model": "15 Plus",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_15_plus-9160.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-15",
+      "manufacturer": "Meizu",
+      "model": "15",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_15-9159.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-15-lite",
+      "manufacturer": "Meizu",
+      "model": "15 Lite",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_15_lite-9158.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-meizu-e3",
+      "manufacturer": "Meizu",
+      "model": "E3",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/meizu_e3-9066.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-p80-ultra",
+      "manufacturer": "TCL",
+      "model": "P80 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_p80_ultra_5g-14927.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-p80-pro",
+      "manufacturer": "TCL",
+      "model": "P80 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_p80_pro_5g-14867.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-p80",
+      "manufacturer": "TCL",
+      "model": "P80",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_p80_5g-14868.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-k70-se",
+      "manufacturer": "TCL",
+      "model": "K70 SE",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_k70_se-14526.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-k70-power",
+      "manufacturer": "TCL",
+      "model": "K70 Power",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_k70_power-14464.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-k70",
+      "manufacturer": "TCL",
+      "model": "K70",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_k70-14465.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-nxtpaper-70-pro",
+      "manufacturer": "TCL",
+      "model": "NxtPaper 70 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_nxtpaper_70_pro_5g-14398.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-nxtpaper-11-gen-2",
+      "manufacturer": "TCL",
+      "model": "NxtPaper 11 Gen 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_nxtpaper_11_gen_2-14295.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-nxtpaper-60-ultra",
+      "manufacturer": "TCL",
+      "model": "NxtPaper 60 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_nxtpaper_60_ultra_5g-14085.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60-se",
+      "manufacturer": "TCL",
+      "model": "60 SE",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60_se-14020.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-605",
+      "manufacturer": "TCL",
+      "model": "605",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_605-13970.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-nxtpaper-11-plus",
+      "manufacturer": "TCL",
+      "model": "NxtPaper 11 Plus",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_nxtpaper_11_plus-13874.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60-xe-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "60 XE NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60_xe_nxtpaper-13842.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60",
+      "manufacturer": "TCL",
+      "model": "60",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60_5g-13829.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60-se-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "60 SE NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60_se_nxtpaper_5g-13830.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60-nxtpaper-4g",
+      "manufacturer": "TCL",
+      "model": "60 NxtPaper 4G",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60_nxtpaper_4g-13831.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-60r",
+      "manufacturer": "TCL",
+      "model": "60R",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_60r_5g-13772.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-503",
+      "manufacturer": "TCL",
+      "model": "503",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_503-13439.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-pro-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "50 Pro NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_pro_nxtpaper-13300.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "50 NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_nxtpaper-13301.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-xe-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "50 XE NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_xe_nxtpaper-13302.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-nxtpaper-14",
+      "manufacturer": "TCL",
+      "model": "NxtPaper 14",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_nxtpaper_14-13296.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-xl-nxtpaper",
+      "manufacturer": "TCL",
+      "model": "50 XL NxtPaper",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_xl_nxtpaper-13173.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-xl",
+      "manufacturer": "TCL",
+      "model": "50 XL",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_xl-13174.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-xe",
+      "manufacturer": "TCL",
+      "model": "50 XE",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_xe-13175.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-le",
+      "manufacturer": "TCL",
+      "model": "50 LE",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_le-13176.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-flip",
+      "manufacturer": "TCL",
+      "model": "Flip",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_flip-13431.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-classic",
+      "manufacturer": "TCL",
+      "model": "Classic",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_classic-13430.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-flip-3",
+      "manufacturer": "TCL",
+      "model": "Flip 3",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_flip_3-13429.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-flip-2",
+      "manufacturer": "TCL",
+      "model": "Flip 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_flip_2-13428.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-5g",
+      "manufacturer": "TCL",
+      "model": "50 5G",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_5g-12842.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-50-se",
+      "manufacturer": "TCL",
+      "model": "50 SE",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_50_se-12841.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-501",
+      "manufacturer": "TCL",
+      "model": "501",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_501-12840.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-502",
+      "manufacturer": "TCL",
+      "model": "502",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_502-13943.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-tcl-505",
+      "manufacturer": "TCL",
+      "model": "505",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/tcl_505-12823.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700-ai",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700 AI",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700_ai_5g-14904.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y900-13",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y900 13",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y900_13-14778.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y900-11",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y900 11",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y900_11-14779.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y70-2026",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y70 (2026)",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y70_5g_(2026)-14666.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700-gen-5",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700 (Gen 5)",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700_(gen_5)-14549.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700-gen-4",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700 (Gen 4)",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700_(gen_4)-13993.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700-2025",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700 (2025)",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700_(2025)-13438.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700-2023",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700 (2023)",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700_(2023)-12476.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y70",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y70",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y70-11747.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y700",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y700",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y700-11394.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-legion-y90",
+      "manufacturer": "Lenovo",
+      "model": "Legion Y90",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_legion_y90-11331.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-k14-plus",
+      "manufacturer": "Lenovo",
+      "model": "K14 Plus",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_k14_plus-12008.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-k13-pro",
+      "manufacturer": "Lenovo",
+      "model": "K13 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_k13_pro-10971.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-k13",
+      "manufacturer": "Lenovo",
+      "model": "K13",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_k13-10972.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-lenovo-k13-note",
+      "manufacturer": "Lenovo",
+      "model": "K13 Note",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/lenovo_k13_note-10970.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-6",
+      "manufacturer": "Blackview",
+      "model": "Xplore 6",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_6_5g-14857.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-x1-pro",
+      "manufacturer": "Blackview",
+      "model": "Xplore X1 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_x1_pro_5g-14858.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-bl7000-pro",
+      "manufacturer": "Blackview",
+      "model": "BL7000 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_bl7000_pro_5g-14852.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-active-7",
+      "manufacturer": "Blackview",
+      "model": "Active 7",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_active_7-14851.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-active-5",
+      "manufacturer": "Blackview",
+      "model": "Active 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_active_5-14850.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-link-mini-kids",
+      "manufacturer": "Blackview",
+      "model": "Link Mini Kids",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_link_mini_kids-14842.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-link-1-kids",
+      "manufacturer": "Blackview",
+      "model": "Link 1 Kids",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_link_1_kids-14841.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-2c",
+      "manufacturer": "Blackview",
+      "model": "Wave 2C",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_2c-14840.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-2-satellite",
+      "manufacturer": "Blackview",
+      "model": "Xplore 2 Satellite",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_2_satellite_5g-14838.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-2-projector",
+      "manufacturer": "Blackview",
+      "model": "Xplore 2 Projector",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_2_projector_5g-14837.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-1-pro",
+      "manufacturer": "Blackview",
+      "model": "Xplore 1 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_1_pro_5g-14836.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-zeno-5",
+      "manufacturer": "Blackview",
+      "model": "Zeno 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_zeno_5-14793.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-5",
+      "manufacturer": "Blackview",
+      "model": "Mega 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_5-14792.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-10c",
+      "manufacturer": "Blackview",
+      "model": "Wave 10C",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_10c-14791.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-10",
+      "manufacturer": "Blackview",
+      "model": "Wave 10",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_10-14790.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-5",
+      "manufacturer": "Blackview",
+      "model": "Rock 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_5-14786.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-3",
+      "manufacturer": "Blackview",
+      "model": "Rock 3",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_3-14785.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-2-pro",
+      "manufacturer": "Blackview",
+      "model": "Rock 2 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_2_pro_5g-14784.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-2",
+      "manufacturer": "Blackview",
+      "model": "Rock 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_2_5g-14783.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-1-pro",
+      "manufacturer": "Blackview",
+      "model": "Rock 1 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_1_pro-14770.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-rock-1",
+      "manufacturer": "Blackview",
+      "model": "Rock 1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_rock_1-14769.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-fort-200",
+      "manufacturer": "Blackview",
+      "model": "Fort 200",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_fort_200-14767.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-fort-100",
+      "manufacturer": "Blackview",
+      "model": "Fort 100",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_fort_100-14766.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-fort-5",
+      "manufacturer": "Blackview",
+      "model": "Fort 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_fort_5-14765.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-7c",
+      "manufacturer": "Blackview",
+      "model": "Wave 7C",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_7c-14755.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-12",
+      "manufacturer": "Blackview",
+      "model": "Mega 12",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_12_5g-14437.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-1-walkie-talkie",
+      "manufacturer": "Blackview",
+      "model": "Xplore 1 Walkie Talkie",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_1_walkie_talkie_5g-14438.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-x1",
+      "manufacturer": "Blackview",
+      "model": "Xplore X1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_x1_5g-14439.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-9c",
+      "manufacturer": "Blackview",
+      "model": "Wave 9C",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_9c-14440.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-zeno-10",
+      "manufacturer": "Blackview",
+      "model": "Zeno 10",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_zeno_10_5g-14441.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-link-2",
+      "manufacturer": "Blackview",
+      "model": "Link 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_link_2-14442.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-link-8",
+      "manufacturer": "Blackview",
+      "model": "Link 8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_link_8-14443.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-fort-2",
+      "manufacturer": "Blackview",
+      "model": "Fort 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_fort_2-14444.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-2",
+      "manufacturer": "Blackview",
+      "model": "Xplore 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_2_5g-14229.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-zeno-1",
+      "manufacturer": "Blackview",
+      "model": "Zeno 1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_zeno_1-14154.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-shark-6",
+      "manufacturer": "Blackview",
+      "model": "Shark 6",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_shark_6_5g-14153.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-color-6",
+      "manufacturer": "Blackview",
+      "model": "Color 6",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_color_6-14152.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-fort-1",
+      "manufacturer": "Blackview",
+      "model": "Fort 1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_fort_1-14151.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-xplore-1",
+      "manufacturer": "Blackview",
+      "model": "Xplore 1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_xplore_1_5g-14127.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-active-12-pro",
+      "manufacturer": "Blackview",
+      "model": "Active 12 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_active_12_pro_5g-14064.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-3",
+      "manufacturer": "Blackview",
+      "model": "Mega 3",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_3-13940.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-bl7000",
+      "manufacturer": "Blackview",
+      "model": "BL7000",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_bl7000_5g-13849.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-bv7300",
+      "manufacturer": "Blackview",
+      "model": "BV7300",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_bv7300-13848.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-2-wifi",
+      "manufacturer": "Blackview",
+      "model": "Mega 2 WiFi",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_2_wifi-13840.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-8",
+      "manufacturer": "Blackview",
+      "model": "Mega 8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_8-13839.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-bv4800-pro",
+      "manufacturer": "Blackview",
+      "model": "BV4800 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_bv4800_pro-13716.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-8c",
+      "manufacturer": "Blackview",
+      "model": "Wave 8C",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_8c-13638.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-wave-8",
+      "manufacturer": "Blackview",
+      "model": "Wave 8",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_wave_8-13637.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-bv8200",
+      "manufacturer": "Blackview",
+      "model": "BV8200",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_bv8200-13636.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-blackview-mega-2",
+      "manufacturer": "Blackview",
+      "model": "Mega 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/blackview_mega_2-13635.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-s300-pro",
+      "manufacturer": "Doogee",
+      "model": "S300 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_s300_pro_5g-14741.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-s300-plus",
+      "manufacturer": "Doogee",
+      "model": "S300 Plus",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_s300_plus_5g-14742.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-s300-plus-thermal",
+      "manufacturer": "Doogee",
+      "model": "S300 Plus Thermal",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_s300_plus_thermal_5g-14743.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-v-max-2-pro",
+      "manufacturer": "Doogee",
+      "model": "V Max 2 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_v_max_2_pro_5g-14736.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-v-max-2",
+      "manufacturer": "Doogee",
+      "model": "V Max 2",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_v_max_2_5g-14735.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-10-energy",
+      "manufacturer": "Doogee",
+      "model": "Blade 10 Energy",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_10_energy-14492.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-10-pro-energy",
+      "manufacturer": "Doogee",
+      "model": "Blade 10 Pro Energy",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_10_pro_energy-14493.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-10-ultra-energy",
+      "manufacturer": "Doogee",
+      "model": "Blade 10 Ultra Energy",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_10_ultra_energy-14494.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-20-pro",
+      "manufacturer": "Doogee",
+      "model": "Blade 20 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_20_pro-14495.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-20-max",
+      "manufacturer": "Doogee",
+      "model": "Blade 20 Max",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_20_max-14496.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-anywise-w1-pro",
+      "manufacturer": "Doogee",
+      "model": "Anywise W1 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_anywise_w1_pro-14472.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-anywise-w1",
+      "manufacturer": "Doogee",
+      "model": "Anywise W1",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_anywise_w1-14473.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-5-pro",
+      "manufacturer": "Doogee",
+      "model": "Fire 5 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_5_pro-14467.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-5-ultra",
+      "manufacturer": "Doogee",
+      "model": "Fire 5 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_5_ultra-14468.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-7-pro",
+      "manufacturer": "Doogee",
+      "model": "Fire 7 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_7_pro_5g-14469.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-7-ultra",
+      "manufacturer": "Doogee",
+      "model": "Fire 7 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_7_ultra_5g-14470.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-s200-ultra",
+      "manufacturer": "Doogee",
+      "model": "S200 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_s200_ultra_5g-14204.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-note-58",
+      "manufacturer": "Doogee",
+      "model": "Note 58",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_note_58-14199.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-note-58-pro",
+      "manufacturer": "Doogee",
+      "model": "Note 58 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_note_58_pro-14200.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-5",
+      "manufacturer": "Doogee",
+      "model": "Fire 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_5-14201.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-v-max-play",
+      "manufacturer": "Doogee",
+      "model": "V Max Play",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_v_max_play_5g-14202.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-v-max-lr",
+      "manufacturer": "Doogee",
+      "model": "V Max LR",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_v_max_lr_5g-14203.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-s200-max",
+      "manufacturer": "Doogee",
+      "model": "S200 Max",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_s200_max_5g-14076.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-3-ultra",
+      "manufacturer": "Doogee",
+      "model": "Fire 3 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_3_ultra-14077.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-3-pro",
+      "manufacturer": "Doogee",
+      "model": "Fire 3 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_3_pro-14078.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-fire-7",
+      "manufacturer": "Doogee",
+      "model": "Fire 7",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_fire_7_5g-14079.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-gt-pro",
+      "manufacturer": "Doogee",
+      "model": "Blade GT Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_gt_pro_5g-13973.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-gt-play",
+      "manufacturer": "Doogee",
+      "model": "Blade GT Play",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_gt_play_5g-13972.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade20-play",
+      "manufacturer": "Doogee",
+      "model": "Blade20 Play",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade20_play_5g-13902.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade20-turbo",
+      "manufacturer": "Doogee",
+      "model": "Blade20 Turbo",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade20_turbo_5g-13901.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade20-ultra",
+      "manufacturer": "Doogee",
+      "model": "Blade20 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade20_ultra-13900.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade20",
+      "manufacturer": "Doogee",
+      "model": "Blade20",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade20-13899.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-note59-pro",
+      "manufacturer": "Doogee",
+      "model": "Note59 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_note59_pro-13835.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-note-59",
+      "manufacturer": "Doogee",
+      "model": "Note 59",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_note_59-13834.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-v-max-s",
+      "manufacturer": "Doogee",
+      "model": "V Max S",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_v_max_s-13833.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-u11-pro",
+      "manufacturer": "Doogee",
+      "model": "U11 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_u11_pro-13832.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-doogee-blade-gt-ultra",
+      "manufacturer": "Doogee",
+      "model": "Blade GT Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/doogee_blade_gt_ultra-13739.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-24-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 24 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_24_pro-14891.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-22-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 22 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_22_pro-14890.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-note-23",
+      "manufacturer": "Ulefone",
+      "model": "Note 23",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_note_23-14825.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-mini-5",
+      "manufacturer": "Ulefone",
+      "model": "Armor Mini 5",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_mini_5-14694.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-note-22",
+      "manufacturer": "Ulefone",
+      "model": "Note 22",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_note_22-14685.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-rugking-5-pro",
+      "manufacturer": "Ulefone",
+      "model": "RugKing 5 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_rugking_5_pro-14544.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-27t-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 27T Pro+",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_27t_pro+_5g-14475.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-27t",
+      "manufacturer": "Ulefone",
+      "model": "Armor 27T+",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_27t+-14476.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-34-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 34 Pro+",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_34_pro+_5g-14368.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-34",
+      "manufacturer": "Ulefone",
+      "model": "Armor 34+",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_34+_5g-14367.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-rugking-4-pro",
+      "manufacturer": "Ulefone",
+      "model": "RugKing 4 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_rugking_4_pro-14340.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-rugking-3-pro",
+      "manufacturer": "Ulefone",
+      "model": "RugKing 3 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_rugking_3_pro-14339.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-rugking-2-pro",
+      "manufacturer": "Ulefone",
+      "model": "RugKing 2 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_rugking_2_pro-14338.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-29-pro-thermal",
+      "manufacturer": "Ulefone",
+      "model": "Armor 29 Pro Thermal",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_29_pro_thermal_5g-14104.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-29-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 29 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_29_pro_5g-14103.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-rugking",
+      "manufacturer": "Ulefone",
+      "model": "RugKing",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_rugking-14102.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-29-ultra",
+      "manufacturer": "Ulefone",
+      "model": "Armor 29 Ultra",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_29_ultra_5g-14056.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-33-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 33 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_33_pro_5g-13692.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-33",
+      "manufacturer": "Ulefone",
+      "model": "Armor 33",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_33-14055.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-30",
+      "manufacturer": "Ulefone",
+      "model": "Armor 30",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_30-13999.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x16-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor X16 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x16_pro_5g-14000.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x16",
+      "manufacturer": "Ulefone",
+      "model": "Armor X16",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x16-14001.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-28-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 28 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_28_pro_5g-13864.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x32-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor X32 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x32_pro_5g-13777.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x32",
+      "manufacturer": "Ulefone",
+      "model": "Armor X32",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x32_5g-13778.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-30-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor 30 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_30_pro_5g-13776.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-mini-4",
+      "manufacturer": "Ulefone",
+      "model": "Armor Mini 4",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_mini_4-13693.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x31",
+      "manufacturer": "Ulefone",
+      "model": "Armor X31",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x31-13854.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-armor-x31-pro",
+      "manufacturer": "Ulefone",
+      "model": "Armor X31 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_armor_x31_pro-13589.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-note-18-pro",
+      "manufacturer": "Ulefone",
+      "model": "Note 18 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_note_18_pro-13543.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-note-20-pro",
+      "manufacturer": "Ulefone",
+      "model": "Note 20 Pro",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_note_20_pro-13451.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    },
+    {
+      "id": "gsmarena-ulefone-note-19",
+      "manufacturer": "Ulefone",
+      "model": "Note 19",
+      "sourceId": "gsmarena-current-catalog-2026-10",
+      "sourceUrl": "https://www.gsmarena.com/ulefone_note_19-13450.php",
+      "sourceTier": "catalog",
+      "notes": [
+        "Identity-only catalog row. Numeric measurements must come from separate measured/official evidence."
+      ]
+    }
+  ]
+}

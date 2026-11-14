@@ -1,0 +1,59 @@
+---
+import SocialLinks from '../../components/SocialLinks.astro';
+import Page from '../../layouts/Page.astro';
+import { serverClient, settings } from '../../lib/supabase';
+import type { TeamMember } from '../../lib/team';
+import '../../styles/team.css';
+
+const client = Astro.locals.supabase ?? (settings() ? serverClient(Astro.cookies, Astro.request) : null);
+const slug = Astro.params.slug ?? '';
+const offset = Math.max(0, Math.min(100000, Math.floor(Number(Astro.url.searchParams.get('offset')) || 0)));
+let member: TeamMember | null = null;
+let unavailable = !client;
+if (client && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
+  const { data, error } = await client.from('team_members').select('*').eq('slug', slug).eq('published', true).maybeSingle();
+  member = data;
+  unavailable = !!error;
+}
+let articles: { id: string; title: string; canonical_path: string; published_at: string; summary: string }[] = [];
+let articlesUnavailable = false;
+let creatorHandle: string | null = null;
+if (client && member) {
+  const { data, error } = await client.rpc('team_articles', { p_slug: slug, p_offset: offset });
+  articles = data ?? [];
+  articlesUnavailable = !!error;
+  if (member.user_id) {
+    const { data: creator } = await client.from('creator_profiles').select('handle').eq('user_id', member.user_id).maybeSingle();
+    creatorHandle = creator?.handle ?? null;
+  }
+}
+if (!member) Astro.response.status = unavailable ? 503 : 404;
+---
+<Page title={member?.name ?? 'Team profile unavailable'} description={member?.bio}>
+  <article class="team-profile">
+    <a href="/about#team-heading">← About PhoneFuturist</a>
+    {member ? <>
+      <h1>{member.name}</h1>
+      <p>{member.title}</p>
+      {member.image_url && <img src={member.image_url} alt={member.name} />}
+      {member.bio && <p>{member.bio}</p>}
+      {creatorHandle && <a href={'/creator/' + creatorHandle}>Community profile ↗</a>}
+      <SocialLinks links={member.social_links} label={member.name+' social and professional links'} />
+      {member.responsibilities && <section><h2>Responsibilities</h2><p>{member.responsibilities}</p></section>}
+      {member.interests && <section><h2>Professional interests</h2><p>{member.interests}</p></section>}
+      {member.extra_details.length > 0 && <section><h2>More about {member.name}</h2><dl>
+        {member.extra_details.map(detail => <div><dt>{detail.label}</dt><dd>{detail.value}</dd></div>)}
+      </dl></section>}
+      <section aria-labelledby="team-articles-heading">
+        <h2 id="team-articles-heading">Articles</h2>
+        {articlesUnavailable ? <p>Articles are temporarily unavailable.</p> : articles.length
+          ? articles.map(article => <a class="team-article" href={article.canonical_path}><h3>{article.title}</h3><p>{article.summary}</p></a>)
+          : <p>No published articles to show yet.</p>}
+        {!articlesUnavailable && <nav class="team-social" aria-label="Article pages">
+          {offset > 0 && <a href={'?offset=' + Math.max(0, offset - 30)}>← Previous articles</a>}
+          {articles.length === 30 && <a href={'?offset=' + (offset + 30)}>More articles →</a>}
+        </nav>}
+      </section>
+    </> : <><h1>{unavailable ? 'Profile temporarily unavailable' : 'Profile not found'}</h1><a href="/about">Meet the publication ↗</a></>}
+  </article>
+</Page>

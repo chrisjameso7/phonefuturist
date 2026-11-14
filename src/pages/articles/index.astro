@@ -5,9 +5,88 @@ import {publishedArticles} from '../../lib/publication';
 import {sections} from '../../lib/editorial';
 const section=Astro.url.searchParams.get('section');
 const offset=Math.max(0,Math.min(100000,Math.floor(Number(Astro.url.searchParams.get('offset'))||0)));
-const {articles,unavailable}=await publishedArticles(null,offset,section&&sections.some(s=>s===section)?section:null);
-const filtered=section&&sections.some(s=>s===section)?articles.filter(a=>a.section===section):articles;
+const validSection=section&&sections.some(s=>s===section)?section:null;
+const {articles,unavailable}=await publishedArticles(null,offset,validSection);
+const filtered=validSection?articles.filter(a=>a.section===validSection):articles;
 if(unavailable)Astro.response.status=503;
 const pageLink=(n:number)=>'/articles?'+new URLSearchParams({offset:String(n),...(section?{section}:{})});
 ---
-<Page title="The latest"><section class="publication-index"><p class="eyebrow">PhoneFuturist / The newsroom</p><h1>{section&&sections.some(s=>s===section)?section.charAt(0).toUpperCase()+section.slice(1):'The latest'}</h1><p class="intro">Independent reporting. The context that counts.</p><nav class="section-tabs" aria-label="Sections"><a href="/articles" aria-current={!section?'page':undefined}>All stories</a>{sections.map(s=><a href={'/articles?section='+s} aria-current={section===s?'page':undefined}>{s}</a>)}</nav>{filtered.length?<ArticleCards articles={filtered}/>:<div class="panel"><h2>{unavailable?'Stories are temporarily unavailable.':'No stories on this page yet.'}</h2><p>{unavailable?'Please try again shortly.':'Published reporting will appear here.'}</p></div>}<nav class="pagination" aria-label="Article pages">{offset>0&&<a href={pageLink(Math.max(0,offset-30))}>← Previous</a>}{articles.length===30&&<a href={pageLink(offset+30)}>Next →</a>}</nav></section></Page>
+<Page title={validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}>
+  <section class="publication-index newsroom-index">
+    <header class="newsroom-head">
+      <p class="eyebrow">PhoneFuturist Newsroom</p>
+      <h1>{validSection?validSection.charAt(0).toUpperCase()+validSection.slice(1):'The latest'}</h1>
+    </header>
+
+    <nav class="section-tabs newsroom-tabs" aria-label="Sections">
+      <a href="/articles" aria-current={!section?'page':undefined}>All stories</a>
+      {sections.map(s=><a href={'/articles?section='+s} aria-current={section===s?'page':undefined}>{s}</a>)}
+    </nav>
+
+    {filtered.length?<ArticleCards articles={filtered}/>:<div class="newsroom-empty"><h2>{unavailable?'Stories are temporarily unavailable.':'No stories on this page yet.'}</h2><p>{unavailable?'Please try again shortly.':'Published reporting will appear here.'}</p></div>}
+
+    <nav class="pagination newsroom-pagination" aria-label="Article pages">
+      {offset>0&&<a href={pageLink(Math.max(0,offset-30))}>← Previous</a>}
+      {articles.length===30&&<a href={pageLink(offset+30)}>Next →</a>}
+    </nav>
+  </section>
+</Page>
+
+<style is:global>
+/* Newsroom — Apple Newsroom-inspired index: featured story, then a calm grid of tiles. */
+html body:not(.product-mode) #main .newsroom-index{box-sizing:border-box;width:min(100%,1320px);margin:0 auto;padding:clamp(16px,3vw,40px) clamp(16px,3vw,36px) 80px!important;overflow-x:clip}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head{max-width:none;padding:clamp(8px,3vw,40px) 0 clamp(20px,2.6vw,32px)!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head .eyebrow{margin:0;font:500 12px/1.4 var(--font-ui);letter-spacing:.07em;text-transform:uppercase;color:var(--pf-brand)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-head h1{margin:10px 0 0;font-size:clamp(2.8rem,7vw,5.6rem)!important;line-height:.96!important;letter-spacing:-.05em!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs{display:inline-flex;max-width:100%;gap:2px;margin:0 0 clamp(28px,4vw,48px);padding:4px;border:0;border-radius:999px;background:var(--pf-raised);overflow-x:auto;scrollbar-width:none}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs::-webkit-scrollbar{display:none}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs .instrument-tab-indicator{display:none!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a{flex:0 0 auto;display:inline-flex;align-items:center;min-height:38px;padding:0 18px;border:0!important;border-radius:999px!important;background:transparent!important;color:var(--pf-secondary)!important;font-size:.9rem;font-weight:500;text-transform:capitalize;text-decoration:none;transition:background-color .35s cubic-bezier(.22,1,.36,1),color .35s cubic-bezier(.22,1,.36,1)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a:hover{color:var(--pf-primary)!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a[aria-current="page"]{background:var(--pf-thumb,var(--pf-surface))!important;color:var(--pf-primary)!important;box-shadow:0 1px 2px rgb(0 0 0 / .25),0 4px 14px -6px rgb(0 0 0 / .35)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:clamp(36px,4vw,56px) clamp(20px,2.4vw,32px)!important;padding:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card{display:flex!important;flex-direction:column!important;min-width:0;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;gap:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card::before{display:none!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover{transform:none!important;box-shadow:none!important;border-color:transparent!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:hover{border-color:var(--pf-border)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture{margin:0 0 16px!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture a{display:block;overflow:hidden;border-radius:clamp(14px,1.8vw,22px);background:var(--pf-raised);transform:translateZ(0)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture img{display:block;width:100%!important;height:auto!important;aspect-ratio:16/10;object-fit:cover;border-radius:0!important;transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover .story-picture img{transform:scale(1.035)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card figcaption{padding:8px 0 0!important;font-size:11px!important;color:var(--pf-muted)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:not(.has-card-image)::after{content:"";order:-1;display:block;aspect-ratio:16/10;margin-bottom:16px;border-radius:clamp(14px,1.8vw,22px);background:url(/assets/phonefuturist-mark.svg) center/72px auto no-repeat,radial-gradient(120% 90% at 20% 0%,color-mix(in srgb,var(--pf-brand) 16%,transparent),transparent 60%),var(--pf-raised)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content{display:flex!important;flex-direction:column;align-items:flex-start;flex:1;gap:0;width:100%!important;min-height:0!important;padding:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content .confidence-tag{order:1;margin:0 0 10px!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-section{order:0;margin:0 0 8px;font:500 12px/1.4 var(--font-ui)!important;letter-spacing:.07em!important;text-transform:uppercase;color:var(--pf-brand)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content h3{order:2;margin:0 0 10px!important;font-size:clamp(1.2rem,1.7vw,1.45rem)!important;line-height:1.2!important;letter-spacing:-.022em!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content h3 a{color:var(--pf-primary)!important;transition:color .3s ease}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover h3 a{color:color-mix(in srgb,var(--pf-primary),var(--pf-brand) 35%)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-content>p{order:3;margin:0 0 14px!important;color:var(--pf-secondary)!important;font-size:.98rem!important;line-height:1.55!important;display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+html body:not(.product-mode) #main .newsroom-index .article-grid .card-meta{order:4;display:flex!important;flex-wrap:wrap;gap:4px 14px;margin-top:auto;padding:0!important;border:0!important;font-size:12px!important;color:var(--pf-muted)!important}
+/* Featured: the first story spans the row, image beside text. */
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card{grid-column:1/-1;display:grid!important;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:center;gap:clamp(24px,4vw,56px)!important;padding-bottom:clamp(36px,4vw,56px)!important;border-bottom:1px solid var(--pf-border)!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .story-picture{margin:0!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:not(.has-card-image){grid-template-columns:minmax(0,1fr)}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card:not(.has-card-image)::after{display:none}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card h3{font-size:clamp(1.8rem,2.9vw,2.6rem)!important;line-height:1.05!important;letter-spacing:-.035em!important}
+html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .card-content>p{font:400 1.15rem/1.55 var(--font-body)!important;-webkit-line-clamp:5}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty{display:grid;place-content:center;min-height:320px;padding:32px;text-align:center;border:1px solid var(--pf-border);border-radius:28px;background:radial-gradient(90% 120% at 50% 0%,color-mix(in srgb,var(--pf-brand) 12%,transparent),transparent 60%),var(--pf-surface)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty h2{margin:0 0 8px;font-size:clamp(1.5rem,3vw,2.2rem)!important;letter-spacing:-.03em!important}
+html body:not(.product-mode) #main .newsroom-index .newsroom-empty p{margin:0;color:var(--pf-secondary)}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination{display:flex;justify-content:space-between;gap:12px;padding-top:clamp(32px,4vw,56px);font-size:.95rem}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination a{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:999px;background:var(--pf-raised);color:var(--pf-primary);text-decoration:none;font-weight:500}
+html body:not(.product-mode) #main .newsroom-index .newsroom-pagination a:hover{background:color-mix(in srgb,var(--pf-raised),var(--pf-primary) 8%)}
+@media(max-width:1020px){html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:760px){
+ html body:not(.product-mode) #main .newsroom-index{padding:8px 16px 48px!important}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-head h1{font-size:clamp(2.6rem,12vw,3.4rem)!important}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-tabs{display:flex}
+ html body:not(.product-mode) #main .newsroom-index .newsroom-tabs a{padding:0 14px}
+ html body:not(.product-mode) #main .newsroom-index .article-grid,html body:not(.product-mode) #main .newsroom-index .article-grid[data-count]{grid-template-columns:minmax(0,1fr)!important;gap:36px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card{grid-template-columns:minmax(0,1fr);gap:0!important;padding-bottom:36px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .story-picture{margin:0 0 16px!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card h3{font-size:1.9rem!important}
+ html body:not(.product-mode) #main .newsroom-index .article-grid .article-card.lead-card .card-content>p{font-size:1.05rem!important}
+}
+@media(prefers-reduced-motion:reduce){html body:not(.product-mode) #main .newsroom-index .article-grid .article-card .story-picture img{transition:none}html body:not(.product-mode) #main .newsroom-index .article-grid .article-card:hover .story-picture img{transform:none}}
+</style>

@@ -50,6 +50,56 @@ export interface CalculatedPackaging {
 
   batteryVolumePercent?: number;
 
+  componentVolumePercent?: {
+    battery?: number;
+    camera?: number;
+    thermal?: number;
+    board?: number;
+    speakers?: number;
+    other?: number;
+  };
+
+  largestKnownComponent?: {
+    component:
+      | 'battery'
+      | 'camera'
+      | 'thermal'
+      | 'board'
+      | 'speakers'
+      | 'other';
+    volumeMm3: number;
+    percentOfAvailableInternalVolume?: number;
+  };
+
+  minimumAggregateThicknessMm?: number;
+  aggregateThicknessHeadroomMm?: number;
+
+  packagingPressure?:
+    | 'relaxed'
+    | 'constrained'
+    | 'tight'
+    | 'exceeded';
+
+  thinnerByHalfMm?: {
+    targetThicknessMm: number;
+    availableInternalVolumeCm3: number;
+    lostAvailableVolumeCm3: number;
+    remainingVolumeCm3: number;
+    usedInternalVolumePercent: number;
+    fitsAvailableVolume: boolean;
+  };
+
+  componentGrowthSensitivity?: Array<{
+    component: 'battery' | 'camera' | 'thermal';
+    growthPercent: 10;
+    baselineVolumeCm3: number;
+    targetVolumeCm3: number;
+    addedVolumeCm3: number;
+    remainingVolumeCm3: number;
+    usedInternalVolumePercent: number;
+    fitsAvailableVolume: boolean;
+  }>;
+
   /**
    * Indicates only whether the aggregate known component
    * volume is within the calculated internal volume budget.
@@ -103,6 +153,19 @@ function calculateKnownComponentVolume(
   }
 
   return { total, warnings };
+}
+
+
+function componentKey(
+  key: keyof NonNullable<PackagingInput['componentVolumes']>,
+) {
+  return key.replace(/Mm3$/, '') as
+    | 'battery'
+    | 'camera'
+    | 'thermal'
+    | 'board'
+    | 'speakers'
+    | 'other';
 }
 
 export function calculatePackaging(
@@ -198,6 +261,51 @@ export function calculatePackaging(
       componentCalculation.total / 1000;
 
     if (
+      result.availableInternalVolumeMm3 !== undefined &&
+      result.availableInternalVolumeMm3 > 0
+    ) {
+      const shares: NonNullable<
+        CalculatedPackaging['componentVolumePercent']
+      > = {};
+
+      let largest:
+        | NonNullable<CalculatedPackaging['largestKnownComponent']>
+        | undefined;
+
+      for (const [key, volume] of Object.entries(
+        input.componentVolumes,
+      )) {
+        if (
+          volume === undefined ||
+          !isNonNegativeFinite(volume)
+        ) {
+          continue;
+        }
+
+        const component = componentKey(
+          key as keyof NonNullable<
+            PackagingInput['componentVolumes']
+          >,
+        );
+        const percent =
+          (volume / result.availableInternalVolumeMm3) * 100;
+
+        shares[component] = percent;
+
+        if (!largest || volume > largest.volumeMm3) {
+          largest = {
+            component,
+            volumeMm3: volume,
+            percentOfAvailableInternalVolume: percent,
+          };
+        }
+      }
+
+      result.componentVolumePercent = shares;
+      result.largestKnownComponent = largest;
+    }
+
+    if (
       input.componentVolumes.batteryMm3 !== undefined &&
       isNonNegativeFinite(
         input.componentVolumes.batteryMm3,
@@ -235,9 +343,163 @@ export function calculatePackaging(
         100;
     }
 
+    const growthSensitivity: NonNullable<
+      CalculatedPackaging['componentGrowthSensitivity']
+    > = [];
+
+    for (const component of [
+      'battery',
+      'camera',
+      'thermal',
+    ] as const) {
+      const key = `${component}Mm3` as keyof NonNullable<
+        PackagingInput['componentVolumes']
+      >;
+      const baselineVolume =
+        input.componentVolumes?.[key];
+
+      if (
+        baselineVolume === undefined ||
+        !isNonNegativeFinite(baselineVolume)
+      ) {
+        continue;
+      }
+
+      const targetVolume = baselineVolume * 1.1;
+      const addedVolume = targetVolume - baselineVolume;
+      const scenarioKnownVolume =
+        result.knownComponentVolumeMm3 + addedVolume;
+      const remainingVolume =
+        result.availableInternalVolumeMm3 -
+        scenarioKnownVolume;
+
+      growthSensitivity.push({
+        component,
+        growthPercent: 10,
+        baselineVolumeCm3: baselineVolume / 1000,
+        targetVolumeCm3: targetVolume / 1000,
+        addedVolumeCm3: addedVolume / 1000,
+        remainingVolumeCm3: remainingVolume / 1000,
+        usedInternalVolumePercent:
+          result.availableInternalVolumeMm3 > 0
+            ? (
+                scenarioKnownVolume /
+                result.availableInternalVolumeMm3
+              ) * 100
+            : Number.POSITIVE_INFINITY,
+        fitsAvailableVolume:
+          scenarioKnownVolume <=
+          result.availableInternalVolumeMm3,
+      });
+    }
+
+    if (growthSensitivity.length > 0) {
+      result.componentGrowthSensitivity =
+        growthSensitivity;
+    }
+
     result.fitsAvailableVolume =
       result.knownComponentVolumeMm3 <=
       result.availableInternalVolumeMm3;
+
+    if (
+      input.widthMm !== undefined &&
+      input.heightMm !== undefined &&
+      isPositiveFinite(input.widthMm) &&
+      isPositiveFinite(input.heightMm)
+    ) {
+      const allocatableFraction =
+        1 - reservedVolumePercent / 100;
+
+      if (allocatableFraction > 0) {
+        result.minimumAggregateThicknessMm =
+          result.knownComponentVolumeMm3 /
+          (
+            input.widthMm *
+            input.heightMm *
+            allocatableFraction
+          );
+
+        if (
+          input.thicknessMm !== undefined &&
+          isPositiveFinite(input.thicknessMm)
+        ) {
+          result.aggregateThicknessHeadroomMm =
+            input.thicknessMm -
+            result.minimumAggregateThicknessMm;
+
+          const targetThicknessMm =
+            input.thicknessMm - 0.5;
+
+          if (
+            targetThicknessMm > 0 &&
+            result.availableInternalVolumeMm3 !== undefined
+          ) {
+            const scenarioExternalVolumeMm3 =
+              input.widthMm *
+              input.heightMm *
+              targetThicknessMm;
+            const scenarioAvailableMm3 =
+              scenarioExternalVolumeMm3 *
+              allocatableFraction;
+            const remainingMm3 =
+              scenarioAvailableMm3 -
+              result.knownComponentVolumeMm3;
+
+            result.thinnerByHalfMm = {
+              targetThicknessMm,
+              availableInternalVolumeCm3:
+                scenarioAvailableMm3 / 1000,
+              lostAvailableVolumeCm3:
+                (
+                  result.availableInternalVolumeMm3 -
+                  scenarioAvailableMm3
+                ) / 1000,
+              remainingVolumeCm3:
+                remainingMm3 / 1000,
+              usedInternalVolumePercent:
+                scenarioAvailableMm3 > 0
+                  ? (
+                      result.knownComponentVolumeMm3 /
+                      scenarioAvailableMm3
+                    ) * 100
+                  : Number.POSITIVE_INFINITY,
+              fitsAvailableVolume:
+                result.knownComponentVolumeMm3 <=
+                scenarioAvailableMm3,
+            };
+          }
+        }
+      }
+    }
+
+    if (!result.fitsAvailableVolume) {
+      result.packagingPressure = 'exceeded';
+    } else if (
+      result.usedInternalVolumePercent !== undefined &&
+      result.usedInternalVolumePercent >= 90
+    ) {
+      result.packagingPressure = 'tight';
+    } else if (
+      result.usedInternalVolumePercent !== undefined &&
+      result.usedInternalVolumePercent >= 75
+    ) {
+      result.packagingPressure = 'constrained';
+    } else if (
+      result.usedInternalVolumePercent !== undefined
+    ) {
+      result.packagingPressure = 'relaxed';
+    }
+
+    if (
+      result.packagingPressure === 'tight'
+    ) {
+      warnings.push({
+        code: 'PACKAGING_HEADROOM_TIGHT',
+        message:
+          'Known components consume at least 90% of the aggregate internal volume budget. This leaves little unallocated volume for routing, tolerances, shielding, adhesives, connectors, and shape inefficiency.',
+      });
+    }
 
     if (!result.fitsAvailableVolume) {
       warnings.push({

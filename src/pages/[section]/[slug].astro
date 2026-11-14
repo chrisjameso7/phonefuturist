@@ -1,5 +1,10 @@
 ---
+import StoryImage from '../../components/StoryImage.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import ConfidenceTag from '../../components/ConfidenceTag.astro';
 import Page from '../../layouts/Page.astro';
+import ArticleEngagement from '../../components/ArticleEngagement';
+import '../../styles/article-engagement.css';
 import InlineContent from '../../components/InlineContent.astro';
 import { safeHttps } from '../../lib/editorial';
 import { publishedArticles } from '../../lib/publication';
@@ -7,16 +12,44 @@ const {section,slug}=Astro.params;
 const {articles,unavailable}=await publishedArticles(section && slug ? `/${section}/${slug}` : null);
 const article=articles[0] ?? null;
 if(!article) Astro.response.status=unavailable?503:404;
+const words = article && !article.withdrawn
+  ? article.blocks.reduce((total, block) => total + (block.items ? block.items.flat().map(part => part.text).join(' ') : block.text ?? '').split(/\s+/).filter(Boolean).length, 0)
+  : 0;
+const readMinutes = words > 0 ? Math.max(1, Math.round(words / 230)) : 0;
+// Related reading: same section first, then the newest stories. Failure only hides the row.
+const related = article
+  ? await publishedArticles(null, 0, article.section)
+      .then(({ articles: pool }) => pool.filter(item => item.id !== article.id && !item.withdrawn).slice(0, 3))
+      .catch(() => [])
+  : [];
+const heroImage = article && !article.withdrawn
+  ? article.card_image && safeHttps(article.card_image.url)
+    ? article.card_image
+    : article.blocks.find(block=>block.type==='image' && safeHttps(block.url))
+  : null;
 ---
-<Page title={article?.title ?? 'Article unavailable'} description={article?.summary}>
+<Page title={article?.title ?? 'Article unavailable'} description={article?.summary} newsletterInContent={!!article}>
+  <div class="reading-progress" aria-hidden="true"></div>
   <div class="reading-page">
-    {article ? <article>
-      <a class="eyebrow" href={`/articles?section=${article.section}`}>{article.section}</a>
-      <h1>{article.title}</h1><p class="intro">{article.summary}</p>
-      <p class="byline">By {article.byline} · <time datetime={article.published_at}>{new Date(article.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}</time></p>
+    {article ? <article class="story">
+      <header class="story-header">
+        <a class="story-section" href={`/articles?section=${article.section}`}>{article.section}</a>
+        <ConfidenceTag article={article}/>
+        <h1>{article.title}</h1>
+        <p class="story-deck">{article.summary}</p>
+        <div class="story-meta">
+          <span>By {article.byline}</span>
+          <time datetime={article.published_at}>{new Date(article.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}</time>
+          {readMinutes > 0 && <span>{readMinutes} min read</span>}
+        </div>
+      </header>
+
+      {heroImage && <div class="story-hero"><StoryImage article={article} linked={false} eager /></div>}
+
       {article.withdrawn ? <aside class="notice"><h2>Article withdrawn</h2><p>{article.withdrawal_note}</p></aside> : <>
         <div class="article-body">
-          {article.blocks.map(block=>{
+          {article.blocks.map((block,index)=>{
+            if(heroImage && block.type==='image' && block.url===heroImage.url && index===article.blocks.findIndex(item=>item.type==='image'&&item.url===heroImage.url)) return null;
             const parts=block.inline ?? [{text:block.text}];
             if(block.type==='heading') return block.level===3?<h3><InlineContent parts={parts}/></h3>:<h2><InlineContent parts={parts}/></h2>;
             if(block.type==='quote') return <blockquote><InlineContent parts={parts}/></blockquote>;
@@ -38,11 +71,113 @@ if(!article) Astro.response.status=unavailable?503:404;
             return <p><InlineContent parts={parts}/></p>;
           })}
         </div>
-        {(article.public_notes?.length ? article.public_notes : article.correction_note ? [{message:article.correction_note,recorded_at:article.updated_at}] : []).map(note=><aside class="notice"><h2>Editorial note</h2><p>{note.message}</p><time datetime={note.recorded_at}>{new Date(note.recorded_at).toLocaleDateString('en-GB',{timeZone:'UTC'})}</time></aside>)}
-        {article.sources.length>0 && <section class="article-sources"><h2>Sources &amp; evidence</h2><ol>{article.sources.map(source=><li>{safeHttps(source.url)?<a href={source.url} rel="noopener noreferrer">{source.label} ↗</a>:source.label}{source.note && <p>{source.note}</p>}</li>)}</ol></section>}
+
+        <ArticleEngagement articleId={article.id} title={article.title} canonicalPath={article.canonical_path} client:load/>
+
+        {(article.public_notes?.length ? article.public_notes : article.correction_note ? [{message:article.correction_note,recorded_at:article.updated_at}] : []).map(note=><aside class="notice story-note"><h2>Editorial note</h2><p>{note.message}</p><time datetime={note.recorded_at}>{new Date(note.recorded_at).toLocaleDateString('en-GB',{timeZone:'UTC'})}</time></aside>)}
+
+        {article.sources.length>0 && <section class="article-sources">
+          <p class="eyebrow">Reporting record</p>
+          <h2>Sources &amp; evidence</h2>
+          <ol>{article.sources.map(source=><li>{safeHttps(source.url)?<a href={source.url} rel="noopener noreferrer">{source.label} ↗</a>:source.label}{source.note && <p>{source.note}</p>}</li>)}</ol>
+        </section>}
       </>}
-    </article> : <><h1>{unavailable?'Temporarily unavailable':'Article not found'}</h1><p>{unavailable?'Please retry shortly.':'This story is not available at this address.'}</p></>}
-    <a class="text-link" href="/articles">← Back to the newsroom</a>
+      {related.length > 0 && <section class="story-related" aria-labelledby="story-related-title">
+        <h2 id="story-related-title">More from the Newsroom</h2>
+        <div class="story-related-grid">
+          {related.map(item => <article>
+            <StoryImage article={item} />
+            <span class="story-related-section">{item.section}</span>
+            <h3><a href={item.canonical_path}>{item.title}</a></h3>
+            <time datetime={item.published_at}>{new Date(item.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}</time>
+          </article>)}
+        </div>
+      </section>}
+      <NewsletterSignup />
+    </article> : <section class="story-empty"><h1>{unavailable?'Temporarily unavailable':'Article not found'}</h1><p>{unavailable?'Please retry shortly.':'This story is not available at this address.'}</p></section>}
+    <a class="story-back" href="/articles">← Back to the newsroom</a>
   </div>
 </Page>
-<style>.article-image-credit{display:block;margin-top:.25rem}.article-image img{max-width:100%;height:auto}</style>
+
+<style>
+  .reading-page{--ease:cubic-bezier(.22,1,.36,1);--col:min(100%,720px);width:min(100%,1320px);margin:0 auto;padding:clamp(16px,3vw,40px) clamp(16px,4vw,48px) 80px;box-sizing:border-box}
+  .story{display:grid}
+  .story-header{width:var(--col);margin:clamp(16px,4vw,56px) auto clamp(28px,4vw,48px)}
+  .story-section{display:inline-flex;align-items:center;min-height:28px;margin:0 10px 14px 0;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--pf-brand) 14%,transparent);color:var(--pf-brand);font:500 12px/1 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;vertical-align:middle;transition:background-color .3s var(--ease)}
+  .story-section:hover{background:color-mix(in srgb,var(--pf-brand) 24%,transparent)}
+  .story-header :global(.confidence-tag){vertical-align:middle;margin:0 0 14px!important}
+  .story-header h1{margin:4px 0 0;font-size:clamp(2.2rem,5vw,3.9rem)!important;line-height:1.04!important;letter-spacing:-.04em!important}
+  .story-deck{margin:22px 0 0;color:var(--pf-secondary);font:400 clamp(1.15rem,1.8vw,1.4rem)/1.5 var(--font-body)}
+  .story-meta{display:flex;flex-wrap:wrap;gap:6px 0;margin-top:26px;padding-top:18px;border-top:1px solid var(--pf-border);color:var(--pf-muted);font-size:.85rem}
+  .story-meta>*+*::before{content:"·";margin:0 10px;color:var(--pf-border-hover)}
+  .story-hero{width:min(100%,1180px);margin:0 auto clamp(36px,5vw,64px)}
+  .story-hero :global(.story-picture){margin:0}
+  .story-hero :global(img){max-height:720px;border-radius:clamp(16px,2.4vw,30px)!important}
+  .story-hero :global(figcaption){justify-content:center;margin-top:12px}
+  .article-body{width:var(--col)!important;margin:0 auto!important;color:var(--pf-primary)}
+  .article-body>p{margin:0 0 1.5em}
+  .article-body h2{margin:2.2em 0 .7em!important;font-size:clamp(1.6rem,2.6vw,2.1rem)!important;letter-spacing:-.03em!important}
+  .article-body h3{margin:1.9em 0 .6em!important;font-size:1.35rem!important;letter-spacing:-.02em!important}
+  .article-body blockquote{margin:1.8em 0;padding:0 0 0 24px;border-left:3px solid var(--pf-brand);color:var(--pf-primary)!important;font-size:clamp(1.35rem,2.2vw,1.7rem)!important;line-height:1.4!important;font-style:italic}
+  .article-body a{color:var(--pf-brand);text-underline-offset:.2em;text-decoration-thickness:1px}
+  .article-body :is(ul,ol){padding-left:1.3rem;margin:0 0 1.6em}
+  .article-body li{margin:.45em 0}
+  .article-body li::marker{color:var(--pf-brand)}
+  .article-image{width:min(1100px,calc(100vw - 40px));margin:2.6em 50%;transform:translateX(-50%)}
+  .article-image img{display:block;width:100%;height:auto;border-radius:clamp(14px,2vw,24px);border:0}
+  .article-image figcaption{margin-top:12px;color:var(--pf-muted);font:400 .8rem/1.5 var(--font-ui);text-align:center}
+  .article-image-credit{display:inline;margin:0 0 0 10px}
+  .story :global(.article-engagement){width:var(--col);margin:48px auto 0;box-sizing:border-box;padding:18px 20px;border:1px solid var(--pf-border);border-radius:20px}
+  .story :global(.article-engagement-actions>:is(button,a)){border-radius:999px!important;padding:0 18px;transition:background-color .3s var(--ease),transform .3s var(--ease)!important}
+  .story :global(.article-engagement-actions>:is(button,a):hover:not(:disabled)){background:color-mix(in srgb,var(--pf-brand) 16%,transparent)}
+  .story-note,.article-sources{width:var(--col);margin:28px auto 0;box-sizing:border-box}
+  .story-note{padding:22px 24px;border:1px solid var(--pf-border);border-left:3px solid var(--pf-brand);border-radius:20px;background:var(--pf-surface)}
+  .story-note h2{margin:0 0 8px;font-size:1.1rem!important}
+  .story-note p{margin:0 0 8px}
+  .story-note time{color:var(--pf-muted);font-size:.8rem}
+  .article-sources{padding:26px 24px;border:1px solid var(--pf-border);border-radius:20px;background:var(--pf-surface)}
+  .article-sources .eyebrow{margin:0;font:500 12px/1.4 var(--font-ui);letter-spacing:.07em;text-transform:uppercase;color:var(--pf-brand)}
+  .article-sources h2{margin:6px 0 18px;font-size:1.4rem!important}
+  .article-sources ol{margin:0;padding-left:1.3rem}
+  .article-sources li{margin:0 0 14px;color:var(--pf-secondary)}
+  .article-sources li::marker{color:var(--pf-muted);font-family:var(--font-data)}
+  .article-sources li p{margin:4px 0 0;color:var(--pf-muted);font-size:.85rem}
+  .story-related{margin:clamp(56px,7vw,96px) 0 0;padding-top:clamp(32px,4vw,48px);border-top:1px solid var(--pf-border)}
+  .story-related>h2{margin:0 0 28px;font-size:clamp(1.6rem,3vw,2.4rem)!important;letter-spacing:-.035em!important}
+  .story-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+  .story-related-grid article{min-width:0}
+  .story-related-grid :global(.story-picture){margin:0 0 14px}
+  .story-related-grid :global(.story-picture a){display:block;overflow:hidden;border-radius:18px;background:var(--pf-raised)}
+  .story-related-grid :global(.story-picture img){transition:transform 1.1s var(--ease)}
+  .story-related-grid article:hover :global(.story-picture img){transform:scale(1.035)}
+  .story-related-grid :global(figcaption){display:none}
+  .story-related-section{font:500 12px/1.4 var(--font-ui);letter-spacing:.07em;text-transform:uppercase;color:var(--pf-brand)}
+  .story-related-grid h3{margin:8px 0 8px;font-size:1.15rem!important;line-height:1.25!important}
+  .story-related-grid h3 a{color:var(--pf-primary);text-decoration:none}
+  .story-related-grid article:hover h3 a{color:color-mix(in srgb,var(--pf-primary),var(--pf-brand) 35%)}
+  .story-related-grid time{color:var(--pf-muted);font-size:.8rem}
+  .story-back{display:flex;width:var(--col);margin:40px auto 0}
+  .story-back{align-items:center;justify-content:center;width:fit-content;min-height:44px;padding:0 20px;border-radius:999px;background:var(--pf-raised);color:var(--pf-primary);font-size:.9rem;font-weight:500;text-decoration:none;transition:background-color .3s var(--ease)}
+  .story-back:hover{background:color-mix(in srgb,var(--pf-raised),var(--pf-primary) 8%)}
+  .story-empty{min-height:55vh;display:grid;place-content:center;max-width:720px;margin:auto;text-align:center}
+  /* Scroll-linked reading progress where supported; invisible elsewhere. */
+  .reading-progress{position:fixed;top:0;left:0;right:0;z-index:400;height:3px;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--pf-brand),color-mix(in srgb,var(--pf-brand),#fff 35%));pointer-events:none;opacity:0}
+  @supports (animation-timeline: scroll()){
+    .reading-progress{opacity:1;animation:reading-progress linear both;animation-timeline:scroll(root block)}
+  }
+  @keyframes reading-progress{to{transform:scaleX(1)}}
+  @media(max-width:900px){.story-related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.story-related-grid article:nth-child(3){display:none}}
+  @media(max-width:700px){
+    .reading-page{padding:8px 16px 64px}
+    .story-header{margin-top:16px}
+    .story-header h1{font-size:clamp(2rem,9vw,2.6rem)!important;line-height:1.06!important}
+    .story-deck{font-size:1.1rem}
+    .story-meta{font-size:.8rem}
+    .story-hero{margin-bottom:32px}
+    .article-image{width:100%;margin:2em 0;transform:none}
+    .story-related-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+    .story-related-grid article:nth-child(3){display:block}
+    .story :global(.article-engagement),.story-note,.article-sources{border-radius:18px}
+  }
+  @media(prefers-reduced-motion:reduce){.reading-progress{display:none}.story-related-grid :global(.story-picture img){transition:none}.story-related-grid article:hover :global(.story-picture img){transform:none}}
+</style>

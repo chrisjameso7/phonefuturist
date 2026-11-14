@@ -1,0 +1,4163 @@
+{
+  "routes": [
+    "src/pages/404.astro",
+    "src/pages/[section]/[slug].astro",
+    "src/pages/about.astro",
+    "src/pages/account/api/avatar.ts",
+    "src/pages/account/api/creator-profile.ts",
+    "src/pages/account/index.astro",
+    "src/pages/account/password.astro",
+    "src/pages/account/security.astro",
+    "src/pages/api/article-engagement.ts",
+    "src/pages/api/community.ts",
+    "src/pages/api/hardware-analysis.ts",
+    "src/pages/api/labs/polls.ts",
+    "src/pages/api/labs/vault.ts",
+    "src/pages/api/simulation-prediction-reality.ts",
+    "src/pages/api/simulation-predictions.ts",
+    "src/pages/api/simulator-feedback-admin.ts",
+    "src/pages/api/simulator-feedback.ts",
+    "src/pages/articles/index.astro",
+    "src/pages/auth/[action].ts",
+    "src/pages/auth/callback.ts",
+    "src/pages/auth/check-email.astro",
+    "src/pages/auth/google.ts",
+    "src/pages/creator/[handle].astro",
+    "src/pages/forgot-password.astro",
+    "src/pages/index.astro",
+    "src/pages/interactive-leaks/api/auto-model.ts",
+    "src/pages/interactive-leaks/api/devices.ts",
+    "src/pages/interactive-leaks/api/fork.ts",
+    "src/pages/interactive-leaks/api/profiles.ts",
+    "src/pages/interactive-leaks/api/simulations.ts",
+    "src/pages/interactive-leaks/explore.astro",
+    "src/pages/interactive-leaks/foldables.astro",
+    "src/pages/interactive-leaks/index.astro",
+    "src/pages/interactive-leaks/laptops.astro",
+    "src/pages/interactive-leaks/profile/[id].astro",
+    "src/pages/interactive-leaks/simulate.astro",
+    "src/pages/interactive-leaks/simulation/[id].astro",
+    "src/pages/interactive-leaks/tablets.astro",
+    "src/pages/join.astro",
+    "src/pages/labs/bom.astro",
+    "src/pages/labs/configurator.astro",
+    "src/pages/labs/display.astro",
+    "src/pages/labs/haptics.astro",
+    "src/pages/labs/index.astro",
+    "src/pages/labs/thermal.astro",
+    "src/pages/labs/vault.astro",
+    "src/pages/login.astro",
+    "src/pages/pro/index.astro",
+    "src/pages/studio/access.astro",
+    "src/pages/studio/api.ts",
+    "src/pages/studio/articles/[id].astro",
+    "src/pages/studio/early-access.astro",
+    "src/pages/studio/index.astro",
+    "src/pages/studio/labs.astro",
+    "src/pages/studio/media.ts",
+    "src/pages/studio/new.astro"
+  ],
+  "files": {
+    "src/components/ArticleEngagement.tsx": [
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Share article ↗"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{metrics.liked?'♥ Liked':'♡ Like'} · {metrics.likes.toLocaleString()}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{'/login?next='+encodeURIComponent(canonicalPath)}"
+        },
+        "text": "Sign in to like {metrics?' · '+metrics.likes.toLocaleString():''}"
+      }
+    ],
+    "src/components/PasswordField.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "id": "\"password\"",
+          "name": "\"password\"",
+          "type": "{visible ? 'text' : 'password'}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      }
+    ],
+    "src/components/community/CommunityBuild.tsx": [
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{'/interactive-leaks/simulation/'+build.id}"
+        },
+        "text": "{build.name}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Close 3D preview"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{'/interactive-leaks/simulation/'+build.id}"
+        },
+        "text": "View saved build →"
+      }
+    ],
+    "src/components/community/CommunityFeed.tsx": [
+      {
+        "tag": "form",
+        "attributes": {},
+        "text": "{!builds.length&&<p>Create a design in the 3D studio and use Share build to Community. You can also share a calculated simulation from its Share result menu.</p>}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{builds.map(b=><option key={b.id} value={b.id}>{b.name}{b.visibility!=='public'?' · Private':''}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Choose a saved build"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{b.name} {b.visibility!=='public'?' · Private':''}"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/labs/configurator\""
+        },
+        "text": "Create or publish a build"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{builds.find(b=>b.id===build)?.visibility==='private'?'Publish build & post':'Post build'}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/login?next=%2Finteractive-leaks%2Fexplore\""
+        },
+        "text": "Sign in"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{'/labs/configurator?communityBuild='+forkTarget}"
+        },
+        "text": "Customize your copy in the 3D studio →"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Retry feed"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/interactive-leaks\""
+        },
+        "text": "Build a device →"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{post.liked?'♥':'♡'} {post.likes}"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Replies · {post.replies}"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Fork · {post.forks}"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Remove"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Remove reply"
+      },
+      {
+        "tag": "form",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Reply"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/login?next=%2Finteractive-leaks%2Fexplore\""
+        },
+        "text": "Sign in to reply"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Load more builds"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/labs\""
+        },
+        "text": "Open the labs →"
+      }
+    ],
+    "src/components/community/CommunityPeople.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{busy===person.id?'Saving…':person.followed?'Following':'Follow'}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/login?next=%2Finteractive-leaks%2Fexplore\""
+        },
+        "text": "Sign in to follow"
+      }
+    ],
+    "src/components/community/Identity.tsx": [
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{'/creator/'+person.handle}"
+        },
+        "text": "{person.avatar?<img src={person.avatar} alt=\"\" loading=\"lazy\"/>:<span className=\"community-avatar\">{person.name.slice(0,1).toUpperCase()}</span>}"
+      }
+    ],
+    "src/components/community/PublishBuild.tsx": [
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": "{run&&<p>Shares your last calculated build. Run the simulation again to include new edits.</p>}"
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Share build to Community"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{busy?'Publishing…':saved?'Published':'Publish publicly'}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{saved?'/interactive-leaks/explore':'/account'}"
+        },
+        "text": "{saved?'View Community':'Sign in or set up your creator profile'}"
+      }
+    ],
+    "src/components/interactive-leaks/BetaFeedbackPanel.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Beta feedback"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\"",
+          "aria-label": "\"Close feedback\""
+        },
+        "text": "×"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Result looks wrong"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Something is broken"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Feature request"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Confusing / hard to understand"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Other"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Cancel"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{submitting ? 'Sending…' : 'Send feedback'}"
+      }
+    ],
+    "src/components/interactive-leaks/BrandSelect.tsx": [
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{PHONE_BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select a brand"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{brand}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\"",
+          "aria-label": "\"Custom brand name\""
+        },
+        "text": ""
+      }
+    ],
+    "src/components/interactive-leaks/DownloadSectionReceipt.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{downloading ? 'Preparing…' : `↓ Download ${kind} results`}"
+      }
+    ],
+    "src/components/interactive-leaks/InteractiveLeaksSimulator.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "step": "{step}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Download share card"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Share result"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Simple"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Advanced"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{predictionSaveState.status === 'saving' ? 'Saving…' : 'Save prediction'}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Load example"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Clear"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "BrandSelect",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Phone"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Book foldable"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Flip foldable"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Tablet"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Laptop"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Wearable"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Width\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Height\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Thickness\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Weight\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Diagonal\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Resolution width\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Resolution height\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "21:9 · tall"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "20.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "20:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "19.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "19:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "18.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "18:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "17:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "19:10"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "18:10"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "16:9.5 · Huawei Pura X View"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "16:10 · Huawei Pura X"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4:3"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1:1 · square"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom ratio"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"0.1\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"0.1\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Refresh rate\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Brightness\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{form.panelTechnology && !['LTPO OLED','LTPS OLED','AMOLED','Super AMOLED','Dynamic AMOLED 2X','Tandem OLED','Micro-lens Array OLED','IPS LCD','TFT LCD','microLED'].includes(form.panelTechnology) && <option value={form.panelTechnology}>{form.panelTechnology} (saved selection)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select display panel"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "LTPO OLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "LTPS OLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "AMOLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Super AMOLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Dynamic AMOLED 2X"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Tandem OLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "MLA OLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "IPS LCD"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "TFT LCD"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "microLED"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{form.panelTechnology} (saved selection)"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Display workload conditions"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Operating refresh\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Average picture level\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Adaptive state 1\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"State 1 duty\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Adaptive state 2\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"State 2 duty\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced bezel geometry"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Top bezel\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Right bezel\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Bottom bezel\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Left bezel\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Capacity\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Nominal voltage\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Web browsing\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video streaming\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Gaming\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Camera use\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced physical battery data"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cell width\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cell height\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cell thickness\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cell weight\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Battery aging assumptions"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Battery age\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Equivalent full cycles\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Calendar fade\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cycle fade\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Health threshold\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Wired charging\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Wireless charging\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{form.batteryChemistry && ![\"Lithium-ion\",\"Lithium-polymer\",\"silicon-carbon\",\"solid-state (experimental)\"].includes(form.batteryChemistry) && <option value={form.batteryChemistry}>{form.batteryChemistry} (saved)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select battery chemistry"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Lithium-ion"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Lithium-polymer"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "silicon-carbon"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "solid-state (experimental)"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{form.batteryChemistry} (saved)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Unknown"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Single cell"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Dual cell"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Tri-cell (3 cells)"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Quad-cell (4 cells)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{form.chargingStandard && ![\"USB PD\",\"USB PD/PPS\",\"USB PD 3.1 EPR\",\"Qualcomm Quick Charge\",\"Samsung Super Fast Charging\",\"OPPO SUPERVOOC\",\"OnePlus SUPERVOOC\",\"vivo FlashCharge\",\"Xiaomi HyperCharge\",\"Huawei SuperCharge\",\"Motorola TurboPower\",\"Apple USB-C PD\",\"Proprietary / other\"].includes(form.chargingStandard) && <option value={form.chargingStandard}>{form.chargingStandard} (saved)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select charging standard"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "USB PD"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "USB PD/PPS"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "USB PD 3.1 EPR"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Qualcomm Quick Charge"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Samsung Super Fast Charging"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "OPPO SUPERVOOC"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "OnePlus SUPERVOOC"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "vivo FlashCharge"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Xiaomi HyperCharge"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Huawei SuperCharge"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Motorola TurboPower"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Apple USB-C PD"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Proprietary / other"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{form.chargingStandard} (saved)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{form.wirelessChargingStandard && ![\"Qi\",\"Qi2\",\"Qi2 Magnetic Power Profile\",\"MagSafe\",\"Samsung Fast Wireless Charging\",\"AirVOOC\",\"Huawei Wireless SuperCharge\",\"Proprietary / other\"].includes(form.wirelessChargingStandard) && <option value={form.wirelessChargingStandard}>{form.wirelessChargingStandard} (saved)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select wireless standard"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Qi"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Qi2"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Qi2 Magnetic Power Profile"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "MagSafe"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Samsung Fast Wireless Charging"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "AirVOOC"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Huawei Wireless SuperCharge"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Proprietary / other"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{form.wirelessChargingStandard} (saved)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Wi-Fi"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "LTE"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "5G sub-6"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "5G mmWave"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Hotspot"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "GNSS"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Bluetooth"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Other"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Download traffic\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Upload traffic\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Link capacity\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Session duration\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Radio power\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Radio active duty\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Signal metric value\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "CPU sustained"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "GPU sustained"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Gaming sustained"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Ray tracing"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Geekbench 6 single-core"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Geekbench 6 multi-core"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "3DMark Wild Life Extreme"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "3DMark Solar Bay"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Assumed generation uplift\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].map(vendor => <option key={vendor} value={vendor}>{vendor}</option>)} {form.socVendor && !['Qualcomm','Samsung','MediaTek','Apple','Google','Huawei','Unisoc','other'].includes(form.socVendor) && <option value={form.socVendor}>{form.socVendor}</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select SoC vendor"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{vendor}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{form.socVendor}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{(SOC_MODELS[form.socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)} {(SOC_MODELS[form.socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select processor"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{chip}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{chip} (rumored / experimental)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Unknown"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Passive graphite"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Vapor chamber"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Large vapor chamber"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Active fan"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Other"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Target SoC power\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Ambient temperature\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Lumped-model thermal ceiling\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "SoC architecture assumptions"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Fabrication node\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Memory bandwidth\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 1 cores\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 1 max clock\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 1 relative IPC\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 2 cores\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 2 max clock\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 2 relative IPC\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 3 cores\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 3 max clock\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 3 relative IPC\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 4 cores\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 4 max clock\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Cluster 4 relative IPC\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "GPU architecture assumptions"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"GPU shader cores\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"GPU execution units\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"GPU peak clock\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Peak GPU power\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Non-GPU package power\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"GPU memory bandwidth\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Texture units\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Render output units\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Ray-tracing units\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Relative GPU architecture efficiency\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "GPU workload target"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Render width\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Render height\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Target FPS\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Render scale\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Relative workload complexity\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Estimated memory traffic\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Gaming session\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Rays per pixel\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": "{incompleteTwoNodeInput ? ( <p className=\"il-simple-error\" role=\"alert\"> Two-node thermal physics needs all four physical parameters: SoC-to-chassis resistance, chassis-to-ambient resistance, SoC/package thermal mass, chassis thermal mass and an SoC/package throttle ceiling. The two-node trace is disabled until all five required values are supplied. </p> ) : null}"
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced thermal model"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Thermal resistance\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Thermal mass\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"SoC → chassis resistance\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Chassis → ambient resistance\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"SoC/package thermal mass\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Chassis thermal mass\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"SoC/package throttle ceiling\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Surface comfort threshold\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Test duration\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "+ Add camera"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Multi-camera zoom handoff"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Zoom target\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Minimum native output\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Remove"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Wide"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Ultrawide"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Telephoto"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Periscope"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Front"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Other"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_SENSOR_FORMATS.map(value => ( <option value={String(value)} key={value}>1/{value}″ type</option> ))} {camera.sensorFormatDenominator && !CAMERA_SENSOR_FORMATS.some(value => String(value) === camera.sensorFormatDenominator) && <option value={camera.sensorFormatDenominator}>1/{camera.sensorFormatDenominator}″ (saved)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select sensor format"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1/ {value} ″ type"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1/ {camera.sensorFormatDenominator} ″ (saved)"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Exact sensor width\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Exact sensor height\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Resolution\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Equivalent focal length\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Fixed aperture"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Variable aperture"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select widest aperture"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "f/ {value}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select narrowest aperture"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "f/ {value}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_APERTURES.filter(value => !camera.variableAperture || (cameraApertureRangeValid(camera.variableApertureWide, camera.variableApertureNarrow) && value >= Number(camera.variableApertureWide) && value <= Number(camera.variableApertureNarrow))) .map(value => <option key={value} value={String(value)}>f/{value}</option>)} {camera.apertureFNumber && !CAMERA_APERTURES.some(value => String(value) === camera.apertureFNumber) && <option value={camera.apertureFNumber}>f/{camera.apertureFNumber} (saved)</option>}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select f-number"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "f/ {value}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "f/ {camera.apertureFNumber} (saved)"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced optical & module data"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Physical focal length\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Focus distance\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Exposure time\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Sensor readout\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video frame rate\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video width\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video height\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video bit depth\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Unknown"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4:2:0"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4:2:2"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4:4:4"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Encoded bitrate\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Recording duration\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Camera pipeline power\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video thermal resistance\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video thermal mass\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Video thermal ceiling\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Subject angular speed\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Camera angular shake\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"OIS shake compensation\"",
+          "step": "\"0.01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Lens transmission\"",
+          "step": "\"0.01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Quantum efficiency\"",
+          "step": "\"0.01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Full-well capacity\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Read noise\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Dark current\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Signal electrons\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Pixel binning\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Crop zoom\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Target output\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Module width\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Module height\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Module depth\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Reserved volume\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Known component volumes"
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Thermal\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Logic board\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Speakers\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "NumericField",
+        "attributes": {
+          "label": "\"Other known components\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{simulationPending ? 'Simulating…' : 'Run simulation →'}"
+      }
+    ],
+    "src/components/interactive-leaks/ShareResult.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Share result"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Download result card"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Download simulation receipt (PDF)"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Copy result summary"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Share"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced export"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Download simulation record (.json)"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{preview}"
+        },
+        "text": "Open PDF receipt ↗"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      }
+    ],
+    "src/components/interactive-leaks/SimpleModePanel.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{preset}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Standard"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Optimized · scenario"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Background-heavy · scenario"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"3\"",
+          "max": "\"5\"",
+          "step": "\"0.01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "BrandSelect",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "HD · 720 × 1600"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "HD+ · 720 × 1650"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "FHD · 1080 × 2400"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "FHD+ · 1080 × 2520"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1200p · 1200 × 2640"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1.5K · 1220 × 2712"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1260p · 1260 × 2800"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1280p · 1280 × 2856"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1344p · 1344 × 2992"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "QHD · 1440 × 3200"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "QHD+ · 1440 × 3120"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4K-class · 1644 × 3840"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom pixel resolution"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"1\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"1\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "21:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "20.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "20:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "19.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "19:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "18.5:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "18:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "17:9"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "16:9.5 · Huawei Pura X View"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "16:10 · Huawei Pura X"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "4:3"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1:1"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"0.1\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"0.1\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Native (100% per dimension)"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Scaled (75% per dimension)"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Scaled (50% per dimension)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "60 Hz"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "90 Hz"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "120 Hz"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "144 Hz"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "165 Hz"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Reference conditions · unchanged"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "200 nits · indoor"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "400 nits · bright room"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "800 nits · outdoors"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1,200 nits · bright sunlight"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{vendors.map((vendor) => ( <option key={vendor} value={vendor}> {vendor} </option> ))}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{vendor}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{(SOC_MODELS[socVendor]?.released ?? []).map(chip => <option key={chip} value={chip}>{chip}</option>)} {(SOC_MODELS[socVendor]?.preview ?? []).map(chip => <option key={chip} value={chip}>{chip} (rumored / experimental)</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select processor"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{chip}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{chip} (rumored / experimental)"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Neutral · no chip efficiency assumption"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Efficiency-focused · assume 12% less loaded SoC power"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Performance-focused · assume 12% more loaded SoC power"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Basic"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Good"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Large VC"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Active cooling"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_SENSOR_FORMATS.map(value => <option key={value} value={String(value)}>1/{value}″ type</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select sensor format"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "1/ {value} ″ type"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{CAMERA_APERTURES.map(value => <option key={value} value={String(value)}>f/{value}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Select aperture"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "f/ {value}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Run simulation"
+      }
+    ],
+    "src/components/labs/AvatarUpload.tsx": [
+      {
+        "tag": "form",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"file\"",
+          "name": "\"avatar\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{busy ? 'Uploading…' : 'Upload avatar'}"
+      }
+    ],
+    "src/components/labs/BomCalculator.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['phone', 'foldable', 'tablet', 'laptop'].map(device => <option key={device} value={device}>{device[0].toUpperCase() + device.slice(1)}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{device[0].toUpperCase() + device.slice(1)}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"search\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": "{groups.map(group => { const id = selectedBomId(input, group.id), option = group.options.find(o => o.id === id); return <div className=\"lab-spec-row\" key={group.id}><label>{group.label}<select value={id ?? ''} onChange={e => choose(group.id, e.currentTarget.value)}><option value=\"\">Not included</option>{group.options.filter(o => !search || group.label.toLowerCase().includes(search.toLowerCase()) || o.name.toLowerCase().includes(search.toLowerCase()) || o.id === id).map(o => <option key={o.id} value={o.id}>{o.name} · {money(bomUnitPrice(input, group.id, o.cost))}</option>)}</select></label><div className=\"lab-fields\"><div className=\"lab-fixed-price\"><span>Unit price</span><strong>{money(option ? bomUnitPrice(input, group.id, option.cost) : 0)}</strong></div><label>Quantity<input aria-label={group.label + ' quantity'} type=\"number\" min=\"0\" max=\"8\" step=\"1\" disabled={!option} value={input.quantities?.[group.id] ?? 1} onChange={e => { const value = Number(e.currentTarget.value); if (Number.isInteger(value) && value >= 0 && value <= 8) update('quantities', { ...input.quantities, [group.id]: value }); }}/></label></div></div>; })}"
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "{section}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{group.options.filter(o => !search || group.label.toLowerCase().includes(search.toLowerCase()) || o.name.toLowerCase().includes(search.toLowerCase()) || o.id === id).map(o => <option key={o.id} value={o.id}>{o.name} · {money(bomUnitPrice(input, group.id, o.cost))}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Not included"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{o.name} · {money(bomUnitPrice(input, group.id, o.cost))}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "{group.label + ' quantity'}",
+          "type": "\"number\"",
+          "min": "\"0\"",
+          "max": "\"8\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{[1080, 1440, 2160].map(n => <option key={n} value={n}>{n}p</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n} p"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{[60, 90, 120, 144, 165, 240].map(n => <option key={n} value={n}>{n} Hz</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n} Hz"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"1\"",
+          "max": "\"5\"",
+          "step": "\"0.1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"1\"",
+          "max": "\"20000\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Custom hardware analysis"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Download spec card ↓"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced export"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Download configuration (.json)"
+      }
+    ],
+    "src/components/labs/ConceptVault.tsx": [
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{poll.resolutionSource}"
+        },
+        "text": "Source ↗"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{fork} {poll.selectedFork === fork ? ' · Your prediction' : ''}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/login?next=%2Flabs%2Fvault\""
+        },
+        "text": "Sign in to lock a prediction →"
+      }
+    ],
+    "src/components/labs/CreatorProfileEditor.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{profile?'Edit Profile':'Create profile'}"
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "aria-label": "\"Edit creator profile\""
+        },
+        "text": "{error&&<p role=\"alert\">{error}</p>} {confirmDiscard&&<div role=\"alertdialog\" aria-labelledby=\"discard-profile-title\"><p id=\"discard-profile-title\">Discard your unsaved profile changes?</p><div className=\"lab-action-row\"><button type=\"button\" className=\"secondary\" onClick={()=>setConfirmDiscard(false)}>Keep editing</button><button type=\"button\" className=\"secondary\" onClick={()=>{setDraft(profile??empty);setConfirmDiscard(false);setEditing(false);setError('');}}>Discard edits</button></div></div>}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"display_name\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"handle\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "\"bio\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"submit\""
+        },
+        "text": "{busy?'Saving…':'Save profile'}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Cancel"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Keep editing"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Discard edits"
+      }
+    ],
+    "src/components/labs/DeviceConceptLab.tsx": [
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{key[0].toUpperCase() + key.slice(1)}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Starting concept\""
+        },
+        "text": "{CONCEPT_PRESETS[active].map((p,i)=><option key={p.name} value={i}>{p.name}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom size & configuration"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{p.name}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Display size\""
+        },
+        "text": "{sizes.map(n=><option key={n} value={n}>{n} inches</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom size"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n} inches"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Cover display size\""
+        },
+        "text": "{[1.9,2.1,3,3.4,3.6,4,4.5,5,5.5,6,6.3,6.5,7].map(n=><option key={n} value={n}>{n} inches</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Custom size"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n} inches"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "{label}"
+        },
+        "text": "{Object.entries(options).map(([value,p])=><option key={value} value={value}>{p.label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{p.label}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Fit chassis to displays"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"0\"",
+          "max": "\"180\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Inner display"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Cover display"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Pin for comparison"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Download result receipt ↓"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Clear comparison"
+      }
+    ],
+    "src/components/labs/DeviceConfigurator.tsx": [
+      {
+        "tag": "LabNumber",
+        "attributes": {
+          "label": "{label}",
+          "min": "{min}",
+          "max": "{max}",
+          "step": "{step}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"text\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Compact"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Ultra"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "{key === 'bezel' ? 'Uniform bezel' : key[0].toUpperCase() + key.slice(1)}",
+          "type": "\"range\"",
+          "min": "{DESIGN_LIMITS[key][0]}",
+          "max": "{DESIGN_LIMITS[key][1]}",
+          "step": "{.1}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Side frame material\""
+        },
+        "text": "{Object.entries(FRAME_FINISHES).map(([value,p])=><option key={value} value={value}>{p.label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{p.label}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Front surface\""
+        },
+        "text": "{Object.entries(FRONT_FINISHES).map(([value,p])=><option key={value} value={value}>{p.label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{p.label}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Rear material\""
+        },
+        "text": "{Object.entries(BACK_FINISHES).map(([value,p])=><option key={value} value={value}>{p.label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{p.label}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Frame profile\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Flat edges"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Soft rounded edges"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Display diagonal · inches\"",
+          "type": "\"number\"",
+          "min": "\".5\"",
+          "step": "\".01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Aspect width\"",
+          "type": "\"number\"",
+          "min": "\".01\"",
+          "step": "\".01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Aspect height\"",
+          "type": "\"number\"",
+          "min": "\".01\"",
+          "step": "\".01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Display width · mm\"",
+          "type": "\"number\"",
+          "step": "\".1\"",
+          "min": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Display height · mm\"",
+          "type": "\"number\"",
+          "step": "\".1\"",
+          "min": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Wallpaper\""
+        },
+        "text": "{Object.entries(WALLPAPERS).map(([value,label])=><option value={value} key={value}>{label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{label}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"color\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Camera module\""
+        },
+        "text": "{Object.entries(CAMERA_LAYOUTS).filter(([value])=>value!=='circle'||design.family==='halo').map(([value, label]) => <option key={value} value={value}>{label}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{label}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Rear lens count\""
+        },
+        "text": "{(design.family==='duo'?[2]:[1,2,3,4]).map(n=><option value={n} key={n}>{n} {n===1?'camera':'cameras'}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n} {n===1?'camera':'cameras'}"
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Selfie opening\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Round punch hole"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Pill opening"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "No visible opening"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "\"Selfie opening size · mm\"",
+          "type": "\"number\"",
+          "min": "\"1\"",
+          "max": "\"6\"",
+          "step": "\".1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {
+          "aria-label": "\"Speakers\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "No grilles"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Bottom grilles"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Top and bottom grilles"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{exporting?'Preparing design card…':'Download design card'}"
+      }
+    ],
+    "src/components/labs/DeviceViewport.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Retry 3D preview"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Front"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Back / reset"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Side / depth"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{interactive ? 'Finish rotating' : 'Rotate device'}"
+      }
+    ],
+    "src/components/labs/DisplayPwmLab.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"60\"",
+          "max": "\"10000\"",
+          "step": "\"10\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"1\"",
+          "max": "\"100\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"1\"",
+          "max": "\"100\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      }
+    ],
+    "src/components/labs/HapticLab.tsx": [
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{p.name}"
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"50\"",
+          "max": "\"200\"",
+          "step": "\"5\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{[1, 2, 3, 4].map(n => <option key={n}>{n}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{n}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"80\"",
+          "max": "\"3000\"",
+          "step": "\"10\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"0\"",
+          "max": "\".4\"",
+          "step": "\".01\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Test pattern ▶"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Stop ■"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Download audio ↓"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Advanced export"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Download vibration pattern (.json)"
+      },
+      {
+        "tag": "details",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "summary",
+        "attributes": {},
+        "text": "Customize pulse timing"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "\"1\"",
+          "max": "\"1000\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Add pulse +"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Remove last pulse"
+      }
+    ],
+    "src/components/labs/HardwareValuation.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"number\"",
+          "min": "{min}",
+          "max": "{max}",
+          "step": "{step}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "SpecificationNumber",
+        "attributes": {
+          "label": "{label}",
+          "min": "{min}",
+          "max": "{max}",
+          "step": "{step}"
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['tsmc', 'samsung', 'other'].map(v => <option key={v} value={v}>{v === 'tsmc' ? 'TSMC' : v === 'samsung' ? 'Samsung' : 'Other / custom'}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{v === 'tsmc' ? 'TSMC' : v === 'samsung' ? 'Samsung' : 'Other / custom'}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Standard"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Advanced"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['LPDDR4X', 'LPDDR5', 'LPDDR5X', 'DDR5'].map(v => <option key={v}>{v}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{v}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['eMMC', 'UFS', 'NVMe'].map(v => <option key={v}>{v}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{v}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['LCD', 'OLED', 'LTPO', 'tandem'].map(v => <option key={v}>{v}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{v}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{['plastic', 'aluminum', 'titanium', 'ceramic', 'steel'].map(v => <option key={v}>{v}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{v}"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Unreleased / custom"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Released configuration"
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Standard"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Periscope"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Remove camera {i + 1}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Add camera"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{busy ? 'Updating…' : 'Analyze cost drivers'}"
+      }
+    ],
+    "src/components/labs/LabNumber.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "aria-label": "{label}",
+          "type": "\"number\"",
+          "min": "{min}",
+          "max": "{max}",
+          "step": "{step}"
+        },
+        "text": ""
+      }
+    ],
+    "src/components/labs/PollEditor.tsx": [
+      {
+        "tag": "form",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"hidden\"",
+          "name": "\"action\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"topic\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "\"forks\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"closesAt\"",
+          "type": "\"datetime-local\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Publish poll"
+      },
+      {
+        "tag": "form",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"hidden\"",
+          "name": "\"action\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"topic\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"winner\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "\"source\"",
+          "type": "\"url\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Resolve & award scores"
+      }
+    ],
+    "src/components/labs/ThermalLab.tsx": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"500\"",
+          "max": "\"10000\"",
+          "step": "\"100\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"0\"",
+          "max": "\"6\"",
+          "step": "\"1\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"checkbox\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{Object.entries(WORKLOADS).map(([key, w]) => <option key={key} value={key}>{w.name}</option>)}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{w.name}"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"20\"",
+          "max": "\"45\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"range\"",
+          "min": "\"1\"",
+          "max": "\"15\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{playing?'Pause replay':'Replay 15-minute simulation'}"
+      }
+    ],
+    "src/components/studio/ArticleEditor.tsx": [
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "\"/studio\""
+        },
+        "text": "All articles"
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{sections.map((section) => ( <option key={section}> {section} </option> ))}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{section}"
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Remove"
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"url\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Add source"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": "{[ 'initial', 'minor', 'update', 'correction', ].map((kind) => ( <option key={kind}> {kind} </option> ))}"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "{kind}"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{busy ? 'Working…' : article ? 'Save new revision' : 'Create draft'}"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "{uploading ? 'Finishing image upload…' : busy ? 'Publishing…' : 'Save and publish'}"
+      },
+      {
+        "tag": "a",
+        "attributes": {
+          "href": "{article.canonical_path}"
+        },
+        "text": "Open {' '} {article.withdrawn ? 'withdrawn' : 'published'} {' '} article ↗"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Request review (optional)"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Approve reviewed revision"
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Request changes"
+      },
+      {
+        "tag": "textarea",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {},
+        "text": "Withdraw with public notice"
+      }
+    ],
+    "src/components/studio/RichArticleEditor.tsx": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Bold"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Italic"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Paragraph"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "H2"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "H3"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Bullets"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Numbered"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Quote"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Link"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "{uploadingImage ? 'Uploading...' : 'Upload image'}"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Image URL"
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "\"file\""
+        },
+        "text": ""
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Undo"
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "\"button\""
+        },
+        "text": "Redo"
+      },
+      {
+        "tag": "input",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "select",
+        "attributes": {},
+        "text": ""
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "Not designated"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "External editorial image"
+      },
+      {
+        "tag": "option",
+        "attributes": {},
+        "text": "PhoneFuturist-owned graphic or screenshot"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": "corpus-release-policy-0.1.0",
+  "generatedAt": "2026-10-08",
+  "releasedDeviceCutoff": "2026-10-08",
+  "policy": [
+    "Released-device calibration must include phones released on or before the cutoff date, not merely older historical devices.",
+    "Prioritize the newest released generation first, then backfill earlier generations for longitudinal calibration.",
+    "Phones announced for a future date after the cutoff remain unreleased priors and must not enter released-device calibration.",
+    "A device may enter the released corpus only when its commercial release date or reviewed retail availability is verified.",
+    "Re-run the cutoff regularly so the calibration corpus advances with the market."
+  ],
+  "priorityWindows": {
+    "tier1": "2026 releases through cutoff",
+    "tier2": "2025 releases",
+    "tier3": "2022-2024 calibration history",
+    "tier4": "2019-2021 historical controls"
+  }
+}

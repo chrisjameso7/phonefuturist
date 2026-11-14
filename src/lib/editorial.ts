@@ -1,3 +1,9 @@
+export type Confidence = 'confirmed' | 'reported' | 'rumor';
+export function articleConfidence(article:{section:string;confidence?:Confidence|null;withdrawn?:boolean}):Confidence|null {
+ if(article.withdrawn)return null;
+ if(article.confidence && ['confirmed','reported','rumor'].includes(article.confidence))return article.confidence;
+ return article.section==='news'?'confirmed':article.section==='leaks'?'reported':null;
+}
 export const sections = ['news', 'reports', 'leaks', 'analysis'] as const;
 export type Section = typeof sections[number];
 export type InlineText = { text: string; bold?: boolean; italic?: boolean; strike?: boolean; code?: boolean; href?: string };
@@ -18,10 +24,10 @@ export type Block = {
   level?: number;
   ordered?: boolean;
 };export type Source = { label: string; url: string; note: string };
-export type ArticlePayload = { schemaVersion: 1; title: string; summary: string; byline: string; section: Section; slug: string; blocks: Block[]; sources: Source[]; privateNotes: string; changeKind: 'initial'|'minor'|'update'|'correction'; correctionNote: string };
+export type ArticlePayload = { confidence?: Confidence | null; schemaVersion: 1; title: string; summary: string; byline: string; section: Section; slug: string; blocks: Block[]; sources: Source[]; privateNotes: string; changeKind: 'initial'|'minor'|'update'|'correction'; correctionNote: string };
 export type StudioItem = { id: string; version: number; current_revision: number; state: string; title?: string; section?: Section; public_revision: number|null; canonical_path: string|null; withdrawn: boolean; updated_at: string };
 export type StudioArticle = StudioItem & { creator_id: string; revision_author: string; payload: ArticlePayload; events: {id:number;revision:number;action:string;message:string;recorded_at:string}[]; revisions:{revision:number;created_at:string;title:string}[] };
-export type PublishedArticle = {id:string;canonical_path:string;published_at:string;updated_at:string;withdrawn:boolean;withdrawal_note:string|null;title:string;byline:string;section:Section;summary:string;blocks:Block[];sources:Source[];correction_note:string;card_image?:{url:string;alt:string|null}|null;public_notes?:{revision:number;recorded_at:string;message:string}[]};
+export type PublishedArticle = {confidence?:Confidence|null;id:string;canonical_path:string;published_at:string;updated_at:string;withdrawn:boolean;withdrawal_note:string|null;title:string;byline:string;section:Section;summary:string;blocks:Block[];sources:Source[];correction_note:string;card_image?:{url:string;alt:string|null;credit?:string|null;caption?:string|null;sourceName?:string|null}|null;public_notes?:{revision:number;recorded_at:string;message:string}[]};
 export function emptyArticle(): ArticlePayload { return {schemaVersion:1,title:'',summary:'',byline:'',section:'news',slug:'',blocks:[{type:'paragraph',text:''}],sources:[],privateNotes:'',changeKind:'initial',correctionNote:''}; }
 export function validUuid(value:unknown): value is string {return typeof value==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);}
 export function safeHttps(value:unknown): value is string {if(typeof value!=='string')return false;try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password;}catch{return false;}}

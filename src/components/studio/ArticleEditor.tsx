@@ -1,3 +1,4 @@
+import {useInstrumentReady} from '../../lib/use-instrument-ready';
 import { useEffect, useState } from 'react';
 import {
   emptyArticle,
@@ -6,23 +7,35 @@ import {
   type StudioArticle,
 } from '../../lib/editorial';
 import './studio.css';
+import type {StudioAuthor} from '../../lib/studio-authors';
 import RichArticleEditor from './RichArticleEditor';
 
 type Props = {
   article: StudioArticle | null;
   roles: string[];
   userId: string;
+  authors?: StudioAuthor[];
+  currentAuthor?: StudioAuthor | null;
+  directoryUnavailable?: boolean;
 };
 
 export default function ArticleEditor({
   article: initial,
   roles,
   userId,
+  authors = [],
+  currentAuthor = null,
+  directoryUnavailable = false,
 }: Props) {
+ useInstrumentReady('ArticleEditor');
   const [article, setArticle] = useState(initial);
   const [draft, setDraft] = useState<ArticlePayload>(
-    () => initial?.payload ?? emptyArticle(),
+    () => initial?.payload ?? {...emptyArticle(),byline:currentAuthor?.display_name || currentAuthor?.handle || ''},
   );
+  const defaultByline = initial?.payload.byline ?? (currentAuthor?.display_name || currentAuthor?.handle || '');
+  const matchedAuthor = authors.find(author=>(author.display_name || author.handle) === defaultByline);
+  const [bylineMode,setBylineMode] = useState(matchedAuthor?.user_id ?? 'manual');
+  const [manualByline,setManualByline] = useState(matchedAuthor ? '' : defaultByline);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -220,6 +233,11 @@ export default function ArticleEditor({
               />
             </label>
 
+            <label>Confidence (optional)
+              <select value={draft.confidence??''} onChange={event=>change('confidence',(event.currentTarget.value||null) as ArticlePayload['confidence'])}>
+                <option value="">None (use section default)</option><option value="confirmed">Confirmed</option><option value="reported">Reported</option><option value="rumor">Rumor</option>
+              </select>
+            </label>
             <div className="studio-pair">
               <label>
                 Section
@@ -242,17 +260,20 @@ export default function ArticleEditor({
                 </select>
               </label>
 
-              <label>
-                Public byline (optional)
-
-                <input
-                  maxLength={160}
-                  value={draft.byline}
-                  onChange={(e) =>
-                    change('byline', e.target.value)
-                  }
-                />
-              </label>
+              <div className="studio-byline">
+                <label>Author
+                  <select aria-label="Author" value={bylineMode} onChange={event=>{
+                    const value=event.target.value;setBylineMode(value);
+                    change('byline',value==='manual'?manualByline:(authors.find(author=>author.user_id===value)?.display_name || authors.find(author=>author.user_id===value)?.handle || ''));
+                  }}>
+                    {authors.map(author=><option key={author.user_id} value={author.user_id}>{author.display_name || author.handle}{author.user_id===userId?' (you)':''}</option>)}
+                    <option value="manual">Other — enter a byline</option>
+                  </select>
+                </label>
+                {bylineMode==='manual' && <label>Public byline<input maxLength={160} value={draft.byline} onChange={event=>{setManualByline(event.target.value);change('byline',event.target.value);}} /></label>}
+                {directoryUnavailable && <small>The author directory is unavailable. Your own profile and manual bylines remain available.</small>}
+                {!currentAuthor && <small><a href="/account">Add your public profile</a> to use your name automatically.</small>}
+              </div>
             </div>
 
             <label>

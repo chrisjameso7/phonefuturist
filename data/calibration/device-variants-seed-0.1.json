@@ -1,0 +1,28 @@
+{
+  "version": "device-variants-seed-0.1.0",
+  "rules": [
+    "Never join measurements by marketing model name alone.",
+    "Treat SoC variants as separate hardware configurations even inside the same device family.",
+    "Treat battery-capacity variants as separate hardware configurations.",
+    "Treat SIM configuration as a variant dimension when it changes internal packaging or battery capacity.",
+    "Preserve exact region, market, model number and SKU whenever a source provides them.",
+    "Measurements should join to the narrowest known variant. Unknown region or SKU must remain unknown rather than guessed."
+  ],
+  "exampleFamilies": [
+    {
+      "manufacturer": "Samsung",
+      "family": "Galaxy S",
+      "modelingRule": "Exynos and Snapdragon versions must be separate variants with independent performance, thermal, modem and battery-efficiency evidence."
+    },
+    {
+      "manufacturer": "Apple",
+      "family": "iPhone",
+      "modelingRule": "eSIM-only, nano-SIM/eSIM and other regional configurations may be separate variants when battery capacity or internal packaging differs."
+    },
+    {
+      "manufacturer": "Xiaomi",
+      "family": "Xiaomi flagship",
+      "modelingRule": "Regional battery-capacity differences must be preserved rather than collapsed into one model entry."
+    }
+  ]
+}

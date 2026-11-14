@@ -1,163 +1,36 @@
 ---
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import Page from '../layouts/Page.astro';
+import EditorialHomepage from '../components/EditorialHomepage.astro';
 import { publishedArticles } from '../lib/publication';
-import ArticleCards from '../components/ArticleCards.astro';
-
-const { articles, unavailable } = await publishedArticles();
-const latest = articles.filter((article) => !article.withdrawn).slice(0, 4);
+const {articles}=await publishedArticles();
 ---
-
-<Page title="Technology, examined" home>
-  <section class="observatory">
-    <section class="hero" aria-labelledby="hero-title">
-      <img
-        class="hero-image"
-        src="/assets/device-concept.png"
-        alt=""
-        width="1672"
-        height="941"
-        fetchpriority="high"
-      />
-
-      <div class="hero-copy">
-        <p class="eyebrow">Technology, examined</p>
-
-        <h1 id="hero-title">
-          The next era.<br />
-          <span>Under the lens.</span>
-        </h1>
-
-        <p class="hero-intro">
-          Independent technology journalism, deep analysis and everything in
-          between. The devices, the silicon and the ideas that move the world
-          forward.
-        </p>
-
-        <div class="hero-actions">
-          <a class="button button-white" href="#latest">
-            Explore the latest →
-          </a>
-
-          <a class="button button-outline" href="#about">
-            About PhoneFuturist
-          </a>
-        </div>
-      </div>
-
-      <div class="hero-caption">
-        <p class="eyebrow">Beyond the surface</p>
-
-        <h2>
-          Every detail.<br />
-          A bigger picture.
-        </h2>
-
-        <p>
-          From the glass to the silicon, understanding what comes next starts
-          with asking better questions.
-        </p>
-
-        <a href="/articles">Explore our reporting ↗</a>
-      </div>
-
-      <small class="image-disclosure">
-        Concept illustration · AI-generated
-      </small>
-    </section>
-  </section>
-
-  <section id="latest" class="latest-section">
-    <div class="latest-main">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">The newsroom</p>
-          <h2>The latest</h2>
-          <p>Top stories, in context.</p>
-        </div>
-
-        <a href="/articles">View all ↗</a>
-      </div>
-
-      <nav class="section-tabs home-section-tabs" aria-label="Browse coverage">
-        <a href="/articles?section=news">News</a>
-        <a href="/articles?section=reports">Reports</a>
-        <a href="/articles?section=leaks">Leaks</a>
-        <a href="/articles?section=analysis">Analysis</a>
-      </nav>
-
-      {
-        latest.length ? (
-          <ArticleCards articles={latest} />
-        ) : (
-          <div class="empty-news">
-            <span class="eyebrow">The newsroom</span>
-
-            <h3>
-              {
-                unavailable
-                  ? 'Reporting is temporarily unavailable.'
-                  : 'Our first stories start here.'
-              }
-            </h3>
-
-            <p>
-              {
-                unavailable
-                  ? 'Please check back shortly.'
-                  : 'Original reporting takes work. Our writers are preparing original stories.'
-              }
-            </p>
-
-            <a href="#about">Our editorial approach ↗</a>
-          </div>
-        )
-      }
-    </div>
-  </section>
-
-  <section class="home-lab">
-    <div class="home-lab-copy">
-      <p class="eyebrow">Interactive Leaks</p>
-
-      <h2>
-        Don't just read the rumor.<br />
-        <span>Test what it could mean.</span>
-      </h2>
-
-      <p>
-        Configure rumored hardware and explore the trade-offs with
-        PhoneFuturist's deterministic device simulator.
-      </p>
-    </div>
-
-    <div class="home-lab-action">
-      <span class="home-lab-mark" aria-hidden="true">PF / Lab</span>
-      <a class="button" href="/interactive-leaks">Enter The Lab ↗</a>
-    </div>
-  </section>
-
-  <section class="about-section" id="about">
-    <div>
-      <p class="eyebrow">Independent thinking. Informed perspective.</p>
-
-      <h2>
-        Technology moves fast.<br />
-        <span>Understanding goes deeper.</span>
-      </h2>
-    </div>
-
-    <div>
-      <p>
-        PhoneFuturist covers smartphones, laptops, chips, displays, cameras
-        and software, with original reporting and structured sourcing.
-      </p>
-
-      <p>
-        We separate what is confirmed from what is claimed. Sources and
-        corrections belong alongside the story, where readers can see them.
-      </p>
-
-      <a class="text-link" href="/articles">Meet your next read →</a>
-    </div>
-  </section>
+<Page title="Technology, examined" home newsletterInContent>
+ <EditorialHomepage articles={articles}>
+  <nav class="pf-home-paths" aria-label="Explore PhoneFuturist">
+   <a class="pf-home-path" href="/articles"><span>01 / Stories</span><strong>Read the latest</strong></a>
+   <a class="pf-home-path" href="/interactive-leaks"><span>02 / Interactive Leaks</span><strong>Build a device</strong></a>
+   <a class="pf-home-path" href="/interactive-leaks/explore"><span>03 / Community</span><strong>Explore builds</strong></a>
+  </nav>
+  <nav class="coverage-links" aria-label="Coverage sections">{['news','reports','leaks','analysis'].map(section=><a href={'/articles?section='+section}>{section}</a>)}<a href="/about">About PhoneFuturist</a></nav>
+  <NewsletterSignup/>
+ </EditorialHomepage>
 </Page>
+<style>
+.pf-home-paths{--ease:cubic-bezier(.22,1,.36,1);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:clamp(24px,4vw,56px) 0 0}
+.pf-home-path{position:relative;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;gap:40px;min-width:0;min-height:200px;padding:26px 26px 24px!important;box-sizing:border-box;color:var(--pf-primary);text-decoration:none;border:1px solid var(--pf-border);border-radius:24px;background:var(--pf-surface);transition:transform .5s var(--ease),border-color .4s var(--ease),box-shadow .5s var(--ease)}
+.pf-home-path::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 100% at 100% 0%,color-mix(in srgb,var(--pf-brand) 18%,transparent),transparent 55%);opacity:0;transition:opacity .6s var(--ease)}
+.pf-home-path::after{content:"→";position:absolute;right:22px;bottom:22px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--pf-raised);color:var(--pf-primary);font-size:1rem;transition:transform .5s var(--ease),background-color .4s var(--ease),color .4s var(--ease)}
+.pf-home-path:hover::before{opacity:1}
+.pf-home-path:hover::after{transform:translateX(2px);background:var(--pf-brand);color:var(--pf-action-ink)}
+.pf-home-path span{font-size:12px;color:var(--pf-muted);line-height:1.5;letter-spacing:.04em}
+.pf-home-path strong{max-width:calc(100% - 52px);font-size:clamp(1.4rem,2.2vw,1.9rem);line-height:1.1;letter-spacing:-.03em}
+.coverage-links{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-block:28px}
+.coverage-links a{display:inline-flex;align-items:center;min-height:40px;padding:0 18px;border-radius:999px;background:var(--pf-raised);text-transform:capitalize;font-size:.92rem;color:var(--pf-primary);text-decoration:none;transition:background-color .3s ease,color .3s ease}
+.coverage-links a:hover{background:var(--pf-primary);color:var(--pf-bg)}
+.coverage-links a:last-child{margin-left:auto;background:transparent;color:var(--pf-brand);padding-right:0}
+.coverage-links a:last-child:hover{background:transparent;color:var(--pf-brand);text-decoration:underline}
+@media(hover:hover){.pf-home-path:hover{transform:translateY(-4px);border-color:var(--pf-border-hover);box-shadow:0 24px 48px -28px rgb(0 0 0 / .45)}}
+@media(max-width:760px){.pf-home-paths{grid-template-columns:minmax(0,1fr);gap:12px}.pf-home-path{flex-direction:row;align-items:center;justify-content:space-between;gap:16px;min-height:84px!important;padding:18px 70px 18px 20px!important;border-radius:20px}.pf-home-path::after{top:50%;bottom:auto;right:18px;margin-top:-20px}.pf-home-path span{max-width:45%}.pf-home-path strong{text-align:right;max-width:55%;font-size:1.1rem}.coverage-links a:last-child{margin-left:0;padding-left:4px}}
+@media(prefers-reduced-motion:reduce){.pf-home-path,.pf-home-path::before,.pf-home-path::after,.coverage-links a{transition:none}.pf-home-path:hover{transform:none}}
+</style>

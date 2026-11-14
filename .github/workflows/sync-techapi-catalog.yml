@@ -1,0 +1,154 @@
+name: Sync TechAPI phone catalog
+
+on:
+  push:
+    branches:
+      - feature/interactive-leaks-product-ui
+    paths:
+      - scripts/sync-techapi-catalog.mjs
+      - .github/workflows/sync-techapi-catalog.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-techapi-phone-catalog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ !contains(github.event.head_commit.message || '', '[techapi-generated]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout PhoneFuturist
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Clone TechAPI smartphone data
+        run: |
+          rm -rf /tmp/TechAPI
+          git clone --depth 1 --branch develop --filter=blob:none --sparse https://github.com/GetTechAPI/TechAPI.git /tmp/TechAPI
+          git -C /tmp/TechAPI sparse-checkout set data/smartphone
+
+      - name: Generate 1000-phone snapshot
+        run: |
+          node scripts/sync-techapi-catalog.mjs \
+            /tmp/TechAPI/data/smartphone \
+            data/calibration/techapi-recent-1000-0.1.json \
+            1000
+
+      - name: Validate generated snapshot
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'data/calibration/techapi-recent-1000-0.1.json';
+          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (data.devices?.length !== 1000) {
+            throw new Error(`Expected exactly 1000 devices, found ${data.devices?.length ?? 0}`);
+          }
+          const ids = new Set(data.devices.map((device) => device.id));
+          const baseCounts = new Map();
+          for (const device of data.devices) {
+            baseCounts.set(
+              device.baseModelSlug,
+              (baseCounts.get(device.baseModelSlug) ?? 0) + 1,
+            );
+          }
+          const base = new Set(baseCounts.keys());
+          const maxPerBase = Math.max(...baseCounts.values());
+
+          if (ids.size !== 1000) {
+            throw new Error(
+              `Generated catalog IDs are not unique: ids=${ids.size}`,
+            );
+          }
+
+          if (base.size < 800) {
+            throw new Error(
+              `Expected at least 800 unique base models, got ${base.size}`,
+            );
+          }
+
+          if (maxPerBase > 2) {
+            throw new Error(
+              `Variant backfill exceeded two entries for a base model: max=${maxPerBase}`,
+            );
+          }
+
+          const lowTrust = data.devices.filter(
+            (device) =>
+              device.catalogTrust ===
+              'source-backed-unverified',
+          ).length;
+          const higherTrust =
+            data.devices.length -
+            lowTrust;
+
+          if (higherTrust < 800) {
+            throw new Error(
+              `Expected at least 800 verified/unspecified source-backed entries, got ${higherTrust}`,
+            );
+          }
+
+          if (lowTrust > 200) {
+            throw new Error(
+              `Low-trust catalog fallback exceeded 200 entries: ${lowTrust}`,
+            );
+          }
+          if (!data.devices.every((device) => device.sourceUrls?.length)) {
+            throw new Error('Every generated device must preserve at least one upstream source URL.');
+          }
+          const invalidYears = data.devices.filter((device) => {
+            const year = String(device.releaseDate ?? '').slice(0, 4);
+            return year !== '2025' && year !== '2026';
+          });
+          if (invalidYears.length) {
+            throw new Error(
+              `Expected only 2025-2026 devices, found ${invalidYears.length} outside range.`,
+            );
+          }
+          if (
+            JSON.stringify(data.selection?.years) !==
+            JSON.stringify([2025, 2026])
+          ) {
+            throw new Error(
+              `Snapshot selection years must be [2025, 2026], got ${JSON.stringify(data.selection?.years)}`,
+            );
+          }
+          console.log({
+            devices: data.devices.length,
+            brands: Object.keys(data.brandCounts ?? {}).length,
+            uniqueBaseModels: base.size,
+            variantBackfill:
+              data.devices.length - base.size,
+            maxPerBase,
+            higherTrust,
+            lowTrust,
+            newest: data.devices[0]?.releaseDate,
+            oldest: data.devices.at(-1)?.releaseDate,
+          });
+          NODE
+
+      - name: Commit generated snapshot
+        run: |
+          if [ -z "$(git status --porcelain -- data/calibration/techapi-recent-1000-0.1.json)" ]; then
+            echo "TechAPI snapshot is already current."
+            exit 0
+          fi
+
+          git config user.name "phonefuturist-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/calibration/techapi-recent-1000-0.1.json
+          git commit -m "data: sync 1000 recent TechAPI phones [techapi-generated]"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
