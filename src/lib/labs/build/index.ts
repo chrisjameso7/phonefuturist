@@ -9,3 +9,4 @@ export { COMPONENTS, COMPONENT_LIST, componentsOfKind } from './catalog';
 export { ARCHITECTURES, DEFAULT_ARCHITECTURE, SLOTS, SLOT_BY_ID, type Architecture } from './architectures';
 export * from './assembly';
 export * from './view-options';
+export * from './inspect';

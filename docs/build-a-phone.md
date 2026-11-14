@@ -106,6 +106,15 @@ The 3D device studio gains an **Exterior / Inside · Build a Phone** switch unde
 
 The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a subsystem filter, a "Look under shields" option in X-ray, and a caption that describes the current view for screen readers. Tapping a part selects it and frames it. With the switch on Exterior, or anywhere else the viewport is used (device concepts, Community), behaviour is unchanged.
 
+## Part selection, inspector and assembly (phase 4)
+
+`build/inspect.ts` turns a resolved build into what the interface shows, so the wording and figures are testable:
+
+- **Inspector**: name, subsystem, assembly step, "Representative part" and installed tags, description, manufacturer and model ("None, generic part class" for representative parts), position and location. Every figure (size, mass, specifications, power, planning cost) carries its confidence label and source. It also lists sub-assemblies, connections in both directions with the interface and the flex or connector that carries them, service access (what must come off to reach it, what comes off with it), alternatives that fit the same position with a concrete difference, and the geometry level.
+- **Assembly**: the twelve steps as an ordered list with progress. Each part can be inspected, replaced from the parts that fit its position, removed or installed. Optional positions can be left empty. "Strip to frame", "Install next step" and "Install everything" let visitors build the phone up step by step and watch each part move into place.
+- **Engineering rules**: the frame and midframe stay in place; removing a part removes what is mounted on it (memory comes off with the processor; chips come off with the logic board); a part cannot be installed before the part it mounts on; covering parts lift out and go back during the animation, and the message names them.
+- Selecting a part fades the parts that physically cover it, so the selection stays visible in X-ray and assembled views.
+
 ## Tests
 
 | File | Covers |
@@ -113,4 +122,5 @@ The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a s
 | `tests/labs-build-catalog.test.ts` | Catalogue integrity, sources and confidence, cost links, slots, connections, architectures |
 | `tests/labs-build-assembly.test.ts` | Placement inside the chassis, no intersections in default builds, stack order, automatic fitting, conditional slots, replace/remove/install, access order, mass, determinism |
 | `tests/labs-build-view.test.ts` | View modes, subsystem options, captions, selection rules, the representative notice, and that the lazily loaded module excludes the renderer |
+| `tests/labs-build-inspect.test.ts` | Inspector completeness for every part, confidence never upgraded, two-way connections, alternatives, multiples, acronym-safe wording, removal with dependants, mount order, strip and step-by-step build-up, which positions may be empty |
 | `tests/labs-build-model.test.ts` | Geometry for every part, instancing and shared materials, exact board cut-outs, distinct exteriors per design family, partial rebuilds, exploded order and reassembly, X-ray ghosting, picking, install/remove animation, quality tiers |

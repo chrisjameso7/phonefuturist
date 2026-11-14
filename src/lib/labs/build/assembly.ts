@@ -491,9 +491,9 @@ function boardGrid(rects: Rect[]) {
 export function accessBlockers(assembly: Assembly, slotId: string): PlacedPart[] {
   const target = assembly.bySlot[slotId];
   if (!target || target.slot.layer === 0) return [];
-  const rearSide = target.slot.layer > 0;
+  const rearSide = target.slot.layer > 0, carried = new Set(dependants(assembly, slotId));
   return assembly.parts.filter(other => {
-    if (other === target || !other.installed || other.slot.layer === 0 || other.parent === slotId) return false;
+    if (other === target || !other.installed || other.slot.layer === 0 || carried.has(other)) return false;
     if ((other.slot.layer > 0) !== rearSide) return false;
     if (Math.abs(other.slot.layer) <= Math.abs(target.slot.layer)) return false;
     if (other.slot.mount === 'instanced' && other.slot.id !== 'screws') return false;
@@ -511,6 +511,8 @@ export function installOrder(assembly: Assembly): PlacedPart[] {
 }
 export function describePosition(part: PlacedPart, layout: Layout): string {
   const { width: W, height: H } = layout.design, { x, y, z } = part.box;
+  if (part.box.w >= W - 6 && part.box.h >= H - 6) return part.slot.layer < 0 ? 'Spans the whole front of the phone' : part.slot.layer > 0 ? 'Spans the whole back of the phone' : 'Forms the outside of the phone';
+  if (part.instances) return `${part.instances.length} placed across the ${y > H * .2 ? 'upper' : y < -H * .2 ? 'lower' : 'middle'} part of the logic board`;
   const vertical = y > H * .2 ? 'upper' : y < -H * .2 ? 'lower' : 'middle', side = x > W * .15 ? 'right' : x < -W * .15 ? 'left' : 'centre';
   const depth = z > layout.z.floor ? `${(layout.z.rearOuter - (z + part.box.d / 2)).toFixed(1)} mm below the rear surface` : `${(z - part.box.d / 2 - layout.z.front).toFixed(1)} mm behind the front surface`;
   return `${vertical[0].toUpperCase() + vertical.slice(1)} ${side}, viewed from the rear · ${depth}`;

@@ -80,8 +80,12 @@ export function createBuildModel(quality: Quality = 'high') {
       mesh.castShadow = !replacement && !(mesh.userData.base as THREE.Material).transparent;
     });
   }
+  /** Parts that physically cover the selection; they fade so the selected part stays visible. */
+  let covering = new Set<string>();
+  function refreshCovering() { covering = new Set(assembly && view.selected && view.mode !== 'inspect' && view.mode !== 'exploded' ? accessBlockers(assembly, view.selected).map(p => p.slot.id) : []); }
   function desiredGhost(entry: Entry): Ghost {
     const id = entry.part.slot.id, selected = view.selected;
+    if (covering.has(id)) return id === 'frame' ? 'frame' : 'ghost';
     if (view.mode === 'inspect' && selected) {
       if (id === selected || entry.part.parent === selected) return 'none';
       return id === 'frame' ? 'frame' : 'faint';
@@ -145,7 +149,7 @@ export function createBuildModel(quality: Quality = 'high') {
     refresh();
   }
   function returnExteriorOf(entry: Entry) { if (exterior) for (const child of entry.group.children.slice()) if (child.userData.exterior) exterior.group.add(child); }
-  function refresh() { for (const entry of entries.values()) setGhost(entry, desiredGhost(entry)); }
+  function refresh() { refreshCovering(); for (const entry of entries.values()) setGhost(entry, desiredGhost(entry)); }
 
   const scratch = new THREE.Vector3(), goal = new THREE.Vector3();
   /** Advances animations. Returns true while anything is still moving. */

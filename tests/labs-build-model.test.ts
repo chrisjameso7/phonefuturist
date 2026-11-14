@@ -157,3 +157,14 @@ describe('Build a Phone model behaviour', () => {
     expect(detectQuality({ coarsePointer: true, shortSide: 1024 })).toBe('high');
   });
 });
+
+describe('Build a Phone selection visibility', () => {
+  it('fades whatever covers the selected part, and restores it when cleared', () => {
+    const model = createBuildModel('balanced'); model.update(resolveBuild(defaultBuild(studio)));
+    model.setView({ mode: 'xray', selected: 'soc' });
+    const ghost = (id: string) => model.entries().get(id)!.ghost;
+    expect(ghost('shield-compute')).toBe('ghost'); expect(ghost('heat-spreader')).toBe('ghost'); expect(ghost('soc')).toBe('none'); expect(ghost('battery')).toBe('none');
+    model.setView({ selected: null }); expect(ghost('heat-spreader')).toBe('none');
+    model.dispose();
+  });
+});
