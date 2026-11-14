@@ -51,7 +51,18 @@ export default function BuildWorkbench({ lib, assembly, state, onState, view, on
   useEffect(() => {
     if (!view.selected) return;
     const part = assembly.bySlot[view.selected]; if (part) setOpenStep(part.slot.step);
-    inspector.current?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const behavior: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    // Wait for the inspector and the opened step to lay out before measuring.
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => {
+      const el = inspector.current; if (!el) return;
+      // On phones the 3D stage is docked at the top; land the inspector just below it, not underneath.
+      const dock = document.querySelector<HTMLElement>('.instrument-result[data-pinned]');
+      if (dock && getComputedStyle(dock).position === 'sticky') {
+        const top = el.getBoundingClientRect().top, visibleTop = dock.getBoundingClientRect().bottom + 8;
+        if (top < visibleTop || top > window.innerHeight - 96) window.scrollTo({ top: window.scrollY + top - visibleTop, behavior });
+      } else el.scrollIntoView({ block: 'nearest', behavior });
+    }));
+    return () => cancelAnimationFrame(frame);
   }, [view.selected]);
 
   const apply = (result: { build: PhoneBuild; message: string; ok: boolean }) => {

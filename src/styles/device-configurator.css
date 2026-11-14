@@ -154,3 +154,34 @@ li[data-level=pass] .build-finding-mark{color:var(--pf-brand);border-radius:50%}
 .build-compare caption{text-align:left;font-size:.78rem;font-weight:600;color:var(--pf-primary);padding:4px 0 8px}
 .build-compare td[data-better=true]{color:var(--pf-brand);font-weight:600}
 .build-compare td[data-better=true]::after{content:" ▲";font-size:.6rem}
+/* Build a Phone on phones: dock the 3D stage at the top, with the workbench scrolling beneath it,
+   instead of hiding the model in the bottom drawer that covers the parts list. */
+@media(max-width:760px){
+  body .device-configurator.is-inside{display:flex!important;flex-direction:column;gap:12px}
+  body .device-configurator.is-inside>.instrument-result[data-pinned]{order:-1;position:sticky;inset:auto;top:calc(var(--pf-header-h,70px) + 6px);z-index:30;max-height:none;margin:0;box-shadow:0 10px 24px -14px rgba(0,0,0,.7)}
+  body .device-configurator.is-inside>.instrument-result[data-pinned]>.instrument-result-content{max-height:none;overflow:visible}
+  body .device-configurator.is-inside .instrument-result-summary{min-height:44px;padding:8px 12px}
+  body:has(.device-configurator.is-inside) main#main{padding-bottom:24px!important}
+  .is-inside .device-studio{padding:8px!important;gap:8px}
+  .is-inside .device-design-summary{display:none}
+  .is-inside .device-viewport{height:min(28dvh,260px)}
+  .is-inside .device-preview{gap:6px}
+  /* One swipeable row for the view modes and one for the tools, so the stage stays short. */
+  .is-inside .build-view-tools{display:flex;gap:6px;margin:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .is-inside .build-view-tools::-webkit-scrollbar,.is-inside .device-view-tools::-webkit-scrollbar{display:none}
+  .is-inside .build-mode-switch{display:flex;flex:0 0 auto;padding:3px}
+  .is-inside .build-mode-switch button{width:auto;flex:0 0 auto;padding:0 12px;white-space:nowrap}
+  .is-inside .build-view-options{display:flex;flex:0 0 auto;align-items:center;gap:6px;flex-wrap:nowrap}
+  .is-inside .build-view-options label{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:.75rem}
+  .is-inside .build-view-options button{flex:0 0 auto;min-height:44px;white-space:nowrap}
+  .is-inside .device-view-tools{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}
+  .is-inside .device-view-tools button{flex:0 0 auto;white-space:nowrap;min-height:40px;padding:8px 12px}
+  /* The caption and tips stay for screen readers; the workbench already carries the representative notice. */
+  .is-inside .device-preview-caption,.is-inside .build-layout-notice:not([data-perf]){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* Selecting a part scrolls its inspector into view below the docked stage, not under it. */
+  .is-inside .build-inspector{scroll-margin-top:calc(var(--pf-header-h,70px) + min(28dvh,260px) + 150px)}
+}
+@media(max-width:760px){
+  .is-inside>.instrument-result,.is-inside .instrument-result-content,.is-inside .device-studio,.is-inside .device-preview,.is-inside .build-view-tools,.is-inside .device-view-tools{min-width:0;max-width:100%}
+  .is-inside .device-studio{display:block}
+}

@@ -71,7 +71,7 @@ export default function DeviceConfigurator() {
     finally{setExporting(false);}
   }
 
-  return <div className="device-configurator">
+  return <div className={inside?'device-configurator is-inside':'device-configurator'}>
 
     <section className="lab-panel device-design-controls" aria-label="Device design controls">
 
@@ -148,7 +148,7 @@ export default function DeviceConfigurator() {
 
     </section>
 
-    <ResultPanel label="Device preview" summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-panel"><DeviceViewport design={rendered} captureRef={captureRef} build={viewportBuild} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
+    <ResultPanel label="Device preview" pinned={inside} summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-panel"><DeviceViewport design={rendered} captureRef={captureRef} build={viewportBuild} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
 
   </div>;
 
