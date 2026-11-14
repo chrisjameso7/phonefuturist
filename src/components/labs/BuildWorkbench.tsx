@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Assembly } from '../../lib/labs/build/assembly';
 import type { BuildView } from '../../lib/labs/build/view-types';
 import type { Confidence, PhoneBuild, Subsystem } from '../../lib/labs/build/schema';
@@ -26,6 +26,8 @@ export default function BuildWorkbench({ lib, assembly, state, onState, view, on
   const [openStep, setOpenStep] = useState<number | null>(null);
   const inspector = useRef<HTMLElement>(null);
   const steps = lib.stepSummaries(assembly);
+  const report = useMemo(() => lib.checkBuild(assembly), [lib, assembly]);
+  const problems = report.findings.filter(f => f.level !== 'pass'), passes = report.findings.filter(f => f.level === 'pass');
   const selected = view.selected ? lib.inspectPart(assembly, view.selected) : null;
   // Selecting a part from the 3D view opens its step and brings the inspector into view.
   useEffect(() => {
@@ -96,6 +98,27 @@ export default function BuildWorkbench({ lib, assembly, state, onState, view, on
         <ul>{selected.sources.map(src => <li key={src.title}><strong>{src.title}</strong>{src.note ? ` — ${src.note}` : ''}</li>)}</ul>
       </details>
     </section>}
+
+    <section className="build-checks" aria-labelledby="build-checks-title">
+      <div className="build-assembly-head">
+        <h3 id="build-checks-title">Engineering checks</h3>
+        <span>{report.counts.blocker ? `${report.counts.blocker} will not work · ` : ''}{report.counts.warning ? `${report.counts.warning} need attention · ` : ''}{report.counts.pass} pass</span>
+      </div>
+      {problems.length === 0 && <p className="build-meta">No problems found. Each check below says what it is based on; estimates are indicative, not verified engineering results.</p>}
+      <ul className="build-findings">{problems.map(f => <li key={f.id} data-level={f.level}>
+        <span className="build-finding-mark" aria-hidden="true">{f.level === 'blocker' ? '✕' : f.level === 'warning' ? '!' : 'i'}</span>
+        <div>
+          <p className="build-finding-title"><span className="build-visually-hidden">{lib.LEVEL_LABELS[f.level]}: </span>{f.title}</p>
+          <p className="build-finding-detail">{f.detail}</p>
+          <p className="build-finding-basis" data-basis={f.basis}>{lib.BASIS_LABELS[f.basis]}{f.sources.filter(id => id !== 'pf-representative' && id !== 'pf-layout').map(id => lib.SOURCES[id]?.title).filter(Boolean).length ? ' · ' + f.sources.filter(id => id !== 'pf-representative' && id !== 'pf-layout').map(id => lib.SOURCES[id]?.title).filter(Boolean).join(' · ') : ''}</p>
+        </div>
+        {f.slots[0] && assembly.bySlot[f.slots[0]] && <button type="button" onClick={() => onSelect(f.slots[0])}>Show</button>}
+      </li>)}</ul>
+      {passes.length > 0 && <details className="build-passes"><summary>{passes.length} checks pass</summary>
+        <ul className="build-findings">{passes.map(f => <li key={f.id} data-level="pass"><span className="build-finding-mark" aria-hidden="true">✓</span><div><p className="build-finding-title">{f.title}</p><p className="build-finding-detail">{f.detail}</p><p className="build-finding-basis" data-basis={f.basis}>{lib.BASIS_LABELS[f.basis]}</p></div></li>)}</ul>
+      </details>}
+      <p className="build-meta">Sustained heat about {report.thermal.sustainedW} W against a passive budget of about {report.thermal.budgetW} W <Confidence lib={lib} value="estimated"/></p>
+    </section>
 
     <section className="build-assembly" aria-labelledby="build-assembly-title">
       <div className="build-assembly-head">

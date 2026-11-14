@@ -115,6 +115,20 @@ The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a s
 - **Engineering rules**: the frame and midframe stay in place; removing a part removes what is mounted on it (memory comes off with the processor; chips come off with the logic board); a part cannot be installed before the part it mounts on; covering parts lift out and go back during the animation, and the message names them.
 - Selecting a part fades the parts that physically cover it, so the selection stays visible in X-ray and assembled views.
 
+## Compatibility and engineering checks (phase 5)
+
+`build/compatibility.ts` runs pure rules over a resolved build. Each finding has a level (will not work, needs attention, worth knowing, checks out) and a **basis**, shown on screen:
+
+| Basis | Meaning | Examples |
+|---|---|---|
+| Geometry of the representative layout | Real maths on a generic arrangement | Battery overruns its bay or the rear cover; a camera module reaches into the display; two parts occupy the same space; no room on the logic board |
+| Required for the part to work | Missing required parts | Battery, processor or storage not installed |
+| Published standard | Cited standards | USB PD's 100 W standard range; UFS backward compatibility; millimetre-wave needs antenna-in-package modules |
+| Physical principle | Holds for any design | Metal rear covers block wireless charging and NFC; a closed metal frame shields antennas; optical fingerprint readers cannot see through an LCD |
+| Planning estimate · not verified | Class values and heuristics | Memory generation vs processor class; camera streams and sensor size vs the image processor; charge rate vs cell class; peak power; sustained heat vs a passive cooling budget |
+
+The thermal budget is a planning heuristic: about 170 W per square metre of skin, scaled by the best heat spreader installed. Planning values were tuned so the default build passes every check: single-cell fast-charge limits of about 2.3C (lithium-ion) and 2.6C (silicon-carbon), 4.2C for dual-cell packs, a 45 W charger by default, and 5.5 W / 4.0 W sustained heat for the flagship and upper-mid processor classes. Every one remains labelled an estimate.
+
 ## Tests
 
 | File | Covers |
@@ -123,4 +137,5 @@ The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a s
 | `tests/labs-build-assembly.test.ts` | Placement inside the chassis, no intersections in default builds, stack order, automatic fitting, conditional slots, replace/remove/install, access order, mass, determinism |
 | `tests/labs-build-view.test.ts` | View modes, subsystem options, captions, selection rules, the representative notice, and that the lazily loaded module excludes the renderer |
 | `tests/labs-build-inspect.test.ts` | Inspector completeness for every part, confidence never upgraded, two-way connections, alternatives, multiples, acronym-safe wording, removal with dependants, mount order, strip and step-by-step build-up, which positions may be empty |
+| `tests/labs-build-compatibility.test.ts` | Clean default builds, basis and sources on every finding, physics, geometry, interface and electrical rules, missing parts, thermal budget scaling, ordering |
 | `tests/labs-build-model.test.ts` | Geometry for every part, instancing and shared materials, exact board cut-outs, distinct exteriors per design family, partial rebuilds, exploded order and reassembly, X-ray ghosting, picking, install/remove animation, quality tiers |

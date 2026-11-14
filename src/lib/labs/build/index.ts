@@ -10,3 +10,4 @@ export { ARCHITECTURES, DEFAULT_ARCHITECTURE, SLOTS, SLOT_BY_ID, type Architectu
 export * from './assembly';
 export * from './view-options';
 export * from './inspect';
+export * from './compatibility';

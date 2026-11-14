@@ -130,3 +130,18 @@
 .build-replace select{width:100%;min-height:44px;background:var(--pf-surface);color:var(--pf-primary);border:1px solid var(--pf-border);border-radius:var(--pf-radius-sm);padding:0 8px;font-size:.76rem}
 .build-visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .build-inspector .build-icon-button{background:transparent!important;color:var(--pf-primary)!important;border:1px solid var(--pf-border)!important}
+.build-checks{display:grid;gap:10px}
+.build-findings{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.build-findings li{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px;border-radius:var(--pf-radius-sm);border:1px solid var(--pf-border);background:var(--pf-surface)}
+.build-findings li[data-level=blocker]{border-color:color-mix(in srgb,#e5484d 55%,var(--pf-border));background:color-mix(in srgb,#e5484d 7%,var(--pf-surface))}
+.build-findings li[data-level=warning]{border-color:color-mix(in srgb,#d48a1c 55%,var(--pf-border))}
+.build-finding-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;font-size:.78rem;font-weight:700;border:1.5px solid currentColor;color:var(--pf-secondary)}
+li[data-level=blocker] .build-finding-mark{color:#e5484d;border-radius:4px}
+li[data-level=warning] .build-finding-mark{color:#d48a1c;border-radius:50% 50% 4px 4px}
+li[data-level=pass] .build-finding-mark{color:var(--pf-brand);border-radius:50%}
+.build-finding-title{margin:0;font-size:.82rem;font-weight:600;line-height:1.35;color:var(--pf-primary)}
+.build-finding-detail{margin:4px 0 0;font-size:.76rem;line-height:1.5;color:var(--pf-secondary)}
+.build-finding-basis{margin:6px 0 0;font-family:var(--font-data,ui-monospace,monospace);font-size:.66rem;letter-spacing:.02em;color:var(--pf-secondary)}
+.build-finding-basis[data-basis=estimate]{color:var(--pf-violet,#ba9bff)}
+.build-findings button{min-height:44px;padding:0 12px;background:transparent;color:var(--pf-primary);border-color:var(--pf-border);font-size:.76rem}
+.build-passes summary{cursor:pointer;min-height:36px;display:flex;align-items:center;font-size:.8rem;color:var(--pf-primary)}
