@@ -3,7 +3,11 @@ import ResultPanel from './ResultPanel';
 import FormSection from './FormSection';
 import PublishBuild from '../community/PublishBuild';
 import { WALLPAPERS } from '../../lib/labs/wallpaper-options';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { BuildLib, BuildState } from './BuildWorkbench';
+import type { BuildView } from '../../lib/labs/build/view-types';
+import type { ViewportBuild } from './DeviceViewport';
+const BuildWorkbench = lazy(() => import('./BuildWorkbench'));
 
 import LabNumber from './LabNumber';
 
@@ -34,6 +38,19 @@ export default function DeviceConfigurator() {
   useEffect(()=>{const id=new URLSearchParams(window.location.search).get('communityBuild');if(!id||!/^[a-f0-9-]{36}$/i.test(id))return;const ctrl=new AbortController();setImportStatus('Loading your Community copy…');fetch('/api/community?kind=design&id='+encodeURIComponent(id),{signal:ctrl.signal}).then(async response=>{const body=await response.json();if(!response.ok)throw new Error(body.error??'Could not load this copy.');if(!importTouched.current){setDesignState(body.design);setCommunitySource(body.forkedFrom);setImportStatus('Community design loaded. Edit it, then share your version.');}else setImportStatus('Your edits were kept. Reload to import the saved copy.');}).catch(e=>{if(e.name!=='AbortError')setImportStatus(e.message);});return()=>ctrl.abort();},[]);
   const rendered={...design,...(display?{displayWidth:display.valid?display.width:0,displayHeight:display.valid?display.height:0}:{})};
 
+  // Build a Phone: the inside of the same chassis. The library loads only when a visitor opens it.
+  const [inside,setInside]=useState(false),[lib,setLib]=useState<BuildLib|null>(null),[libError,setLibError]=useState(false);
+  const [buildState,setBuildState]=useState<BuildState>({architecture:'classic',selections:{},uninstalled:[]});
+  const [view,setView]=useState<BuildView>({mode:'assembled',subsystem:'all',xrayDepth:1,selected:null});
+  const [focus,setFocus]=useState<{slot:string|null;key:number}>({slot:null,key:0});
+  useEffect(()=>{if(!inside||lib)return;let live=true;import('../../lib/labs/build').then(m=>{if(live)setLib(m);}).catch(()=>{if(live)setLibError(true);});return()=>{live=false;};},[inside,lib]);
+  const renderedKey=JSON.stringify(rendered);
+  const assembly=useMemo(()=>inside&&lib?lib.resolveBuild({version:lib.BUILD_SCHEMA_VERSION,name:rendered.name,design:rendered,...buildState}):null,[inside,lib,renderedKey,buildState]);
+  const changeView=useCallback((change:Partial<BuildView>)=>setView(v=>lib?lib.nextView(v,change):{...v,...change}),[lib]);
+  const selectPart=useCallback((slot:string|null)=>{setView(v=>({...v,selected:slot,mode:slot&&v.mode==='assembled'?'xray':v.mode}));setFocus(f=>({slot,key:f.key+1}));},[]);
+  const selectedName=assembly&&view.selected?assembly.bySlot[view.selected]?.component.name:null;
+  const viewportBuild:ViewportBuild|undefined=inside&&lib?{assembly,view,onViewChange:changeView,onSelect:selectPart,focus,modes:lib.VIEW_MODES,subsystems:lib.subsystemOptions(),caption:lib.describeView(view,selectedName)+' '+lib.VIEW_MODES[view.mode].description,notice:lib.LAYOUT_NOTICE}:undefined;
+
   function dimension(key:'width'|'height',value:number){const r=ratio.width/ratio.height;const w=key==='width'?value:value*r,h=key==='height'?value:value/r;setDiagonal(Math.hypot(w,h)/25.4);}
 
   function number(key:keyof DeviceDesign,label:string,min:number,max:number,step=.1){return <LabNumber key={key} label={label} value={Number(design[key]??normalizeDesign(design)[key]??0)} min={min} max={max} step={step} onValue={value=>update(key,value as never)}/>;}
@@ -59,6 +76,15 @@ export default function DeviceConfigurator() {
     <section className="lab-panel device-design-controls" aria-label="Device design controls">
 
       <label>Concept name<input type="text" value={design.name} maxLength={80} onChange={e => setDesign(c => ({ ...c, name: e.target.value }))} /></label>
+
+      <div className="build-switch" role="group" aria-label="What to design">
+        <button type="button" aria-pressed={!inside} onClick={()=>setInside(false)}>Exterior</button>
+        <button type="button" aria-pressed={inside} onClick={()=>setInside(true)}>Inside · Build a Phone</button>
+      </div>
+
+      {inside&&<div className="build-pane">{libError?<p role="alert">Build a Phone could not load. Check your connection and reload the page.</p>:lib&&assembly?<Suspense fallback={<p role="status">Opening the workbench…</p>}><BuildWorkbench lib={lib} assembly={assembly} state={buildState} onState={setBuildState} view={view} onView={changeView} onSelect={selectPart} onDesign={change=>setDesign(c=>normalizeDesign({...c,...change}))}/></Suspense>:<p role="status">Opening the workbench…</p>}</div>}
+
+      <div hidden={inside} className="device-exterior-controls">
 
       <FormSection title="Design family" summary={DESIGN_FAMILIES[design.family??'plateau']}><fieldset className="device-family-picker"><legend>Design family</legend><div>{Object.entries(DESIGN_FAMILIES).map(([value,label],i)=><button type="button" key={value} aria-pressed={design.family===value} onClick={()=>setDesign(c=>({...c,family:value as DeviceDesign['family'],cornerRadius:value==='stealth'?3:value==='plateau'||value==='duo'?12:7,cameraWidth:value==='plateau'||value==='duo'||value==='dot'?c.width-8:value==='halo'?Math.min(56,c.width-8):24,cameraHeight:value==='duo'?24:value==='plateau'?44:value==='halo'?Math.min(56,c.width-8):58,cameraCount:value==='duo'?2:value==='column'?4:3,selfieStyle:value==='stealth'?'none':value==='plateau'?'pill':'punch',protrusion:value==='stealth'?1:3,camera:value==='halo'?'circle':'triple'}))}><svg viewBox="0 0 60 80" aria-hidden="true"><rect x="12" y="3" width="36" height="72" rx={value==='stealth'?2:8}/>{value==='duo'?<rect x="14" y="10" width="32" height="10" rx="3"/>:value==='halo'?<circle cx="30" cy="20" r="12"/>:<><circle cx="21" cy="15" r="4"/><circle cx="21" cy="27" r="4"/>{i!==1&&<circle cx="34" cy="20" r="4"/>}</>}{value==='dot'&&<><circle cx="38" cy="11" r="3"/><path d="M18 47H40M20 53H35"/></>}{value==='stealth'&&<path d="M20 48L40 40M20 53L40 45"/>}</svg><span>{label}</span></button>)}</div></fieldset>
 
@@ -117,11 +143,12 @@ export default function DeviceConfigurator() {
 
       {(design.family==='stealth'||design.family==='dot')&&<label><input type="checkbox" checked={design.lighting??false} onChange={e=>update('lighting',e.target.checked)}/> Decorative lighting</label>}
 
-      </FormSection><button type="button" disabled={exporting||!!(display&&!display.valid)} onClick={download}>{exporting?'Preparing design card…':'Download design card'}</button><p role="status">{exportStatus}</p><PublishBuild design={rendered} forkedFrom={communitySource}/><p role="status">{importStatus}</p>
+      </FormSection>
+      </div><button type="button" disabled={exporting||!!(display&&!display.valid)} onClick={download}>{exporting?'Preparing design card…':'Download design card'}</button><p role="status">{exportStatus}</p><PublishBuild design={rendered} forkedFrom={communitySource}/><p role="status">{importStatus}</p>
 
     </section>
 
-    <ResultPanel label="Device preview" summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-panel"><DeviceViewport design={rendered} captureRef={captureRef} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
+    <ResultPanel label="Device preview" summary={`${design.height} × ${design.width} × ${design.thickness} mm`}><div className="device-studio lab-panel"><DeviceViewport design={rendered} captureRef={captureRef} build={viewportBuild} /><div className="device-design-summary"><h2>{design.name || 'Untitled concept'}</h2><p>{design.height} × {design.width} × {design.thickness} mm · {BACK_FINISHES[design.backFinish??'titanium'].label}</p><p>{CAMERA_LAYOUTS[design.camera]}</p></div></div></ResultPanel>
 
   </div>;
 

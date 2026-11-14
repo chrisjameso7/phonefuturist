@@ -4,7 +4,8 @@ import { createStudioEnvironment } from './studio-environment';
 import { createHardwareModel } from './hardware-mesh';
 import { normalizeDesign, type DeviceDesign } from './device-design';
 import type { Assembly } from './build/assembly';
-import type { BuildModel, BuildView } from './build/build-model';
+import type { BuildModel } from './build/build-model';
+import type { BuildView } from './build/view-types';
 import type { Quality } from './build/materials';
 
 export type { Quality };

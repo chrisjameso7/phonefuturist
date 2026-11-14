@@ -85,10 +85,22 @@ Quality tiers: **high** for desktops (2× pixel ratio, 2048 px soft shadows, gla
 
 The exterior is unchanged except for detail: a coated front element and inner ring in each lens, the USB-C tongue, microphone ports, and moulded antenna breaks in place of black slots.
 
+## Studio interface (phase 3)
+
+The 3D device studio gains an **Exterior / Inside · Build a Phone** switch under the concept name. Exterior shows the existing controls unchanged. Inside loads the Build a Phone library on demand (`build/index.ts`, no Three.js) and shows the workbench in the controls column:
+
+- a "Representative" notice, worded the same everywhere the layout appears;
+- the three internal layouts as radio choices with their summaries;
+- totals with confidence labels: parts installed, estimated mass, internal cavity depth, and the chassis as your setting;
+- the ten subsystems with part counts; choosing one separates just that subsystem.
+
+The preview gains the four view modes (Assembled, Exploded, X-ray, Inspect), a subsystem filter, a "Look under shields" option in X-ray, and a caption that describes the current view for screen readers. Tapping a part selects it and frames it. With the switch on Exterior, or anywhere else the viewport is used (device concepts, Community), behaviour is unchanged.
+
 ## Tests
 
 | File | Covers |
 |---|---|
 | `tests/labs-build-catalog.test.ts` | Catalogue integrity, sources and confidence, cost links, slots, connections, architectures |
 | `tests/labs-build-assembly.test.ts` | Placement inside the chassis, no intersections in default builds, stack order, automatic fitting, conditional slots, replace/remove/install, access order, mass, determinism |
+| `tests/labs-build-view.test.ts` | View modes, subsystem options, captions, selection rules, the representative notice, and that the lazily loaded module excludes the renderer |
 | `tests/labs-build-model.test.ts` | Geometry for every part, instancing and shared materials, exact board cut-outs, distinct exteriors per design family, partial rebuilds, exploded order and reassembly, X-ray ghosting, picking, install/remove animation, quality tiers |

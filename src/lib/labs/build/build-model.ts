@@ -13,8 +13,8 @@ import { createMaterialLibrary, type Quality } from './materials';
 import { buildPartObject, disposePartObject } from './part-mesh';
 import type { PlacedPart, Subsystem } from './schema';
 
-export type BuildViewMode = 'assembled' | 'exploded' | 'xray' | 'inspect';
-export type BuildView = { mode: BuildViewMode; subsystem: Subsystem | 'all'; xrayDepth: 1 | 2; selected: string | null };
+import type { BuildView } from './view-types';
+export type { BuildView, BuildViewMode } from './view-types';
 export const DEFAULT_BUILD_VIEW: BuildView = { mode: 'assembled', subsystem: 'all', xrayDepth: 1, selected: null };
 
 /** Which studio exterior meshes belong to which slot. */
