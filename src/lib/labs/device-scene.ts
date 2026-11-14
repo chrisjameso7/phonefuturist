@@ -28,7 +28,8 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: quality === 'high' ? 'high-performance' : 'low-power' });
   renderer.shadowMap.enabled = true;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+  // Khronos PBR Neutral keeps product colours and metals true instead of ACES's warm, desaturated look.
+  renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1;
   const canvas = renderer.domElement; canvas.setAttribute('aria-hidden', 'true');
   host.append(canvas);
   const scene = new THREE.Scene();
@@ -47,7 +48,7 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   Object.assign(key.shadow.camera, { left: -150, right: 150, top: 200, bottom: -200, far: 650 });
   key.shadow.bias = -.0006; key.shadow.normalBias = .5; key.shadow.radius = 3; scene.add(key);
   const rim = new THREE.DirectionalLight('#80ddff', 2.2); rim.position.set(130, 50, -160); scene.add(rim);
-  const model = createHardwareModel(initial); scene.add(model.group);
+  const model = createHardwareModel(initial, { quality }); scene.add(model.group);
   const floorGeometry = new THREE.PlaneGeometry(1000, 1000);
   const floorMaterial = new THREE.ShadowMaterial({ opacity: .22 });
   const floor = new THREE.Mesh(floorGeometry, floorMaterial); floor.rotation.x = -Math.PI / 2;
@@ -120,7 +121,7 @@ export function createDeviceScene(host: HTMLElement, initial: DeviceDesign, onLo
   function monitor(ms: number) {
     frameMs = frameMs ? frameMs * .9 + ms * .1 : ms;
     slowFrames = ms > 34 ? slowFrames + 1 : Math.max(0, slowFrames - 2);
-    if (slowFrames > 36 && quality !== 'mobile') { quality = ORDER[ORDER.indexOf(quality) + 1]; downgraded = true; slowFrames = 0; frameMs = 0; applyQuality(); build?.setQuality(quality); wake(); }
+    if (slowFrames > 36 && quality !== 'mobile') { quality = ORDER[ORDER.indexOf(quality) + 1]; downgraded = true; slowFrames = 0; frameMs = 0; applyQuality(); model.setQuality(quality); build?.setQuality(quality); wake(); }
   }
   renderer.setAnimationLoop(() => {
     const now = performance.now(), seconds = Math.min(.1, (now - last) / 1000); last = now;

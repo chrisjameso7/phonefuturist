@@ -2,10 +2,11 @@ import { wallpaperMaterial,screenUV } from './device-wallpaper';
 import * as THREE from 'three';
 import { normalizeDesign, type DeviceDesign } from './device-design';
 import { rearCameraLayout } from './camera-layout';
+import { addFlash, addLens, addPinhole, createOpticsMaterials, frostNormal, islandGeometry, type OpticsQuality } from './camera-optics';
 import { BACK_FINISHES, FRAME_FINISHES, FRONT_FINISHES } from './device-finishes';
 
 /** Flat, uniformly rounded face; extrusion bevel stays independent of the corner radius. */
-export function slab(width: number, height: number, depth: number, radius: number, bevel = .25, corners?: [number,number,number,number]) {
+export function slab(width: number, height: number, depth: number, radius: number, bevel = .25, corners?: [number,number,number,number], segments = 2) {
   bevel=Math.min(bevel,depth*.24);
   const w = width / 2 - bevel, h = height / 2 - bevel, r = Math.min(radius, w, h);
   const [bl,br,tr,tl]=(corners??[r,r,r,r]).map(n=>Math.max(0,Math.min(n,w,h)));
@@ -16,7 +17,7 @@ export function slab(width: number, height: number, depth: number, radius: numbe
   shape.quadraticCurveTo(-w, h, -w, h - tl); shape.lineTo(-w, -h + bl);
   shape.quadraticCurveTo(-w, -h, -w + bl, -h);
   const geometry = new THREE.ExtrudeGeometry(shape, { depth: Math.max(.01, depth - 2 * bevel), bevelEnabled: bevel > 0,
-    bevelSize: bevel, bevelThickness: bevel, bevelSegments: 2, steps: 1, curveSegments: 10 });
+    bevelSize: bevel, bevelThickness: bevel, bevelSegments: segments, steps: 1, curveSegments: 14 });
   geometry.translate(0, 0, -depth / 2 + bevel);
   return geometry;
 }
@@ -40,7 +41,7 @@ export function addDeviceBrand(parent: THREE.Group, material: THREE.Material, y:
 }
 
 /** Hollow perimeter frame with the same outer profile as the solid chassis slab. */
-export function frameRing(width: number, height: number, depth: number, radius: number, bevel: number, wall: number) {
+export function frameRing(width: number, height: number, depth: number, radius: number, bevel: number, wall: number, segments = 2) {
   bevel = Math.min(bevel, depth * .24);
   const outline = (w: number, h: number, r: number, target: THREE.Path) => {
     r = Math.max(.05, Math.min(r, w, h));
@@ -50,12 +51,12 @@ export function frameRing(width: number, height: number, depth: number, radius: 
   };
   const w = width / 2 - bevel, h = height / 2 - bevel, shape = outline(w, h, radius, new THREE.Shape()) as THREE.Shape;
   shape.holes.push(outline(width / 2 - wall + bevel, height / 2 - wall + bevel, Math.max(.3, radius - wall + bevel), new THREE.Path()));
-  const geometry = new THREE.ExtrudeGeometry(shape, { depth: Math.max(.01, depth - 2 * bevel), bevelEnabled: bevel > 0, bevelSize: bevel, bevelThickness: bevel, bevelSegments: 2, steps: 1, curveSegments: 10 });
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: Math.max(.01, depth - 2 * bevel), bevelEnabled: bevel > 0, bevelSize: bevel, bevelThickness: bevel, bevelSegments: segments, steps: 1, curveSegments: 14 });
   geometry.translate(0, 0, -depth / 2 + bevel);
   return geometry;
 }
 
-export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boolean; wall?: number } = {}) {
+export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boolean; wall?: number; quality?: OpticsQuality } = {}) {
   const group = new THREE.Group(); group.name = 'device';
   const pixels = new Uint8Array(64 * 64 * 4);
   for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
@@ -71,7 +72,9 @@ export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boo
   // Coated front element: clear-coated glass with a thin-film tint, as on multi-coated camera lenses.
   const optic = new THREE.MeshPhysicalMaterial({ color: '#05070c', roughness: .04, metalness: .15, clearcoat: 1, clearcoatRoughness: 0, iridescence: .9, iridescenceIOR: 1.9, iridescenceThicknessRange: [220, 420], envMapIntensity: 1.6 });
   const seam = new THREE.MeshStandardMaterial({ color: '#3b3e44', roughness: .78, metalness: 0 });
-  const cameraBlack = new THREE.MeshBasicMaterial({color:'#000000'});
+  // Camera windows on the Duo and Halo families: deep black glass with a hard clear coat.
+  const cameraBlack = new THREE.MeshPhysicalMaterial({ color: '#010102', roughness: .05, metalness: .1, clearcoat: 1, clearcoatRoughness: 0, envMapIntensity: 1.4 });
+  const optics = createOpticsMaterials(options.quality ?? 'high'), frost = frostNormal();
   const screen = new THREE.MeshPhysicalMaterial({ color: '#112837', roughness: .35, metalness: .1, emissive: '#082d3b', emissiveIntensity: .6 });
   const accent = new THREE.MeshStandardMaterial({ color: '#9fb6c9', roughness: .5, metalness: .4 });
   const glow = new THREE.MeshStandardMaterial({ color: '#75e4d1', emissive: '#75e4d1', emissiveIntensity: 1 });
@@ -105,15 +108,21 @@ export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boo
     const frameMap = c.frameFinish === 'brushedTitanium' ? brush : null;
     if (frame.normalMap !== frameMap) { frame.normalMap = frameMap; frame.needsUpdate = true; }
     frame.normalScale.set(.08,.08);
+    // Brushed metal reflects in streaks along the grain; polished and plastic frames do not.
+    frame.anisotropy = c.frameFinish === 'brushedTitanium' || c.frameFinish === 'matteAluminium' ? .65 : 0;
+    // Frosted glass and ceramic get a fine bead-blasted micro-relief; glossy surfaces stay smooth.
+    const relief = c.backFinish === 'frostedGlass' || c.backFinish === 'frostedPlastic' || c.backFinish === 'ceramic' ? frost : null;
+    if (relief && finish.normalMap !== relief) { finish.normalMap = relief; finish.normalScale.set(.12, .12); frost.repeat.set(10, 22); finish.needsUpdate = true; }
     wallpaper.update(c.wallpaper);
     const signature = [c.width, c.height, c.thickness, c.bezel, c.camera, c.family, c.cameraCount, c.cornerRadius, c.lensDiameter, c.lensSpacing, c.cameraWidth, c.cameraHeight, c.protrusion, c.lighting, c.displayWidth, c.displayHeight, c.usbC, c.speakers, c.antenna, c.selfieDiameter, c.selfieStyle, c.frameProfile, c.cameraX, c.cameraY].join(':');
     if (signature === previous) return;
     previous = signature; clearGeometry();
     const { width: w, height: h, thickness: t, bezel: b } = c;
     const r = c.cornerRadius!;
-    const edge = c.frameProfile === 'rounded' ? Math.min(1,t*.15) : .25;
-    mesh(options.hollow ? frameRing(w, h, t, r, edge, options.wall ?? 2.2) : slab(w, h, t, r, edge), frame, 'chassis');
-    mesh(slab(w - .8, h - .8, .5, r - .4, .1), finish, 'back', 0, 0, t / 2 + .05);
+    // Flat frames get a machined chamfer that catches a line of light; rounded frames a smooth multi-segment radius.
+    const rounded = c.frameProfile === 'rounded', edge = rounded ? Math.min(1.4, t * .2) : .42, segments = rounded ? 6 : 1;
+    mesh(options.hollow ? frameRing(w, h, t, r, edge, options.wall ?? 2.2, segments) : slab(w, h, t, r, edge, undefined, segments), frame, 'chassis');
+    mesh(slab(w - .8, h - .8, .5, r - .4, .12, undefined, 3), finish, 'back', 0, 0, t / 2 + .05);
     mesh(slab(w - .6, h - .6, .35, r - .3, .1), black, 'front-bezel', 0, 0, -t / 2 - .06);
     const dw = c.displayWidth ?? w - 2*b, dh = c.displayHeight ?? h - 2*b;
     if (dw > 0 && dh > 0 && dw <= w - 1 && dh <= h - 1)
@@ -124,35 +133,40 @@ export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boo
       const opening=mesh(slab(c.selfieStyle==='pill'?selfie*2.2:selfie,selfie,.15,selfie/2,.01),black,'selfie-camera',0,dh/2-selfie*1.2,-t/2-.4);
       opening.userData.diameter=selfie;
     }
-    mesh(slab(1.3, 15, t * .55, .5, .1), frame, 'power-button', w / 2 + .4, h * .12);
-    mesh(slab(1.3, 25, t * .55, .5, .1), frame, 'volume-rocker', -w / 2 - .4, h * .2);
+    mesh(slab(1.3, 15, t * .55, .5, .14, undefined, 3), frame, 'power-button', w / 2 + .4, h * .12);
+    mesh(slab(1.3, 25, t * .55, .5, .14, undefined, 3), frame, 'volume-rocker', -w / 2 - .4, h * .2);
+    // A dark relief slot around each key, as on machined frames.
+    mesh(slab(.5, 15.8, t * .62, .5, .05), black, 'button-slot', w / 2 - .05, h * .12); mesh(slab(.5, 25.8, t * .62, .5, .05), black, 'button-slot', -w / 2 + .05, h * .2);
     const protrusion = c.protrusion!, rearSurface=t/2+.3, backZ = rearSurface + protrusion/2, islandTop=rearSurface+protrusion;
     const camLayout = rearCameraLayout(raw), { family, circular, horizontal, islandWidth, islandHeight, cx, cy, positions, radius } = camLayout;
-    const count = positions.length;
+    const count = positions.length, add = (g: THREE.BufferGeometry, m: THREE.Material, name: string, x = 0, y = 0, z = 0) => mesh(g, m, name, x, y, z);
+    const periscopeIndex = c.camera === 'periscope' && count > 1 ? count - 1 : -1, windowed = family !== 'duo' && family !== 'halo';
+    // Floating and Dot lenses stand on the rear glass as separate machined towers; the others sit in an island.
+    const freestanding = family === 'floating' || family === 'dot';
+    const lensBase = freestanding ? rearSurface : islandTop, ringHeight = freestanding ? protrusion + .5 : .5;
     if (circular) {
-      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,64),frame,'circular-housing',cx,cy,backZ);
+      const housing = mesh(new THREE.CylinderGeometry(islandWidth/2,islandWidth/2,protrusion,96),frame,'circular-housing',cx,cy,backZ);
       housing.rotation.x=Math.PI/2;
-      const face=mesh(new THREE.CylinderGeometry(islandWidth/2-.7,islandWidth/2-.7,.12,64),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);face.rotation.x=Math.PI/2;
-    } else if (family !== 'dot') {
-      mesh(slab(islandWidth,islandHeight,protrusion,family==='stealth'?2:family==='duo'?islandHeight/2:8),horizontal?frame:finish,horizontal?'camera-bar':'camera-island',cx,cy,backZ);
+      const face=mesh(new THREE.CylinderGeometry(islandWidth/2-.7,islandWidth/2-.7,.12,96),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);face.rotation.x=Math.PI/2;
+    } else if (!freestanding) {
+      const islandRadius = family === 'stealth' ? 2 : family === 'duo' ? islandHeight / 2 : family === 'value' ? Math.min(7, islandWidth / 2 - .2) : 8;
+      const openings = windowed ? positions.filter((_, i) => i !== periscopeIndex).map(([x, y]) => [x - cx, y - cy, radius * .8] as [number, number, number]) : [];
+      mesh(horizontal ? slab(islandWidth, islandHeight, protrusion, islandRadius, .25, undefined, 3) : islandGeometry(islandWidth, islandHeight, protrusion, islandRadius, openings), horizontal ? frame : finish, horizontal ? 'camera-bar' : 'camera-island', cx, cy, backZ);
       if(horizontal)mesh(slab(islandWidth-1.4,islandHeight-1.4,.12,(islandHeight-1.4)/2,.02),cameraBlack,'camera-island-inlay',cx,cy,islandTop-.02);
     }
-    // Duo and Halo use an uninterrupted opaque black camera window.
-    if(family!=='duo'&&family!=='halo')positions.forEach(([x,y],i)=>{
-      const periscope=c.camera==='periscope'&&i===count-1&&count>1;
-      if(periscope){mesh(slab(radius*2,radius*2,.5,1,.1),frame,'periscope-block',x,y,islandTop+.25);mesh(slab(radius*1.5,radius*1.5,.12,.6,.03),lens,'periscope-glass',x,y,islandTop+.56);}
-      else {
-        const ring=mesh(new THREE.CylinderGeometry(radius,radius,.5,40),frame,'lens-ring',x,y,islandTop+.25);ring.rotation.x=Math.PI/2;
-        const glass=mesh(new THREE.CylinderGeometry(radius*.8,radius*.8,.12,40),lens,'camera-lens',x,y,islandTop+.56);glass.rotation.x=Math.PI/2;
-        const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),lens,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
-        // Stepped inner barrel and a domed, coated front element give the lens visible depth.
-        const step=mesh(new THREE.TorusGeometry(radius*.62,radius*.05,8,40),frame,'lens-inner-ring',x,y,islandTop+.62);step.userData.detail=true;
-        const dome=new THREE.SphereGeometry(radius*.56,28,10,0,Math.PI*2,0,.7);dome.scale(1,.3,1);dome.translate(0,-radius*.56*.3*Math.cos(.7),0);
-        const element=mesh(dome,optic,'lens-element',x,y,islandTop+.63);element.rotation.x=Math.PI/2;element.userData.detail=true;
-      }
+    // Duo and Halo use an uninterrupted black glass camera window.
+    if (windowed) positions.forEach(([x, y], i) => {
+      if (i === periscopeIndex) { mesh(slab(radius*2,radius*2,.5,1,.1),frame,'periscope-block',x,y,lensBase+.25); mesh(slab(radius*1.5,radius*1.5,.12,.6,.03),optics.m.sapphire,'periscope-glass',x,y,lensBase+.44); mesh(slab(radius*1.3,radius*1.3,.05,.4,.01),optics.m.coating,'periscope-prism',x,y,lensBase+.36); return; }
+      addLens(add, optics.m, frame, x, y, lensBase, ringHeight, radius, rearSurface);
     });
     const [flashX,flashY]=camLayout.flash;
-    const flash=mesh(new THREE.CylinderGeometry(1.5,1.5,.4,20),accent,'flash',flashX,flashY,t/2+.5);flash.rotation.x=Math.PI/2;
+    const onIsland = !freestanding && (circular ? Math.hypot(flashX - cx, flashY - cy) < islandWidth / 2 - 2.2 : Math.abs(flashX - cx) < islandWidth / 2 - 2.2 && Math.abs(flashY - cy) < islandHeight / 2 - 2.2);
+    addFlash(add, optics.m, frame, flashX, flashY, onIsland ? islandTop : rearSurface);
+    // A microphone port on the camera module, placed clear of the lenses and flash.
+    if (!freestanding && !circular && !horizontal) {
+      const mic: [number, number] = [cx + islandWidth / 2 - 3, cy - islandHeight / 2 + 3];
+      if (positions.every(([x, y]) => Math.hypot(x - mic[0], y - mic[1]) > radius + 1.5) && Math.hypot(flashX - mic[0], flashY - mic[1]) > 4) addPinhole(add, optics.m, frame, mic[0], mic[1], islandTop);
+    }
     if(family==='stealth'){
       const fan=mesh(new THREE.CylinderGeometry(8,8,.4,32),black,'cooling-fan',-w*.2,-h*.05,t/2+.5);fan.rotation.x=Math.PI/2;
       for(let i=0;i<6;i++){const blade=mesh(slab(1,10,.2,.3,.03),c.lighting?glow:accent,'fan-vane',-w*.2,-h*.05,t/2+.8);blade.rotation.z=i*Math.PI/3;}
@@ -180,5 +194,5 @@ export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boo
 
   }
   update(initial);
-  return { group, update, finish, dispose() { clearGeometry(); for (const material of materials) material.dispose(); brush.dispose(); wallpaper.dispose(); } };
+  return { group, update, finish, setQuality: (q: OpticsQuality) => optics.setQuality(q), dispose() { clearGeometry(); for (const material of materials) material.dispose(); brush.dispose(); frost.dispose(); optics.dispose(); wallpaper.dispose(); } };
 }

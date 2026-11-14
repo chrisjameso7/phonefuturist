@@ -3,7 +3,7 @@ import type { FrameFinish, BackFinish, FrontFinish } from './device-finishes';
 export type DeviceMaterial = 'titanium' | 'ceramic' | 'glass' | 'steel';
 export type CameraLayout = 'triple' | 'periscope' | 'circle';
 export const DESIGN_FAMILIES = {
-  plateau: 'Plateau', column: 'Precision', dot: 'Dot', duo: 'Duo', stealth: 'Stealth', halo: 'Halo',
+  plateau: 'Plateau', column: 'Precision', dot: 'Dot', duo: 'Duo', stealth: 'Stealth', halo: 'Halo', floating: 'Floating', value: 'Essential',
 } as const;
 export type DesignFamily = keyof typeof DESIGN_FAMILIES;
 export type HardwareKind = 'phone' | 'tablet' | 'laptop' | 'book_foldable' | 'flip_foldable';

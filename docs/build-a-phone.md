@@ -85,6 +85,16 @@ Quality tiers: **high** for desktops (2× pixel ratio, 2048 px soft shadows, gla
 
 The exterior is unchanged except for detail: a coated front element and inner ring in each lens, the USB-C tongue, microphone ports, and moulded antenna breaks in place of black slots.
 
+## Realism pass and design families
+
+Requested on 2026-11-14: designs informed by today's most popular phones, and a far more realistic camera and body.
+
+**Families.** Counterpoint's Q1 and Q2 2026 best-seller lists are led by the iPhone 17 line, the Galaxy S26 Ultra, several Galaxy A models and the Redmi A5. Rather than copying any product's look, the studio covers the patterns these share with two new original families: **Floating** (separate machined lens towers in a column, flash beside them) and **Essential** (a compact raised module holding two lenses and the flash, typical of value phones). They join Plateau, Precision, Dot, Duo, Stealth and Halo. No family reproduces a specific phone's camera arrangement or branding.
+
+**Camera windows** (`camera-optics.ts`). Each lens is a machined trim ring with a polished chamfer, a recessed sapphire cover (true refraction on desktop, a reflective clear coat on phones), a black anodised well with stepped light baffles, a multi-coated front element, a seven-blade aperture stop and a dark sensor. The island has a real opening at each lens and a machined chamfered edge. The flash has a metal bezel, a Fresnel diffuser and a cool and a warm emitter. Island families also get a microphone pinhole.
+
+**Body.** Flat frames have a machined chamfer, rounded frames a smooth radius. Brushed finishes reflect in streaks along the grain (anisotropic reflections). Frosted glass, frosted plastic and ceramic backs have a fine bead-blasted micro-relief. Buttons have chamfered caps in dark relief slots. Duo and Halo camera windows are deep black glass with a hard clear coat. Tone mapping moved to Khronos PBR Neutral, which keeps product colours and metals true.
+
 ## Studio interface (phase 3)
 
 The 3D device studio gains an **Exterior / Inside · Build a Phone** switch under the concept name. Exterior shows the existing controls unchanged. Inside loads the Build a Phone library on demand (`build/index.ts`, no Three.js) and shows the workbench in the controls column:

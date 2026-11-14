@@ -25,6 +25,14 @@ const EXTERIOR_OWNER: Record<string, string> = {
   'circular-housing': 'camera-housing', 'camera-island-inlay': 'camera-housing', 'camera-island': 'camera-housing', 'camera-bar': 'camera-housing', 'lens-ring': 'camera-housing', 'camera-lens': 'camera-housing', 'lens-aperture': 'camera-housing', 'lens-inner-ring': 'camera-housing', 'lens-element': 'camera-housing', 'periscope-block': 'camera-housing', 'periscope-glass': 'camera-housing',
   'power-button': 'buttons', 'volume-rocker': 'buttons',
 };
+/** Exterior meshes not listed above go to the part they belong to by name. */
+function exteriorOwner(name: string): string {
+  if (EXTERIOR_OWNER[name]) return EXTERIOR_OWNER[name];
+  if (/^(lens|camera|flash|periscope)/.test(name)) return 'camera-housing';
+  if (/button/.test(name)) return 'buttons';
+  if (/^(usb|speaker|antenna|microphone|cooling)/.test(name)) return 'frame';
+  return 'rear-cover';
+}
 const XRAY_SHELL = new Set(['rear-cover', 'camera-housing', 'cover-glass', 'panel', 'touch-layer', 'polarizer', 'backplane', 'display-support', 'display-adhesive', 'rear-adhesive', 'graphite', 'buttons', 'seals']);
 const XRAY_COVERS = new Set(['shield-compute', 'shield-rf', 'heat-spreader', 'tim', 'wireless-coil', 'antenna-nfc', 'main-flex', 'battery-insulation', 'brackets']);
 const LAYOUT_DEPENDENT = new Set(['film', 'panel', 'cover-glass', 'midplate', 'seal-ring', 'adhesive-ring']);
@@ -98,7 +106,7 @@ export function createBuildModel(quality: Quality = 'high') {
     if (!exterior) return;
     for (const child of exterior.group.children.slice()) {
       child.userData.exterior = true;
-      const owner = EXTERIOR_OWNER[child.name] ?? (child.name ? undefined : 'rear-cover'), entry = owner && entries.get(owner);
+      const owner = exteriorOwner(child.name), entry = entries.get(owner);
       if (entry) { entry.group.add(child); entry.group.userData.dirty = true; }
     }
   }
@@ -106,7 +114,7 @@ export function createBuildModel(quality: Quality = 'high') {
   function update(next: Assembly) {
     const design = next.layout.design;
     returnExterior();
-    if (!exterior) exterior = createDeviceModel(design, { hollow: true }); else exterior.update(design);
+    if (!exterior) exterior = createDeviceModel(design, { hollow: true, quality: lib.quality }); else exterior.update(design);
     const layoutKey = [design.width, design.height, design.thickness, design.cornerRadius, design.bezel, next.layout.bay.x0, next.layout.bay.x1, next.layout.bay.y0, next.layout.bay.y1, next.layout.board.bottomY, next.layout.z.boardTop].join(':');
     const context = { lib, layout: next.layout }, seen = new Set<string>();
     let primary: string | null = null;
@@ -220,7 +228,7 @@ export function createBuildModel(quality: Quality = 'high') {
       if (next === lib.quality) return;
       returnExterior();
       for (const entry of entries.values()) { group.remove(entry.group); disposePartObject(entry.group); }
-      entries.clear(); lib.dispose(); lib = createMaterialLibrary(next);
+      entries.clear(); lib.dispose(); lib = createMaterialLibrary(next); exterior?.setQuality(next);
       if (assembly) update(assembly);
     },
     stats() { let meshes = 0, triangles = 0; group.traverse(node => { const mesh = node as THREE.Mesh; if (!mesh.isMesh || !mesh.visible) return; meshes++; const g = mesh.geometry, count = (g.index ? g.index.count : g.attributes.position.count) / 3; triangles += count * ((mesh as unknown as THREE.InstancedMesh).isInstancedMesh ? (mesh as unknown as THREE.InstancedMesh).count : 1); }); return { parts: entries.size, meshes, triangles: Math.round(triangles), materials: Object.keys(lib.m).length }; },

@@ -103,8 +103,9 @@ describe('phone family geometry and surfaces',()=>{
     for(const name of ['usb-c-port','speaker-grille','antenna-cutout','selfie-camera'])expect(model.group.getObjectByName(name)).toBeUndefined();
     model.update({...DEFAULT_DESIGN,usbC:true,speakers:'stereo',antenna:true,selfieDiameter:4,protrusion:4});
     for(const name of ['usb-c-port','speaker-grille','upper-speaker','antenna-cutout','selfie-camera'])expect(model.group.getObjectByName(name)).toBeTruthy();
-    const lens=new Box3().setFromObject(model.group.getObjectByName('lens-aperture')!);
-    expect(lens.max.z-DEFAULT_DESIGN.thickness/2).toBeCloseTo(4.96,2);model.dispose();
+    // The aperture stop now sits inside the lens window: below the sapphire cover, above the rear glass.
+    const lens=new Box3().setFromObject(model.group.getObjectByName('lens-aperture')!),cover=new Box3().setFromObject(model.group.getObjectByName('camera-lens')!);
+    expect(lens.max.z).toBeLessThan(cover.min.z);expect(lens.min.z).toBeGreaterThan(DEFAULT_DESIGN.thickness/2+.3);expect(cover.max.z-DEFAULT_DESIGN.thickness/2).toBeCloseTo(4.77,2);model.dispose();
   });
 });
 

@@ -3,9 +3,11 @@ import * as THREE from 'three';
 import { createDeviceModel, slab, addDeviceBrand } from './device-mesh';
 import { FRAME_FINISHES,BACK_FINISHES,FRONT_FINISHES } from './device-finishes';
 import { normalizeDesign, type DeviceDesign } from './device-design';
+import type { OpticsQuality } from './camera-optics';
 
 /** Larger devices have real lids or hinge panels, rather than scaling a phone silhouette. */
-export function createHardwareModel(initial: DeviceDesign) {
+export function createHardwareModel(initial: DeviceDesign, options: { quality?: OpticsQuality } = {}) {
+  let quality: OpticsQuality = options.quality ?? 'high';
   const group=new THREE.Group(); let phone:ReturnType<typeof createDeviceModel>|null=null;
   const body=new THREE.MeshPhysicalMaterial({color:'#68717d',metalness:.8,roughness:.4});
   const rear=new THREE.MeshPhysicalMaterial({color:'#68717d',metalness:.3,roughness:.65});
@@ -23,7 +25,7 @@ export function createHardwareModel(initial: DeviceDesign) {
   function screen(parent:THREE.Group,w:number,h:number,t:number,name:string,x=0,y=0){if(w<=0||h<=0)return;panel(parent,w,h,.12,glass,name,x,y,-t/2-.08,3);}
   function update(raw:DeviceDesign){
     const c=normalizeDesign(raw),kind=c.kind??'phone';
-    if(kind==='phone'){if(!phone){clear();phone=createDeviceModel(c);group.add(phone.group);}else phone.update(c);signature='';group.updateMatrixWorld(true);return;}
+    if(kind==='phone'){if(!phone){clear();phone=createDeviceModel(c,{quality});group.add(phone.group);}else phone.update(c);signature='';group.updateMatrixWorld(true);return;}
     wallpaper.update(c.wallpaper);
     body.color.set(c.color);rear.color.set(c.color);
     if(c.frameFinish&&FRAME_FINISHES[c.frameFinish]){const {label:_label,...params}=FRAME_FINISHES[c.frameFinish];body.setValues(params);}
@@ -107,5 +109,5 @@ export function createHardwareModel(initial: DeviceDesign) {
     group.updateMatrixWorld(true);
   }
   update(initial);
-  return {group,update,dispose(){wallpaper.dispose();clear();for(const m of [body,rear,dark,glass,logo,crease])m.dispose();}};
+  return {group,update,setQuality(q:OpticsQuality){quality=q;phone?.setQuality(q);},dispose(){wallpaper.dispose();clear();for(const m of [body,rear,dark,glass,logo,crease])m.dispose();}};
 }
