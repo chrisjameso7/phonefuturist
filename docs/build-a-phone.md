@@ -71,9 +71,24 @@ Coordinates: origin at the chassis centre, +x right and +y up when looking at th
 | 2 · Reference-based | Modelled from credible references | USB-C receptacle, from the USB Type-C specification |
 | 3 · Reference-accurate | Validated against several references and measurements | None; requires teardown references |
 
+## Rendering (phase 2)
+
+| File | Contents |
+|---|---|
+| `build/materials.ts` | One shared library of PBR materials. Textures (board traces, chip markings, cell labels, brushed and dimpled metal) are generated in code, so there are no image downloads. Lens and cover glass use transmission and thin-film coating on the high tier only. |
+| `build/part-mesh.ts` | A geometry builder per part class: lens barrel on a voice-coil can, pouch cell with terrace and tabs, logic board cut exactly around the cameras, 24-contact USB-C receptacle, coil windings, shield cans, flex tails and connectors. Geometry is merged per material, and repeated parts (passives, connectors, screws, brackets) use instancing. |
+| `build/build-model.ts` | Owns one group per installed part. It reuses the studio's exterior model for the shell, so the outside matches the 3D device studio. It handles exploded views (all or one subsystem), X-ray (shell ghosted, internals opaque; a deeper level also ghosts shields and covers), inspection, selection outlines with connection lines, and picking. It animates install and remove: covering parts lift first, then the target moves, then they reseat. |
+| `studio-environment.ts` | A procedural studio light room used for reflections, replacing the stock room environment. |
+| `device-scene.ts` | Same API as before, plus zoom while rotating, tap-to-select, smooth camera framing, and quality tiers with a frame-time monitor. |
+
+Quality tiers: **high** for desktops (2× pixel ratio, 2048 px soft shadows, glass transmission), **balanced** for low-memory machines, **mobile** for touch phones (1.5× pixel ratio, 1024 px shadows, no transmission). If frames stay slow, the scene steps down a tier on its own. Reduced motion skips the animations.
+
+The exterior is unchanged except for detail: a coated front element and inner ring in each lens, the USB-C tongue, microphone ports, and moulded antenna breaks in place of black slots.
+
 ## Tests
 
 | File | Covers |
 |---|---|
 | `tests/labs-build-catalog.test.ts` | Catalogue integrity, sources and confidence, cost links, slots, connections, architectures |
 | `tests/labs-build-assembly.test.ts` | Placement inside the chassis, no intersections in default builds, stack order, automatic fitting, conditional slots, replace/remove/install, access order, mass, determinism |
+| `tests/labs-build-model.test.ts` | Geometry for every part, instancing and shared materials, exact board cut-outs, distinct exteriors per design family, partial rebuilds, exploded order and reassembly, X-ray ghosting, picking, install/remove animation, quality tiers |

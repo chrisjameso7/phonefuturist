@@ -39,7 +39,23 @@ export function addDeviceBrand(parent: THREE.Group, material: THREE.Material, y:
   logo.position.set(0, y, z); parent.add(logo); return logo;
 }
 
-export function createDeviceModel(initial: DeviceDesign) {
+/** Hollow perimeter frame with the same outer profile as the solid chassis slab. */
+export function frameRing(width: number, height: number, depth: number, radius: number, bevel: number, wall: number) {
+  bevel = Math.min(bevel, depth * .24);
+  const outline = (w: number, h: number, r: number, target: THREE.Path) => {
+    r = Math.max(.05, Math.min(r, w, h));
+    target.moveTo(-w + r, -h); target.lineTo(w - r, -h); target.quadraticCurveTo(w, -h, w, -h + r); target.lineTo(w, h - r);
+    target.quadraticCurveTo(w, h, w - r, h); target.lineTo(-w + r, h); target.quadraticCurveTo(-w, h, -w, h - r); target.lineTo(-w, -h + r); target.quadraticCurveTo(-w, -h, -w + r, -h);
+    return target;
+  };
+  const w = width / 2 - bevel, h = height / 2 - bevel, shape = outline(w, h, radius, new THREE.Shape()) as THREE.Shape;
+  shape.holes.push(outline(width / 2 - wall + bevel, height / 2 - wall + bevel, Math.max(.3, radius - wall + bevel), new THREE.Path()));
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: Math.max(.01, depth - 2 * bevel), bevelEnabled: bevel > 0, bevelSize: bevel, bevelThickness: bevel, bevelSegments: 2, steps: 1, curveSegments: 10 });
+  geometry.translate(0, 0, -depth / 2 + bevel);
+  return geometry;
+}
+
+export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boolean; wall?: number } = {}) {
   const group = new THREE.Group(); group.name = 'device';
   const pixels = new Uint8Array(64 * 64 * 4);
   for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
@@ -52,12 +68,15 @@ export function createDeviceModel(initial: DeviceDesign) {
   const frame = new THREE.MeshPhysicalMaterial({ metalness: .9, roughness: .28 });
   const black = new THREE.MeshStandardMaterial({ color: '#080b10', roughness: .65, metalness: 0 });
   const lens = new THREE.MeshPhysicalMaterial({ color: '#000000', roughness: .38, metalness: 0, clearcoat: 0, envMapIntensity: .1 });
+  // Coated front element: clear-coated glass with a thin-film tint, as on multi-coated camera lenses.
+  const optic = new THREE.MeshPhysicalMaterial({ color: '#05070c', roughness: .04, metalness: .15, clearcoat: 1, clearcoatRoughness: 0, iridescence: .9, iridescenceIOR: 1.9, iridescenceThicknessRange: [220, 420], envMapIntensity: 1.6 });
+  const seam = new THREE.MeshStandardMaterial({ color: '#3b3e44', roughness: .78, metalness: 0 });
   const cameraBlack = new THREE.MeshBasicMaterial({color:'#000000'});
   const screen = new THREE.MeshPhysicalMaterial({ color: '#112837', roughness: .35, metalness: .1, emissive: '#082d3b', emissiveIntensity: .6 });
   const accent = new THREE.MeshStandardMaterial({ color: '#9fb6c9', roughness: .5, metalness: .4 });
   const glow = new THREE.MeshStandardMaterial({ color: '#75e4d1', emissive: '#75e4d1', emissiveIntensity: 1 });
   const wallpaper=wallpaperMaterial(screen);
-  const materials = [finish, frame, black, lens, cameraBlack, screen, accent, glow];
+  const materials = [finish, frame, black, lens, cameraBlack, screen, accent, glow, optic, seam];
   let previous = '';
   function mesh(geometry: THREE.BufferGeometry, material: THREE.Material, name: string, x = 0, y = 0, z = 0) {
     const node = new THREE.Mesh(geometry, material); node.name = name; node.position.set(x, y, z);
@@ -92,7 +111,8 @@ export function createDeviceModel(initial: DeviceDesign) {
     previous = signature; clearGeometry();
     const { width: w, height: h, thickness: t, bezel: b } = c;
     const r = c.cornerRadius!;
-    mesh(slab(w, h, t, r, c.frameProfile === 'rounded' ? Math.min(1,t*.15) : .25), frame, 'chassis');
+    const edge = c.frameProfile === 'rounded' ? Math.min(1,t*.15) : .25;
+    mesh(options.hollow ? frameRing(w, h, t, r, edge, options.wall ?? 2.2) : slab(w, h, t, r, edge), frame, 'chassis');
     mesh(slab(w - .8, h - .8, .5, r - .4, .1), finish, 'back', 0, 0, t / 2 + .05);
     mesh(slab(w - .6, h - .6, .35, r - .3, .1), black, 'front-bezel', 0, 0, -t / 2 - .06);
     const dw = c.displayWidth ?? w - 2*b, dh = c.displayHeight ?? h - 2*b;
@@ -125,6 +145,10 @@ export function createDeviceModel(initial: DeviceDesign) {
         const ring=mesh(new THREE.CylinderGeometry(radius,radius,.5,40),frame,'lens-ring',x,y,islandTop+.25);ring.rotation.x=Math.PI/2;
         const glass=mesh(new THREE.CylinderGeometry(radius*.8,radius*.8,.12,40),lens,'camera-lens',x,y,islandTop+.56);glass.rotation.x=Math.PI/2;
         const pupil=mesh(new THREE.CylinderGeometry(radius*.28,radius*.28,.04,24),lens,'lens-aperture',x,y,islandTop+.64);pupil.rotation.x=Math.PI/2;
+        // Stepped inner barrel and a domed, coated front element give the lens visible depth.
+        const step=mesh(new THREE.TorusGeometry(radius*.62,radius*.05,8,40),frame,'lens-inner-ring',x,y,islandTop+.62);step.userData.detail=true;
+        const dome=new THREE.SphereGeometry(radius*.56,28,10,0,Math.PI*2,0,.7);dome.scale(1,.3,1);dome.translate(0,-radius*.56*.3*Math.cos(.7),0);
+        const element=mesh(dome,optic,'lens-element',x,y,islandTop+.63);element.rotation.x=Math.PI/2;element.userData.detail=true;
       }
     });
     const [flashX,flashY]=camLayout.flash;
@@ -142,12 +166,17 @@ export function createDeviceModel(initial: DeviceDesign) {
       for(let row=-2;row<=2;row++)for(let col=-2;col<=2;col++)if(Math.hypot(row,col)<=2.7){const dot=mesh(new THREE.CylinderGeometry(.35,.35,.15,8),c.lighting?glow:accent,'display-dot',mx+col*1.7,my+row*1.7,t/2+.75);dot.rotation.x=Math.PI/2;}
       mesh(slab(w*.7,.4,.2,.1,.03),accent,'rear-panel-seam',0,-h*.1,t/2+.4);
     }
-    if(c.usbC!==false){const port=mesh(slab(9,2.8,.3,1,.05),black,'usb-c-port',0,-h/2-.05,0);port.rotation.x=Math.PI/2;}
+    if(c.usbC!==false){const port=mesh(slab(9,2.8,.3,1,.05),black,'usb-c-port',0,-h/2-.05,0);port.rotation.x=Math.PI/2;
+      // Centre tongue of the receptacle, visible inside the opening.
+      mesh(slab(6.7,.7,.1,.3,.02),seam,'usb-c-tongue',0,-h/2-.12,0).rotation.x=Math.PI/2;}
+    // Microphone port beside the charging port and at the top edge.
+    for(const [x,y] of [[-13.5,-h/2-.06],[10,h/2+.06]] as Array<[number,number]>)if(Math.abs(x)<w/2-r){const hole=mesh(new THREE.CylinderGeometry(.45,.45,.3,12),black,'microphone-port',x,y,0);hole.userData.detail=true;}
     if(c.speakers!=='none')for(const side of [-1,1])for(let i=0;i<5;i++){
       mesh(new THREE.CylinderGeometry(.55,.55,.3,12),black,'speaker-grille',side*(8+i*1.8),-h/2-.06,0);
       if(c.speakers==='stereo')mesh(new THREE.CylinderGeometry(.55,.55,.3,12),black,'upper-speaker',side*(8+i*1.8),h/2+.06,0);
     }
-    if(c.antenna!==false)for(const side of [-1,1])for(const end of [-1,1])mesh(slab(.5,1.3,t+.1,.2,.05),black,'antenna-cutout',side*(w/2),end*h*.32,0);
+    // Antenna breaks are moulded polymer, lighter and duller than the metal either side.
+    if(c.antenna!==false)for(const side of [-1,1])for(const end of [-1,1])mesh(slab(.5,1.3,t+.1,.2,.05),seam,'antenna-cutout',side*(w/2),end*h*.32,0);
 
   }
   update(initial);

@@ -376,6 +376,14 @@ export function resolveBuild(build: PhoneBuild): Assembly {
   put('rear-cover', full(rearInner, T / 2 + .3), { sizeConfidence: 'user' });
   put('camera-housing', { x: camera.cx, y: camera.cy, z: T / 2 + .3 + design.protrusion! / 2 + .3, w: camera.islandWidth, h: camera.islandHeight, d: design.protrusion! + .6 }, { sizeConfidence: 'user' });
 
+  // Openings in the midframe for parts that pass through it, and bosses under each screw.
+  if (bySlot['midplate']) {
+    const cutouts: number[][] = [];
+    for (const id of [...camSlots, 'camera-front', 'earpiece', 'face-ir', 'prox-als', 'fingerprint']) { const p = bySlot[id]; if (p && p.box.z - p.box.d / 2 < stackBack + .5 && p.box.z + p.box.d / 2 > stackBack) { const r = boxRect(p.box); cutouts.push([r.x0 - .4, r.y0 - .4, r.x1 + .4, r.y1 + .4]); } }
+    const flex = bySlot['display-flex']; if (flex) cutouts.push([flex.box.x - 7, flex.box.y + flex.box.h / 2 - 2.4, flex.box.x + 7, flex.box.y + flex.box.h / 2 - .4]);
+    bySlot['midplate'].detail = { cutouts, bosses: (bySlot['screws']?.instances ?? []).map(([x, y]) => [x, y]) };
+  }
+
   // Mass. Fitted parts are computed from volume and published density.
   let weightG = 0, installedWeightG = 0;
   for (const part of parts) {
