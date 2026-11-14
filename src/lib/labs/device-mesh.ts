@@ -56,6 +56,8 @@ export function frameRing(width: number, height: number, depth: number, radius: 
   return geometry;
 }
 
+const SMALL_DETAIL = /^(lens-|camera-lens|camera-mic|flash|speaker-grille|upper-speaker|microphone-port|antenna-cutout|display-dot|fan-vane|button-slot|usb-c-|cooling-vent|periscope-glass|periscope-prism|phonefuturist-logo)/;
+
 export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boolean; wall?: number; quality?: OpticsQuality } = {}) {
   const group = new THREE.Group(); group.name = 'device';
   const pixels = new Uint8Array(64 * 64 * 4);
@@ -83,7 +85,8 @@ export function createDeviceModel(initial: DeviceDesign, options: { hollow?: boo
   let previous = '';
   function mesh(geometry: THREE.BufferGeometry, material: THREE.Material, name: string, x = 0, y = 0, z = 0) {
     const node = new THREE.Mesh(geometry, material); node.name = name; node.position.set(x, y, z);
-    node.castShadow = node.receiveShadow = true; group.add(node); return node;
+    // Small details neither cast nor need shadows; keeping them out of the shadow pass saves draw calls.
+    node.castShadow = !SMALL_DETAIL.test(name); node.receiveShadow = true; group.add(node); return node;
   }
   function clearGeometry() {
     group.traverse(child => { if (child instanceof THREE.Mesh) child.geometry.dispose(); });

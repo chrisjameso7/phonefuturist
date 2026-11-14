@@ -39,8 +39,11 @@ describe('Build a Phone part geometry', () => {
     const capacitors = buildPartObject(assembly.bySlot['passive-capacitors'], { lib, layout: assembly.layout });
     const instanced = capacitors.children.filter(c => (c as InstancedMesh).isInstancedMesh) as InstancedMesh[];
     expect(instanced.length).toBeGreaterThan(0);
-    expect(instanced[0].count).toBe(assembly.bySlot['passive-capacitors'].instances!.length);
-    expect(instanced[0].count).toBeGreaterThan(30);
+    // Phones draw every other passive; desktops draw them all.
+    expect(instanced[0].count).toBe(Math.ceil(assembly.bySlot['passive-capacitors'].instances!.length / 2));
+    expect(instanced[0].count).toBeGreaterThan(15);
+    const high = createMaterialLibrary('high'), full = buildPartObject(assembly.bySlot['passive-capacitors'], { lib: high, layout: assembly.layout }).children.find(c => (c as InstancedMesh).isInstancedMesh) as InstancedMesh;
+    expect(full.count).toBe(assembly.bySlot['passive-capacitors'].instances!.length); high.dispose();
     const model = createBuildModel('mobile'); model.update(assembly);
     const used = new Set<unknown>(); model.group.traverse(node => { const mesh = node as Mesh; if (mesh.isMesh) used.add(mesh.material); });
     expect(used.size).toBeLessThan(60);
@@ -166,5 +169,23 @@ describe('Build a Phone selection visibility', () => {
     expect(ghost('shield-compute')).toBe('ghost'); expect(ghost('heat-spreader')).toBe('ghost'); expect(ghost('soc')).toBe('none'); expect(ghost('battery')).toBe('none');
     model.setView({ selected: null }); expect(ghost('heat-spreader')).toBe('none');
     model.dispose();
+  });
+});
+
+describe('Build a Phone rendering budget', () => {
+  const drawCalls = (quality: 'high' | 'mobile') => {
+    const model = createBuildModel(quality); model.update(resolveBuild(defaultBuild(studio)));
+    let meshes = 0, casters = 0;
+    model.group.traverse(node => { const mesh = node as Mesh; if (!mesh.isMesh) return; meshes++; if (mesh.castShadow) casters++; });
+    model.setView({ mode: 'xray' }); model.setView({ mode: 'assembled' });
+    let after = 0; model.group.traverse(node => { if ((node as Mesh).isMesh && (node as Mesh).castShadow) after++; });
+    model.dispose();
+    return { total: meshes + casters, casters, after };
+  };
+  it('keeps draw calls within budget, lighter on phones, and survives view changes', () => {
+    const high = drawCalls('high'), mobile = drawCalls('mobile');
+    expect(high.total).toBeLessThan(420); expect(mobile.total).toBeLessThan(high.total);
+    expect(mobile.casters).toBeLessThan(30); expect(high.casters).toBeLessThan(80);
+    expect(high.after).toBe(high.casters);
   });
 });

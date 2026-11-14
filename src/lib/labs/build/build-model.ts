@@ -77,7 +77,8 @@ export function createBuildModel(quality: Quality = 'high') {
       mesh.userData.base ??= mesh.material;
       mesh.material = replacement ?? mesh.userData.base;
       mesh.renderOrder = replacement ? 6 : 0;
-      mesh.castShadow = !replacement && !(mesh.userData.base as THREE.Material).transparent;
+      mesh.userData.castBase ??= mesh.castShadow && !(mesh.userData.base as THREE.Material).transparent;
+      mesh.castShadow = !replacement && mesh.userData.castBase;
     });
   }
   /** Parts that physically cover the selection; they fade so the selected part stays visible. */

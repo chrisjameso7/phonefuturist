@@ -30,7 +30,9 @@ describe('Build a Phone compatibility', () => {
   });
   it('detects physical impossibilities from physics, not guesses', () => {
     expect(ids(swap([['wireless-coil', 'coil-15']], { ...studio, backFinish: 'titanium' }))).toContain('wpc-shield');
-    expect(ids(defaultBuild({ ...studio, backFinish: 'steel' }))).toContain('nfc-shield');
+    expect(ids(defaultBuild({ ...studio, backFinish: 'steel' }))).not.toContain('nfc-shield');
+    expect(ids(swap([['antenna-nfc', 'antenna-nfc-loop'], ['nfc', 'nfc-controller']], { ...studio, backFinish: 'steel' }))).toContain('nfc-shield');
+    expect(check(defaultBuild({ ...studio, backFinish: 'titanium' })).counts.blocker).toBe(0);
     expect(ids(swap([['panel', 'panel-ips-lcd'], ['fingerprint', 'fp-optical']]))).toContain('fp-lcd');
     expect(ids(defaultBuild({ ...studio, antenna: false, frameFinish: 'steel' }))).toContain('antenna-breaks');
     expect(ids(defaultBuild({ ...studio, antenna: false, frameFinish: 'plastic' }))).not.toContain('antenna-breaks');

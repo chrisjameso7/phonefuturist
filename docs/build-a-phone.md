@@ -140,6 +140,34 @@ The thermal budget is a planning heuristic: about 170 W per square metre of skin
 
 The only change to the simulator is this entry point and its notice; its calculations, Simple mode and existing flows are untouched.
 
+## Performance, mobile and QA (phase 7)
+
+| Tier | Chosen for | Pixel ratio | Shadows | Glass | Passives drawn | Draw calls, default build |
+|---|---|---|---|---|---|---|
+| High | Desktops | up to 2× | 2048 px soft | True refraction | All | about 370 |
+| Balanced | Machines with ≤ 4 GB memory or ≤ 4 cores | up to 1.5× | 1024 px | True refraction | All | about 370 |
+| Mobile | Touch screens under 820 px on the short side | up to 1.5× | 1024 px, largest parts only | Reflective clear coat | Every other one | about 334 |
+
+- The frame monitor steps down a tier when frames stay slower than about 30 fps.
+- Rendering is on demand: nothing draws while the phone is still, off screen or in a background tab.
+- Small parts and small exterior details stay out of the shadow pass, which cut draw calls from about 620 to 370. A bug that switched shadow casting back on for every part after an X-ray view was fixed.
+- Build a Phone loads only when a visitor opens the Inside tab; the renderer loads separately from the catalogue.
+- Add `?perf` to the address to show a live readout of tier, frame time, draw calls and triangles.
+- At phone width the studio stacks with no sideways scrolling, every control is at least 44 px, and the preview uses the studio's existing collapsible panel.
+- Metal-backed builds start without a wireless coil or NFC, so the studio's default titanium back opens with no blockers; adding either is still flagged.
+
+### Verification in this session
+
+| Check | Result |
+|---|---|
+| All 59 new Build a Phone tests (7 files) | Pass |
+| Existing lab tests (studio, geometry, concepts, BOM, calculators, export) | Pass, unchanged |
+| Whole suite, branch versus the untouched base, same local runner | All 243 existing test files give identical results on both |
+| Strict type check of the labs library, studio components and simulator | Clean, apart from Astro-only CSS module declarations |
+| Headless browser: exterior, assembled, exploded, X-ray, inspect, assembly steps, checks, hand-off into the real simulator, phone width | Working |
+
+**Not run in this session:** the database tests (need the local PostgreSQL engine), `astro check`, the calibration checks and the production build. Package installs are blocked in this session, so these run in GitHub's checks on the pull request.
+
 ## Tests
 
 | File | Covers |

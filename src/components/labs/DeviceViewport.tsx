@@ -58,6 +58,13 @@ export default function DeviceViewport({ design, preferredView, captureRef, buil
   const focusKey = build?.focus?.key;
   useEffect(() => { if (status === 'ready' && build?.focus) scene.current?.focus(build.focus.slot); }, [focusKey, status]);
 
+  // Rendering monitor for QA: add ?perf to the address to show tier, frame time, draw calls and triangles.
+  const [perf, setPerf] = useState<string | null>(null);
+  useEffect(() => {
+    if (status !== 'ready' || !new URLSearchParams(window.location.search).has('perf')) return;
+    const timer = window.setInterval(() => { const s = scene.current?.stats(); if (s) setPerf(`${s.quality}${s.downgraded ? ' (stepped down)' : ''} · ${s.frameMs} ms · ${s.calls} draws · ${Math.round(s.triangles / 1000)}k triangles · ${s.pixelRatio}× pixels`); }, 1000);
+    return () => window.clearInterval(timer);
+  }, [status]);
   const inside = !!(build && assembly);
   const modeButtons = build ? (Object.keys(build.modes) as BuildViewMode[]) : [];
   return <section className="device-preview" aria-label="Device preview">
@@ -87,6 +94,7 @@ export default function DeviceViewport({ design, preferredView, captureRef, buil
       }}>{interactive ? 'Finish rotating' : 'Rotate device'}</button>
     </div>
     <p className="device-preview-caption" aria-live="polite">{inside ? build!.caption : interactive ? 'Drag to orbit. Choose Finish rotating to scroll over the preview.' : 'Choose Rotate device to explore every angle.'}</p>
+    {perf && <p className="build-layout-notice" data-perf="">{perf}</p>}
     {inside && <p className="build-layout-notice">{interactive ? 'Drag to orbit, scroll or pinch to zoom, tap a part to select it. ' : 'Tap a part to select it. Choose Rotate device to orbit and zoom. '}{build!.notice}</p>}
   </section>;
 }

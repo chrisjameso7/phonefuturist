@@ -488,11 +488,17 @@ export function buildPartObject(part: PlacedPart, ctx: MeshContext): THREE.Group
   const b = new PartBuilder(absolute ? 0 : x, absolute ? 0 : y, absolute ? 0 : z);
   if (INSTANCED[name] && part.instances) {
     const size = (part.detail?.size as [number, number, number] | undefined) ?? part.component.dimensions;
-    const spots = part.instances.map(([ix, iy, third]): [number, number, number, number] => name === 'screw' ? [ix, iy, third, 0] : [ix, iy, part.box.z, third ? HALF_PI : 0]);
+    // Phones draw every other passive: the clusters still read as clusters at a fraction of the vertex cost.
+    const thin = ctx.lib.quality === 'mobile' && (name === 'mlcc' || name === 'resistor');
+    const spots = part.instances.filter((_, i) => !thin || i % 2 === 0).map(([ix, iy, third]): [number, number, number, number] => name === 'screw' ? [ix, iy, third, 0] : [ix, iy, part.box.z, third ? HALF_PI : 0]);
     b.instanced(one => INSTANCED[name](one, size, ctx.lib.m), spots);
   } else if (!EXTERIOR_BUILDERS.has(name)) (BUILDERS[name] ?? BUILDERS.block)(b, part, ctx);
   const group = b.build(part.slot.id);
   group.userData.slot = part.slot.id;
+  // Only parts large enough to throw a visible shadow render into the shadow pass; this roughly halves draw calls.
+  // On phones only the largest parts cast shadows.
+  const casts = ctx.lib.quality === 'mobile' ? ['battery', 'pcb', 'midplate', 'daughterboard'].includes(part.slot.id) : !part.instances && part.box.w * part.box.h >= 300;
+  group.traverse(node => { if ((node as THREE.Mesh).isMesh && !casts) node.castShadow = false; });
   return group;
 }
 

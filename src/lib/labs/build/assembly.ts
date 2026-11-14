@@ -67,7 +67,8 @@ function defaultFor(build: Pick<PhoneBuild, 'design' | 'architecture'>, slot: Sl
   if (Object.hasOwn(arch.defaults, slot.id)) { const value = arch.defaults[slot.id]; if (value === null || slot.options.includes(value)) return value; }
   if (slot.id === 'camera-tele' && build.design.camera === 'periscope' && rearCameraLayout(build.design).positions.length === 3) return 'cam-tele-peri-5x';
   if (slot.id === 'camera-tele-2' && build.design.camera === 'periscope') return 'cam-tele-peri-5x';
-  if (slot.id === 'wireless-coil' && COMPONENTS[DESIGN_BOUND['rear-cover'](build.design)]?.traits.conductive) return null;
+  // A metal rear cover blocks inductive charging and NFC, so metal-backed builds start without them; adding one is flagged by the checks.
+  if ((slot.id === 'wireless-coil' || slot.id === 'antenna-nfc' || slot.id === 'nfc') && COMPONENTS[DESIGN_BOUND['rear-cover'](build.design)]?.traits.conductive) return null;
   if (slot.initial !== undefined) return slot.initial;
   return slot.options[0] ?? null;
 }
