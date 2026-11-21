@@ -9,6 +9,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // The legacy /simulate page is only a public redirect to the simulator.
   // Keep actual lab API endpoints behind their existing access checks.
   const earlyAccessPage = path.startsWith('/interactive-leaks/api/');
+  // Server-to-server webhook: verified by its own signature, never sent with a browser Origin.
+  const signedWebhook = path === '/api/inbound-email';
   const authPage = protectedPage || earlyAccessPage || ['/login', '/join', '/forgot-password'].includes(path) || path.startsWith('/auth/');
   context.locals.supabase = null; context.locals.user = null; context.locals.access = null;
   let response: Response;
@@ -25,7 +27,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       if(requested.some(h=>!supported.includes(h)))response=new Response('Request headers not allowed.',{status:403});
       else response=new Response(null,{status:204,headers:{'Access-Control-Allow-Methods':'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS','Access-Control-Allow-Headers':supported.join(', '),'Access-Control-Max-Age':'600'}});
     }
-  } else if (!['GET', 'HEAD'].includes(context.request.method) && (!config || !validOrigin(origin, config.origin,config.allowedOrigins))) {
+  } else if (!signedWebhook && !['GET', 'HEAD'].includes(context.request.method) && (!config || !validOrigin(origin, config.origin,config.allowedOrigins))) {
     response = new Response('Request origin not allowed.', { status: 403 });
   } else if (authPage && !config) {
     response = new Response('Account services are not configured yet. Please try again after setup is complete.', { status: 503 });

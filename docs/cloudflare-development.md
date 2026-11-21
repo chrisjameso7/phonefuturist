@@ -34,3 +34,9 @@ Verify the deployed shell, security headers, missing/invalid-origin rejection an
 ## Automatic deployment
 
 Cloudflare Workers Builds is connected to `chrisjameso7/phonefuturist` with `main` as the production branch (build: `npm run build`, deploy: `npx wrangler deploy`, `NODE_VERSION=22`). Every merge to `main` deploys phonefuturist.com.
+
+## Inbound email (Resend → Gmail)
+
+Mail to any address at phonefuturist.com is received by Resend Inbound and posted to `POST /api/inbound-email` (`email.received`). The endpoint verifies the Svix signature, fetches the message and attachments (up to 20 MB) and forwards it from `inbox@phonefuturist.com` to `INBOUND_FORWARD_TO`, with Reply-To set to the original sender. Every message also stays in Resend → Emails → Receiving.
+
+Worker secrets: `RESEND_API_KEY` (existing), `RESEND_INBOUND_WEBHOOK_SECRET` (the webhook's signing secret), `INBOUND_FORWARD_TO` (destination inbox).
