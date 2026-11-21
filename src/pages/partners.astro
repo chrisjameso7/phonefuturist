@@ -1,0 +1,79 @@
+---
+import Page from '../layouts/Page.astro';
+const email = 'contact@phonefuturist.com';
+const mailto = `mailto:${email}?subject=${encodeURIComponent('PhoneFuturist partnership')}`;
+const options = [
+  { title: 'Sponsored stories', description: 'A clearly labelled article about your product or launch, written in the PhoneFuturist style and shared across X and Telegram.' },
+  { title: 'Product reviews', description: 'Hands-on reviews of phones, accessories and gadgets. You send the product; our verdict stays independent.' },
+  { title: 'Launch coverage', description: 'Day-one coverage of your announcement, with briefings and early access respected under embargo.' },
+  { title: 'Social posts', description: 'Labelled posts and threads to our audience on X and Telegram, where our leaks and exclusives reach thousands of readers.' },
+  { title: 'Newsletter sponsorship', description: 'Your brand and message at the top of the weekly PhoneFuturist newsletter.' },
+  { title: 'Site takeover', description: 'A week of brand presence in the homepage spotlight.' },
+];
+---
+<Page title="Partner with us" description="Sponsor PhoneFuturist or partner with us: sponsored stories, product reviews, launch coverage, social posts, newsletter sponsorship and site takeovers.">
+  <article class="partner-publication" aria-labelledby="partner-title">
+    <header class="partner-header">
+      <p class="partner-kicker">Partnerships</p>
+      <h1 id="partner-title">Partner with PhoneFuturist</h1>
+      <p class="partner-tagline">Reach the readers who follow every launch and leak.</p>
+      <p class="partner-lead">PhoneFuturist readers are phone enthusiasts and early adopters who follow Samsung, Apple, Google and the chips inside their devices closely. We work with brands that want to put their products in front of them.</p>
+      <p><a class="partner-cta" href={mailto}>Email us to partner ↗</a></p>
+    </header>
+    <div class="partner-layout">
+      <nav class="partner-contents" aria-label="On this page">
+        <span>On this page</span>
+        <a href="#options">Ways to partner</a>
+        <a href="#standards">Our standards</a>
+        <a href="#contact">Get in touch</a>
+      </nav>
+      <div class="partner-copy">
+        <section id="options" aria-labelledby="options-title">
+          <h2 id="options-title">Ways to partner</h2>
+          <dl class="option-list">
+            {options.map(item => <div><dt>{item.title}</dt><dd>{item.description}</dd></div>)}
+          </dl>
+          <p>Options can be combined into launch packages or monthly partnerships.</p>
+        </section>
+        <section id="standards" aria-labelledby="standards-title">
+          <h2 id="standards-title">Our standards</h2>
+          <p>Every paid placement is clearly labelled as sponsored. Partners do not approve our reviews or analysis before they are published, and payment never buys a positive verdict.</p>
+        </section>
+        <section id="contact" class="partner-mission" aria-labelledby="contact-title">
+          <h2 id="contact-title">Get in touch</h2>
+          <p>Tell us about your brand, the product and your preferred dates, and we will send our media kit with audience figures and rates.</p>
+          <p><a class="partner-cta" href={mailto}>{email}</a></p>
+        </section>
+      </div>
+    </div>
+  </article>
+</Page>
+
+<style>
+  .partner-publication { max-width: var(--pf-width-content); margin: 0 auto; padding: clamp(24px, 3vw, 40px) clamp(16px, 3vw, 40px) 48px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+  .partner-header { padding-bottom: clamp(32px, 5vw, 60px); border-bottom: 1px solid var(--line); }
+  .partner-kicker { margin: 0 0 20px; color: var(--muted); font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { max-width: 18ch; margin: 0; color: var(--ink); font-size: clamp(2.1rem, 4.8vw, 4rem); line-height: 1.1; letter-spacing: -.045em; overflow-wrap: anywhere; }
+  .partner-tagline { margin: 24px 0 0; color: var(--ink); font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 600; }
+  .partner-lead { max-width: 48ch; margin: 24px 0 0; color: var(--muted); font-size: clamp(1.1rem, 2vw, 1.4rem); line-height: 1.65; }
+  .partner-layout { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr); gap: clamp(32px, 6vw, 88px); margin-top: 48px; }
+  .partner-contents { position: sticky; top: 104px; align-self: start; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .partner-contents span { margin-bottom: 10px; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .partner-contents a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; font-size: .9rem; }
+  .partner-contents a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  a:focus-visible { outline: 2px solid var(--accent, var(--pf-brand)); outline-offset: 4px; border-radius: var(--pf-radius-sm); }
+  .partner-copy { min-width: 0; max-width: 680px; color: var(--pf-primary); font-family: var(--font-body); font-size: 19px; line-height: 1.7; }
+  .partner-copy p { margin: 0 0 20px; }
+  section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
+  h2 { margin: 0 0 22px; color: var(--ink); font-size: clamp(1.35rem, 2.5vw, 1.8rem); line-height: 1.25; letter-spacing: -.025em; }
+  .option-list { margin: 0; }
+  .option-list div { margin: 0 0 26px; }
+  dt { color: var(--ink); font-weight: 650; line-height: 1.4; }
+  dd { margin: 8px 0 0; }
+  .partner-mission > p:first-of-type { color: var(--ink); font-size: 1.2rem; line-height: 1.65; }
+  .partner-copy .partner-signoff { margin-top: 32px; color: var(--muted); font-size: .85rem; }
+  @media (max-width: 700px) { .partner-layout { grid-template-columns: 1fr; margin-top: 28px; gap: 28px; } .partner-contents { position: static; border-bottom: 1px solid var(--pf-border); padding-bottom: 16px; flex-direction: row; flex-wrap: wrap; gap: 0 20px; } .partner-contents span { flex-basis: 100%; } }
+  @media print { .partner-publication { max-width: none; padding: 0; } .partner-contents { display: none; } .partner-layout { display: block; } .partner-copy { max-width: none; color: var(--pf-muted); } h1,h2,dt,.partner-mission > p:first-of-type { color: var(--pf-muted); } section { break-inside: avoid; } }
+  .partner-cta { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; padding: 0 18px; border: 1px solid var(--pf-border); border-radius: var(--pf-radius-sm, 4px); color: var(--ink); font-family: var(--font-ui); font-size: .95rem; font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+  .partner-cta:hover { background: var(--pf-raised); }
+</style>
