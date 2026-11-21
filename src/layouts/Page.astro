@@ -20,6 +20,12 @@ interface Props {
   home?: boolean;
   productMode?: boolean;
   newsletterInContent?: boolean;
+  /** Absolute https image for link previews; falls back to the brand card. */
+  image?: string;
+  imageAlt?: string;
+  ogType?: 'website' | 'article';
+  publishedTime?: string;
+  author?: string;
 }
 
 const {
@@ -29,7 +35,31 @@ const {
   home = false,
   productMode = false,
   newsletterInContent = false,
+  image,
+  imageAlt,
+  ogType = 'website',
+  publishedTime,
+  author,
 } = Astro.props;
+
+const SITE = 'https://phonefuturist.com';
+const pageTitle = `${title.replace(/(?:\s*·\s*PhoneFuturist)+$/i, '')} · PhoneFuturist`;
+const canonical = SITE + Astro.url.pathname + (Astro.url.pathname === '/articles' && Astro.url.searchParams.get('section') ? `?section=${encodeURIComponent(Astro.url.searchParams.get('section')!)}` : '');
+const shareImage = image && /^https:\/\//.test(image) ? image : `${SITE}/og-image.png`;
+const shareImageAlt = shareImage !== `${SITE}/og-image.png` ? (imageAlt || title) : 'PhoneFuturist — Technology, examined';
+const organization = {
+  '@type': 'NewsMediaOrganization',
+  '@id': `${SITE}/#organization`,
+  name: 'PhoneFuturist',
+  url: SITE,
+  logo: { '@type': 'ImageObject', url: `${SITE}/icon-512.png`, width: 512, height: 512 },
+  parentOrganization: { '@type': 'Organization', name: 'Lumière Media & Entertainment' },
+};
+const structuredData = privatePage ? null : ogType === 'article'
+  ? { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: title.slice(0, 110), description, image: [shareImage], datePublished: publishedTime, mainEntityOfPage: canonical, ...(author ? { author: { '@type': 'Person', name: author } } : {}), publisher: organization }
+  : home
+    ? { '@context': 'https://schema.org', '@graph': [organization, { '@type': 'WebSite', '@id': `${SITE}/#website`, url: SITE, name: 'PhoneFuturist', publisher: { '@id': `${SITE}/#organization` } }] }
+    : null;
 
 const links = [
   ['Newsroom', 'newsroom'],
@@ -48,9 +78,9 @@ const showAds=canShowAds(Astro.url.pathname,privatePage,Astro.locals.adAudience)
 const adsNonce=showAds?crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''):undefined;
 if(showAds&&Astro.csp){
  Astro.csp.insertScriptResource(`'nonce-${adsNonce}'`);
- for(const host of ['https://*.googlesyndication.com','https://*.doubleclick.net','https://*.google.com','https://*.googleadservices.com','https://*.googletagservices.com'])Astro.csp.insertScriptResource(host);
- Astro.csp.insertDirective("connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://*.googletagservices.com https://ep1.adtrafficquality.google");
- Astro.csp.insertDirective("frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com");
+ for(const host of ['https://*.googlesyndication.com','https://*.doubleclick.net','https://*.google.com','https://*.googleadservices.com','https://*.googletagservices.com','https://*.adtrafficquality.google','https://*.gstatic.com'])Astro.csp.insertScriptResource(host);
+ Astro.csp.insertDirective("connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://*.googletagservices.com https://*.adtrafficquality.google");
+ Astro.csp.insertDirective("frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google");
  Astro.csp.insertStyleResource({resource:"'unsafe-inline'",kind:'attribute'});
 }
 ---
@@ -71,7 +101,34 @@ if(showAds&&Astro.csp){
 
     {privatePage && <meta name="robots" content="noindex, nofollow" />}
 
-    <title>{title.replace(/(?:\s*·\s*PhoneFuturist)+$/i, '')} · PhoneFuturist</title>
+    <title>{pageTitle}</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/icon-96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#12171a" />
+
+    {!privatePage && <>
+      <link rel="canonical" href={canonical} />
+      <meta property="og:site_name" content="PhoneFuturist" />
+      <meta property="og:type" content={ogType} />
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:image" content={shareImage} />
+      <meta property="og:image:alt" content={shareImageAlt} />
+      {shareImage === `${SITE}/og-image.png` && <><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /></>}
+      <meta property="og:locale" content="en_GB" />
+      {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={shareImage} />
+      <meta name="twitter:image:alt" content={shareImageAlt} />
+    </>}
+    {structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
     {showAds&&<><meta name="google-adsense-account" content={ADSENSE_CLIENT}/><script is:inline nonce={adsNonce} async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script></>}
   </head>
 

@@ -28,7 +28,7 @@ const heroImage = article && !article.withdrawn
     : article.blocks.find(block=>block.type==='image' && safeHttps(block.url))
   : null;
 ---
-<Page title={article?.title ?? 'Article unavailable'} description={article?.summary} newsletterInContent={!!article}>
+<Page title={article?.title ?? 'Article unavailable'} description={article?.summary} newsletterInContent={!!article} image={heroImage?.url} imageAlt={(heroImage as {alt?:string}|null)?.alt} ogType={article && !article.withdrawn ? 'article' : 'website'} publishedTime={article?.published_at} author={article?.byline}>
   <div class="reading-progress" aria-hidden="true"></div>
   <div class="reading-page">
     {article ? <article class="story">
