@@ -1,0 +1,20 @@
+---
+import {ADSENSE_CLIENT,AD_SLOTS,type AdPlacement} from '../lib/advertising';
+interface Props { placement: AdPlacement }
+const { placement } = Astro.props;
+const slot = AD_SLOTS[placement];
+const show = Boolean(Astro.locals.showAds && slot);
+const inArticle = placement === 'inArticle';
+---
+{show && <aside class:list={['pf-ad', `pf-ad--${placement}`]} aria-label="Advertisement">
+  <span class="pf-ad__label">Advertisement</span>
+  {inArticle
+    ? <ins class="adsbygoogle" style="display:block;text-align:center" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client={ADSENSE_CLIENT} data-ad-slot={slot}></ins>
+    : <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true" data-ad-client={ADSENSE_CLIENT} data-ad-slot={slot}></ins>}
+</aside>}
+<style>
+.pf-ad{display:block;width:min(100%,728px);margin:clamp(28px,4vw,48px) auto;min-height:120px;text-align:center;clear:both}
+.pf-ad--feed{width:min(100%,970px)}
+.pf-ad__label{display:block;margin-bottom:8px;color:var(--pf-muted);font:500 11px/1 var(--font-ui);letter-spacing:.08em;text-transform:uppercase}
+.pf-ad :global(ins.adsbygoogle[data-ad-status="unfilled"]){display:none!important}
+</style>
