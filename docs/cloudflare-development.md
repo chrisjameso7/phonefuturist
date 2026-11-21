@@ -30,3 +30,7 @@ Keep any still-needed localhost callback entries. Avoid wildcard production redi
 ## Verification and acceptance
 
 Verify the deployed shell, security headers, missing/invalid-origin rejection and account redirects. After runtime settings and the Foundation database migration are applied, verify Google login, email confirmation, recovery, MFA and role restrictions. A successful Worker upload alone does not satisfy Milestone 0 acceptance. External SMTP delivery and the free-plan runtime budget remain acceptance checks.
+
+## Automatic deployment
+
+Cloudflare Workers Builds is connected to `chrisjameso7/phonefuturist` with `main` as the production branch (build: `npm run build`, deploy: `npx wrangler deploy`, `NODE_VERSION=22`). Every merge to `main` deploys phonefuturist.com.
