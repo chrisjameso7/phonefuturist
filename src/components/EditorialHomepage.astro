@@ -2,6 +2,7 @@
 import ConfidenceTag from './ConfidenceTag.astro';
 import StoryImage from './StoryImage.astro';
 import StoryByline from './StoryByline.astro';
+import AdSlot from './AdSlot.astro';
 import type { PublishedArticle } from '../lib/editorial';
 interface Props {articles: PublishedArticle[]}
 const { articles } = Astro.props;
@@ -27,6 +28,7 @@ const today = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric
    {next.map(story=><article><StoryImage article={story}/><div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story}/></div><h3><a href={story.canonical_path}>{story.title}</a></h3><StoryByline article={story}/></article>)}
   </section>}
  </section> : <p>Stories are currently unavailable. <a href="/articles">Open the Newsroom</a></p>}
+ <AdSlot placement="feed"/>
  {latest.length>0 && <section class="latest-edition"><h2>More stories</h2><div class="latest-grid">{latest.map(story=><article><StoryImage article={story}/><div class="story-meta"><span class="kicker">{story.section}</span><ConfidenceTag article={story}/></div><h3><a href={story.canonical_path}>{story.title}</a></h3>{story.summary && <p>{story.summary}</p>}<StoryByline article={story}/></article>)}</div></section>}
  <slot/>
 </div>

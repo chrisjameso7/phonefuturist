@@ -75,6 +75,7 @@ const { signedIn, showStudio } = navigationFor(
 
 const active = activeNavigation(Astro.url);
 const showAds=canShowAds(Astro.url.pathname,privatePage,Astro.locals.adAudience);
+Astro.locals.showAds=showAds;
 const adsNonce=showAds?crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''):undefined;
 if(showAds&&Astro.csp){
  Astro.csp.insertScriptResource(`'nonce-${adsNonce}'`);
@@ -129,7 +130,7 @@ if(showAds&&Astro.csp){
       <meta name="twitter:image:alt" content={shareImageAlt} />
     </>}
     {structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
-    {showAds&&<><meta name="google-adsense-account" content={ADSENSE_CLIENT}/><script is:inline nonce={adsNonce} async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script></>}
+    {showAds&&<><meta name="google-adsense-account" content={ADSENSE_CLIENT}/><script is:inline nonce={adsNonce} async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script><script is:inline defer src="/ads-init.js"></script></>}
   </head>
 
   <body class:list={{ 'product-mode': productMode }}>
