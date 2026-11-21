@@ -7,11 +7,11 @@ export const ADSENSE_CLIENT='ca-pub-1048772235239044';
  */
 export const AD_SLOTS = {
   /** In-article ad shown part-way through a story. Create as an "In-article" unit. */
-  inArticle: '',
+  inArticle: '5646907799',
   /** Display ad after the story body. Create as a responsive "Display" unit. */
-  articleEnd: '',
+  articleEnd: '9318559492',
   /** In-feed/display ad between homepage and newsroom story lists. */
-  feed: '',
+  feed: '3340755767',
 } as const satisfies Record<string,string>;
 export type AdPlacement = keyof typeof AD_SLOTS;
 
