@@ -48,8 +48,9 @@ export default defineConfig({
       scriptDirective: { resources: ["'self'"] },
       directives: [
         "default-src 'self'",
+        // connect-src is set per page in Page.astro (ad pages need Google's ad hosts);
+        // two connect-src directives would make browsers ignore the second one.
         "img-src 'self' data: blob: https:",
-        "connect-src 'self'",
         "form-action 'self'",
         "base-uri 'self'",
         "object-src 'none'",
