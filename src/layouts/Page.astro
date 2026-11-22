@@ -77,12 +77,20 @@ const active = activeNavigation(Astro.url);
 const showAds=canShowAds(Astro.url.pathname,privatePage,Astro.locals.adAudience);
 Astro.locals.showAds=showAds;
 const adsNonce=showAds?crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''):undefined;
-if(showAds&&Astro.csp){
- Astro.csp.insertScriptResource(`'nonce-${adsNonce}'`);
- for(const host of ['https://*.googlesyndication.com','https://*.doubleclick.net','https://*.google.com','https://*.googleadservices.com','https://*.googletagservices.com','https://*.adtrafficquality.google','https://*.gstatic.com'])Astro.csp.insertScriptResource(host);
- Astro.csp.insertDirective("connect-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.googleadservices.com https://*.googletagservices.com https://*.adtrafficquality.google");
- Astro.csp.insertDirective("frame-src 'self' https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.adtrafficquality.google");
- Astro.csp.insertStyleResource({resource:"'unsafe-inline'",kind:'attribute'});
+if(Astro.csp){
+ if(showAds){
+  // AdSense loads code from hosts Google changes over time and needs eval, so ad pages
+  // follow Google's supported policy (support.google.com/adsense/answer/16283098):
+  // nonce for the loader, plus https: and 'unsafe-eval' for what it pulls in.
+  Astro.csp.insertScriptResource(`'nonce-${adsNonce}'`);
+  Astro.csp.insertScriptResource("'unsafe-eval'");
+  Astro.csp.insertScriptResource('https:');
+  Astro.csp.insertDirective("connect-src 'self' https:");
+  Astro.csp.insertDirective("frame-src 'self' https:");
+  Astro.csp.insertStyleResource({resource:"'unsafe-inline'",kind:'attribute'});
+ } else {
+  Astro.csp.insertDirective("connect-src 'self'");
+ }
 }
 ---
 
